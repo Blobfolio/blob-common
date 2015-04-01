@@ -121,15 +121,21 @@ if(!function_exists('common_get_clean_svg'))
 		if(!@file_exists($path))
 			return false;
 
-		$svg = preg_replace('/\s{1,}/u', ' ', @file_get_contents($path));
+		//start by cleaning up whitespace
+		$svg = common_sanitize_whitespace(@file_get_contents($path));
 
-		//Illustrator has some annoying SVG bugs... fix those
+		//fix a couple common Illustrator bugs
 		$svg = str_replace(array('xmlns="&ns_svg;"','xmlns:xlink="&ns_xlink;"','id="Layer_1"'), array('xmlns="http://www.w3.org/2000/svg"','xmlns:xlink="http://www.w3.org/1999/xlink"',''), $svg);
 
+		//drop spaces between tags
+		$svg = str_replace("> <", "><", $svg);
+
+		//find out where our SVG starts and ends
 		if(false === ($start = strpos($svg, '<svg')) || false === ($end = strpos($svg, '</svg>')))
 			return false;
 
-		return preg_replace('/\s{1,}/u', ' ', substr($svg, $start, ($end - $start + 6)));
+		//and done!
+		return common_sanitize_whitespace(substr($svg, $start, ($end - $start + 6)));
 	}
 }
 
@@ -518,8 +524,8 @@ if(!function_exists('common_generate_random_string'))
 // @return name
 if(!function_exists('common_sanitize_name'))
 {
-	function common_sanitize_name($value=''){
-		return ucwords(common_sanitize_quotes(common_sanitize_whitespace(preg_replace('/[^\p{L}\p{Zs}\p{P}]/u', '', $value))));
+	function common_sanitize_name($str=''){
+		return ucwords(common_sanitize_whitespace(preg_replace('/[^\p{L}\p{Zs}\p{Pd}\'\"\,\.]/u', '', common_sanitize_quotes($str))));
 	}
 }
 
@@ -579,9 +585,35 @@ if(!function_exists('common_sanitize_whitespace'))
 if(!function_exists('common_sanitize_quotes'))
 {
 	function common_sanitize_quotes($str=''){
-		$str = str_replace(array("\xe2\x80\x98", "\xe2\x80\x99", "\xe2\x80\x9c", "\xe2\x80\x9d", "\xe2\x80\x93", "\xe2\x80\x94", "\xe2\x80\xa6"), array("'", "'", '"', '"', '-', '--', '...'), $str);
-		// Next, replace their Windows-1252 equivalents.
-		return str_replace(array(chr(145), chr(146), chr(147), chr(148), chr(150), chr(151), chr(133)), array("'", "'", '"', '"', '-', '--', '...'), $str);
+		$quotes = array(
+			//Windows codepage 1252
+			"\xC2\x82" => "'",		// U+0082⇒U+201A single low-9 quotation mark
+			"\xC2\x84" => '"',		// U+0084⇒U+201E double low-9 quotation mark
+			"\xC2\x8B" => "'",		// U+008B⇒U+2039 single left-pointing angle quotation mark
+			"\xC2\x91" => "'",		// U+0091⇒U+2018 left single quotation mark
+			"\xC2\x92" => "'",		// U+0092⇒U+2019 right single quotation mark
+			"\xC2\x93" => '"',		// U+0093⇒U+201C left double quotation mark
+			"\xC2\x94" => '"',		// U+0094⇒U+201D right double quotation mark
+			"\xC2\x9B" => "'",		// U+009B⇒U+203A single right-pointing angle quotation mark
+
+			//Regular Unicode		// U+0022 quotation mark (")
+			                  		// U+0027 apostrophe     (')
+			"\xC2\xAB"     => '"',	// U+00AB left-pointing double angle quotation mark
+			"\xC2\xBB"     => '"',	// U+00BB right-pointing double angle quotation mark
+			"\xE2\x80\x98" => "'",	// U+2018 left single quotation mark
+			"\xE2\x80\x99" => "'",	// U+2019 right single quotation mark
+			"\xE2\x80\x9A" => "'",	// U+201A single low-9 quotation mark
+			"\xE2\x80\x9B" => "'",	// U+201B single high-reversed-9 quotation mark
+			"\xE2\x80\x9C" => '"',	// U+201C left double quotation mark
+			"\xE2\x80\x9D" => '"',	// U+201D right double quotation mark
+			"\xE2\x80\x9E" => '"',	// U+201E double low-9 quotation mark
+			"\xE2\x80\x9F" => '"',	// U+201F double high-reversed-9 quotation mark
+			"\xE2\x80\xB9" => "'",	// U+2039 single left-pointing angle quotation mark
+			"\xE2\x80\xBA" => "'",	// U+203A single right-pointing angle quotation mark
+		);
+		$from = array_keys($quotes); // but: for efficiency you should
+		$to = array_values($quotes); // pre-calculate these two arrays
+		return str_replace($from, $to, $str);
 	}
 }
 
