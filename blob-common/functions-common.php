@@ -12,10 +12,100 @@
 //---------------------------------------------------------------------
 
 //do not include back/next in meta
-add_filter( 'previous_post_rel_link', '__return_false' );
-add_filter( 'next_post_rel_link', '__return_false' );
+add_filter('previous_post_rel_link', '__return_false');
+add_filter('next_post_rel_link', '__return_false');
 
 //--------------------------------------------------------------------- end theme/system
+
+
+
+//---------------------------------------------------------------------
+// Email
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// WP Mail wrapper
+//
+// this ensures mail is sent in HTML
+//
+// @param to
+// @param subject
+// @param msg
+// @param from (e.g. headers)
+// @param attachments
+// @return true
+if(!function_exists('common_mail'))
+{
+	function common_mail($to, $subject, $msg, $from=null, $attachments=null){
+		if(is_null($from))
+			$from = common_sanitize_name(get_bloginfo('name')) . ' <' . get_bloginfo('admin_email') . '>';
+
+		//engage our filters
+		add_filter('wp_mail_content_type', 'common_mail_html_content_type');
+
+		//send the mail
+		wp_mail($to, $subject, $msg, "From: $from\r\nReply-To: $from\r\n", $attachments);
+
+		//remove our filters
+		remove_filter('wp_mail_content_type', 'common_mail_html_content_type');
+
+		return true;
+	}
+}
+
+//-------------------------------------------------
+// Set e-mail content type to HTML
+//
+// @param n/a
+// @return text/html
+if(!function_exists('common_mail_html_content_type'))
+{
+	function common_mail_html_content_type(){
+		return 'text/html';
+	}
+}
+
+//--------------------------------------------------------------------- end email
+
+
+
+//---------------------------------------------------------------------
+// Forms
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Generate form timestamp
+//
+// this field can be used to prevent rapid
+// form submissions by robots
+//
+// @param n/a
+// @return hash
+if(!function_exists('common_get_form_timestamp'))
+{
+	function common_get_form_timestamp(){
+		$time = time();
+		return "$time," . md5($time . NONCE_KEY);
+	}
+}
+
+//-------------------------------------------------
+// Validate form timestamp
+//
+// @param hash
+// @param time elapsed (must be >= this value)
+// @return true/false
+if(!function_exists('common_check_form_timestamp'))
+{
+	function common_check_form_timestamp($hash='', $elapsed=5){
+		if(!preg_match('/^\d+,([\da-f]{32})$/i', $hash))
+			return false;
+		list($t,$h) = explode(',', $hash);
+		return ($h === md5($t . NONCE_KEY) && time() - $t >= $elapsed);
+	}
+}
+
+//--------------------------------------------------------------------- end forms
 
 
 
@@ -161,46 +251,6 @@ if(!function_exists('common_get_data_uri'))
 
 
 //---------------------------------------------------------------------
-// Forms
-//---------------------------------------------------------------------
-
-//-------------------------------------------------
-// Generate form timestamp
-//
-// this field can be used to prevent rapid
-// form submissions by robots
-//
-// @param n/a
-// @return hash
-if(!function_exists('common_get_form_timestamp'))
-{
-	function common_get_form_timestamp(){
-		$time = time();
-		return "$time," . md5($time . NONCE_KEY);
-	}
-}
-
-//-------------------------------------------------
-// Validate form timestamp
-//
-// @param hash
-// @param time elapsed (must be >= this value)
-// @return true/false
-if(!function_exists('common_check_form_timestamp'))
-{
-	function common_check_form_timestamp($hash='', $elapsed=5){
-		if(!preg_match('/^\d+,([\da-f]{32})$/i', $hash))
-			return false;
-		list($t,$h) = explode(',', $hash);
-		return ($h === md5($t . NONCE_KEY) && time() - $t >= $elapsed);
-	}
-}
-
-//--------------------------------------------------------------------- end form
-
-
-
-//---------------------------------------------------------------------
 // Localities
 //---------------------------------------------------------------------
 
@@ -211,8 +261,7 @@ if(!function_exists('common_check_form_timestamp'))
 // @return states
 if(!function_exists('common_get_us_states'))
 {
-	function common_get_us_states($include_other=true)
-	{
+	function common_get_us_states($include_other=true){
 		$states = array('AL' => 'ALABAMA',
 					'AK' => 'ALASKA',
 					'AZ' => 'ARIZONA',
@@ -291,8 +340,7 @@ if(!function_exists('common_get_us_states'))
 // @return provinces
 if(!function_exists('common_get_ca_provinces'))
 {
-	function common_get_ca_provinces()
-	{
+	function common_get_ca_provinces(){
 		return array('AB'=>'ALBERTA',
 					 'BC'=>'BRITISH COLUMBIA',
 					 'MB'=>'MANITOBA',
@@ -306,6 +354,43 @@ if(!function_exists('common_get_ca_provinces'))
 					 'QC'=>'QUEBEC',
 					 'SK'=>'SASKATCHEWAN',
 					 'YT'=>'YUKON');
+	}
+}
+
+//-------------------------------------------------
+// Datediff
+//
+// a simple function to count the number of days
+// between two dates
+//
+// @param date1
+// @param date2
+// @return days
+if(!function_exists('common_datediff'))
+{
+	function common_datediff($date1, $date2){
+		$date1 = date('Y-m-d', strtotime($date1));
+		$date2 = date('Y-m-d', strtotime($date2));
+
+		//same date, tricky tricky!
+		if($date1 === $date2)
+			return 0;
+
+		try {
+			$date1 = new DateTime($date1);
+			$date2 = new DateTime($date2);
+			$diff = $date1->diff($date2);
+
+			return abs($diff->days);
+		}
+		catch(Exception $e) {
+			//this is a simple fallback using unix timestamps
+			//however it will fail to consider things like
+			//daylight saving
+			$date1 = strtotime($date1);
+			$date2 = strtotime($date2);
+			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
+		}
 	}
 }
 
@@ -372,94 +457,6 @@ if(!function_exists('common_switcheroo'))
 }
 
 //-------------------------------------------------
-// Make excerpt (character length)
-//
-// @param string
-// @param length
-// @param append
-// @return excerpt
-if(!function_exists('common_get_excerpt'))
-{
-	function common_get_excerpt($str, $length=200, $append='...'){
-		$str = trim(strip_tags(common_sanitize_whitespace($str)));
-		if(strlen($str) > $length)
-			$str = trim(substr($str, 0, $length)) . $append;
-
-		return $str;
-	}
-}
-
-//-------------------------------------------------
-// Check whether a URL is local
-//
-// @param url
-// @return true/false
-if(!function_exists('common_is_site_url'))
-{
-	function common_is_site_url($url){
-		return filter_var($url, FILTER_VALIDATE_URL) && strtolower(substr($url, 0, strlen(site_url()))) === strtolower(site_url());
-	}
-}
-
-//-------------------------------------------------
-// Is a given URL being viewed?
-//
-// @param url to check against
-// @param subpages to match subpages
-// @return true/false
-if(!function_exists('common_is_current_page'))
-{
-	function common_is_current_page($url, $subpages=false){
-
-		//ready the test URL for comparison
-		//strip out the URL so we can compare just the relative uri
-		$url = str_replace(site_url(), '', $url);
-		if(substr($url, 0, 1) !== '/')
-			$url = "/$url";
-		if(substr($url, -1) !== '/')
-			$url = "$url/";
-
-		//and ready the actual URL for comparison
-		$url2 = explode('?', $_SERVER['REQUEST_URI']);
-		$url2 = common_array_pop_top($url2);
-		if(substr($url2, 0, 1) !== '/')
-			$url2 = "/$url";
-		if(substr($url2, -1) !== '/')
-			$url2 = "$url/";
-
-		//and check for a match
-		return $subpages ? substr($url2, 0, strlen($url)) === $url : $url === $url2;
-	}
-}
-
-//-------------------------------------------------
-// Redirect wrapper
-//
-// clear $_REQUEST and exit
-//
-// @param url
-// @param offsite
-// @return n/a
-if(!function_exists('common_redirect'))
-{
-	function common_redirect($url=null, $offsite=false){
-		if(is_null($url) || (true !== $offsite && !common_is_site_url($url)))
-			$url = site_url();
-
-		unset($_POST);
-		unset($_GET);
-		unset($_REQUEST);
-
-		if(headers_sent())
-			echo "<script>top.location.href='" . esc_js($url) . "';</script>";
-		else
-			wp_redirect($url);
-
-		exit;
-	}
-}
-
-//-------------------------------------------------
 // WP Parse Args wrapper
 //
 // remove extra keys from $args if they are not in
@@ -509,13 +506,68 @@ if(!function_exists('common_generate_random_string'))
 	}
 }
 
+//-------------------------------------------------
+// Case-insensitive in_array()
+//
+// @param needle
+// @param haystack
+// @return true/false
+if(!function_exists('common_iin_array()'))
+{
+	function common_iin_array($needle, $haystack){
+		$needle = strtolower($needle);
+		$haystack = array_map('strtolower', $haystack);
+		return in_array($needle, $haystack);
+	}
+}
+
+//-------------------------------------------------
+// Case-insensitive substr_count
+//
+// @param haystack
+// @param needle
+// @return true/false
+if(!function_exists('common_isubstr_count()'))
+{
+	function common_isubstr_count($haystack, $needle){
+		$needle = strtolower($needle);
+		$haystack = strtolower($haystack);
+		return substr_count($haystack, $needle);
+	}
+}
+
+
 //--------------------------------------------------------------------- end misc
 
 
 
 //---------------------------------------------------------------------
-// Sanitize and formatting
+// Sanitizing, validation, and formatting
 //---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Make excerpt (character length)
+//
+// @param string
+// @param length
+// @param append
+// @param chop method (chars or words)
+// @return excerpt
+if(!function_exists('common_get_excerpt'))
+{
+	function common_get_excerpt($str, $length=200, $append='...', $method='chars'){
+		$str = trim(common_sanitize_whitespace(strip_tags(common_sanitize_whitespace($str))));
+
+		//limit string to X characters
+		if($method === 'chars' && strlen($str) > $length)
+				$str = trim(substr($str, 0, $length)) . $append;
+		//limit string to X words
+		elseif($method === 'words' && substr_count($str, ' ') > $length + 1)
+			$str = implode(' ', array_slice(explode(' ', $str), 0, $length)) . $append;
+
+		return $str;
+	}
+}
 
 //-------------------------------------------------
 // Sanitize name (like a person's name)
@@ -684,48 +736,6 @@ if(!function_exists('common_format_money'))
 }
 
 //-------------------------------------------------
-// WP Mail wrapper
-//
-// this ensures mail is sent in HTML
-//
-// @param to
-// @param subject
-// @param msg
-// @param from (e.g. headers)
-// @param attachments
-// @return true
-if(!function_exists('common_mail'))
-{
-	function common_mail($to, $subject, $msg, $from=null, $attachments=null){
-		if(is_null($from))
-			$from = common_sanitize_name(get_bloginfo('name')) . ' <' . get_bloginfo('admin_email') . '>';
-
-		//engage our filters
-		add_filter('wp_mail_content_type', 'common_mail_html_content_type');
-
-		//send the mail
-		wp_mail($to, $subject, $msg, "From: $from\r\nReply-To: $from\r\n", $attachments);
-
-		//remove our filters
-		remove_filter('wp_mail_content_type', 'common_mail_html_content_type');
-
-		return true;
-	}
-}
-
-//-------------------------------------------------
-// Set e-mail content type to HTML
-//
-// @param n/a
-// @return text/html
-if(!function_exists('common_mail_html_content_type'))
-{
-	function common_mail_html_content_type() {
-		return 'text/html';
-	}
-}
-
-//-------------------------------------------------
 // Validate credit card
 //
 // @param card
@@ -806,6 +816,132 @@ if(!function_exists('common_to_char_array'))
 	}
 }
 
+//-------------------------------------------------
+// Remove non-numeric chars from str
+//
+// @param num
+// @return num (float)
+if(!function_exists('common_sanitize_number'))
+{
+	function common_sanitize_number($num){
+		//numbers and periods only
+		$num = preg_replace('/[^\d\.]/', '', $num);
+
+		//drop 2+ periods
+		if(substr_count($num, '.') > 1)
+		{
+			$first = strpos($num, '.');
+			$num = substr($num, 0, $first) . '.' . str_replace('.', '', substr($num, $first));
+		}
+
+		//done!
+		return (float) $num;
+	}
+}
+
+//-------------------------------------------------
+// Typecast as (int)
+//
+// @param int-ish
+// @return int
+if(!function_exists('common_intval'))
+{
+	function common_intval($num){
+		return intval(common_sanitize_number($num));
+	}
+}
+
+//-------------------------------------------------
+// Typecast as (double)... which is really just
+// (float) for old people
+//
+// @param double-ish
+// @return double
+if(!function_exists('common_doubleval'))
+{
+	function common_doubleval($num){
+		return (double) common_sanitize_number($num);
+	}
+}
+
+//-------------------------------------------------
+// Typecast as (float)
+//
+// @param float-ish
+// @return float
+if(!function_exists('common_floatval'))
+{
+	function common_floatval($num){
+		return (float) common_sanitize_number($num);
+	}
+}
+
 //--------------------------------------------------------------------- end sanitizing
+
+
+
+//---------------------------------------------------------------------
+// URLs
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Check whether a URL is local
+//
+// @param url
+// @return true/false
+if(!function_exists('common_is_site_url'))
+{
+	function common_is_site_url($url){
+		return filter_var($url, FILTER_VALIDATE_URL) && strtolower(parse_url($url, PHP_URL_HOST)) === strtolower(parse_url(site_url(), PHP_URL_HOST));
+	}
+}
+
+//-------------------------------------------------
+// Is a given URL being viewed?
+//
+// @param url to check against
+// @param subpages to match subpages
+// @return true/false
+if(!function_exists('common_is_current_page'))
+{
+	function common_is_current_page($url, $subpages=false){
+
+		//ready the test URL for comparison
+		$url = parse_url($url, PHP_URL_PATH);
+		$url2 = parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+
+		//and check for a match
+		return $subpages ? substr($url2, 0, strlen($url)) === $url : $url === $url2;
+	}
+}
+
+//-------------------------------------------------
+// Redirect wrapper
+//
+// clear $_REQUEST and exit
+//
+// @param url
+// @param offsite
+// @return n/a
+if(!function_exists('common_redirect'))
+{
+	function common_redirect($url=null, $offsite=false){
+		if(is_null($url) || (true !== $offsite && !common_is_site_url($url)))
+			$url = site_url();
+
+		unset($_POST);
+		unset($_GET);
+		unset($_REQUEST);
+
+		if(headers_sent())
+			echo "<script>top.location.href='" . esc_js($url) . "';</script>";
+		else
+			wp_redirect($url);
+
+		exit;
+	}
+}
+
+//--------------------------------------------------------------------- end URLs
 
 ?>
