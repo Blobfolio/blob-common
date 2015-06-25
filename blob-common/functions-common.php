@@ -717,6 +717,27 @@ if(!function_exists('common_sanitize_zip5'))
 }
 
 //-------------------------------------------------
+// Sanitize IP
+//
+// IPv6 addresses are compacted for consistency
+//
+// @param IP
+// @return IP
+if(!function_exists('common_sanitize_ip'))
+{
+	function common_sanitize_ip($ip){
+		//start by getting rid of obviously bad data
+		$ip = strtolower(preg_replace('/[^\d\.\:a-f]/i', '', $ip));
+
+		//try to compact
+		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+			$ip = inet_ntop(inet_pton($ip));
+
+		return $ip;
+	}
+}
+
+//-------------------------------------------------
 // Format money
 //
 // @param amount
@@ -939,6 +960,37 @@ if(!function_exists('common_redirect'))
 			wp_redirect($url);
 
 		exit;
+	}
+}
+
+//-------------------------------------------------
+// IP as Number
+//
+// convert an IP to a number for cleaner comparison
+//
+// @param IP
+// @return num or false
+if(!function_exists('common_ip_to_number'))
+{
+	function common_ip_to_number($ip){
+		if(!filter_var($ip, FILTER_VALIDATE_IP))
+			return false;
+
+		//ipv4 is easy
+		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+			return ip2long($ip);
+
+		//ipv6 is a little more roundabout
+		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+		{
+			$binNum = '';
+			foreach (unpack('C*', inet_pton($ip)) as $byte) {
+				$binNum .= str_pad(decbin($byte), 8, "0", STR_PAD_LEFT);
+			}
+			return base_convert(ltrim($binNum, '0'), 2, 10);
+		}
+
+		return false;
 	}
 }
 

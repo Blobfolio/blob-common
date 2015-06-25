@@ -3,7 +3,7 @@
 Plugin Name: Blob Common
 Plugin URI: https://blobfolio.com/repo/blob-common/
 Description: Commonly used WordPress extensions and helper functions.
-Version: 1.0
+Version: 1.0.1
 Author: Blobfolio, LLC
 Author URI: https://blobfolio.com/
 License: GPLv2 or later
