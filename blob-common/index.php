@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Blob Common
+Plugin Name: Tutan Common
 Plugin URI: https://blobfolio.com/repo/blob-common/
-Description: Commonly used WordPress extensions and helper functions.
-Version: 1.0.1
+Description: Functions to assist common theme operations.
+Version: 1.0.2
 Author: Blobfolio, LLC
 Author URI: https://blobfolio.com/
 License: GPLv2 or later

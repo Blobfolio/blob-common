@@ -134,10 +134,15 @@ if(!function_exists('common_upload_mimes'))
 //
 // @param post id
 // @param size
-// @return src or false
+// @param return attributes (ambiguous keys correspond to wp_get_attachment_image_src)
+//		0 URL
+//		1 width
+//		2 height
+//		3 is resized
+// @return array, src or false
 if(!function_exists('common_get_featured_image_src'))
 {
-	function common_get_featured_image_src($id=0, $size=null){
+	function common_get_featured_image_src($id=0, $size=null, $attributes=false){
 		$id = (int) $id;
 
 		$tmp = get_post_thumbnail_id($id);
@@ -145,7 +150,7 @@ if(!function_exists('common_get_featured_image_src'))
 		{
 			$tmp2 = wp_get_attachment_image_src($tmp, $size);
 			if(is_array($tmp2) && filter_var($tmp2[0], FILTER_VALIDATE_URL))
-				return $tmp2[0];
+				return $attributes === true ? $tmp2 : $tmp2[0];
 		}
 
 		return false;
@@ -546,6 +551,42 @@ if(!function_exists('common_isubstr_count()'))
 //---------------------------------------------------------------------
 
 //-------------------------------------------------
+// Check for UTF-8
+//
+// @param string
+// @return true/false
+if(!function_exists('common_is_utf8'))
+{
+	function common_is_utf8($str){
+		return (bool) preg_match('//u', $str);
+	}
+}
+
+//-------------------------------------------------
+// Convert to UTF-8
+//
+// @param string
+// @return string or false
+if(!function_exists('common_utf8'))
+{
+	function common_utf8($str){
+		if(common_is_utf8($str))
+			return $str;
+		else
+		{
+			try {
+				$str = mb_convert_encoding($str, 'UTF-8');
+				return $str;
+			} catch(Exception $e){
+				return false;
+			}
+		}
+
+		return false;
+	}
+}
+
+//-------------------------------------------------
 // Make excerpt (character length)
 //
 // @param string
@@ -577,7 +618,8 @@ if(!function_exists('common_get_excerpt'))
 if(!function_exists('common_sanitize_name'))
 {
 	function common_sanitize_name($str=''){
-		return ucwords(common_sanitize_whitespace(preg_replace('/[^\p{L}\p{Zs}\p{Pd}\'\"\,\.]/u', '', common_sanitize_quotes($str))));
+		$str = common_utf8($str);
+		return ucwords(common_sanitize_whitespace(preg_replace('/[^\p{L}\p{Zs}\p{Pd}\d\'\"\,\.]/u', '', common_sanitize_quotes($str))));
 	}
 }
 
@@ -589,6 +631,7 @@ if(!function_exists('common_sanitize_name'))
 if(!function_exists('common_sanitize_newlines'))
 {
 	function common_sanitize_newlines($str=''){
+		$str = common_utf8($str);
 		$str = str_replace("\r\n", "\n", $str);
 		$str = preg_replace('/\v/u', "\n", $str);
 		$str = preg_replace("/\n{2,}/", "\n\n", $str);
@@ -604,6 +647,7 @@ if(!function_exists('common_sanitize_newlines'))
 if(!function_exists('common_sanitize_spaces'))
 {
 	function common_sanitize_spaces($str=''){
+		$str = common_utf8($str);
 		return trim(preg_replace('/\h{1,}/u', ' ', $str));
 	}
 }
@@ -620,7 +664,7 @@ if(!function_exists('common_sanitize_whitespace'))
 
 		//convert all white space to a regular " "
 		if(!$multiline)
-			return trim(preg_replace('/\s{1,}/u', ' ', $str));
+			return trim(preg_replace('/\s{1,}/u', ' ', common_utf8($str)));
 
 		$str = common_sanitize_spaces($str);
 		$str = common_sanitize_newlines($str);
