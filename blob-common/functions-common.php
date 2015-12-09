@@ -408,6 +408,50 @@ if(!function_exists('common_datediff'))
 //---------------------------------------------------------------------
 
 //-------------------------------------------------
+// Database logging - query errors
+//
+// this logs invalid queries to db-debug.log if
+// the WP_DB_DEBUG_LOG constant is set to true.
+// this can be used independently of WP_DEBUG
+//
+// @param n/a
+// @return n/a
+if(!function_exists('common_db_debug_log'))
+{
+	function common_db_debug_log(){
+		if(!defined('WP_DB_DEBUG_LOG') || !WP_DB_DEBUG_LOG)
+			return;
+
+		//WP already stores query errors in this obscure
+		//global variable, so we can see what we've ended
+		//up with just before shutdown
+		global $EZSQL_ERROR;
+		$log = ABSPATH . '/wp-content/db-debug.log';
+
+		try {
+			if(is_array($EZSQL_ERROR) && count($EZSQL_ERROR))
+			{
+				$xout = array();
+				$xout[] = "DATE: " . date('r', current_time('timestamp'));
+				$xout[] = "SITE: " . site_url();
+				$xout[] = "IP: " . $_SERVER['REMOTE_ADDR'];
+				$xout[] = "UA: " . $_SERVER['HTTP_USER_AGENT'];
+				$xout[] = "SCRIPT: " . $_SERVER['SCRIPT_NAME'];
+				$xout[] = "REQUEST: " . $_SERVER['REQUEST_URI'];
+				foreach($EZSQL_ERROR AS $e)
+					$xout[] = str_repeat('-', 50) . "\n" . implode("\n", $e) . "\n" . str_repeat('-', 50);
+				$xout[] = "\n\n\n\n";
+
+				@file_put_contents($log, implode("\n", $xout), FILE_APPEND);
+			}
+		} catch(Exception $e){ }
+
+		return;
+	}
+	add_action('shutdown', 'common_db_debug_log');
+}
+
+//-------------------------------------------------
 // Return the first index of an array
 //
 // this is like array_pop for the first entry

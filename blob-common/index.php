@@ -3,7 +3,7 @@
 Plugin Name: Tutan Common
 Plugin URI: https://blobfolio.com/repo/blob-common/
 Description: Functions to assist common theme operations.
-Version: 1.0.2
+Version: 1.0.3
 Author: Blobfolio, LLC
 Author URI: https://blobfolio.com/
 License: GPLv2 or later
