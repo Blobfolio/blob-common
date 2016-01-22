@@ -399,6 +399,37 @@ if(!function_exists('common_datediff'))
 	}
 }
 
+//-------------------------------------------------
+// IP as Number
+//
+// convert an IP to a number for cleaner comparison
+//
+// @param IP
+// @return num or false
+if(!function_exists('common_ip_to_number'))
+{
+	function common_ip_to_number($ip){
+		if(!filter_var($ip, FILTER_VALIDATE_IP))
+			return false;
+
+		//ipv4 is easy
+		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+			return ip2long($ip);
+
+		//ipv6 is a little more roundabout
+		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+		{
+			$binNum = '';
+			foreach (unpack('C*', inet_pton($ip)) as $byte) {
+				$binNum .= str_pad(decbin($byte), 8, "0", STR_PAD_LEFT);
+			}
+			return base_convert(ltrim($binNum, '0'), 2, 10);
+		}
+
+		return false;
+	}
+}
+
 //--------------------------------------------------------------------- end localities
 
 
@@ -985,6 +1016,65 @@ if(!function_exists('common_floatval'))
 	}
 }
 
+//-------------------------------------------------
+// Sanitize phone number
+//
+// this function should only be used on north
+// american numbers, like: (123) 456-7890 x12345
+//
+// @param phone
+// @return phone
+if(!function_exists('common_sanitize_phone'))
+{
+	function common_sanitize_phone($value=''){
+		$value = preg_replace('/[^\d]/', '', $value);
+
+		//if this looks like a 10-digit number with the +1 on it, chop it off
+		if(strlen($value) === 11 && intval(substr($value,0,1)) === 1)
+			$value = substr($value, 1);
+
+		return $value;
+	}
+}
+
+//-------------------------------------------------
+// Validate north american phone number
+//
+// the first 10 digits must match standards
+//
+// @param phone
+// @return true/false
+if(!function_exists('common_validate_phone'))
+{
+	function common_validate_phone($value=''){
+		//match the first 10
+		$first10 = substr($value, 0, 10);
+		return preg_match("/^[2-9][0-8][0-9][2-9][0-9]{2}[0-9]{4}$/i", $first10);
+	}
+}
+
+//-------------------------------------------------
+// Format phone
+//
+// again, this assumes north american formatting
+//
+// @param n/a
+// @return phone (pretty)
+if(!function_exists('common_format_phone'))
+{
+	function common_format_phone($value=''){
+		$value = common_sanitize_phone($value);
+
+		if(strlen($value) >= 10)
+		{
+			$first10 = substr($value,0,10);
+			return preg_replace("/^([0-9]{3})([0-9]{3})([0-9]{4})/i", "(\\1) \\2-\\3", $first10) . (strlen($value) > 10 ? ' x' . substr($value,10) : '');
+		}
+
+		return $value;
+	}
+}
+
 //--------------------------------------------------------------------- end sanitizing
 
 
@@ -1048,37 +1138,6 @@ if(!function_exists('common_redirect'))
 			wp_redirect($url);
 
 		exit;
-	}
-}
-
-//-------------------------------------------------
-// IP as Number
-//
-// convert an IP to a number for cleaner comparison
-//
-// @param IP
-// @return num or false
-if(!function_exists('common_ip_to_number'))
-{
-	function common_ip_to_number($ip){
-		if(!filter_var($ip, FILTER_VALIDATE_IP))
-			return false;
-
-		//ipv4 is easy
-		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-			return ip2long($ip);
-
-		//ipv6 is a little more roundabout
-		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-		{
-			$binNum = '';
-			foreach (unpack('C*', inet_pton($ip)) as $byte) {
-				$binNum .= str_pad(decbin($byte), 8, "0", STR_PAD_LEFT);
-			}
-			return base_convert(ltrim($binNum, '0'), 2, 10);
-		}
-
-		return false;
 	}
 }
 
