@@ -65,6 +65,39 @@ if(!function_exists('common_mail_html_content_type'))
 	}
 }
 
+//-------------------------------------------------
+// Developer Debug Email
+//
+// ever need to quickly email yourself a print_r
+// of a variable to see what happened?
+//
+// will go to blog email unless WP_DEBUG_EMAIL is
+// defined
+//
+// @param variable
+// @param subject
+// @param use mail() instead of wp_mail()
+// @return true/false
+if(!function_exists('common_debug_mail'))
+{
+	function common_debug_mail($variable, $subject=null, $mail=true){
+		$mto = defined('WP_DEBUG_EMAIL') ? common_sanitize_email(WP_DEBUG_EMAIL) : get_bloginfo('admin_email');
+		$msub = common_sanitize_whitespace('[' . get_bloginfo('name') . '] ' . (is_null($subject) ? 'Debug' : $subject));
+		ob_start();
+		print_r($variable);
+		$mbody = ob_get_clean();
+
+		try {
+			if($mail)
+				mail($mto, $msub, $mbody);
+			else
+				wp_mail($mto, $msub, $mbody);
+		} catch(Exception $e) { return false; }
+
+		return true;
+	}
+}
+
 //--------------------------------------------------------------------- end email
 
 
@@ -699,6 +732,18 @@ if(!function_exists('common_sanitize_name'))
 }
 
 //-------------------------------------------------
+// Sanitize CSV
+//
+// @param field
+// @return field
+if(!function_exists('common_sanitize_csv'))
+{
+	function common_sanitize_csv($str=''){
+		return common_sanitize_whitespace(str_replace('"', '\"', common_sanitize_quotes($str)));
+	}
+}
+
+//-------------------------------------------------
 // Consistent new lines (\n)
 //
 // @param str
@@ -811,6 +856,18 @@ if(!function_exists('common_sanitize_email'))
 {
 	function common_sanitize_email($email=''){
 		return strtolower(str_replace(array("'", '"'), '', sanitize_email($email)));
+	}
+}
+
+//-------------------------------------------------
+// Validate an email (FQDN)
+//
+// @param email
+// @return true/false
+if(!function_exists('common_validate_email'))
+{
+	function common_validate_email($email=''){
+		return filter_var($email, FILTER_VALIDATE_EMAIL) && preg_match('/^.+\@.+\..+$/', $email);
 	}
 }
 
