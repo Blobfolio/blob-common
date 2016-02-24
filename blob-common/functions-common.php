@@ -649,6 +649,43 @@ if(!function_exists('common_isubstr_count()'))
 	}
 }
 
+//-------------------------------------------------
+// readfile() in chunks
+//
+// this greatly reduces the server resource demands
+// compared with reading a file all in one go
+//
+// @param file
+// @param bytes
+// @return bytes or false
+if(!function_exists('common_readfile_chunked'))
+{
+	function common_readfile_chunked($file, $retbytes=true){
+		$buffer = '';
+		$cnt = 0;
+		$chunk_size = 1024*1024;
+
+		if(false === ($handle = fopen($file, 'rb')))
+			return false;
+		while(!feof($handle))
+		{
+			$buffer = fread($handle, $chunk_size);
+			echo $buffer;
+			ob_flush();
+			flush();
+			if($retbytes)
+				$cnt += strlen($buffer);
+		}
+
+		$status = fclose($handle);
+
+ 		//return number of bytes delivered like readfile() does
+		if($retbytes && $status)
+			return $cnt;
+
+		return $status;
+	}
+}
 
 //--------------------------------------------------------------------- end misc
 
