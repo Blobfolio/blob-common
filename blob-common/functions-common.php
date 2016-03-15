@@ -696,6 +696,24 @@ if(!function_exists('common_readfile_chunked'))
 //---------------------------------------------------------------------
 
 //-------------------------------------------------
+// Singular/Plural inflection based on number
+//
+// @param number
+// @param single
+// @param plural
+if(!function_exists('common_inflect'))
+{
+	function common_inflect($num, $single='', $plural=''){
+		$num = (int) $num;
+		if($num === 1)
+			return sprintf($single, $num);
+		else
+			return sprintf($plural, $num);
+	}
+}
+
+
+//-------------------------------------------------
 // Check for UTF-8
 //
 // @param string
