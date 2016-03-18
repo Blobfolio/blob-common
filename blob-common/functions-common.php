@@ -1253,6 +1253,77 @@ if(!function_exists('common_redirect'))
 	}
 }
 
+//-------------------------------------------------
+// Sanitize domain name
+//
+// this does not strip invalid characters; it
+// merely attempts to extract the hostname portion
+// of a URL-like string
+//
+// @param domain
+// @return domain or false
+if(!function_exists('common_sanitize_domain_name'))
+{
+	function common_sanitize_domain_name($domain){
+		$domain = (string) $domain;
+		$domain = common_sanitize_whitespace(strtolower($domain));
+
+		if(!strlen($domain))
+			return false;
+
+		//maybe it is a full URL
+		$host = parse_url($domain, PHP_URL_HOST);
+
+		//nope...
+		if(is_null($host))
+		{
+			$host = $domain;
+			//maybe there's a path?
+			if(substr_count($host, '/'))
+			{
+				$host = explode('/', $host);
+				$host = common_array_pop_top($host);
+			}
+			//and/or a query?
+			if(substr_count($host, '?'))
+			{
+				$host = explode('?', $host);
+				$host = common_array_pop_top($host);
+			}
+		}
+
+		return $host;
+	}
+}
+
+//-------------------------------------------------
+// Validate domain name
+//
+// @param domain
+// @param live (does it have an IP?)
+// @return true/false
+if(!function_exists('common_validate_domain_name'))
+{
+	function common_validate_domain_name($domain, $live=true){
+		if(false === $host = common_sanitize_domain_name($domain))
+			return false;
+
+		//we only want ASCII domains
+		if($host !== filter_var($host, FILTER_SANITIZE_URL))
+			return false;
+
+		//does our host kinda match domain standards?
+		if(!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host))
+			return false;
+
+		//does it have an A record?
+		if($live && !filter_var(gethostbyname($host), FILTER_VALIDATE_IP))
+			return false;
+
+		return true;
+	}
+}
+
 //--------------------------------------------------------------------- end URLs
 
 ?>
