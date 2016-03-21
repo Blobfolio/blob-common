@@ -516,6 +516,24 @@ if(!function_exists('common_db_debug_log'))
 }
 
 //-------------------------------------------------
+// Turn a string into an array of chars
+//
+// (this is used for CC validation)
+//
+// @param string
+// @return array
+if(!function_exists('common_to_char_array'))
+{
+	function common_to_char_array($input){
+		$len = strlen($input);
+		for ($j=0;$j<$len;$j++){
+			$char[$j] = substr($input, $j, 1);
+		}
+		return ($char);
+	}
+}
+
+//-------------------------------------------------
 // Return the first index of an array
 //
 // this is like array_pop for the first entry
@@ -988,87 +1006,6 @@ if(!function_exists('common_format_money'))
 }
 
 //-------------------------------------------------
-// Validate credit card
-//
-// @param card
-// @return true/false
-if(!function_exists('common_validate_cc'))
-{
-	function common_validate_cc( $ccnum='' ){
-
-		//digits only
-		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
-
-		//different cards have different length requirements
-		switch (substr($ccnum,0,1)){
-			//Amex
-			case 3:
-				if(strlen($ccnum) != 15 || !preg_match('/3[47]/', $ccnum)) return false;
-				break;
-			//Visa
-			case 4:
-				if(!in_array(strlen($ccnum), array(13,16))) return false;
-				break;
-			//MC
-			case 5:
-				if(strlen($ccnum) != 16 || !preg_match('/5[1-5]/', $ccnum)) return false;
-				break;
-			//Disc
-			case 6:
-				if(strlen($ccnum) != 16 || substr($ccnum, 0, 4) != '6011') return false;
-				break;
-			//There is nothing else...
-			default:
-				return false;
-		}
-
-		// Start MOD 10 checks
-		$dig = common_to_char_array($ccnum);
-		$numdig = count($dig);
-		$j = 0;
-		for ($i=($numdig-2); $i>=0; $i-=2){
-			$dbl[$j] = $dig[$i] * 2;
-			$j++;
-		}
-		$dblsz = count($dbl);
-		$validate =0;
-		for ($i=0;$i<$dblsz;$i++){
-			$add = common_to_char_array($dbl[$i]);
-			for ($j=0;$j<count($add);$j++){
-				$validate += $add[$j];
-			}
-			$add = '';
-		}
-		for ($i=($numdig-1); $i>=0; $i-=2){
-			$validate += $dig[$i];
-		}
-
-		if(substr($validate, -1, 1) == '0')
-			return true;
-		else
-			return false;
-	}
-}
-
-//-------------------------------------------------
-// Turn a string into an array of chars
-//
-// (this is only used for CC validation)
-//
-// @param string
-// @return array
-if(!function_exists('common_to_char_array'))
-{
-	function common_to_char_array($input){
-		$len = strlen($input);
-		for ($j=0;$j<$len;$j++){
-			$char[$j] = substr($input, $j, 1);
-		}
-		return ($char);
-	}
-}
-
-//-------------------------------------------------
 // Remove non-numeric chars from str
 //
 // @param num
@@ -1188,6 +1125,109 @@ if(!function_exists('common_format_phone'))
 }
 
 //--------------------------------------------------------------------- end sanitizing
+
+
+
+//---------------------------------------------------------------------
+// Credit cards
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Validate credit card
+//
+// @param card
+// @return true/false
+if(!function_exists('common_validate_cc'))
+{
+	function common_validate_cc( $ccnum='' ){
+
+		//digits only
+		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
+
+		//different cards have different length requirements
+		switch (substr($ccnum,0,1)){
+			//Amex
+			case 3:
+				if(strlen($ccnum) != 15 || !preg_match('/3[47]/', $ccnum)) return false;
+				break;
+			//Visa
+			case 4:
+				if(!in_array(strlen($ccnum), array(13,16))) return false;
+				break;
+			//MC
+			case 5:
+				if(strlen($ccnum) != 16 || !preg_match('/5[1-5]/', $ccnum)) return false;
+				break;
+			//Disc
+			case 6:
+				if(strlen($ccnum) != 16 || substr($ccnum, 0, 4) != '6011') return false;
+				break;
+			//There is nothing else...
+			default:
+				return false;
+		}
+
+		// Start MOD 10 checks
+		$dig = common_to_char_array($ccnum);
+		$numdig = count($dig);
+		$j = 0;
+		for ($i=($numdig-2); $i>=0; $i-=2){
+			$dbl[$j] = $dig[$i] * 2;
+			$j++;
+		}
+		$dblsz = count($dbl);
+		$validate =0;
+		for ($i=0;$i<$dblsz;$i++){
+			$add = common_to_char_array($dbl[$i]);
+			for ($j=0;$j<count($add);$j++){
+				$validate += $add[$j];
+			}
+			$add = '';
+		}
+		for ($i=($numdig-1); $i>=0; $i-=2){
+			$validate += $dig[$i];
+		}
+
+		if(substr($validate, -1, 1) == '0')
+			return true;
+		else
+			return false;
+	}
+}
+
+//-------------------------------------------------
+// Get Expiration Years
+//
+// @param n/a
+// @return years
+if(!function_exists('common_get_cc_exp_years'))
+{
+	function common_get_cc_exp_years(){
+		$years = array();
+		for($x=0; $x<10; $x++)
+			$years[(intval(current_time('Y')) + $x)] = intval(current_time('Y')) + $x;
+
+		return $years;
+	}
+}
+
+//-------------------------------------------------
+// Get Expiration Months
+//
+// @param format
+// @return months
+if(!function_exists('common_get_cc_exp_months'))
+{
+	function common_get_cc_exp_months($format='m - M'){
+		$months = array();
+		for($x=1; $x<=12; $x++)
+			$months[$x] = date($format, strtotime("2000-" . sprintf('%02d', $x) . "-01"));
+
+		return $months;
+	}
+}
+
+//--------------------------------------------------------------------- end credit cards
 
 
 
