@@ -153,13 +153,57 @@ if(!function_exists('common_check_form_timestamp'))
 // @return image types
 if(!function_exists('common_upload_mimes'))
 {
-	add_filter('upload_mimes', 'common_upload_mimes');
 	function common_upload_mimes ($existing_mimes=array()){
-		// add the file extension to the array
 		$existing_mimes['svg'] = 'image/svg+xml';
-		// call the modified list of extensions
 		return $existing_mimes;
 	}
+	add_filter('upload_mimes', 'common_upload_mimes');
+}
+
+//-------------------------------------------------
+// SVG previews in media library
+//
+// @param response
+// @param attachment
+// @param meta
+// @return response
+if(!function_exists('common_svg_media_thumbnail'))
+{
+	function common_svg_media_thumbnails($response, $attachment, $meta){
+
+		if(!is_array($response) || !array_key_exists('type', $response) || !array_key_exists('subtype', $response))
+			return $response;
+
+		if($response['type'] === 'image' && $response['subtype'] === 'svg+xml' && class_exists('SimpleXMLElement'))
+		{
+			try {
+				$path = get_attached_file($attachment->ID);
+				if(@file_exists($path))
+				{
+					$svg = new SimpleXMLElement(@file_get_contents($path));
+					$src = $response['url'];
+					$width = (int) $svg['width'];
+					$height = (int) $svg['height'];
+
+					//media gallery
+					$response['image'] = compact( 'src', 'width', 'height' );
+					$response['thumb'] = compact( 'src', 'width', 'height' );
+
+					//media single
+					$response['sizes']['full'] = array(
+						'height'		=> $height,
+						'width'			=> $width,
+						'url'			=> $src,
+						'orientation'	=> $height > $width ? 'portrait' : 'landscape',
+					);
+				}
+			}
+			catch(Exception $e){}
+		}
+
+		return $response;
+	}
+	add_filter('wp_prepare_attachment_for_js', 'common_svg_media_thumbnails', 10, 3);
 }
 
 //-------------------------------------------------
