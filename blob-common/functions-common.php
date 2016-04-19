@@ -34,8 +34,7 @@ add_filter('next_post_rel_link', '__return_false');
 // @param from (e.g. headers)
 // @param attachments
 // @return true
-if(!function_exists('common_mail'))
-{
+if(!function_exists('common_mail')){
 	function common_mail($to, $subject, $msg, $from=null, $attachments=null){
 		if(is_null($from))
 			$from = common_sanitize_name(get_bloginfo('name')) . ' <' . get_bloginfo('admin_email') . '>';
@@ -58,8 +57,7 @@ if(!function_exists('common_mail'))
 //
 // @param n/a
 // @return text/html
-if(!function_exists('common_mail_html_content_type'))
-{
+if(!function_exists('common_mail_html_content_type')){
 	function common_mail_html_content_type(){
 		return 'text/html';
 	}
@@ -78,8 +76,7 @@ if(!function_exists('common_mail_html_content_type'))
 // @param subject
 // @param use mail() instead of wp_mail()
 // @return true/false
-if(!function_exists('common_debug_mail'))
-{
+if(!function_exists('common_debug_mail')){
 	function common_debug_mail($variable, $subject=null, $mail=true){
 		$mto = defined('WP_DEBUG_EMAIL') ? common_sanitize_email(WP_DEBUG_EMAIL) : get_bloginfo('admin_email');
 		$msub = common_sanitize_whitespace('[' . get_bloginfo('name') . '] ' . (is_null($subject) ? 'Debug' : $subject));
@@ -114,8 +111,7 @@ if(!function_exists('common_debug_mail'))
 //
 // @param n/a
 // @return hash
-if(!function_exists('common_get_form_timestamp'))
-{
+if(!function_exists('common_get_form_timestamp')){
 	function common_get_form_timestamp(){
 		$time = time();
 		return "$time," . md5($time . NONCE_KEY);
@@ -128,8 +124,7 @@ if(!function_exists('common_get_form_timestamp'))
 // @param hash
 // @param time elapsed (must be >= this value)
 // @return true/false
-if(!function_exists('common_check_form_timestamp'))
-{
+if(!function_exists('common_check_form_timestamp')){
 	function common_check_form_timestamp($hash='', $elapsed=5){
 		if(!preg_match('/^\d+,([\da-f]{32})$/i', $hash))
 			return false;
@@ -151,8 +146,7 @@ if(!function_exists('common_check_form_timestamp'))
 //
 // @param image types
 // @return image types
-if(!function_exists('common_upload_mimes'))
-{
+if(!function_exists('common_upload_mimes')){
 	function common_upload_mimes ($existing_mimes=array()){
 		$existing_mimes['svg'] = 'image/svg+xml';
 		return $existing_mimes;
@@ -167,8 +161,7 @@ if(!function_exists('common_upload_mimes'))
 // @param attachment
 // @param meta
 // @return response
-if(!function_exists('common_svg_media_thumbnail'))
-{
+if(!function_exists('common_svg_media_thumbnail')){
 	function common_svg_media_thumbnails($response, $attachment, $meta){
 
 		if(!is_array($response) || !array_key_exists('type', $response) || !array_key_exists('subtype', $response))
@@ -217,8 +210,7 @@ if(!function_exists('common_svg_media_thumbnail'))
 //		2 height
 //		3 is resized
 // @return array, src or false
-if(!function_exists('common_get_featured_image_src'))
-{
+if(!function_exists('common_get_featured_image_src')){
 	function common_get_featured_image_src($id=0, $size=null, $attributes=false){
 		$id = (int) $id;
 
@@ -240,8 +232,7 @@ if(!function_exists('common_get_featured_image_src'))
 // @param post id
 // @param size
 // @return path or false
-if(!function_exists('common_get_featured_image_path'))
-{
+if(!function_exists('common_get_featured_image_path')){
 	function common_get_featured_image_path($id=0, $size=null){
 		//surprisingly, there isn't a built-in function for this, so
 		//let's just convert the URL back into the path
@@ -261,8 +252,7 @@ if(!function_exists('common_get_featured_image_path'))
 //
 // @param url
 // @return path
-if(!function_exists('common_get_path_by_url'))
-{
+if(!function_exists('common_get_path_by_url')){
 	function common_get_path_by_url($url){
 
 		$from = site_url();
@@ -287,8 +277,7 @@ if(!function_exists('common_get_path_by_url'))
 //
 // @param file path
 // @return svg data or false
-if(!function_exists('common_get_clean_svg'))
-{
+if(!function_exists('common_get_clean_svg')){
 	function common_get_clean_svg($path){
 		if(!@file_exists($path))
 			return false;
@@ -316,8 +305,7 @@ if(!function_exists('common_get_clean_svg'))
 //
 // @param path
 // @return data
-if(!function_exists('common_get_data_uri'))
-{
+if(!function_exists('common_get_data_uri')){
 	function common_get_data_uri($path){
 		if(!@file_exists($path))
 			return false;
@@ -341,8 +329,7 @@ if(!function_exists('common_get_data_uri'))
 //
 // @param include other?
 // @return states
-if(!function_exists('common_get_us_states'))
-{
+if(!function_exists('common_get_us_states')){
 	function common_get_us_states($include_other=true){
 		$states = array('AL' => 'ALABAMA',
 					'AK' => 'ALASKA',
@@ -420,8 +407,7 @@ if(!function_exists('common_get_us_states'))
 //
 // @param n/a
 // @return provinces
-if(!function_exists('common_get_ca_provinces'))
-{
+if(!function_exists('common_get_ca_provinces')){
 	function common_get_ca_provinces(){
 		return array('AB'=>'ALBERTA',
 					 'BC'=>'BRITISH COLUMBIA',
@@ -448,8 +434,7 @@ if(!function_exists('common_get_ca_provinces'))
 // @param date1
 // @param date2
 // @return days
-if(!function_exists('common_datediff'))
-{
+if(!function_exists('common_datediff')){
 	function common_datediff($date1, $date2){
 		$date1 = date('Y-m-d', strtotime($date1));
 		$date2 = date('Y-m-d', strtotime($date2));
@@ -483,8 +468,7 @@ if(!function_exists('common_datediff'))
 //
 // @param IP
 // @return num or false
-if(!function_exists('common_ip_to_number'))
-{
+if(!function_exists('common_ip_to_number')){
 	function common_ip_to_number($ip){
 		if(!filter_var($ip, FILTER_VALIDATE_IP))
 			return false;
@@ -501,6 +485,81 @@ if(!function_exists('common_ip_to_number'))
 				$binNum .= str_pad(decbin($byte), 8, "0", STR_PAD_LEFT);
 			}
 			return base_convert(ltrim($binNum, '0'), 2, 10);
+		}
+
+		return false;
+	}
+}
+
+//-------------------------------------------------
+// Convert Netblock to Min/Max IPs
+//
+// @param cidr
+// @return array or false
+if(!function_exists('common_cidr_to_range')){
+	function common_cidr_to_range($cidr){
+		$range = array('min'=>0, 'max'=>0);
+		$cidr = explode('/', $cidr);
+
+		//ipv4?
+		if(filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+		{
+			$range['min'] = long2ip((ip2long($cidr[0])) & ((-1 << (32 - (int)$cidr[1]))));
+			$range['max'] = long2ip((ip2long($cidr[0])) + pow(2, (32 - (int)$cidr[1])) - 1);
+			return $range;
+		}
+
+		//ipv6?  of course a little more complicated
+		if(filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+		{
+			//parse the address into a binary string
+			$firstaddrbin = inet_pton($cidr[0]);
+
+			//convert the binary string to a string with hexadecimal characters (bin2hex)
+			$firstaddrhex = reset(unpack('H*', $firstaddrbin));
+
+			//overwriting first address string to make sure notation is optimal
+			$cidr[0] = inet_ntop($firstaddrbin);
+
+			//calculate the number of 'flexible' bits
+			$flexbits = 128 - $cidr[1];
+
+			//build the hexadecimal string of the last address
+			$lastaddrhex = $firstaddrhex;
+
+			//we start at the end of the string (which is always 32 characters long)
+			$pos = 31;
+			while($flexbits > 0) {
+				//get the character at this position
+				$orig = substr($lastaddrhex, $pos, 1);
+
+				//convert it to an integer
+				$origval = hexdec($orig);
+
+				//OR it with (2^flexbits)-1, with flexbits limited to 4 at a time
+				$newval = $origval | (pow(2, min(4, $flexbits)) - 1);
+
+				//convert it back to a hexadecimal character
+				$new = dechex($newval);
+
+				//and put that character back in the string
+				$lastaddrhex = substr_replace($lastaddrhex, $new, $pos, 1);
+
+				//we processed one nibble, move to previous position
+				$flexbits -= 4;
+				$pos -= 1;
+			}
+
+			//convert the hexadecimal string to a binary string (hex2bin)
+			$lastaddrbin = pack('H*', $lastaddrhex);
+
+			//and create an IPv6 address from the binary string
+			$lastaddrstr = inet_ntop($lastaddrbin);
+
+			//pack and done!
+			$range['min'] = common_sanitize_ip($cidr[0]);
+			$range['max'] = common_sanitize_ip($lastaddrstr);
+			return $range;
 		}
 
 		return false;
@@ -524,8 +583,7 @@ if(!function_exists('common_ip_to_number'))
 //
 // @param n/a
 // @return n/a
-if(!function_exists('common_db_debug_log'))
-{
+if(!function_exists('common_db_debug_log')){
 	function common_db_debug_log(){
 		if(!defined('WP_DB_DEBUG_LOG') || !WP_DB_DEBUG_LOG)
 			return;
@@ -566,8 +624,7 @@ if(!function_exists('common_db_debug_log'))
 //
 // @param string
 // @return array
-if(!function_exists('common_to_char_array'))
-{
+if(!function_exists('common_to_char_array')){
 	function common_to_char_array($input){
 		$len = strlen($input);
 		for ($j=0;$j<$len;$j++){
@@ -584,8 +641,7 @@ if(!function_exists('common_to_char_array'))
 //
 // @param array
 // @return mixed or false
-if(!function_exists('common_array_pop_top'))
-{
+if(!function_exists('common_array_pop_top')){
 	function common_array_pop_top(&$arr){
 		if(!is_array($arr) || !count($arr))
 			return false;
@@ -603,8 +659,7 @@ if(!function_exists('common_array_pop_top'))
 //
 // @param array
 // @return mixed or false
-if(!function_exists('common_array_pop'))
-{
+if(!function_exists('common_array_pop')){
 	function common_array_pop(&$arr){
 		if(!is_array($arr) || !count($arr))
 			return false;
@@ -620,8 +675,7 @@ if(!function_exists('common_array_pop'))
 // @param var1
 // @param var2
 // @return true
-if(!function_exists('common_switcheroo'))
-{
+if(!function_exists('common_switcheroo')){
 	function common_switcheroo(&$var1, &$var2){
 		$tmp = $var2;
 		$var2 = $var1;
@@ -640,8 +694,7 @@ if(!function_exists('common_switcheroo'))
 // @param args
 // @param defaults
 // @return parsed
-if(!function_exists('common_parse_args'))
-{
+if(!function_exists('common_parse_args')){
 	function common_parse_args($args=null, $defaults=null){
 		if(is_array($defaults) && is_array($args))
 		{
@@ -663,8 +716,7 @@ if(!function_exists('common_parse_args'))
 //
 // @param length
 // @return string
-if(!function_exists('common_generate_random_string'))
-{
+if(!function_exists('common_generate_random_string')){
 	function common_generate_random_string($length=10){
 		$soup = array('A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','2','3','4','5','6','7','8','9');
 
@@ -687,8 +739,7 @@ if(!function_exists('common_generate_random_string'))
 // @param needle
 // @param haystack
 // @return true/false
-if(!function_exists('common_iin_array()'))
-{
+if(!function_exists('common_iin_array()')){
 	function common_iin_array($needle, $haystack){
 		$needle = strtolower($needle);
 		$haystack = array_map('strtolower', $haystack);
@@ -702,8 +753,7 @@ if(!function_exists('common_iin_array()'))
 // @param haystack
 // @param needle
 // @return true/false
-if(!function_exists('common_isubstr_count()'))
-{
+if(!function_exists('common_isubstr_count()')){
 	function common_isubstr_count($haystack, $needle){
 		$needle = strtolower($needle);
 		$haystack = strtolower($haystack);
@@ -720,8 +770,7 @@ if(!function_exists('common_isubstr_count()'))
 // @param file
 // @param bytes
 // @return bytes or false
-if(!function_exists('common_readfile_chunked'))
-{
+if(!function_exists('common_readfile_chunked')){
 	function common_readfile_chunked($file, $retbytes=true){
 		$buffer = '';
 		$cnt = 0;
@@ -763,8 +812,7 @@ if(!function_exists('common_readfile_chunked'))
 // @param number
 // @param single
 // @param plural
-if(!function_exists('common_inflect'))
-{
+if(!function_exists('common_inflect')){
 	function common_inflect($num, $single='', $plural=''){
 		$num = (int) $num;
 		if($num === 1)
@@ -780,8 +828,7 @@ if(!function_exists('common_inflect'))
 //
 // @param string
 // @return true/false
-if(!function_exists('common_is_utf8'))
-{
+if(!function_exists('common_is_utf8')){
 	function common_is_utf8($str){
 		return (bool) preg_match('//u', $str);
 	}
@@ -792,8 +839,7 @@ if(!function_exists('common_is_utf8'))
 //
 // @param string
 // @return string or false
-if(!function_exists('common_utf8'))
-{
+if(!function_exists('common_utf8')){
 	function common_utf8($str){
 		if(common_is_utf8($str))
 			return $str;
@@ -819,8 +865,7 @@ if(!function_exists('common_utf8'))
 // @param append
 // @param chop method (chars or words)
 // @return excerpt
-if(!function_exists('common_get_excerpt'))
-{
+if(!function_exists('common_get_excerpt')){
 	function common_get_excerpt($str, $length=200, $append='...', $method='chars'){
 		$str = trim(common_sanitize_whitespace(strip_tags(common_sanitize_whitespace($str))));
 
@@ -840,8 +885,7 @@ if(!function_exists('common_get_excerpt'))
 //
 // @param name
 // @return name
-if(!function_exists('common_sanitize_name'))
-{
+if(!function_exists('common_sanitize_name')){
 	function common_sanitize_name($str=''){
 		$str = common_utf8($str);
 		return ucwords(common_sanitize_whitespace(preg_replace('/[^\p{L}\p{Zs}\p{Pd}\d\'\"\,\.]/u', '', common_sanitize_quotes($str))));
@@ -853,8 +897,7 @@ if(!function_exists('common_sanitize_name'))
 //
 // @param field
 // @return field
-if(!function_exists('common_sanitize_csv'))
-{
+if(!function_exists('common_sanitize_csv')){
 	function common_sanitize_csv($str=''){
 		return common_sanitize_whitespace(str_replace('"', '\"', common_sanitize_quotes($str)));
 	}
@@ -865,8 +908,7 @@ if(!function_exists('common_sanitize_csv'))
 //
 // @param str
 // @return str
-if(!function_exists('common_sanitize_newlines'))
-{
+if(!function_exists('common_sanitize_newlines')){
 	function common_sanitize_newlines($str=''){
 		$str = common_utf8($str);
 		$str = str_replace("\r\n", "\n", $str);
@@ -881,8 +923,7 @@ if(!function_exists('common_sanitize_newlines'))
 //
 // @param str
 // @return str
-if(!function_exists('common_sanitize_spaces'))
-{
+if(!function_exists('common_sanitize_spaces')){
 	function common_sanitize_spaces($str=''){
 		$str = common_utf8($str);
 		return trim(preg_replace('/\h{1,}/u', ' ', $str));
@@ -895,8 +936,7 @@ if(!function_exists('common_sanitize_spaces'))
 // @param str
 // @param multiline
 // @return str
-if(!function_exists('common_sanitize_whitespace'))
-{
+if(!function_exists('common_sanitize_whitespace')){
 	function common_sanitize_whitespace($str='', $multiline=false){
 
 		//convert all white space to a regular " "
@@ -915,8 +955,7 @@ if(!function_exists('common_sanitize_whitespace'))
 //
 // @param str
 // @return str
-if(!function_exists('common_sanitize_quotes'))
-{
+if(!function_exists('common_sanitize_quotes')){
 	function common_sanitize_quotes($str=''){
 		$quotes = array(
 			//Windows codepage 1252
@@ -957,8 +996,7 @@ if(!function_exists('common_sanitize_quotes'))
 //
 // @param str
 // @return str
-if(!function_exists('common_sanitize_js_variable'))
-{
+if(!function_exists('common_sanitize_js_variable')){
 	function common_sanitize_js_variable($str=''){
 		return str_replace("'", "\'", common_sanitize_whitespace(common_sanitize_quotes($str)));
 	}
@@ -969,8 +1007,7 @@ if(!function_exists('common_sanitize_js_variable'))
 //
 // @param email
 // @return email
-if(!function_exists('common_sanitize_email'))
-{
+if(!function_exists('common_sanitize_email')){
 	function common_sanitize_email($email=''){
 		return strtolower(str_replace(array("'", '"'), '', sanitize_email($email)));
 	}
@@ -981,8 +1018,7 @@ if(!function_exists('common_sanitize_email'))
 //
 // @param email
 // @return true/false
-if(!function_exists('common_validate_email'))
-{
+if(!function_exists('common_validate_email')){
 	function common_validate_email($email=''){
 		return filter_var($email, FILTER_VALIDATE_EMAIL) && preg_match('/^.+\@.+\..+$/', $email);
 	}
@@ -993,8 +1029,7 @@ if(!function_exists('common_validate_email'))
 //
 // @param zip
 // @return zip
-if(!function_exists('common_sanitize_zip5'))
-{
+if(!function_exists('common_sanitize_zip5')){
 	function common_sanitize_zip5($zip){
 		$zip = preg_replace('/[^\d]/', '', $zip);
 		if(strlen($zip) < 5)
@@ -1016,8 +1051,7 @@ if(!function_exists('common_sanitize_zip5'))
 //
 // @param IP
 // @return IP
-if(!function_exists('common_sanitize_ip'))
-{
+if(!function_exists('common_sanitize_ip')){
 	function common_sanitize_ip($ip){
 		//start by getting rid of obviously bad data
 		$ip = strtolower(preg_replace('/[^\d\.\:a-f]/i', '', $ip));
@@ -1036,8 +1070,7 @@ if(!function_exists('common_sanitize_ip'))
 // @param amount
 // @param cents (if under $1, use ¢ sign)
 // @return money
-if(!function_exists('common_format_money'))
-{
+if(!function_exists('common_format_money')){
 	function common_format_money($amount, $cents=false){
 		$amount = (double) preg_replace('/[^\d\.]/', '', $amount);
 		$amount = round($amount,2);
@@ -1054,8 +1087,7 @@ if(!function_exists('common_format_money'))
 //
 // @param num
 // @return num (float)
-if(!function_exists('common_sanitize_number'))
-{
+if(!function_exists('common_sanitize_number')){
 	function common_sanitize_number($num){
 		//numbers and periods only
 		$num = preg_replace('/[^\d\.]/', '', $num);
@@ -1077,8 +1109,7 @@ if(!function_exists('common_sanitize_number'))
 //
 // @param int-ish
 // @return int
-if(!function_exists('common_intval'))
-{
+if(!function_exists('common_intval')){
 	function common_intval($num){
 		return intval(common_sanitize_number($num));
 	}
@@ -1090,8 +1121,7 @@ if(!function_exists('common_intval'))
 //
 // @param double-ish
 // @return double
-if(!function_exists('common_doubleval'))
-{
+if(!function_exists('common_doubleval')){
 	function common_doubleval($num){
 		return (double) common_sanitize_number($num);
 	}
@@ -1102,8 +1132,7 @@ if(!function_exists('common_doubleval'))
 //
 // @param float-ish
 // @return float
-if(!function_exists('common_floatval'))
-{
+if(!function_exists('common_floatval')){
 	function common_floatval($num){
 		return (float) common_sanitize_number($num);
 	}
@@ -1117,8 +1146,7 @@ if(!function_exists('common_floatval'))
 //
 // @param phone
 // @return phone
-if(!function_exists('common_sanitize_phone'))
-{
+if(!function_exists('common_sanitize_phone')){
 	function common_sanitize_phone($value=''){
 		$value = preg_replace('/[^\d]/', '', $value);
 
@@ -1137,8 +1165,7 @@ if(!function_exists('common_sanitize_phone'))
 //
 // @param phone
 // @return true/false
-if(!function_exists('common_validate_phone'))
-{
+if(!function_exists('common_validate_phone')){
 	function common_validate_phone($value=''){
 		//match the first 10
 		$first10 = substr($value, 0, 10);
@@ -1153,8 +1180,7 @@ if(!function_exists('common_validate_phone'))
 //
 // @param n/a
 // @return phone (pretty)
-if(!function_exists('common_format_phone'))
-{
+if(!function_exists('common_format_phone')){
 	function common_format_phone($value=''){
 		$value = common_sanitize_phone($value);
 
@@ -1181,8 +1207,7 @@ if(!function_exists('common_format_phone'))
 //
 // @param card
 // @return true/false
-if(!function_exists('common_validate_cc'))
-{
+if(!function_exists('common_validate_cc')){
 	function common_validate_cc( $ccnum='' ){
 
 		//digits only
@@ -1244,8 +1269,7 @@ if(!function_exists('common_validate_cc'))
 //
 // @param n/a
 // @return years
-if(!function_exists('common_get_cc_exp_years'))
-{
+if(!function_exists('common_get_cc_exp_years')){
 	function common_get_cc_exp_years(){
 		$years = array();
 		for($x=0; $x<10; $x++)
@@ -1260,8 +1284,7 @@ if(!function_exists('common_get_cc_exp_years'))
 //
 // @param format
 // @return months
-if(!function_exists('common_get_cc_exp_months'))
-{
+if(!function_exists('common_get_cc_exp_months')){
 	function common_get_cc_exp_months($format='m - M'){
 		$months = array();
 		for($x=1; $x<=12; $x++)
@@ -1284,8 +1307,7 @@ if(!function_exists('common_get_cc_exp_months'))
 //
 // @param url
 // @return true/false
-if(!function_exists('common_is_site_url'))
-{
+if(!function_exists('common_is_site_url')){
 	function common_is_site_url($url){
 		return filter_var($url, FILTER_VALIDATE_URL) && strtolower(parse_url($url, PHP_URL_HOST)) === strtolower(parse_url(site_url(), PHP_URL_HOST));
 	}
@@ -1297,8 +1319,7 @@ if(!function_exists('common_is_site_url'))
 // @param url to check against
 // @param subpages to match subpages
 // @return true/false
-if(!function_exists('common_is_current_page'))
-{
+if(!function_exists('common_is_current_page')){
 	function common_is_current_page($url, $subpages=false){
 
 		//ready the test URL for comparison
@@ -1318,8 +1339,7 @@ if(!function_exists('common_is_current_page'))
 // @param url
 // @param offsite
 // @return n/a
-if(!function_exists('common_redirect'))
-{
+if(!function_exists('common_redirect')){
 	function common_redirect($url=null, $offsite=false){
 		if(is_null($url) || (true !== $offsite && !common_is_site_url($url)))
 			$url = site_url();
@@ -1346,8 +1366,7 @@ if(!function_exists('common_redirect'))
 //
 // @param domain
 // @return domain or false
-if(!function_exists('common_sanitize_domain_name'))
-{
+if(!function_exists('common_sanitize_domain_name')){
 	function common_sanitize_domain_name($domain){
 		$domain = (string) $domain;
 		$domain = common_sanitize_whitespace(strtolower($domain));
@@ -1386,8 +1405,7 @@ if(!function_exists('common_sanitize_domain_name'))
 // @param domain
 // @param live (does it have an IP?)
 // @return true/false
-if(!function_exists('common_validate_domain_name'))
-{
+if(!function_exists('common_validate_domain_name')){
 	function common_validate_domain_name($domain, $live=true){
 		if(false === $host = common_sanitize_domain_name($domain))
 			return false;
