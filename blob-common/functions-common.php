@@ -15,6 +15,37 @@
 add_filter('previous_post_rel_link', '__return_false');
 add_filter('next_post_rel_link', '__return_false');
 
+//-------------------------------------------------
+// Remove Emoji
+//
+// @param n/a
+// @return n/a
+if(!function_exists('common_disable_wp_emojicons')){
+	function common_disable_wp_emojicons(){
+		//all actions related to emojis
+		remove_action('admin_print_styles', 'print_emoji_styles');
+		remove_action('wp_head', 'print_emoji_detection_script', 7 );
+		remove_action('admin_print_scripts', 'print_emoji_detection_script');
+		remove_action('wp_print_styles', 'print_emoji_styles');
+		remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+		remove_filter('the_content_feed', 'wp_staticize_emoji');
+		remove_filter('comment_text_rss', 'wp_staticize_emoji');
+
+		//filter to remove TinyMCE emojis
+		add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
+	}
+	if(defined('WP_DISABLE_EMOJI') && WP_DISABLE_EMOJI)
+		add_action('init', 'common_disable_wp_emojicons');
+
+	//and remove from TinyMCE
+	function common_disable_emojicons_tinymce($plugins){
+		if(is_array($plugins))
+			return array_diff($plugins, array('wpemoji'));
+
+		return array();
+	}
+}
+
 //--------------------------------------------------------------------- end theme/system
 
 
@@ -89,7 +120,7 @@ if(!function_exists('common_debug_mail')){
 				mail($mto, $msub, $mbody);
 			else
 				wp_mail($mto, $msub, $mbody);
-		} catch(Exception $e) { return false; }
+		} catch(Exception $e){ return false; }
 
 		return true;
 	}
@@ -164,23 +195,21 @@ if(!function_exists('common_upload_mimes')){
 if(!function_exists('common_svg_media_thumbnail')){
 	function common_svg_media_thumbnails($response, $attachment, $meta){
 
-		if(!is_array($response) || !array_key_exists('type', $response) || !array_key_exists('subtype', $response))
+		if(!is_array($response) || !isset($response['type'], $response['subtype']))
 			return $response;
 
-		if($response['type'] === 'image' && $response['subtype'] === 'svg+xml' && class_exists('SimpleXMLElement'))
-		{
+		if($response['type'] === 'image' && $response['subtype'] === 'svg+xml' && class_exists('SimpleXMLElement')){
 			try {
 				$path = get_attached_file($attachment->ID);
-				if(@file_exists($path))
-				{
+				if(@file_exists($path)){
 					$svg = new SimpleXMLElement(@file_get_contents($path));
 					$src = $response['url'];
 					$width = (int) $svg['width'];
 					$height = (int) $svg['height'];
 
 					//media gallery
-					$response['image'] = compact( 'src', 'width', 'height' );
-					$response['thumb'] = compact( 'src', 'width', 'height' );
+					$response['image'] = compact('src', 'width', 'height');
+					$response['thumb'] = compact('src', 'width', 'height');
 
 					//media single
 					$response['sizes']['full'] = array(
@@ -215,8 +244,7 @@ if(!function_exists('common_get_featured_image_src')){
 		$id = (int) $id;
 
 		$tmp = get_post_thumbnail_id($id);
-		if($tmp)
-		{
+		if($tmp){
 			$tmp2 = wp_get_attachment_image_src($tmp, $size);
 			if(is_array($tmp2) && filter_var($tmp2[0], FILTER_VALIDATE_URL))
 				return $attributes === true ? $tmp2 : $tmp2[0];
@@ -269,6 +297,18 @@ if(!function_exists('common_get_path_by_url')){
 }
 
 //-------------------------------------------------
+// Blank Image
+//
+// @param n/a
+// @return src
+if(!function_exists('common_get_blank_image')){
+	function common_get_blank_image(){
+		return 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABA
+AACAkQBADs=';
+	}
+}
+
+//-------------------------------------------------
 // Clean SVG
 //
 // strip out XML headers and garbage that might be
@@ -310,9 +350,7 @@ if(!function_exists('common_get_data_uri')){
 		if(!@file_exists($path))
 			return false;
 
-		$type = wp_check_filetype($path);
-
-		return "data: {$type['type']};base64," . base64_encode(file_get_contents($path));
+		return "data: " . common_get_mime_type($path) . ";base64," . base64_encode(file_get_contents($path));
 	}
 }
 
@@ -321,258 +359,34 @@ if(!function_exists('common_get_data_uri')){
 
 
 //---------------------------------------------------------------------
-// Localities
-//---------------------------------------------------------------------
-
-//-------------------------------------------------
-// Return array of us states
-//
-// @param include other?
-// @return states
-if(!function_exists('common_get_us_states')){
-	function common_get_us_states($include_other=true){
-		$states = array('AL' => 'ALABAMA',
-					'AK' => 'ALASKA',
-					'AZ' => 'ARIZONA',
-					'AR' => 'ARKANSAS',
-					'CA' => 'CALIFORNIA',
-					'CO' => 'COLORADO',
-					'CT' => 'CONNECTICUT',
-					'DE' => 'DELAWARE',
-					'DC' => 'DISTRICT OF COLUMBIA',
-					'FL' => 'FLORIDA',
-					'GA' => 'GEORGIA',
-					'HI' => 'HAWAII',
-					'ID' => 'IDAHO',
-					'IL' => 'ILLINOIS',
-					'IN' => 'INDIANA',
-					'IA' => 'IOWA',
-					'KS' => 'KANSAS',
-					'KY' => 'KENTUCKY',
-					'LA' => 'LOUISIANA',
-					'ME' => 'MAINE',
-					'MD' => 'MARYLAND',
-					'MA' => 'MASSACHUSETTS',
-					'MI' => 'MICHIGAN',
-					'MN' => 'MINNESOTA',
-					'MS' => 'MISSISSIPPI',
-					'MO' => 'MISSOURI',
-					'MT' => 'MONTANA',
-					'NE' => 'NEBRASKA',
-					'NV' => 'NEVADA',
-					'NH' => 'NEW HAMPSHIRE',
-					'NJ' => 'NEW JERSEY',
-					'NM' => 'NEW MEXICO',
-					'NY' => 'NEW YORK',
-					'NC' => 'NORTH CAROLINA',
-					'ND' => 'NORTH DAKOTA',
-					'OH' => 'OHIO',
-					'OK' => 'OKLAHOMA',
-					'OR' => 'OREGON',
-					'PA' => 'PENNSYLVANIA',
-					'RI' => 'RHODE ISLAND',
-					'SC' => 'SOUTH CAROLINA',
-					'SD' => 'SOUTH DAKOTA',
-					'TN' => 'TENNESSEE',
-					'TX' => 'TEXAS',
-					'UT' => 'UTAH',
-					'VT' => 'VERMONT',
-					'VA' => 'VIRGINIA',
-					'WA' => 'WASHINGTON',
-					'WV' => 'WEST VIRGINIA',
-					'WI' => 'WISCONSIN',
-					'WY' => 'WYOMING');
-
-		$other = array('AA' => 'ARMED FORCES AMERICAS',
-					'AE' => 'ARMED FORCES EUROPE',
-					'AP' => 'ARMED FORCES PACIFIC',
-					'AS' => 'AMERICAN SAMOA',
-					'FM' => 'FEDERATED STATES OF MICRONESIA',
-					'GU' => 'GUAM GU',
-					'MH' => 'MARSHALL ISLANDS',
-					'MP' => 'NORTHERN MARIANA ISLANDS',
-					'PW' => 'PALAU',
-					'PR' => 'PUERTO RICO',
-					'VI' => 'VIRGIN ISLANDS');
-
-		if($include_other)
-			return array_merge($states, $other);
-		else
-			return $states;
-	}
-}
-
-//-------------------------------------------------
-// Return canadian provinces
-//
-// @param n/a
-// @return provinces
-if(!function_exists('common_get_ca_provinces')){
-	function common_get_ca_provinces(){
-		return array('AB'=>'ALBERTA',
-					 'BC'=>'BRITISH COLUMBIA',
-					 'MB'=>'MANITOBA',
-					 'NB'=>'NEW BRUNSWICK',
-					 'NL'=>'NEWFOUNDLAND',
-					 'NT'=>'NORTHWEST TERRITORIES',
-					 'NS'=>'NOVA SCOTIA',
-					 'NU'=>'NUNAVUT',
-					 'ON'=>'ONTARIO',
-					 'PE'=>'PRINCE EDWARD ISLAND',
-					 'QC'=>'QUEBEC',
-					 'SK'=>'SASKATCHEWAN',
-					 'YT'=>'YUKON');
-	}
-}
-
-//-------------------------------------------------
-// Datediff
-//
-// a simple function to count the number of days
-// between two dates
-//
-// @param date1
-// @param date2
-// @return days
-if(!function_exists('common_datediff')){
-	function common_datediff($date1, $date2){
-		$date1 = date('Y-m-d', strtotime($date1));
-		$date2 = date('Y-m-d', strtotime($date2));
-
-		//same date, tricky tricky!
-		if($date1 === $date2)
-			return 0;
-
-		try {
-			$date1 = new DateTime($date1);
-			$date2 = new DateTime($date2);
-			$diff = $date1->diff($date2);
-
-			return abs($diff->days);
-		}
-		catch(Exception $e) {
-			//this is a simple fallback using unix timestamps
-			//however it will fail to consider things like
-			//daylight saving
-			$date1 = strtotime($date1);
-			$date2 = strtotime($date2);
-			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
-		}
-	}
-}
-
-//-------------------------------------------------
-// IP as Number
-//
-// convert an IP to a number for cleaner comparison
-//
-// @param IP
-// @return num or false
-if(!function_exists('common_ip_to_number')){
-	function common_ip_to_number($ip){
-		if(!filter_var($ip, FILTER_VALIDATE_IP))
-			return false;
-
-		//ipv4 is easy
-		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-			return ip2long($ip);
-
-		//ipv6 is a little more roundabout
-		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-		{
-			$binNum = '';
-			foreach (unpack('C*', inet_pton($ip)) as $byte) {
-				$binNum .= str_pad(decbin($byte), 8, "0", STR_PAD_LEFT);
-			}
-			return base_convert(ltrim($binNum, '0'), 2, 10);
-		}
-
-		return false;
-	}
-}
-
-//-------------------------------------------------
-// Convert Netblock to Min/Max IPs
-//
-// @param cidr
-// @return array or false
-if(!function_exists('common_cidr_to_range')){
-	function common_cidr_to_range($cidr){
-		$range = array('min'=>0, 'max'=>0);
-		$cidr = explode('/', $cidr);
-
-		//ipv4?
-		if(filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-		{
-			$range['min'] = long2ip((ip2long($cidr[0])) & ((-1 << (32 - (int)$cidr[1]))));
-			$range['max'] = long2ip((ip2long($cidr[0])) + pow(2, (32 - (int)$cidr[1])) - 1);
-			return $range;
-		}
-
-		//ipv6?  of course a little more complicated
-		if(filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-		{
-			//parse the address into a binary string
-			$firstaddrbin = inet_pton($cidr[0]);
-
-			//convert the binary string to a string with hexadecimal characters (bin2hex)
-			$firstaddrhex = reset(unpack('H*', $firstaddrbin));
-
-			//overwriting first address string to make sure notation is optimal
-			$cidr[0] = inet_ntop($firstaddrbin);
-
-			//calculate the number of 'flexible' bits
-			$flexbits = 128 - $cidr[1];
-
-			//build the hexadecimal string of the last address
-			$lastaddrhex = $firstaddrhex;
-
-			//we start at the end of the string (which is always 32 characters long)
-			$pos = 31;
-			while($flexbits > 0) {
-				//get the character at this position
-				$orig = substr($lastaddrhex, $pos, 1);
-
-				//convert it to an integer
-				$origval = hexdec($orig);
-
-				//OR it with (2^flexbits)-1, with flexbits limited to 4 at a time
-				$newval = $origval | (pow(2, min(4, $flexbits)) - 1);
-
-				//convert it back to a hexadecimal character
-				$new = dechex($newval);
-
-				//and put that character back in the string
-				$lastaddrhex = substr_replace($lastaddrhex, $new, $pos, 1);
-
-				//we processed one nibble, move to previous position
-				$flexbits -= 4;
-				$pos -= 1;
-			}
-
-			//convert the hexadecimal string to a binary string (hex2bin)
-			$lastaddrbin = pack('H*', $lastaddrhex);
-
-			//and create an IPv6 address from the binary string
-			$lastaddrstr = inet_ntop($lastaddrbin);
-
-			//pack and done!
-			$range['min'] = common_sanitize_ip($cidr[0]);
-			$range['max'] = common_sanitize_ip($lastaddrstr);
-			return $range;
-		}
-
-		return false;
-	}
-}
-
-//--------------------------------------------------------------------- end localities
-
-
-
-//---------------------------------------------------------------------
 // Miscellaneous
 //---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Get Mime Type by file path
+//
+// why is this so hard?! the fileinfo extension is
+// not reliably present, and even when it is it
+// kinda sucks, and WordPress' internal function
+// excludes a ton. well, let's do it ourselves then
+//
+// @param file
+// @return type
+if(!function_exists('common_get_mime_type')){
+	function common_get_mime_type($file){
+		static $mimes;
+
+		//first, load the mimes
+		if(is_null($mimes))
+			$mimes = json_decode(@file_get_contents(dirname(__FILE__) . '/mimes.json'), true);
+
+		//extension
+		$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+		//done
+		return strlen($ext) && isset($mimes[$ext]) ? $mimes[$ext] : 'application/octet-stream';
+	}
+}
 
 //-------------------------------------------------
 // Database logging - query errors
@@ -595,8 +409,7 @@ if(!function_exists('common_db_debug_log')){
 		$log = ABSPATH . '/wp-content/db-debug.log';
 
 		try {
-			if(is_array($EZSQL_ERROR) && count($EZSQL_ERROR))
-			{
+			if(is_array($EZSQL_ERROR) && count($EZSQL_ERROR)){
 				$xout = array();
 				$xout[] = "DATE: " . date('r', current_time('timestamp'));
 				$xout[] = "SITE: " . site_url();
@@ -696,11 +509,9 @@ if(!function_exists('common_switcheroo')){
 // @return parsed
 if(!function_exists('common_parse_args')){
 	function common_parse_args($args=null, $defaults=null){
-		if(is_array($defaults) && is_array($args))
-		{
-			foreach($args AS $k=>$v)
-			{
-				if(!array_key_exists($k, $defaults))
+		if(is_array($defaults) && is_array($args)){
+			foreach($args AS $k=>$v){
+				if(!isset($defaults[$k]))
 					unset($args[$k]);
 			}
 		}
@@ -778,8 +589,7 @@ if(!function_exists('common_readfile_chunked')){
 
 		if(false === ($handle = fopen($file, 'rb')))
 			return false;
-		while(!feof($handle))
-		{
+		while(!feof($handle)){
 			$buffer = fread($handle, $chunk_size);
 			echo $buffer;
 			ob_flush();
@@ -843,14 +653,11 @@ if(!function_exists('common_utf8')){
 	function common_utf8($str){
 		if(common_is_utf8($str))
 			return $str;
-		else
-		{
+		else {
 			try {
 				$str = mb_convert_encoding($str, 'UTF-8');
 				return $str;
-			} catch(Exception $e){
-				return false;
-			}
+			} catch(Exception $e){ return false; }
 		}
 
 		return false;
@@ -1093,8 +900,7 @@ if(!function_exists('common_sanitize_number')){
 		$num = preg_replace('/[^\d\.]/', '', $num);
 
 		//drop 2+ periods
-		if(substr_count($num, '.') > 1)
-		{
+		if(substr_count($num, '.') > 1){
 			$first = strpos($num, '.');
 			$num = substr($num, 0, $first) . '.' . str_replace('.', '', substr($num, $first));
 		}
@@ -1184,8 +990,7 @@ if(!function_exists('common_format_phone')){
 	function common_format_phone($value=''){
 		$value = common_sanitize_phone($value);
 
-		if(strlen($value) >= 10)
-		{
+		if(strlen($value) >= 10){
 			$first10 = substr($value,0,10);
 			return preg_replace("/^([0-9]{3})([0-9]{3})([0-9]{4})/i", "(\\1) \\2-\\3", $first10) . (strlen($value) > 10 ? ' x' . substr($value,10) : '');
 		}
@@ -1208,7 +1013,7 @@ if(!function_exists('common_format_phone')){
 // @param card
 // @return true/false
 if(!function_exists('common_validate_cc')){
-	function common_validate_cc( $ccnum='' ){
+	function common_validate_cc( $ccnum=''){
 
 		//digits only
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
@@ -1378,18 +1183,15 @@ if(!function_exists('common_sanitize_domain_name')){
 		$host = parse_url($domain, PHP_URL_HOST);
 
 		//nope...
-		if(is_null($host))
-		{
+		if(is_null($host)){
 			$host = $domain;
 			//maybe there's a path?
-			if(substr_count($host, '/'))
-			{
+			if(substr_count($host, '/')){
 				$host = explode('/', $host);
 				$host = common_array_pop_top($host);
 			}
 			//and/or a query?
-			if(substr_count($host, '?'))
-			{
+			if(substr_count($host, '?')){
 				$host = explode('?', $host);
 				$host = common_array_pop_top($host);
 			}
