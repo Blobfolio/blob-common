@@ -28,8 +28,14 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 
-//the helper functions that are the purpose of this plugin are stored externally
+//most helper functions are here
 @require_once(dirname(__FILE__) . '/functions-common.php');
+
+//localities
+@require_once(dirname(__FILE__) . '/functions-localities.php');
+
+//JIT images
+@require_once(dirname(__FILE__) . '/functions-jit-images.php');
 
 
 
@@ -47,8 +53,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 function blobcommon_get_info($key = null){
 	static $info;
 
-	if(is_null($info))
-	{
+	if(is_null($info)){
 		require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 		$info = get_plugin_data(__FILE__);
 	}
@@ -69,20 +74,17 @@ function blobcommon_get_info($key = null){
 function blobcommon_get_remote_info($key = null){
 	static $info;
 
-	if(is_null($info))
-	{
+	if(is_null($info)){
 		$info = array();
-		if(false !== ($url = blobcommon_get_info('PluginURI')))
-		{
+		if(false !== ($url = blobcommon_get_info('PluginURI'))){
 			$data = wp_remote_get($url);
-			if(is_array($data) && array_key_exists('body', $data))
-			{
+			if(is_array($data) && array_key_exists('body', $data)){
 				try {
 					$response = json_decode($data['body'], true);
 					foreach($response AS $k=>$v)
 						$info[$k] = $v;
 				}
-				catch(Exception $e) { }
+				catch(Exception $e){ }
 			}
 		}
 	}
