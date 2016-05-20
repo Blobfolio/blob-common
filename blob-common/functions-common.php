@@ -509,14 +509,18 @@ if(!function_exists('common_switcheroo')){
 // @return parsed
 if(!function_exists('common_parse_args')){
 	function common_parse_args($args=null, $defaults=null){
-		if(is_array($defaults) && is_array($args)){
-			foreach($args AS $k=>$v){
-				if(!isset($defaults[$k]))
-					unset($args[$k]);
-			}
+		$defaults = (array) $defaults;
+		$args = (array) $args;
+
+		if(!count($defaults))
+			return array();
+
+		foreach($defaults AS $k=>$v){
+			if(array_key_exists($k, $args))
+				$defaults[$k] = $args[$k];
 		}
 
-		return wp_parse_args($args, $defaults);
+		return $defaults;
 	}
 }
 
