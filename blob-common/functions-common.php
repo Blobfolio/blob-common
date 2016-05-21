@@ -32,7 +32,7 @@ if(!function_exists('common_disable_wp_emojicons')){
 		remove_filter('comment_text_rss', 'wp_staticize_emoji');
 
 		//filter to remove TinyMCE emojis
-		add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
+		add_filter('tiny_mce_plugins', 'common_disable_emojicons_tinymce');
 	}
 	if(defined('WP_DISABLE_EMOJI') && WP_DISABLE_EMOJI)
 		add_action('init', 'common_disable_wp_emojicons');
