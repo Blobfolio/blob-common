@@ -883,11 +883,15 @@ if(!function_exists('common_sanitize_ip')){
 // @return money
 if(!function_exists('common_format_money')){
 	function common_format_money($amount, $cents=false){
-		$amount = (double) preg_replace('/[^\d\.]/', '', $amount);
+		$amount = (double) preg_replace('/[^\-\d\.]/', '', $amount);
 		$amount = round($amount,2);
 
+		$negative = $amount < 0;
+		if($negative)
+			$amount = abs($amount);
+
 		if($amount >= 1 || $cents === false)
-			return '$' . number_format($amount,2,'.','');
+			return ($negative ? '-' : '') . '$' . number_format($amount,2,'.','');
 		else
 			return (100 * $amount) . '¢';
 	}
