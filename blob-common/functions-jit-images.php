@@ -152,7 +152,7 @@ function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $i
 						$src_path,
 						$v2['width'],
 						$v2['height'],
-						$v2['crop']
+						isset($v2['crop']) ? $v2['crop'] : null
 					)){
 						//remove from sources on failure
 						//unset($sources[$k]);
