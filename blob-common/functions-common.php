@@ -439,11 +439,18 @@ if(!function_exists('common_db_debug_log')){
 // @return array
 if(!function_exists('common_to_char_array')){
 	function common_to_char_array($input){
-		$len = strlen($input);
-		for ($j=0;$j<$len;$j++){
-			$char[$j] = substr($input, $j, 1);
-		}
-		return ($char);
+		return str_split($input);
+	}
+}
+
+//-------------------------------------------------
+// Recursive Array Map
+//
+// @param callback
+// @param var
+if(!function_exists('common_array_map_recursive')){
+	function common_array_map_recursive(callable $func, array $array){
+		return filter_var($array, \FILTER_CALLBACK, ['options' => $func]);
 	}
 }
 
