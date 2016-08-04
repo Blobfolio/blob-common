@@ -28,9 +28,16 @@ if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
 // @param size
 // @return size meta or false
 function _common_image_downsize($downsize, $attachment_id, $size){
+
 	//if the size is already set, exit
 	$image_meta = wp_get_attachment_metadata($attachment_id);
-	if(is_array($image_meta) && isset($image_meta['sizes'][$size]))
+
+	//let WP handle fake sizes (e.g. favicons)
+	if(is_array($size))
+		return false;
+
+	//already exists
+	if(is_array($image_meta) && isset($size) && isset($image_meta['sizes'][$size]))
 		return false;
 
 	//if the size exists, exit
