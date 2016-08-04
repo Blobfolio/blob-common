@@ -91,8 +91,15 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 	//find what's missing
 	foreach($_wp_additional_image_sizes AS $k=>$v){
 		if(!isset($image_meta['sizes'][$k])){
+
 			//first, let's find out how things would play out dimensionally
-			$new_size = image_resize_dimensions($image_meta['width'], $image_meta['height'], $v['width'], $v['height'], $v['crop']);
+			$new_size = image_resize_dimensions(
+				$image_meta['width'],
+				$image_meta['height'],
+				$v['width'],
+				$v['height'],
+				$v['crop']
+			);
 			if(!$new_size)
 				continue;
 			$new_w = (int) $new_size[4];
@@ -129,7 +136,8 @@ if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
 // @param image_meta
 // @param attachment id
 function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $image_meta, $attachment_id){
-	static $called;
+
+	global $_wp_additional_image_sizes;
 
 	//get some source info
 	$src_path = get_attached_file($attachment_id);
@@ -159,7 +167,7 @@ function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $i
 						$src_path,
 						$v2['width'],
 						$v2['height'],
-						isset($v2['crop']) ? $v2['crop'] : null
+						$_wp_additional_image_sizes[$k2]['crop']
 					)){
 						//remove from sources on failure
 						//unset($sources[$k]);
