@@ -283,16 +283,29 @@ if(!function_exists('common_get_featured_image_path')){
 if(!function_exists('common_get_path_by_url')){
 	function common_get_path_by_url($url){
 
-		$from = site_url();
-		$to = ABSPATH;
-
-		//make sure both from and to end with a slash
-		if(substr($from, -1) !== '/')
-			$from .= "/";
-		if(substr($to, -1) !== '/')
-			$to .= "/";
+		$from = trailingslashit(site_url());
+		$to = trailingslashit(ABSPATH);
 
 		return str_replace($from, $to, $url);
+	}
+}
+
+//-------------------------------------------------
+// Get url from path
+//
+// this will only work for web-accessible files,
+// and only on servers that have the right kind of
+// directory separators (i.e. Linux)
+//
+// @param path
+// @return url
+if(!function_exists('common_get_url_by_path')){
+	function common_get_url_by_path($path){
+
+		$from = trailingslashit(ABSPATH);
+		$to = trailingslashit(site_url());
+
+		return str_replace($from, $to, $path);
 	}
 }
 
