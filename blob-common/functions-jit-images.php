@@ -84,8 +84,7 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 	$src_info = pathinfo($src_path);
 	$src_root = trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
-	$src_mime = wp_check_filetype($src_path);
-	$src_mime = $src_mime['type'];
+	$src_mime = common_get_mime_type($src_path);
 	$src_base = wp_basename($src_path, ".$src_ext");
 
 	//find what's missing
