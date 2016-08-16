@@ -45,14 +45,50 @@ function _common_image_downsize($downsize, $attachment_id, $size){
 	if(!isset($_wp_additional_image_sizes[$size]))
 		return false;
 
-	//make it
-	if(!$resized = image_make_intermediate_size(
-		get_attached_file($attachment_id),
+	//let's pull together a likely file name and see if it already exists,
+	//even though the meta does not. this can happen if a plugin corrupts
+	//image meta
+	$made = false;
+
+	$src_path = get_attached_file($attachment_id);
+	$src_info = pathinfo($src_path);
+	$src_root = trailingslashit($src_info['dirname']);
+	$src_ext = $src_info['extension'];
+	$src_mime = common_get_mime_type($src_path);
+	$src_base = wp_basename($src_path, ".$src_ext");
+	$new_size = image_resize_dimensions(
+		$image_meta['width'],
+		$image_meta['height'],
 		$_wp_additional_image_sizes[$size]['width'],
 		$_wp_additional_image_sizes[$size]['height'],
 		$_wp_additional_image_sizes[$size]['crop']
-	))
-		return false;
+	);
+	if($new_size) {
+		$new_w = (int) $new_size[4];
+		$new_h = (int) $new_size[5];
+		$new_f = wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . strtolower($src_ext));
+		if(file_exists("{$src_root}{$new_f}"))
+			$made = true;
+	}
+
+	//make it
+	if(!$made){
+		if(!$resized = image_make_intermediate_size(
+			$src_path,
+			$_wp_additional_image_sizes[$size]['width'],
+			$_wp_additional_image_sizes[$size]['height'],
+			$_wp_additional_image_sizes[$size]['crop']
+		))
+			return false;
+	}
+	else {
+		$resized = array(
+			'file'		=> $new_f,
+			'width'		=> $new_w,
+			'height'	=> $new_h,
+			'mime-type'	=> $src_mime
+		);
+	}
 
 	//update the metadata accordingly
 	$image_meta['sizes'][$size] = $resized;
