@@ -46,6 +46,49 @@ if(!function_exists('common_disable_wp_emojicons')){
 	}
 }
 
+//-------------------------------------------------
+// Add more cron settings
+//
+// @param schedules
+// @return schedules
+if(!function_exists('common_cron_schedules')){
+	function common_cron_schedules($schedules){
+
+		//every minute
+		$schedules['oneminute'] = array(
+			'interval' => 60,
+			'display' => 'Every 1 minute'
+		);
+
+		//every other minute
+		$schedules['twominutes'] = array(
+			'interval' => 120,
+			'display' => 'Every 2 minutes'
+		);
+
+		//every five minutes
+		$schedules['fiveminutes'] = array(
+			'interval' => 300,
+			'display' => 'Every 5 minutes'
+		);
+
+		//every ten minutes
+		$schedules['tenminutes'] = array(
+			'interval' => 600,
+			'display' => 'Every 10 minutes'
+		);
+
+		//ever half hour
+		$schedules['halfhour'] = array(
+			'interval' => 1800,
+			'display' => 'Every 30 minutes'
+		);
+
+		return $schedules;
+	}
+	add_filter('cron_schedules', 'common_cron_schedules');
+}
+
 //--------------------------------------------------------------------- end theme/system
 
 
@@ -127,6 +170,75 @@ if(!function_exists('common_debug_mail')){
 }
 
 //--------------------------------------------------------------------- end email
+
+
+
+//---------------------------------------------------------------------
+// Files
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Get file path from url
+//
+// this will only work for web-accessible files,
+// and only on servers that have the right kind of
+// directory separators (i.e. Linux)
+//
+// @param url
+// @return path
+if(!function_exists('common_get_path_by_url')){
+	function common_get_path_by_url($url){
+
+		$from = trailingslashit(site_url());
+		$to = trailingslashit(ABSPATH);
+
+		return str_replace($from, $to, $url);
+	}
+}
+
+//-------------------------------------------------
+// Get url from path
+//
+// this will only work for web-accessible files,
+// and only on servers that have the right kind of
+// directory separators (i.e. Linux)
+//
+// @param path
+// @return url
+if(!function_exists('common_get_url_by_path')){
+	function common_get_url_by_path($path){
+
+		$from = trailingslashit(ABSPATH);
+		$to = trailingslashit(site_url());
+
+		return str_replace($from, $to, $path);
+	}
+}
+
+//-------------------------------------------------
+// Is a directory empty?
+//
+// @param path
+// @return true/false
+if(!function_exists('common_is_empty_dir')){
+	function common_is_empty_dir($path){
+		if(!is_readable($path) || !is_dir($path))
+			return false;
+
+		//scan all files in dir
+		$handle = opendir($path);
+		while(false !== ($entry = readdir($handle))){
+			//anything but a dot === not empty
+			if($entry !== "." && $entry !== "..")
+				return false;
+		}
+
+		//nothing found
+		return true;
+	}
+}
+
+//--------------------------------------------------------------------- end files
 
 
 
@@ -268,44 +380,6 @@ if(!function_exists('common_get_featured_image_path')){
 			return false;
 
 		return common_get_path_by_url($url);
-	}
-}
-
-//-------------------------------------------------
-// Get file path from url
-//
-// this will only work for web-accessible files,
-// and only on servers that have the right kind of
-// directory separators (i.e. Linux)
-//
-// @param url
-// @return path
-if(!function_exists('common_get_path_by_url')){
-	function common_get_path_by_url($url){
-
-		$from = trailingslashit(site_url());
-		$to = trailingslashit(ABSPATH);
-
-		return str_replace($from, $to, $url);
-	}
-}
-
-//-------------------------------------------------
-// Get url from path
-//
-// this will only work for web-accessible files,
-// and only on servers that have the right kind of
-// directory separators (i.e. Linux)
-//
-// @param path
-// @return url
-if(!function_exists('common_get_url_by_path')){
-	function common_get_url_by_path($path){
-
-		$from = trailingslashit(ABSPATH);
-		$to = trailingslashit(site_url());
-
-		return str_replace($from, $to, $path);
 	}
 }
 
