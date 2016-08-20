@@ -35,7 +35,12 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 @require_once(dirname(__FILE__) . '/functions-localities.php');
 
 //JIT images
-@require_once(dirname(__FILE__) . '/functions-jit-images.php');
+if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
+	@require_once(dirname(__FILE__) . '/functions-jit-images.php');
+
+//WebP images
+if(defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES)
+	@require_once(dirname(__FILE__) . '/functions-webp.php');
 
 
 
