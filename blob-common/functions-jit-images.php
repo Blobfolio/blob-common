@@ -17,8 +17,7 @@ function _common_intermediate_image_sizes_advanced($sizes){
 		'large' => $sizes['large']
 	);
 }
-if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
-	add_filter('intermediate_image_sizes_advanced', '_common_intermediate_image_sizes_advanced');
+add_filter('intermediate_image_sizes_advanced', '_common_intermediate_image_sizes_advanced');
 
 //-------------------------------------------------
 // Generate an image if missing
@@ -98,8 +97,7 @@ function _common_image_downsize($downsize, $attachment_id, $size){
 	$src_url = wp_get_attachment_url($attachment_id);
 	return array(dirname($src_url) . '/' . $resized['file'], $resized['width'], $resized['height'], true);
 }
-if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
-	add_filter('image_downsize', '_common_image_downsize', 10, 3);
+add_filter('image_downsize', '_common_image_downsize', 10, 3);
 
 //-------------------------------------------------
 // Add Missing Sizes to SRCSET pool
@@ -159,8 +157,7 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 
 	return $image_meta;
 }
-if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
-	add_filter('wp_calculate_image_srcset_meta', '_common_wp_calculate_image_srcset_meta', 10, 4);
+add_filter('wp_calculate_image_srcset_meta', '_common_wp_calculate_image_srcset_meta', 10, 4);
 
 //-------------------------------------------------
 // Generate Matched srcset sources
@@ -228,6 +225,5 @@ function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $i
 
 	return $sources;
 }
-if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
-	add_filter('wp_calculate_image_srcset', '_common_wp_calculate_image_srcset', 10, 5);
+add_filter('wp_calculate_image_srcset', '_common_wp_calculate_image_srcset', 10, 5);
 ?>
