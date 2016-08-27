@@ -619,6 +619,36 @@ if(!function_exists('common_parse_args')){
 }
 
 //-------------------------------------------------
+// Force a value to fall within a range
+//
+// @param value
+// @param min
+// @param max
+// @return value
+if(!function_exists('common_to_range')){
+	function common_to_range($value, $min=null, $max=null){
+
+		//max sure min/max are in the right order
+		if($min > $max)
+			common_switcheroo($min, $max);
+
+		//recursive
+		if(is_array($value)){
+			foreach($value AS $k=>$v)
+				$value[$k] = common_to_range($v, $min, $max);
+		}
+		else {
+			if(!is_null($min) && $value < $min)
+				$value = $min;
+			if(!is_null($max) && $value > $max)
+				$value = $max;
+		}
+
+		return $value;
+	}
+}
+
+//-------------------------------------------------
 // Generate a random string
 //
 // using only unambiguous letters
