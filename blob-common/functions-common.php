@@ -437,7 +437,7 @@ if(!function_exists('common_get_data_uri')){
 		if(!@file_exists($path))
 			return false;
 
-		return "data: " . common_get_mime_type($path) . ";base64," . base64_encode(file_get_contents($path));
+		return "data:" . common_get_mime_type($path) . ";base64," . base64_encode(file_get_contents($path));
 	}
 }
 
