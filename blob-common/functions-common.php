@@ -542,6 +542,35 @@ if(!function_exists('common_array_map_recursive')){
 }
 
 //-------------------------------------------------
+// Get a Random Integer
+//
+// this will shoot for several implementations of
+// randomness in order of preference until a
+// supported one is found
+//
+// @param min
+// @param max
+// @return random
+if(!function_exists('common_random_int')){
+	function common_random_int($min=0, $max=1){
+		static $random_int;
+
+		if(is_null($random_int))
+			$random_int = function_exists('random_int');
+
+		$min = (int) $min;
+		$max = (int) $max;
+		if($min > $max)
+			common_switcheroo($min, $max);
+
+		if($random_int)
+			return random_int($min, $max);
+		else
+			return mt_rand($min, $max);
+	}
+}
+
+//-------------------------------------------------
 // Return the first index of an array
 //
 // this is like array_pop for the first entry
@@ -665,8 +694,9 @@ if(!function_exists('common_generate_random_string')){
 
 		//pick nine entries at random
 		$salt = '';
+		$max = count($soup) - 1;
 		for($x=0; $x<$length; $x++)
-			$salt .= $soup[array_rand($soup, 1)];
+			$salt .= $soup[common_random_int(0, $max)];
 
 		return $salt;
 	}
