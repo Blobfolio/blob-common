@@ -683,10 +683,23 @@ if(!function_exists('common_to_range')){
 // using only unambiguous letters
 //
 // @param length
+// @param character set (optional)
 // @return string
 if(!function_exists('common_generate_random_string')){
-	function common_generate_random_string($length=10){
-		$soup = array('A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','2','3','4','5','6','7','8','9');
+	function common_generate_random_string($length=10, $soup=null){
+		if(is_array($soup) && count($soup)){
+			$soup = implode('', array_map('strval', $soup));
+			$soup = preg_replace('/[^[:print:]]/u', '', $soup);	//strip non-printable
+			$soup = preg_replace('/\s/u', '', $soup);			//strip whitespace
+			$soup = array_unique(str_split($soup));
+			$soup = array_values($soup);
+			if(!count($soup))
+				return '';
+		}
+
+		//use default soup
+		if(!is_array($soup) || !count($soup))
+			$soup = array('A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','2','3','4','5','6','7','8','9');
 
 		$length = (int) $length;
 		if($length <= 0)
