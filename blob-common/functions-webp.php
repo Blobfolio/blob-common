@@ -169,7 +169,11 @@ if(!function_exists('common_get_webp_srcset')){
 		}
 		//try srcset
 		else {
-			$srcset = wp_get_attachment_image_srcset($data['attachment_id'], $data['size']);
+			//if there is no srcset, let the src function handle it
+			//not sure why WP's function just explodes when it could return *something*
+			if(false === $srcset = wp_get_attachment_image_srcset($data['attachment_id'], $data['size']))
+				return common_get_webp_src($data);
+
 			if(is_string($srcset) && strlen($srcset)){
 				$srcset = explode(',', $srcset);
 				$srcset = array_map('common_sanitize_whitespace', $srcset);
