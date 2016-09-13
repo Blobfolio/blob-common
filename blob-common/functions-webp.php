@@ -15,6 +15,28 @@ if(!defined('WP_WEBP_GIF2WEBP'))
 
 
 //-------------------------------------------------
+// Can the server do the WebP stuff?
+//
+// @param n/a
+// @return true/false
+if(!function_exists('common_supports_webp')){
+	function common_supports_webp(){
+		static $support;
+
+		if(is_null($support)){
+			try {
+				$support =	@file_exists(WP_WEBP_CWEBP) &&
+							@file_exists(WP_WEBP_GIF2WEBP) &&
+							@is_readable(WP_WEBP_CWEBP) &&
+							@is_readable(WP_WEBP_GIF2WEBP);
+			} catch(Exception $e){ $support = false; }
+		}
+
+		return $support;
+	}
+}
+
+//-------------------------------------------------
 // Sort SRCSET by size
 //
 // @param a
@@ -69,7 +91,8 @@ if(!function_exists('common_webp_cleanup')){
 			closedir($dir);
 		}
 	}
-	add_action('delete_attachment', 'common_webp_cleanup', 10, 1);
+	if(common_supports_webp())
+		add_action('delete_attachment', 'common_webp_cleanup', 10, 1);
 }
 
 //-------------------------------------------------
@@ -107,7 +130,7 @@ if(!function_exists('common_get_webp_src')){
 			return false;
 
 		//add in webp
-		if(false !== ($w = common_get_webp_sister($image[0])))
+		if(common_supports_webp() && false !== ($w = common_get_webp_sister($image[0])))
 			$sources[] = '<source type="image/webp" srcset="' . $w . '" />';
 
 		//add in regular image
@@ -164,7 +187,7 @@ if(!function_exists('common_get_webp_srcset')){
 		//no srcset for GIFs
 		$type = common_get_mime_type($image[0]);
 		if($type === 'image/gif'){
-			if(false !== ($w = common_get_webp_sister($image[0])))
+			if(common_supports_webp() && false !== ($w = common_get_webp_sister($image[0])))
 				$sources[] = sprintf($source, 'image/webp', "$w {$image[1]}w", '');
 		}
 		//try srcset
@@ -190,7 +213,7 @@ if(!function_exists('common_get_webp_srcset')){
 					if(file_exists($path)){
 						$source_normal[] = trim("$url $size");
 
-						if(false !== ($w = common_get_webp_sister($url)))
+						if(common_supports_webp() && false !== ($w = common_get_webp_sister($url)))
 							$source_webp[] = trim("$w $size");
 					}
 				}
@@ -223,7 +246,7 @@ if(!function_exists('common_generate_webp')){
 		if(file_exists($out))
 			return true;
 
-		if(!file_exists(WP_WEBP_CWEBP) || !file_exists(WP_WEBP_GIF2WEBP))
+		if(!common_supports_webp())
 			return false;
 
 		//proc setup
@@ -266,6 +289,9 @@ if(!function_exists('common_generate_webp')){
 // @return sister or false
 if(!function_exists('common_get_webp_sister')){
 	function common_get_webp_sister($path){
+		if(!common_supports_webp())
+			return false;
+
 		$mode = 'url';
 		if(substr($path, 0, strlen(ABSPATH)) === ABSPATH)
 			$mode = 'path';
