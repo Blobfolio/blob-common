@@ -78,8 +78,9 @@ function blobcommon_get_info($key = null){
 // @return info (all) or tidbit
 function blobcommon_get_remote_info($key = null){
 	static $info;
+	$transient_key = 'blobcommon_remote_info';
 
-	if(is_null($info)){
+	if(is_null($info) && false === $info = get_transient($transient_key)){
 		$info = array();
 		if(false !== ($url = blobcommon_get_info('PluginURI'))){
 			$data = wp_remote_get($url);
@@ -88,6 +89,8 @@ function blobcommon_get_remote_info($key = null){
 					$response = json_decode($data['body'], true);
 					foreach($response AS $k=>$v)
 						$info[$k] = $v;
+
+					set_transient($transient_key, $info, 3600);
 				}
 				catch(Exception $e){ }
 			}
