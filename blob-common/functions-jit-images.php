@@ -50,6 +50,11 @@ function _common_image_downsize($downsize, $attachment_id, $size){
 	$made = false;
 
 	$src_path = get_attached_file($attachment_id);
+
+	//ignore svgs
+	if(common_get_mime_type($src_path) === 'image/svg+xml')
+		return false;
+
 	$src_info = pathinfo($src_path);
 	$src_root = trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
@@ -115,6 +120,11 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 
 	//some source file specs we'll use a lot
 	$src_path = get_attached_file($attachment_id);
+
+	//ignore svgs
+	if(common_get_mime_type($src_path) === 'image/svg+xml')
+		return false;
+
 	$src_info = pathinfo($src_path);
 	$src_root = trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
@@ -173,6 +183,11 @@ function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $i
 
 	//get some source info
 	$src_path = get_attached_file($attachment_id);
+
+	//ignore svgs
+	if(common_get_mime_type($src_path) === 'image/svg+xml')
+		return false;
+
 	$src_root = trailingslashit(pathinfo($src_path, PATHINFO_DIRNAME));
 
 	//the actual image metadata (which might be altered here)
