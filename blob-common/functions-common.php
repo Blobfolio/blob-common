@@ -537,7 +537,7 @@ if(!function_exists('common_to_char_array')){
 // @param var
 if(!function_exists('common_array_map_recursive')){
 	function common_array_map_recursive(callable $func, array $array){
-		return filter_var($array, \FILTER_CALLBACK, ['options' => $func]);
+		return filter_var($array, FILTER_CALLBACK, array('options'=>$func));
 	}
 }
 
