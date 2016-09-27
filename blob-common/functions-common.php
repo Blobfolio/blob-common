@@ -1060,7 +1060,7 @@ if(!function_exists('common_format_money')){
 		if($amount >= 1 || $cents === false)
 			return ($negative ? '-' : '') . '$' . number_format($amount,2,'.','');
 		else
-			return (100 * $amount) . '¢';
+			return ($negative ? '-' : '') . (100 * $amount) . '¢';
 	}
 }
 
