@@ -286,10 +286,10 @@ if(!function_exists('common_ip_to_number')){
 		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)){
 			$ip_n = inet_pton($ip);
 			$bin = '';
-			for($bit = strlen($ip_n) - 1; $bit >= 0; $bit--)
+			for($bit = common_strlen($ip_n) - 1; $bit >= 0; $bit--)
 				$bin = sprintf('%08b', ord($ip_n[$bit])) . $bin;
 			$dec = '0';
-			for ($i = 0; $i < strlen($bin); $i++){
+			for ($i = 0; $i < common_strlen($bin); $i++){
 				$dec = bcmul($dec, '2', 0);
 				$dec = bcadd($dec, $bin[$i], 0);
 			}

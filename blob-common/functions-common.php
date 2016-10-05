@@ -350,12 +350,17 @@ if(!function_exists('common_svg_media_thumbnail')){
 //		1 width
 //		2 height
 //		3 is resized
+// @param fallback
 // @return array, src or false
 if(!function_exists('common_get_featured_image_src')){
-	function common_get_featured_image_src($id=0, $size=null, $attributes=false){
+	function common_get_featured_image_src($id=0, $size=null, $attributes=false, $fallback=0){
 		$id = (int) $id;
+		$tmp = (int) get_post_thumbnail_id($id);
 
-		$tmp = get_post_thumbnail_id($id);
+		//using a fallback?
+		if(!$tmp && $fallback > 0)
+			$tmp = $fallback;
+
 		if($tmp){
 			$tmp2 = wp_get_attachment_image_src($tmp, $size);
 			if(is_array($tmp2) && filter_var($tmp2[0], FILTER_VALIDATE_URL))
@@ -450,6 +455,26 @@ if(!function_exists('common_get_data_uri')){
 //---------------------------------------------------------------------
 
 //-------------------------------------------------
+// String Length
+//
+// @param str
+// @return length
+if(!function_exists('common_strlen')){
+	function common_strlen($str){
+		//prefer mb_strlen
+		if(function_exists('mb_strlen'))
+			$length = mb_strlen($str);
+		else
+			$length = strlen($str);
+
+		if(false === $length)
+			$length = 0;
+
+		return $length;
+	}
+}
+
+//-------------------------------------------------
 // Get Mime Type by file path
 //
 // why is this so hard?! the fileinfo extension is
@@ -471,7 +496,7 @@ if(!function_exists('common_get_mime_type')){
 		$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
 		//done
-		return strlen($ext) && isset($mimes[$ext]) ? $mimes[$ext] : 'application/octet-stream';
+		return common_strlen($ext) && isset($mimes[$ext]) ? $mimes[$ext] : 'application/octet-stream';
 	}
 }
 
@@ -629,9 +654,10 @@ if(!function_exists('common_switcheroo')){
 //
 // @param args
 // @param defaults
+// @param strict (force same type, one level deep)
 // @return parsed
 if(!function_exists('common_parse_args')){
-	function common_parse_args($args=null, $defaults=null){
+	function common_parse_args($args=null, $defaults=null, $strict=false){
 		$defaults = (array) $defaults;
 		$args = (array) $args;
 
@@ -639,8 +665,12 @@ if(!function_exists('common_parse_args')){
 			return array();
 
 		foreach($defaults AS $k=>$v){
-			if(array_key_exists($k, $args))
+			if(array_key_exists($k, $args)){
+				if($strict && !is_null($defaults[$k])){
+					settype($args[$k], gettype($defaults[$k]));
+				}
 				$defaults[$k] = $args[$k];
+			}
 		}
 
 		return $defaults;
@@ -766,7 +796,7 @@ if(!function_exists('common_readfile_chunked')){
 			ob_flush();
 			flush();
 			if($retbytes)
-				$cnt += strlen($buffer);
+				$cnt += common_strlen($buffer);
 		}
 
 		$status = fclose($handle);
@@ -848,7 +878,7 @@ if(!function_exists('common_get_excerpt')){
 		$str = trim(common_sanitize_whitespace(strip_tags(common_sanitize_whitespace($str))));
 
 		//limit string to X characters
-		if($method === 'chars' && strlen($str) > $length)
+		if($method === 'chars' && common_strlen($str) > $length)
 				$str = trim(substr($str, 0, $length)) . $append;
 		//limit string to X words
 		elseif($method === 'words' && substr_count($str, ' ') > $length + 1)
@@ -871,6 +901,18 @@ if(!function_exists('common_sanitize_name')){
 }
 
 //-------------------------------------------------
+// Sanitize printable
+//
+// @param str
+// @return str
+if(!function_exists('common_sanitize_printable')){
+	function common_sanitize_printable($str=''){
+		$str = common_utf8($str);
+		return preg_replace('/[^[:print:]]/u', '', $str);
+	}
+}
+
+//-------------------------------------------------
 // Sanitize CSV
 //
 // @param field
@@ -887,11 +929,16 @@ if(!function_exists('common_sanitize_csv')){
 // @param str
 // @return str
 if(!function_exists('common_sanitize_newlines')){
-	function common_sanitize_newlines($str=''){
+	function common_sanitize_newlines($str='', $newlines=2){
 		$str = common_utf8($str);
+		$newlines = common_to_range(intval($newlines), 1);
 		$str = str_replace("\r\n", "\n", $str);
 		$str = preg_replace('/\v/u', "\n", $str);
-		$str = preg_replace("/\n{2,}/", "\n\n", $str);
+
+		//trim each line so we don't miss anything
+		$str = implode("\n", array_map('trim', explode("\n", $str)));
+
+		$str = preg_replace('/\n{' . ($newlines + 1) . ',}/', str_repeat("\n", $newlines), $str);
 		return trim($str);
 	}
 }
@@ -921,8 +968,12 @@ if(!function_exists('common_sanitize_whitespace')){
 		if(!$multiline)
 			return trim(preg_replace('/\s{1,}/u', ' ', common_utf8($str)));
 
+		$newlines = 2;
+		if(is_int($multiline))
+			$newlines = $multiline;
+
 		$str = common_sanitize_spaces($str);
-		$str = common_sanitize_newlines($str);
+		$str = common_sanitize_newlines($str, $newlines);
 
 		return $str;
 	}
@@ -1010,9 +1061,9 @@ if(!function_exists('common_validate_email')){
 if(!function_exists('common_sanitize_zip5')){
 	function common_sanitize_zip5($zip){
 		$zip = preg_replace('/[^\d]/', '', $zip);
-		if(strlen($zip) < 5)
+		if(common_strlen($zip) < 5)
 			$zip = sprintf('%05d', $zip);
-		elseif(strlen($zip) > 5)
+		elseif(common_strlen($zip) > 5)
 			$zip = substr($zip, 0, 5);
 
 		if($zip === '00000')
@@ -1050,8 +1101,11 @@ if(!function_exists('common_sanitize_ip')){
 // @return money
 if(!function_exists('common_format_money')){
 	function common_format_money($amount, $cents=false){
-		$amount = (double) preg_replace('/[^\-\d\.]/', '', $amount);
-		$amount = round($amount,2);
+		//convert back to dollars if it is so easy
+		if(preg_match('/^[\d]+¢$/', $amount))
+			$amount = round(common_sanitize_number($amount) / 100, 2);
+		else
+			$amount = round(common_sanitize_number($amount), 2);
 
 		$negative = $amount < 0;
 		if($negative)
@@ -1071,51 +1125,85 @@ if(!function_exists('common_format_money')){
 // @return num (float)
 if(!function_exists('common_sanitize_number')){
 	function common_sanitize_number($num){
-		//numbers and periods only
-		$num = preg_replace('/[^\d\.]/', '', $num);
+		//let's convert cents back into proper dollars
+		if(preg_match('/^[\d]+¢$/', $num))
+			$num = substr($num, 0, -1) / 100;
 
-		//drop 2+ periods
-		if(substr_count($num, '.') > 1){
-			$first = strpos($num, '.');
-			$num = substr($num, 0, $first) . '.' . str_replace('.', '', substr($num, $first));
-		}
-
-		//done!
-		return (float) $num;
+		return (float) filter_var($num, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 	}
 }
 
 //-------------------------------------------------
-// Typecast as (int)
+// Bool
 //
-// @param int-ish
-// @return int
-if(!function_exists('common_intval')){
-	function common_intval($num){
-		return intval(common_sanitize_number($num));
+// @param value
+// @return true/false
+if(!function_exists('common_sanitize_bool')){
+	function common_sanitize_bool($value=false){
+		return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 	}
 }
 
 //-------------------------------------------------
-// Typecast as (double)... which is really just
-// (float) for old people
+// Float
 //
-// @param double-ish
-// @return double
+// @param value
+// @return true/false
+if(!function_exists('common_sanitize_float')){
+	function common_sanitize_float($num=0){
+		$num = common_sanitize_number($num);
+		if(false === $num = filter_var($num, FILTER_VALIDATE_FLOAT))
+			return (float) 0;
+
+		return $num;
+	}
+}
+//these are just wrappers
 if(!function_exists('common_doubleval')){
-	function common_doubleval($num){
-		return (double) common_sanitize_number($num);
+	function common_doubleval($num){ return common_sanitize_float($num); }
+}
+if(!function_exists('common_floatval')){
+	function common_floatval($num){ return common_sanitize_float($num); }
+}
+
+//-------------------------------------------------
+// Int
+//
+// @param value
+// @return true/false
+if(!function_exists('common_sanitize_int')){
+	function common_sanitize_int($num=0){
+		$num = common_sanitize_number($num);
+		if(false === $num = filter_var($num, FILTER_VALIDATE_INT))
+			return (int) 0;
+
+		return $num;
+	}
+}
+//another wrapper
+if(!function_exists('common_intval')){
+	function common_intval($num){ return common_sanitize_int($num); }
+}
+
+//-------------------------------------------------
+// String
+//
+// @param value
+// @return value
+if(!function_exists('common_sanitize_string')){
+	function common_sanitize_string($value=''){
+		return (string) $value;
 	}
 }
 
 //-------------------------------------------------
-// Typecast as (float)
+// Array
 //
-// @param float-ish
-// @return float
-if(!function_exists('common_floatval')){
-	function common_floatval($num){
-		return (float) common_sanitize_number($num);
+// @param value
+// @return value
+if(!function_exists('common_sanitize_array')){
+	function common_sanitize_array($value=''){
+		return (array) $value;
 	}
 }
 
@@ -1132,7 +1220,7 @@ if(!function_exists('common_sanitize_phone')){
 		$value = preg_replace('/[^\d]/', '', $value);
 
 		//if this looks like a 10-digit number with the +1 on it, chop it off
-		if(strlen($value) === 11 && intval(substr($value,0,1)) === 1)
+		if(common_strlen($value) === 11 && intval(substr($value,0,1)) === 1)
 			$value = substr($value, 1);
 
 		return $value;
@@ -1165,9 +1253,9 @@ if(!function_exists('common_format_phone')){
 	function common_format_phone($value=''){
 		$value = common_sanitize_phone($value);
 
-		if(strlen($value) >= 10){
+		if(common_strlen($value) >= 10){
 			$first10 = substr($value,0,10);
-			return preg_replace("/^([0-9]{3})([0-9]{3})([0-9]{4})/i", "(\\1) \\2-\\3", $first10) . (strlen($value) > 10 ? ' x' . substr($value,10) : '');
+			return preg_replace("/^([0-9]{3})([0-9]{3})([0-9]{4})/i", "(\\1) \\2-\\3", $first10) . (common_strlen($value) > 10 ? ' x' . substr($value,10) : '');
 		}
 
 		return $value;
@@ -1197,19 +1285,19 @@ if(!function_exists('common_validate_cc')){
 		switch (substr($ccnum,0,1)){
 			//Amex
 			case 3:
-				if(strlen($ccnum) != 15 || !preg_match('/3[47]/', $ccnum)) return false;
+				if(common_strlen($ccnum) != 15 || !preg_match('/3[47]/', $ccnum)) return false;
 				break;
 			//Visa
 			case 4:
-				if(!in_array(strlen($ccnum), array(13,16))) return false;
+				if(!in_array(common_strlen($ccnum), array(13,16))) return false;
 				break;
 			//MC
 			case 5:
-				if(strlen($ccnum) != 16 || !preg_match('/5[1-5]/', $ccnum)) return false;
+				if(common_strlen($ccnum) != 16 || !preg_match('/5[1-5]/', $ccnum)) return false;
 				break;
 			//Disc
 			case 6:
-				if(strlen($ccnum) != 16 || substr($ccnum, 0, 4) != '6011') return false;
+				if(common_strlen($ccnum) != 16 || substr($ccnum, 0, 4) != '6011') return false;
 				break;
 			//There is nothing else...
 			default:
@@ -1307,7 +1395,7 @@ if(!function_exists('common_is_current_page')){
 		$url2 = parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
 
 		//and check for a match
-		return $subpages ? substr($url2, 0, strlen($url)) === $url : $url === $url2;
+		return $subpages ? substr($url2, 0, common_strlen($url)) === $url : $url === $url2;
 	}
 }
 
@@ -1351,7 +1439,7 @@ if(!function_exists('common_sanitize_domain_name')){
 		$domain = (string) $domain;
 		$domain = common_sanitize_whitespace(strtolower($domain));
 
-		if(!strlen($domain))
+		if(!common_strlen($domain))
 			return false;
 
 		//maybe it is a full URL
@@ -1400,6 +1488,93 @@ if(!function_exists('common_validate_domain_name')){
 			return false;
 
 		return true;
+	}
+}
+
+//-------------------------------------------------
+// Unix slashes
+//
+// fix backward Windows slashes, and also get
+// rid of double slashes and dot paths
+//
+// @param path
+// @return path
+if(!function_exists('common_unixslashit')){
+	function common_unixslashit($path=''){
+		$path = str_replace('\\', '/', $path);
+		$path = str_replace('/./', '//', $path);
+		return preg_replace('/\/{2,}/', '/', $path);
+	}
+}
+
+//-------------------------------------------------
+// Unleading Slash
+//
+// WP doesn't have leading slash functions for
+// some reason
+//
+// @param path
+// @return path
+if(!function_exists('common_unleadingslashit')){
+	function common_unleadingslashit($path=''){
+		$path = common_unixslashit($path);
+		return ltrim($path, '/');
+	}
+}
+
+//-------------------------------------------------
+// Leading Slash
+//
+// WP doesn't have leading slash functions for
+// some reason
+//
+// @param path
+// @return path
+if(!function_exists('common_leadingslashit')){
+	function common_leadingslashit($path=''){
+		return '/' . common_unleadingslashit($path);
+	}
+}
+
+//-------------------------------------------------
+// Upload Path
+//
+// this works like site_url for upload directory
+// paths
+//
+// @param subpath
+// @param return url?
+// @return path or url
+if(!function_exists('common_upload_path')){
+	function common_upload_path($subpath=null, $url=false){
+		$dir = wp_upload_dir();
+		$dir = $dir['basedir'];
+		$path = trailingslashit($dir);
+		if(!is_null($subpath))
+			$path .= common_unleadingslashit($subpath);
+
+		return $url ? common_get_url_by_path($path) : $path;
+	}
+}
+
+//-------------------------------------------------
+// Theme Path
+//
+// this works like site_url for theme directory
+// paths
+//
+// @param subpath
+// @param return url?
+// @return path or url
+if(!function_exists('common_theme_path')){
+	function common_theme_path($subpath=null, $url=false){
+		//this is a URL
+		$dir = trailingslashit(get_stylesheet_directory_uri());
+		$path = trailingslashit($dir);
+		if(!is_null($subpath))
+			$path .= common_unleadingslashit($subpath);
+
+		return $url ? $path : common_get_path_by_url($path);
 	}
 }
 

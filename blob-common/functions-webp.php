@@ -79,10 +79,10 @@ if(!function_exists('common_webp_cleanup')){
 		if(false !== ($dir = opendir($path))){
 			while(false !== ($thumb = readdir($dir))){
 				//wrong base
-				if(substr($thumb, 0, strlen($stub['filename'])) !== $stub['filename'])
+				if(substr($thumb, 0, common_strlen($stub['filename'])) !== $stub['filename'])
 					continue;
 
-				$suffix = substr($thumb, strlen($stub['filename']));
+				$suffix = substr($thumb, common_strlen($stub['filename']));
 				if(preg_match('/^(\-\d+x\d+)?\.webp$/', $suffix)){
 					$file = trailingslashit($path) . $thumb;
 					@unlink($file);
@@ -116,12 +116,12 @@ if(!function_exists('common_get_webp_src')){
 		if(!$data['attachment_id'])
 			return false;
 
-		if(is_string($data['classes']) && strlen($data['classes']))
+		if(is_string($data['classes']) && common_strlen($data['classes']))
 			$data['classes'] = explode(' ', common_sanitize_whitespace($data['classes']));
 		elseif(!is_array($data['classes']))
 			$data['classes'] = array();
 
-		if(!strlen($data['alt']))
+		if(!common_strlen($data['alt']))
 			$data['alt'] = $defaults['alt'];
 
 		//all right, let's get started!
@@ -163,19 +163,19 @@ if(!function_exists('common_get_webp_srcset')){
 		if(!$data['attachment_id'])
 			return false;
 
-		if(is_string($data['sizes']) && strlen($data['sizes'])){
+		if(is_string($data['sizes']) && common_strlen($data['sizes'])){
 			$data['sizes'] = explode(',', $data['sizes']);
 			$data['sizes'] = array_map('common_sanitize_whitespace', $data['sizes']);
 		}
 		if(!is_array($data['sizes']))
 			$data['sizes'] = array();
 
-		if(is_string($data['classes']) && strlen($data['classes']))
+		if(is_string($data['classes']) && common_strlen($data['classes']))
 			$data['classes'] = explode(' ', common_sanitize_whitespace($data['classes']));
 		elseif(!is_array($data['classes']))
 			$data['classes'] = array();
 
-		if(!strlen($data['alt']))
+		if(!common_strlen($data['alt']))
 			$data['alt'] = $defaults['alt'];
 
 		//all right, let's get started!
@@ -197,7 +197,7 @@ if(!function_exists('common_get_webp_srcset')){
 			if(false === $srcset = wp_get_attachment_image_srcset($data['attachment_id'], $data['size']))
 				return common_get_webp_src($data);
 
-			if(is_string($srcset) && strlen($srcset)){
+			if(is_string($srcset) && common_strlen($srcset)){
 				$srcset = explode(',', $srcset);
 				$srcset = array_map('common_sanitize_whitespace', $srcset);
 				usort($srcset, '_common_sort_srcset');
@@ -293,7 +293,7 @@ if(!function_exists('common_get_webp_sister')){
 			return false;
 
 		$mode = 'url';
-		if(substr($path, 0, strlen(ABSPATH)) === ABSPATH)
+		if(substr($path, 0, common_strlen(ABSPATH)) === ABSPATH)
 			$mode = 'path';
 
 		if($mode === 'url')
