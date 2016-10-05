@@ -558,11 +558,29 @@ if(!function_exists('common_to_char_array')){
 //-------------------------------------------------
 // Recursive Array Map
 //
+// this should work on single values, arrays, and
+// loopable objects
+//
 // @param callback
 // @param var
+// @return filtered
 if(!function_exists('common_array_map_recursive')){
-	function common_array_map_recursive(callable $func, array $array){
-		return filter_var($array, FILTER_CALLBACK, array('options'=>$func));
+	function common_array_map_recursive(callable $func, $value){
+		if(is_array($value)){
+			foreach($value AS $k=>$v)
+				$value[$k] = call_user_func($func, $value);
+		}
+		elseif(is_object($value)){
+			try {
+				foreach($value AS $k=>$v){
+					$value->{$k} = call_user_func($func, $value);
+				}
+			} catch(Exception $e){ continue; }
+		}
+		else
+			$value = call_user_func($func, $value);
+
+		return $value;
 	}
 }
 
@@ -931,7 +949,7 @@ if(!function_exists('common_sanitize_csv')){
 if(!function_exists('common_sanitize_newlines')){
 	function common_sanitize_newlines($str='', $newlines=2){
 		$str = common_utf8($str);
-		$newlines = common_to_range(intval($newlines), 1);
+		$newlines = common_to_range(intval($newlines), 0);
 		$str = str_replace("\r\n", "\n", $str);
 		$str = preg_replace('/\v/u', "\n", $str);
 
@@ -1205,6 +1223,32 @@ if(!function_exists('common_sanitize_array')){
 	function common_sanitize_array($value=''){
 		return (array) $value;
 	}
+}
+
+//-------------------------------------------------
+// Datetime
+//
+// @param date
+// @return date
+if(!function_exists('common_sanitize_datetime')){
+	function common_sanitize_datetime($date){
+		$default = '0000-00-00 00:00:00';
+		if($date === $default)
+			return $date;
+
+		if(is_numeric($date))
+			$date = round($date);
+		else {
+			if(false === $date = strtotime($date))
+				return $default;
+		}
+
+		return date('Y-m-d H:i:s', $date);
+	}
+}
+//wrapper for just the date half
+if(!function_exists('common_sanitize_date')){
+	function common_sanitize_date($date){ return substr(common_sanitie_datetime($date), 0, 10); }
 }
 
 //-------------------------------------------------
