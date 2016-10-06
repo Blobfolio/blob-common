@@ -575,7 +575,7 @@ if(!function_exists('common_array_map_recursive')){
 				foreach($value AS $k=>$v){
 					$value->{$k} = call_user_func($func, $value);
 				}
-			} catch(Exception $e){ continue; }
+			} catch(Exception $e){ return $value; }
 		}
 		else
 			$value = call_user_func($func, $value);
@@ -631,6 +631,39 @@ if(!function_exists('common_array_pop_top')){
 }
 
 //-------------------------------------------------
+// Compare Arrays
+//
+// @param arr1
+// @param arr2
+if(!function_exists('common_array_compare')){
+	function common_array_compare(&$arr1, &$arr2){
+		//obviously bad data
+		if(!is_array($arr1) || !is_array($arr2) || count($arr1) !== count($arr2))
+			return false;
+
+		//different keys, we don't need to check further
+		if(count(array_intersect_key($arr1, $arr2)) !== count($arr1))
+			return false;
+
+		//check each item
+		foreach($arr1 AS $k=>$v){
+			if(!isset($arr2[$k]))
+				return false;
+
+			//recursive?
+			if(is_array($arr1[$k]) && is_array($arr2[$k])){
+				if(!common_array_compare($arr1[$k], $arr2[$k]))
+					return false;
+			}
+			elseif($arr1[$k] !== $arr2[$k])
+				return false;
+		}
+
+		return true;
+	}
+}
+
+//-------------------------------------------------
 // Return the last index of an array
 //
 // this is like array_pop but doesn't destroy the
@@ -673,9 +706,10 @@ if(!function_exists('common_switcheroo')){
 // @param args
 // @param defaults
 // @param strict (force same type, one level deep)
+// @param recursive
 // @return parsed
 if(!function_exists('common_parse_args')){
-	function common_parse_args($args=null, $defaults=null, $strict=false){
+	function common_parse_args($args=null, $defaults=null, $strict=false, $recursive=false){
 		$defaults = (array) $defaults;
 		$args = (array) $args;
 
@@ -684,14 +718,45 @@ if(!function_exists('common_parse_args')){
 
 		foreach($defaults AS $k=>$v){
 			if(array_key_exists($k, $args)){
-				if($strict && !is_null($defaults[$k])){
-					settype($args[$k], gettype($defaults[$k]));
+				if($strict && !is_null($defaults[$k]) && gettype($args[$k]) !== gettype($defaults[$k])){
+					$defaults[$k] = common_sanitize_by_type($args[$k], gettype($defaults[$k]));
 				}
-				$defaults[$k] = $args[$k];
+
+				if($recursive && is_array($defaults[$k]) && count($defaults[$k]))
+					$defaults[$k] = common_parse_args($args[$k], $defaults[$k], $strict, $recursive);
+				else
+					$defaults[$k] = $args[$k];
 			}
 		}
 
 		return $defaults;
+	}
+}
+
+//-------------------------------------------------
+// Parse Args from JSON source
+//
+// defaults are optional
+//
+// @param args
+// @param defaults
+// @param strict (force same type, one level deep)
+// @param recursive
+// @return parsed
+if(!function_exists('common_parse_json_args')){
+	function common_parse_json_args($json='', $defaults=null, $strict=true, $recursive=true){
+		$json = trim(common_sanitize_string($json));
+		if(common_strlen($json))
+			$json = (array) json_decode($json, true);
+		else
+			$json = array();
+
+		//if there are no defaults just return the result
+		if(!is_array($defaults) || !count($defaults))
+			return $json;
+
+		//otherwise parse and return
+		return common_parse_args($json, $defaults, $strict, $recursive);
 	}
 }
 
@@ -870,16 +935,16 @@ if(!function_exists('common_is_utf8')){
 // @return string or false
 if(!function_exists('common_utf8')){
 	function common_utf8($str){
-		if(common_is_utf8($str))
-			return $str;
-		else {
-			try {
-				$str = mb_convert_encoding($str, 'UTF-8');
-				return $str;
-			} catch(Exception $e){ return false; }
-		}
+		@require_once(dirname(__FILE__) . '/utf8.php');
 
-		return false;
+		//we don't need to worry about certain types
+		if(is_numeric($str) || is_bool($str))
+			return $str;
+
+		$str = (string) $str;
+
+		$str = \blobcommon\utf8::toUTF8($str);
+		return (1 === @preg_match('/^./us', $str)) ? $str : false;
 	}
 }
 
@@ -1185,6 +1250,32 @@ if(!function_exists('common_floatval')){
 }
 
 //-------------------------------------------------
+// Sanitize by Type
+//
+// @param value
+// @param type
+// @return value
+if(!function_exists('common_sanitize_by_type')){
+	function common_sanitize_by_type($value, $type=null){
+		if(!is_string($type) || !common_length($type))
+			return $value;
+
+		if($type === 'boolean' || $type === 'bool')
+			return common_sanitize_bool($value);
+		elseif($type === 'integer' || $type === 'int')
+			return common_sanitize_int($value);
+		elseif($type === 'double' || $type === 'float')
+			return common_sanitize_float($value);
+		elseif($type === 'string')
+			return common_sanitize_string($value);
+		elseif($type === 'array')
+			return common_sanitize_array($value);
+
+		return $value;
+	}
+}
+
+//-------------------------------------------------
 // Int
 //
 // @param value
@@ -1210,7 +1301,8 @@ if(!function_exists('common_intval')){
 // @return value
 if(!function_exists('common_sanitize_string')){
 	function common_sanitize_string($value=''){
-		return (string) $value;
+		$value = common_utf8($value);
+		return $value ? $value : '';
 	}
 }
 
@@ -1532,6 +1624,17 @@ if(!function_exists('common_validate_domain_name')){
 			return false;
 
 		return true;
+	}
+}
+
+//-------------------------------------------------
+// Get Site Hostname
+//
+// @param n/a
+// @return hostname
+if(!function_exists('common_get_site_hostname')){
+	function common_get_site_hostname(){
+		return preg_replace('/^www\./', '', parse_url(strtolower(site_url()), PHP_URL_HOST));
 	}
 }
 
