@@ -1257,7 +1257,7 @@ if(!function_exists('common_floatval')){
 // @return value
 if(!function_exists('common_sanitize_by_type')){
 	function common_sanitize_by_type($value, $type=null){
-		if(!is_string($type) || !common_length($type))
+		if(!is_string($type) || !common_strlen($type))
 			return $value;
 
 		if($type === 'boolean' || $type === 'bool')
