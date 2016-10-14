@@ -16,6 +16,20 @@ add_filter('previous_post_rel_link', '__return_false');
 add_filter('next_post_rel_link', '__return_false');
 
 //-------------------------------------------------
+// Don't bubble selected terms to top on edit
+// post pages (nobody likes this, haha)
+//
+// @param args
+// @return args
+if(!function_exists('common_disable_checked_to_top')){
+	function common_disable_checked_to_top($args){
+		$args['checked_ontop'] = false;
+		return $args;
+	}
+	add_filter('wp_terms_checklist_args','common_disable_checked_to_top');
+}
+
+//-------------------------------------------------
 // Remove Emoji
 //
 // @param n/a
@@ -550,9 +564,7 @@ if(!function_exists('common_db_debug_log')){
 // @param string
 // @return array
 if(!function_exists('common_to_char_array')){
-	function common_to_char_array($input){
-		return str_split($input);
-	}
+	function common_to_char_array($input){ return str_split($input); }
 }
 
 //-------------------------------------------------
@@ -627,6 +639,29 @@ if(!function_exists('common_array_pop_top')){
 
 		reset($arr);
 		return $arr[key($arr)];
+	}
+}
+
+//-------------------------------------------------
+// Convert a k=>v associative array to an indexed
+// array
+//
+// @param arr
+// @return arr
+if(!function_exists('common_array_to_indexed')){
+	function common_array_to_indexed($arr){
+		$out = array();
+		if(!is_array($arr) || !count($arr))
+			return $out;
+
+		foreach($arr AS $k=>&$v){
+			$out[] = array(
+				'key'=>$k,
+				'value'=>$v
+			);
+		}
+
+		return $out;
 	}
 }
 
@@ -718,12 +753,10 @@ if(!function_exists('common_parse_args')){
 
 		foreach($defaults AS $k=>$v){
 			if(array_key_exists($k, $args)){
-				if($strict && !is_null($defaults[$k]) && gettype($args[$k]) !== gettype($defaults[$k])){
-					$defaults[$k] = common_sanitize_by_type($args[$k], gettype($defaults[$k]));
-				}
-
 				if($recursive && is_array($defaults[$k]) && count($defaults[$k]))
 					$defaults[$k] = common_parse_args($args[$k], $defaults[$k], $strict, $recursive);
+				elseif($strict && !is_null($v) && gettype($args[$k]) !== gettype($v))
+					$defaults[$k] = common_sanitize_by_type($args[$k], gettype($v));
 				else
 					$defaults[$k] = $args[$k];
 			}
@@ -771,7 +804,7 @@ if(!function_exists('common_to_range')){
 	function common_to_range($value, $min=null, $max=null){
 
 		//max sure min/max are in the right order
-		if($min > $max)
+		if(!is_null($min) && !is_null($max) && $min > $max)
 			common_switcheroo($min, $max);
 
 		//recursive
@@ -1257,7 +1290,7 @@ if(!function_exists('common_floatval')){
 // @return value
 if(!function_exists('common_sanitize_by_type')){
 	function common_sanitize_by_type($value, $type=null){
-		if(!is_string($type) || !common_strlen($type))
+		if(!is_string($type) || !strlen($type))
 			return $value;
 
 		if($type === 'boolean' || $type === 'bool')
