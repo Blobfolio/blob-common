@@ -30,6 +30,29 @@ if(!function_exists('common_disable_checked_to_top')){
 }
 
 //-------------------------------------------------
+// Disable jQuery Migrate
+//
+// @param scripts
+// @return n/a
+if(!function_exists('common_disable_jquery_migrate')){
+	function common_disable_jquery_migrate(&$scripts){
+		//keep migrate for admin and admin-adjacent pages
+		if(is_admin() || in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php')))
+			return;
+
+		if(!isset($scripts->registered['jquery']))
+			return;
+
+		if(false !== $index = array_search('jquery-migrate', $scripts->registered['jquery']->deps)){
+			unset($scripts->registered['jquery']->deps[$index]);
+			$scripts->registered['jquery']->deps = array_values($scripts->registered['jquery']->deps);
+		}
+	}
+	if(defined('WP_DISABLE_JQUERY_MIGRATE') && WP_DISABLE_JQUERY_MIGRATE)
+		add_action('wp_default_scripts', 'common_disable_jquery_migrate');
+}
+
+//-------------------------------------------------
 // Remove Emoji
 //
 // @param n/a
@@ -1373,7 +1396,7 @@ if(!function_exists('common_sanitize_datetime')){
 }
 //wrapper for just the date half
 if(!function_exists('common_sanitize_date')){
-	function common_sanitize_date($date){ return substr(common_sanitie_datetime($date), 0, 10); }
+	function common_sanitize_date($date){ return substr(common_sanitize_datetime($date), 0, 10); }
 }
 
 //-------------------------------------------------
