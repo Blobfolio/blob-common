@@ -1255,6 +1255,7 @@ if(!function_exists('common_format_money')){
 		else
 			return ($negative ? '-' : '') . (100 * $amount) . '¢';
 	}
+	add_filter('common_format_money', 'common_format_money', 5, 2);
 }
 
 //-------------------------------------------------
