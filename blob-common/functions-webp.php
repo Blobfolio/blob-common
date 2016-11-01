@@ -154,7 +154,8 @@ if(!function_exists('common_get_webp_srcset')){
 			'size'=>'full',
 			'sizes'=>array(),
 			'alt'=>get_bloginfo('name'),
-			'classes'=>array()
+			'classes'=>array(),
+			'default_size'=>null
 		);
 		$data = common_parse_args($args, $defaults);
 
@@ -181,8 +182,13 @@ if(!function_exists('common_get_webp_srcset')){
 		//all right, let's get started!
 		$sources = array();
 		$source = '<source type="%s" srcset="%s" sizes="%s" />';
+
+		//make sure the main size is good
 		if(false === ($image = wp_get_attachment_image_src($data['attachment_id'], $data['size'])))
 			return false;
+		//but is a different default preferred?
+		if(is_null($data['default_size']) || false === ($default_image = wp_get_attachment_image_src($data['attachment_id'], $data['size'])))
+			$default_image = $image;
 
 		//no srcset for GIFs
 		$type = common_get_mime_type($image[0]);
@@ -226,7 +232,7 @@ if(!function_exists('common_get_webp_srcset')){
 		}
 
 		//add in regular image
-		$sources[] = '<img src="' . $image[0] . '" alt="' . esc_attr($data['alt']) . '" width="' . $image[1] . '" height="' . $image[2] . '" />';
+		$sources[] = '<img src="' . $default_image[0] . '" alt="' . esc_attr($data['alt']) . '" width="' . $default_image[1] . '" height="' . $default_image[2] . '" />';
 
 		//wrap in a picture and we're done
 		return '<picture class="' . implode(' ', $data['classes']) . '">' . implode('', $sources) . '</picture>';
