@@ -994,7 +994,7 @@ if(!function_exists('common_utf8')){
 		@require_once(dirname(__FILE__) . '/utf8.php');
 
 		//we don't need to worry about certain types
-		if(is_numeric($str) || is_bool($str))
+		if(is_numeric($str) || is_bool($str) || (is_string($str) && !strlen($str)))
 			return $str;
 
 		$str = (string) $str;
