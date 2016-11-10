@@ -2,15 +2,26 @@
 //---------------------------------------------------------------------
 // JIT Images
 //---------------------------------------------------------------------
-//toggle JIT images by setting WP_JIT_IMAGES constant
+// By default, WordPress generates all possible thumbnail sizes for an
+// image immediately after upload. These functions alter this behavior
+// so that instead thumbnails are only generated when a size is
+// actually requested.
+//
+// To enable "just in time" thumbnails, add the following to wp-config:
+// define('WP_JIT_IMAGES', true);
+//
+// See README for more information, gotchas, etc.
 
 //-------------------------------------------------
 // Disable all but stock sizes
 //
+// the stock sizes tie into WordPress more directly
+// than anything extra defined in a theme, so we
+// need to keep these around.
+//
 // @param sizes
 // @return sizes
 function _common_intermediate_image_sizes_advanced($sizes){
-	// Removing these defaults might cause problems, so we don't
 	return array(
 		'thumbnail' => $sizes['thumbnail'],
 		'medium' => $sizes['medium'],
@@ -113,7 +124,11 @@ add_filter('image_downsize', '_common_image_downsize', 10, 3);
 // data for granted. let's temporarily add them
 // back.
 //
-// @param
+// @param image meta
+// @param sizes
+// @param image source
+// @param attachment id
+// @return image meta or false
 function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image_src, $attachment_id){
 	//all registered sizes
 	global $_wp_additional_image_sizes;
@@ -177,6 +192,7 @@ add_filter('wp_calculate_image_srcset_meta', '_common_wp_calculate_image_srcset_
 // @param image_src
 // @param image_meta
 // @param attachment id
+// @return sources or false
 function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $image_meta, $attachment_id){
 
 	global $_wp_additional_image_sizes;

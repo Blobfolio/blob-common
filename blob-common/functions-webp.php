@@ -1,8 +1,22 @@
 <?php
 //---------------------------------------------------------------------
-// WebP
+// FUNCTIONS: WEBP
 //---------------------------------------------------------------------
-// Make WebPs!
+// WebP compression is a lot better than anything WordPress comes up
+// with on its own. Unfortunately browser support for this format is
+// incomplete. These functions cause WordPress to generate WebP copies
+// of any requested image. It also provides alternative SRC/SRCSET
+// functions that can return both WebP and original sources (for
+// e.g. <picture> elements) so your theme can serve lighter copies
+// to people who can view them.
+//
+// To enable WebP features, add the following to wp-config:
+// define('WP_WEBP_IMAGES', true);
+//
+// Note: WebP binaries must be installed on the server and accessible
+// to WordPress or else these functions will essentially do nothing.
+//
+// See README for more information, gotchas, etc.
 
 
 

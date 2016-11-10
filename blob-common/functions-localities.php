@@ -1,8 +1,12 @@
 <?php
 //---------------------------------------------------------------------
-// Locality
+// FUNCTIONS: LOCALITY, SPACE, TIME, ETC.
 //---------------------------------------------------------------------
-// functions for handling space and time
+// This file includes functions related to space, time, etc.
+
+//this must be called through WordPress
+if(!defined('ABSPATH'))
+	exit;
 
 
 
@@ -11,78 +15,78 @@
 //---------------------------------------------------------------------
 
 //-------------------------------------------------
-// Return array of us states
+// Return US States
 //
 // @param include other?
 // @return states
 if(!function_exists('common_get_us_states')){
 	function common_get_us_states($include_other=true){
 		$states = array(
-			'AL' => 'ALABAMA',
-			'AK' => 'ALASKA',
-			'AZ' => 'ARIZONA',
-			'AR' => 'ARKANSAS',
-			'CA' => 'CALIFORNIA',
-			'CO' => 'COLORADO',
-			'CT' => 'CONNECTICUT',
-			'DE' => 'DELAWARE',
-			'DC' => 'DISTRICT OF COLUMBIA',
-			'FL' => 'FLORIDA',
-			'GA' => 'GEORGIA',
-			'HI' => 'HAWAII',
-			'ID' => 'IDAHO',
-			'IL' => 'ILLINOIS',
-			'IN' => 'INDIANA',
-			'IA' => 'IOWA',
-			'KS' => 'KANSAS',
-			'KY' => 'KENTUCKY',
-			'LA' => 'LOUISIANA',
-			'ME' => 'MAINE',
-			'MD' => 'MARYLAND',
-			'MA' => 'MASSACHUSETTS',
-			'MI' => 'MICHIGAN',
-			'MN' => 'MINNESOTA',
-			'MS' => 'MISSISSIPPI',
-			'MO' => 'MISSOURI',
-			'MT' => 'MONTANA',
-			'NE' => 'NEBRASKA',
-			'NV' => 'NEVADA',
-			'NH' => 'NEW HAMPSHIRE',
-			'NJ' => 'NEW JERSEY',
-			'NM' => 'NEW MEXICO',
-			'NY' => 'NEW YORK',
-			'NC' => 'NORTH CAROLINA',
-			'ND' => 'NORTH DAKOTA',
-			'OH' => 'OHIO',
-			'OK' => 'OKLAHOMA',
-			'OR' => 'OREGON',
-			'PA' => 'PENNSYLVANIA',
-			'RI' => 'RHODE ISLAND',
-			'SC' => 'SOUTH CAROLINA',
-			'SD' => 'SOUTH DAKOTA',
-			'TN' => 'TENNESSEE',
-			'TX' => 'TEXAS',
-			'UT' => 'UTAH',
-			'VT' => 'VERMONT',
-			'VA' => 'VIRGINIA',
-			'WA' => 'WASHINGTON',
-			'WV' => 'WEST VIRGINIA',
-			'WI' => 'WISCONSIN',
-			'WY' => 'WYOMING'
+			'AL' => 'Alabama',
+			'AK' => 'Alaska',
+			'AZ' => 'Arizona',
+			'AR' => 'Arkansas',
+			'CA' => 'California',
+			'CO' => 'Colorado',
+			'CT' => 'Connecticut',
+			'DE' => 'Delaware',
+			'DC' => 'District of Columbia',
+			'FL' => 'Florida',
+			'GA' => 'Georgia',
+			'HI' => 'Hawaii',
+			'ID' => 'Idaho',
+			'IL' => 'Illinois',
+			'IN' => 'Indiana',
+			'IA' => 'Iowa',
+			'KS' => 'Kansas',
+			'KY' => 'Kentucky',
+			'LA' => 'Louisiana',
+			'ME' => 'Maine',
+			'MD' => 'Maryland',
+			'MA' => 'Massachusetts',
+			'MI' => 'Michigan',
+			'MN' => 'Minnesota',
+			'MS' => 'Mississippi',
+			'MO' => 'Missouri',
+			'MT' => 'Montana',
+			'NE' => 'Nebraska',
+			'NV' => 'Nevada',
+			'NH' => 'New Hampshire',
+			'NJ' => 'New Jersey',
+			'NM' => 'New Mexico',
+			'NY' => 'New York',
+			'NC' => 'North Carolina',
+			'ND' => 'North Dakota',
+			'OH' => 'Ohio',
+			'OK' => 'Oklahoma',
+			'OR' => 'Oregon',
+			'PA' => 'Pennsylvania',
+			'RI' => 'Rhode Island',
+			'SC' => 'South Carolina',
+			'SD' => 'South Dakota',
+			'TN' => 'Tennessee',
+			'TX' => 'Texas',
+			'UT' => 'Utah',
+			'VT' => 'Vermont',
+			'VA' => 'Virginia',
+			'WA' => 'Washington',
+			'WV' => 'West Virginia',
+			'WI' => 'Wisconsin',
+			'WY' => 'Wyoming'
 		);
 
 		$other = array(
-			'AA' => 'ARMED FORCES AMERICAS',
-			'AE' => 'ARMED FORCES EUROPE',
-			'AP' => 'ARMED FORCES PACIFIC',
-			'AS' => 'AMERICAN SAMOA',
-			'FM' => 'FEDERATED STATES OF MICRONESIA',
-			'GU' => 'GUAM GU',
-			'MH' => 'MARSHALL ISLANDS',
-			'MP' => 'NORTHERN MARIANA ISLANDS',
-			'PW' => 'PALAU',
-			'PR' => 'PUERTO RICO',
-			'VI' => 'VIRGIN ISLANDS'
+			'AA' => 'Armed Forces Americas',
+			'ae' => 'Armed Forces Europe',
+			'ap' => 'Armed Forces Pacific',
+			'as' => 'American Samoa',
+			'fm' => 'Federated States of Micronesia',
+			'gu' => 'Guam Gu',
+			'mh' => 'Marshall Islands',
+			'mp' => 'Northern Mariana Islands',
+			'pw' => 'Palau',
+			'pr' => 'Puerto Rico',
+			'vi' => 'Virgin Islands'
 		);
 
 		if($include_other)
@@ -93,34 +97,34 @@ if(!function_exists('common_get_us_states')){
 }
 
 //-------------------------------------------------
-// Return canadian provinces
+// Return Canadian Provinces
 //
 // @param n/a
 // @return provinces
 if(!function_exists('common_get_ca_provinces')){
 	function common_get_ca_provinces(){
 		return array(
-			'AB' => 'ALBERTA',
-			'BC' => 'BRITISH COLUMBIA',
-			'MB' => 'MANITOBA',
-			'NB' => 'NEW BRUNSWICK',
-			'NL' => 'NEWFOUNDLAND',
-			'NT' => 'NORTHWEST TERRITORIES',
-			'NS' => 'NOVA SCOTIA',
-			'NU' => 'NUNAVUT',
-			'ON' => 'ONTARIO',
-			'PE' => 'PRINCE EDWARD ISLAND',
-			'QC' => 'QUEBEC',
-			'SK' => 'SASKATCHEWAN',
-			'YT' => 'YUKON'
+			'AB' => 'Alberta',
+			'BC' => 'British Columbia',
+			'MB' => 'Manitoba',
+			'NB' => 'New Brunswick',
+			'NL' => 'Newfoundland',
+			'NT' => 'Northwest Territories',
+			'NS' => 'Nova Scotia',
+			'NU' => 'Nunavut',
+			'ON' => 'Ontario',
+			'PE' => 'Prince Edward Island',
+			'QC' => 'Quebec',
+			'SK' => 'Saskatchewan',
+			'YT' => 'Yukon'
 		);
 	}
 }
 
 //-------------------------------------------------
-// Return countries
+// Return Countries
 //
-// key is ISO code
+// ISO Code => Name
 //
 // @param n/a
 // @return countries
@@ -262,6 +266,91 @@ if(!function_exists('common_get_countries')){
 
 
 
+
+//---------------------------------------------------------------------
+// File Handling
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Readfile() in chunks
+//
+// this greatly reduces the server resource demands
+// compared with reading a file all in one go
+//
+// @param file
+// @param bytes
+// @return bytes or false
+if(!function_exists('common_readfile_chunked')){
+	function common_readfile_chunked($file, $retbytes=true){
+		$buffer = '';
+		$cnt = 0;
+		$chunk_size = 1024*1024;
+
+		if(false === ($handle = fopen($file, 'rb')))
+			return false;
+		while(!feof($handle)){
+			$buffer = fread($handle, $chunk_size);
+			echo $buffer;
+			ob_flush();
+			flush();
+			if($retbytes)
+				$cnt += common_strlen($buffer);
+		}
+
+		$status = fclose($handle);
+
+ 		//return number of bytes delivered like readfile() does
+		if($retbytes && $status)
+			return $cnt;
+
+		return $status;
+	}
+}
+
+//-------------------------------------------------
+// Return Data URI
+//
+// @param path
+// @return data
+if(!function_exists('common_get_data_uri')){
+	function common_get_data_uri($path){
+		if(!@file_exists($path))
+			return false;
+
+		return "data:" . common_get_mime_type($path) . ";base64," . base64_encode(file_get_contents($path));
+	}
+}
+
+//-------------------------------------------------
+// Get Mime Type by file path
+//
+// why is this so hard?! the fileinfo extension is
+// not reliably present, and even when it is it
+// kinda sucks, and WordPress' internal function
+// excludes a lot. let's do it ourselves then
+//
+// @param file
+// @return type
+if(!function_exists('common_get_mime_type')){
+	function common_get_mime_type($file){
+		static $mimes;
+
+		//first, load the mimes
+		if(is_null($mimes))
+			$mimes = json_decode(@file_get_contents(dirname(__FILE__) . '/mimes.json'), true);
+
+		//extension
+		$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+		//done
+		return common_strlen($ext) && isset($mimes[$ext]) ? $mimes[$ext] : 'application/octet-stream';
+	}
+}
+
+//--------------------------------------------------------------------- end files
+
+
+
 //---------------------------------------------------------------------
 // IPs
 //---------------------------------------------------------------------
@@ -374,6 +463,196 @@ if(!function_exists('common_cidr_to_range')){
 }
 
 //--------------------------------------------------------------------- end IPs
+
+
+
+//---------------------------------------------------------------------
+// Paths & URLs
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Get File Path From URL
+//
+// this will only work for web-accessible files,
+// and only on servers that have the right kind of
+// directory separators (i.e. Linux)
+//
+// @param url
+// @return path
+if(!function_exists('common_get_path_by_url')){
+	function common_get_path_by_url($url){
+
+		$from = trailingslashit(site_url());
+		$to = trailingslashit(ABSPATH);
+
+		//query strings and hashes aren't part of files
+		if(substr_count($url, '?')){
+			$url = explode('?', $url);
+			$url = common_array_pop_top($url);
+		}
+		if(substr_count($url, '#')){
+			$url = explode('#', $url);
+			$url = common_array_pop_top($url);
+		}
+
+		return str_replace($from, $to, $url);
+	}
+}
+
+//-------------------------------------------------
+// Get URL From Path
+//
+// this will only work for web-accessible files,
+// and only on servers that have the right kind of
+// directory separators (i.e. Linux)
+//
+// @param path
+// @return url
+if(!function_exists('common_get_url_by_path')){
+	function common_get_url_by_path($path){
+
+		$path = common_unixslashit($path);
+		$from = trailingslashit(ABSPATH);
+		$to = trailingslashit(site_url());
+
+		return str_replace($from, $to, $path);
+	}
+}
+
+//-------------------------------------------------
+// Is a Directory Empty?
+//
+// @param path
+// @return true/false
+if(!function_exists('common_is_empty_dir')){
+	function common_is_empty_dir($path){
+		if(!is_readable($path) || !is_dir($path))
+			return false;
+
+		//scan all files in dir
+		$handle = opendir($path);
+		while(false !== ($entry = readdir($handle))){
+			//anything but a dot === not empty
+			if($entry !== "." && $entry !== "..")
+				return false;
+		}
+
+		//nothing found
+		return true;
+	}
+}
+
+//-------------------------------------------------
+// Check whether a URL is local
+//
+// @param url
+// @return true/false
+if(!function_exists('common_is_site_url')){
+	function common_is_site_url($url){
+		return filter_var($url, FILTER_VALIDATE_URL) && strtolower(parse_url($url, PHP_URL_HOST)) === strtolower(parse_url(site_url(), PHP_URL_HOST));
+	}
+}
+
+//-------------------------------------------------
+// Is a given URL being viewed?
+//
+// @param url to check against
+// @param subpages to match subpages
+// @return true/false
+if(!function_exists('common_is_current_page')){
+	function common_is_current_page($url, $subpages=false){
+
+		//ready the test URL for comparison
+		$url = parse_url($url, PHP_URL_PATH);
+		$url2 = parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+
+		//and check for a match
+		return $subpages ? substr($url2, 0, common_strlen($url)) === $url : $url === $url2;
+	}
+}
+
+//-------------------------------------------------
+// Redirect wrapper
+//
+// clear $_REQUEST and exit
+//
+// @param url
+// @param offsite
+// @return n/a
+if(!function_exists('common_redirect')){
+	function common_redirect($url=null, $offsite=false){
+		if(is_null($url) || (true !== $offsite && !common_is_site_url($url)))
+			$url = site_url();
+
+		unset($_POST);
+		unset($_GET);
+		unset($_REQUEST);
+
+		if(headers_sent())
+			echo "<script>top.location.href='" . esc_js($url) . "';</script>";
+		else
+			wp_redirect($url);
+
+		exit;
+	}
+}
+
+//-------------------------------------------------
+// Get Site Hostname
+//
+// strip www., lowercase
+//
+// @param n/a
+// @return hostname
+if(!function_exists('common_get_site_hostname')){
+	function common_get_site_hostname(){
+		return preg_replace('/^www\./', '', parse_url(strtolower(site_url()), PHP_URL_HOST));
+	}
+}
+
+//-------------------------------------------------
+// Upload Path
+//
+// this works like site_url for upload directory
+// paths
+//
+// @param subpath
+// @param return url?
+// @return path or url
+if(!function_exists('common_upload_path')){
+	function common_upload_path($subpath=null, $url=false){
+		$dir = wp_upload_dir();
+		$dir = $dir['basedir'];
+		$path = trailingslashit($dir);
+		if(!is_null($subpath))
+			$path .= common_unleadingslashit($subpath);
+
+		return $url ? common_get_url_by_path($path) : $path;
+	}
+}
+
+//-------------------------------------------------
+// Theme Path
+//
+// this works like site_url for theme directory
+// paths
+//
+// @param subpath
+// @param return url?
+// @return path or url
+if(!function_exists('common_theme_path')){
+	function common_theme_path($subpath=null, $url=false){
+		//this is a URL
+		$dir = trailingslashit(get_stylesheet_directory_uri());
+		$path = trailingslashit($dir);
+		if(!is_null($subpath))
+			$path .= common_unleadingslashit($subpath);
+
+		return $url ? $path : common_get_path_by_url($path);
+	}
+}
+
+//--------------------------------------------------------------------- end paths
 
 
 

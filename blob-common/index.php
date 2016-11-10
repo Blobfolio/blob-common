@@ -26,32 +26,35 @@ License URI: http://www.wtfpl.net/
 	0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
+//this must be called through WordPress
+if(!defined('ABSPATH'))
+	exit;
 
 
-//most helper functions are here
-@require_once(dirname(__FILE__) . '/functions-common.php');
 
-//date, time, space functions
-@require_once(dirname(__FILE__) . '/functions-localities.php');
+//the root path to the plugin
+define('BLOB_COMMON_ROOT', dirname(__FILE__));
 
-//JIT image thumbnails
-if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
-	@require_once(dirname(__FILE__) . '/functions-jit-images.php');
-
-//WebP images
-if(defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES)
-	@require_once(dirname(__FILE__) . '/functions-webp.php');
+@require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');		//wp overrides
+@require_once(BLOB_COMMON_ROOT . '/functions-common.php');			//misc functions
+@require_once(BLOB_COMMON_ROOT . '/functions-debug.php');			//email functions
+@require_once(BLOB_COMMON_ROOT . '/functions-email.php');			//email functions
+@require_once(BLOB_COMMON_ROOT . '/functions-image.php');			//image functions
+@require_once(BLOB_COMMON_ROOT . '/functions-localities.php');		//date, time, etc
+@require_once(BLOB_COMMON_ROOT . '/functions-sanitize.php');		//sanitize/validate
 
 
 
 //---------------------------------------------------------------------
-// SELF AWARENESS / UPDATES
+// SELF AWARENESS/UPDATES
 //---------------------------------------------------------------------
 // The plugin is not hosted in the WP plugin repository, so we need
 // some helpers to help it help itself. :)
+//
+// To reduce overhead, update checks are throttled to once per hour.
 
 //-------------------------------------------------
-// Get Plugin Info
+// Get (Installed) Plugin Info
 //
 // @param key (optional)
 // @return info (all) or tidbit
@@ -72,7 +75,7 @@ function blobcommon_get_info($key = null){
 }
 
 //-------------------------------------------------
-// Get Remote Info
+// Get (Remote) Plugin Info
 //
 // @param key (optional)
 // @return info (all) or tidbit
@@ -134,7 +137,7 @@ function blobcommon_get_latest_version(){
 }
 
 //-------------------------------------------------
-// Check Update
+// Check For Updates
 //
 // @param $options
 // @return $options
