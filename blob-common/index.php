@@ -1,29 +1,29 @@
 <?php
 /*
 Plugin Name: Tutan Common
-Plugin URI: https://blobfolio.com/repo/blob-common/
+Plugin URI: https://github.com/Blobfolio/blob-common
 Description: Functions to assist common theme operations.
-Version: 1.1.8
+Version: 1.2.0
 Author: Blobfolio, LLC
 Author URI: https://blobfolio.com/
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: WTFPL
+License URI: http://www.wtfpl.net/
 
 	Copyright © 2016  Blobfolio, LLC  (email: hello@blobfolio.com)
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	Version 2, December 2004
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+	Copyright (C) 2016 Sam Hocevar <sam@hocevar.net>
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+	Everyone is permitted to copy and distribute verbatim or modified
+	copies of this license document, and changing it is allowed as long
+	as the name is changed.
+
+	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+	0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 
@@ -31,10 +31,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 //most helper functions are here
 @require_once(dirname(__FILE__) . '/functions-common.php');
 
-//localities
+//date, time, space functions
 @require_once(dirname(__FILE__) . '/functions-localities.php');
 
-//JIT images
+//JIT image thumbnails
 if(defined('WP_JIT_IMAGES') && WP_JIT_IMAGES)
 	@require_once(dirname(__FILE__) . '/functions-jit-images.php');
 
@@ -82,18 +82,18 @@ function blobcommon_get_remote_info($key = null){
 
 	if(is_null($info) && false === $info = get_transient($transient_key)){
 		$info = array();
-		if(false !== ($url = blobcommon_get_info('PluginURI'))){
-			$data = wp_remote_get($url);
-			if(is_array($data) && array_key_exists('body', $data)){
-				try {
-					$response = json_decode($data['body'], true);
+		$data = wp_remote_get('https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/plugin.json');
+		if(is_array($data) && array_key_exists('body', $data)){
+			try {
+				$response = json_decode($data['body'], true);
+				if(is_array($response)){
 					foreach($response AS $k=>$v)
 						$info[$k] = $v;
 
 					set_transient($transient_key, $info, 3600);
 				}
-				catch(Exception $e){ }
 			}
+			catch(Exception $e){ }
 		}
 	}
 
