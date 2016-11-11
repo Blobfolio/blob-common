@@ -18,9 +18,10 @@ if(!defined('ABSPATH'))
 // Return US States
 //
 // @param include other?
+// @param uppercase (for backward compatibility)
 // @return states
 if(!function_exists('common_get_us_states')){
-	function common_get_us_states($include_other=true){
+	function common_get_us_states($include_other=true, $uppercase=true){
 		$states = array(
 			'AL' => 'Alabama',
 			'AK' => 'Alaska',
@@ -89,6 +90,15 @@ if(!function_exists('common_get_us_states')){
 			'vi' => 'Virgin Islands'
 		);
 
+		//originally all results were returned in uppercase,
+		//but this is a bit limiting. raw data is now stored
+		//in title case, but can be uppercased as needed for
+		//backward compatibility
+		if($uppercase){
+			$states = array_map('strtoupper', $states);
+			$other = array_map('strtoupper', $states);
+		}
+
 		if($include_other)
 			return array_merge($states, $other);
 		else
@@ -99,11 +109,11 @@ if(!function_exists('common_get_us_states')){
 //-------------------------------------------------
 // Return Canadian Provinces
 //
-// @param n/a
+// @param uppercase (for backward compatibility)
 // @return provinces
 if(!function_exists('common_get_ca_provinces')){
-	function common_get_ca_provinces(){
-		return array(
+	function common_get_ca_provinces($uppercase=true){
+		$provinces = array(
 			'AB' => 'Alberta',
 			'BC' => 'British Columbia',
 			'MB' => 'Manitoba',
@@ -118,6 +128,15 @@ if(!function_exists('common_get_ca_provinces')){
 			'SK' => 'Saskatchewan',
 			'YT' => 'Yukon'
 		);
+
+		//originally all results were returned in uppercase,
+		//but this is a bit limiting. raw data is now stored
+		//in title case, but can be uppercased as needed for
+		//backward compatibility
+		if($uppercase)
+			$provinces = array_map('strtoupper', $provinces);
+
+		return $provinces;
 	}
 }
 
@@ -126,11 +145,11 @@ if(!function_exists('common_get_ca_provinces')){
 //
 // ISO Code => Name
 //
-// @param n/a
+// @param uppercase
 // @return countries
 if(!function_exists('common_get_countries')){
-	function common_get_countries(){
-		return array(
+	function common_get_countries($uppercase=false){
+		$countries = array(
 			'US' => 'USA',
 			'CA' => 'Canada',
 			'GB' => 'United Kingdom',
@@ -259,6 +278,14 @@ if(!function_exists('common_get_countries')){
 			'VE' => 'Venezuela',
 			'VU' => 'Vietnam'
 		);
+
+		//unlike state/province functions, these have always
+		//been stored in title case. however for the sake of
+		//consistency, an uppercase flag has been added.
+		if($uppercase)
+			$countries = array_map('strtoupper', $countries);
+
+		return $countries;
 	}
 }
 

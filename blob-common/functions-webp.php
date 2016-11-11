@@ -84,7 +84,8 @@ if(!function_exists('_common_sort_srcset')){
 // @return true
 if(!function_exists('common_webp_cleanup')){
 	function common_webp_cleanup($attachment_id){
-		$image = get_attached_file($attachment_id);
+		if(false === $image = get_attached_file($attachment_id))
+			return false;
 		$stub = pathinfo($image);
 		$stub['filename'];
 		$path = $stub['dirname'];
@@ -104,6 +105,8 @@ if(!function_exists('common_webp_cleanup')){
 			}
 			closedir($dir);
 		}
+
+		return true;
 	}
 	if(common_supports_webp())
 		add_action('delete_attachment', 'common_webp_cleanup', 10, 1);

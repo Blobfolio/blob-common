@@ -349,7 +349,7 @@ if(!function_exists('common_sanitize_quotes')){
 			"\xE2\x80\x9E" => '"',	// U+201E double low-9 quotation mark
 			"\xE2\x80\x9F" => '"',	// U+201F double high-reversed-9 quotation mark
 			"\xE2\x80\xB9" => "'",	// U+2039 single left-pointing angle quotation mark
-			"\xE2\x80\xBA" => "'",	// U+203A single right-pointing angle quotation mark
+			"\xE2\x80\xBA" => "'"	// U+203A single right-pointing angle quotation mark
 		);
 		$from = array_keys($quotes); // but: for efficiency you should
 		$to = array_values($quotes); // pre-calculate these two arrays

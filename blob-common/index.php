@@ -36,12 +36,13 @@ if(!defined('ABSPATH'))
 define('BLOB_COMMON_ROOT', dirname(__FILE__));
 
 @require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');		//wp overrides
-@require_once(BLOB_COMMON_ROOT . '/functions-common.php');			//misc functions
 @require_once(BLOB_COMMON_ROOT . '/functions-debug.php');			//email functions
 @require_once(BLOB_COMMON_ROOT . '/functions-email.php');			//email functions
+@require_once(BLOB_COMMON_ROOT . '/functions-form.php');			//web form functions
 @require_once(BLOB_COMMON_ROOT . '/functions-image.php');			//image functions
-@require_once(BLOB_COMMON_ROOT . '/functions-localities.php');		//date, time, etc
+@require_once(BLOB_COMMON_ROOT . '/functions-spacetime.php');		//date, time, etc
 @require_once(BLOB_COMMON_ROOT . '/functions-sanitize.php');		//sanitize/validate
+@require_once(BLOB_COMMON_ROOT . '/functions-tool.php');			//misc functions
 
 
 
