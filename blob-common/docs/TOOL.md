@@ -1,25 +1,37 @@
 # Reference: Miscellaneous Functions
 
-This guide documents miscellaneous tools and helper functions that don't really fit in any of the other categories. The code can be located in `functions-tool.php`.
+This guide documents miscellaneous tools and helper functions that don't really fit in any of the other categories. (Great description, I know.) The code can be located in `functions-tool.php`.
 
 
 
 ##### Table of Contents
 
- * [common_webp_cleanup()](#common_webp_cleanup)
- * [common_get_webp_sister()](#common_get_webp_sister)
- * [common_get_webp_src()](#common_get_webp_src)
- * [common_get_webp_srcset()](#common_get_webp_srcset)
+ * [common_array_compare()](#common_array_compare)
+ * [common_array_map_recursive()](#common_array_map_recursive)
+ * [common_array_pop()](#common_array_pop)
+ * [common_array_pop_top()](#common_array_pop_top)
+ * [common_generate_random_string()](#common_generate_random_string)
+ * [common_get_cc_exp_months()](#common_get_cc_exp_months)
+ * [common_get_cc_exp_years()](#common_get_cc_exp_years)
+ * [common_iarray_key_exists()](#common_iarray_key_exists)
+ * [common_iin_array()](#common_iin_array)
+ * [common_isubstr_count()](#common_isubstr_count)
+ * [common_parse_args()](#common_parse_args)
+ * [common_parse_json_args()](#common_parse_json_args)
+ * [common_random_int()](#common_random_int)
+ * [common_strlen()](#common_strlen)
+ * [common_switcheroo()](#common_switcheroo)
 
 
 
-## common_webp_cleanup()
+## common_array_compare()
 
-This function deletes any WebP thumbnails generated for a given attachment. It is called automatically whenever an image is deleted from the media library, but can also be called manually.
+This function does an admirable job of comparing two arrays. It may not work as expected with certain types of data.
 
 #### Arguments
 
- * (*int*) Attachment ID
+ * (*array*) (*reference) Array One
+ * (*array*) (*reference) Array Two
 
 #### Return
 
@@ -27,64 +39,209 @@ Returns `TRUE` or `FALSE`.
 
 
 
-## common_get_webp_sister()
+## common_array_map_recursive()
 
-This function returns the WebP counterpart for the image source provided (e.g. image1.jpeg -> image1.webp). If the WebP source does not exist, it will try to generate it.
-
-#### Arguments
-
- * (*string*) Path or URL
-
-#### Return
-
-This function returns the corresponding WebP's path or URL (depending on what you passed), or `FALSE` on failure.
-
-
-
-## common_get_webp_src()
-
-WebP support is not universal. This function will return a `<picture>` element with both WebP and original sources. An old fashioned `<img>` tag is included as a fallback for browsers that do not support `<picture>`.
+Recursively apply a callback function (without breaking array keys). Non-iterable objects are returned as-is.
 
 #### Arguments
 
- * (*array*) Arguments
-
-```php
-//argument defaults
-array(
-	'attachment_id'=>0,
-	'size'=>'full',
-	'alt'=>get_bloginfo('name'), //alt tag for the <img>
-	'classes'=>array() //classes to add to the <picture>
-)
-```
+ * (*callable*) Function
+ * (*mixed*) Variable
 
 #### Return
 
-This function returns a `<picture>` element containing matching sources or false on failure. If WebP's cannot be located or generated, the element will only contain standard sources.
+Returns the filtered variable.
 
 
 
-## common_get_webp_srcset()
+## common_array_pop()
 
-This works just like `common_get_webp_src()` except it supports the `srcset` attribute for responsive image serving.
+Return the last value of an array like `array_pop` without transforming the original variable.
 
 #### Arguments
 
- * (*array*) Arguments
-
-```php
-//argument defaults
-array(
-	'attachment_id'=>0,
-	'size'=>'full',
-	'sizes'=>array(), //a string or array containing data for the `sizes` attribute, optional
-	'alt'=>get_bloginfo('name'), //alt tag for the <img>
-	'classes'=>array(), //classes to add to the <picture>
-	'default_size'=>null //the size to use for the <img> fallback; defaults to the size passed via 'size'
-)
-```
+ * (*array*) (*reference*) Array
 
 #### Return
 
-This function returns a `<picture>` element containing matching sources or false on failure. If WebP's cannot be located or generated, the element will only contain standard sources.
+Returns the last value of the array or `FALSE` if not possible.
+
+
+
+## common_array_pop_top()
+
+Return the first value of an array without transforming the original variable.
+
+#### Arguments
+
+ * (*array*) (*reference*) Array
+
+#### Return
+
+Returns the first value of the array or `FALSE` if not possible.
+
+
+
+## common_generate_random_string()
+
+Generate a random string.
+
+#### Arguments
+
+ * (*int*) (*optional*) Length. Default: `10`
+ * (*array*) (*optional*) Characters to use. Default: unambiguous uppercase letters and numbers
+
+#### Return
+
+Returns a random string of characters from the "soup" of the chosen length.
+
+
+
+## common_get_cc_exp_months()
+
+Return months of the year for e.g. a credit card expiration field.
+
+#### Arguments
+
+ * (*string*) (*optional*) Value format (using `date()` syntax). Default: `m - M`
+
+#### Return
+
+Returns a key=>value array of months. The key is the integer (e.g. `1`), the value is the corresponding date string.
+
+
+
+## common_get_cc_exp_years()
+
+Returns years for e.g. a credit card expiration field.
+
+#### Arguments
+
+ * (*int*) (*optional*) Number of years to return, including current. Default `10`
+
+#### Return
+
+Returns a key=>value array of years. The keys and values are both integer values of the 4-digit year, e.g. `2000`.
+
+
+
+## common_iarray_key_exists()
+
+Case-insensitive `array_key_exists()`.
+
+#### Arguments
+
+ * (*mixed*) Needle
+ * (*array*) Haystack
+
+#### Return
+
+Returns `TRUE` or `FALSE`.
+
+
+
+## common_iin_array()
+
+Case-insensitive `in_array()`.
+
+#### Arguments
+
+ * (*mixed*) Needle
+ * (*array*) Haystack
+
+#### Return
+
+Returns `TRUE` or `FALSE`.
+
+
+
+## common_isubstr_count()
+
+Case-insensitive `substr_count()`.
+
+#### Arguments
+
+ * (*array*) Haystack
+ * (*mixed*) Needle
+
+#### Return
+
+Returns integer of count.
+
+
+
+## common_parse_args()
+
+A `wp_parse_args()` wrapper on steroids. The primary difference is it returns an array with all keys from the default and does not allow additional keys to be specified by the user args.
+
+#### Arguments
+
+ * (*array*) User Args
+ * (*array*) Defaults
+ * (*bool*) (*optional*) Typecast user args to match defaults. Default `FALSE`
+ * (*bool*) (*optional*) Recursive. If `TRUE` and the default's value at a given index is a populated array, it will run the corresponding user args back through the function. Default `FALSE`
+
+#### Return
+
+Returns the default array with overrides provided by the user args.
+
+
+
+## common_parse_args_json()
+
+The same as `common_parse_args()` except the user args can be passed as a JSON string.
+
+#### Arguments
+
+ * (*JSON|array*) User Args
+ * (*array*) Defaults
+ * (*bool*) (*optional*) Typecast user args to match defaults. Default `FALSE`
+ * (*bool*) (*optional*) Recursive. If `TRUE` and the default's value at a given index is a populated array, it will run the corresponding user args back through the function. Default `FALSE`
+
+#### Return
+
+Returns the default array with overrides provided by the user args.
+
+
+
+## common_random_int()
+
+Generate a random number. The function prefers the modern `random_int()` function but will fall back to `mt_rand()` if necessary.
+
+#### Arguments
+
+ * (*int*) Min
+ * (*int*) Max
+
+#### Return
+
+Returns a random integer between Min and Max.
+
+
+
+## common_strlen()
+
+Returns the (multi-byte safe) length of a string if PHP supports `mbstring`, otherwise it will fall back to `strlen()`.
+
+#### Arguments
+
+ * (*string*) String
+
+#### Return
+
+Return the number of characters if `mbstring` is supported, otherwise the number of bytes (which might amount to the same thing).
+
+
+
+## common_switcheroo()
+
+Swap two variables.
+
+#### Arguments
+
+ * (*mixed*) (*reference*) Var One
+ * (*mixed*) (*reference*) Var Two
+
+#### Return
+
+The variables are passed by reference. This function always returns `TRUE`.

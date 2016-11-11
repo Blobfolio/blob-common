@@ -64,6 +64,20 @@ if(!function_exists('common_iin_array()')){
 }
 
 //-------------------------------------------------
+// Case-insensitive array_key_exists()
+//
+// @param needle
+// @param haystack
+// @return true/false
+if(!function_exists('common_iarray_key_exists()')){
+	function common_iarray_key_exists($needle, $haystack){
+		$needle = strtolower($needle);
+		$haystack = array_map('strtolower', array_keys($haystack));
+		return in_array($needle, $haystack);
+	}
+}
+
+//-------------------------------------------------
 // Case-insensitive substr_count
 //
 // @param haystack
@@ -341,12 +355,16 @@ if(!function_exists('common_generate_random_string')){
 //-------------------------------------------------
 // Get Expiration Years
 //
-// @param n/a
+// @param length
 // @return years
 if(!function_exists('common_get_cc_exp_years')){
-	function common_get_cc_exp_years(){
+	function common_get_cc_exp_years($length=10){
+		$length = (int) $length;
+		if($length <= 0)
+			$length = 10;
+
 		$years = array();
-		for($x=0; $x<10; $x++)
+		for($x=0; $x<$length; $x++)
 			$years[(intval(current_time('Y')) + $x)] = intval(current_time('Y')) + $x;
 
 		return $years;

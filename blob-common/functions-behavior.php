@@ -21,6 +21,20 @@ add_filter('previous_post_rel_link', '__return_false');
 add_filter('next_post_rel_link', '__return_false');
 
 //-------------------------------------------------
+// Disable WP-Embed
+//
+// nobody uses this, I swear!
+//
+// @param n/a
+// @return n/a
+if(!function_exists('common_disable_wp_embed')){
+	function common_disable_wp_embed(){
+		wp_deregister_script('wp-embed');
+	}
+	add_action('wp', 'common_disable_wp_embed');
+}
+
+//-------------------------------------------------
 // Don't bubble selected terms to top on edit
 // post pages (nobody likes this, haha)
 //

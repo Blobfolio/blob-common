@@ -508,8 +508,7 @@ if(!function_exists('common_cidr_to_range')){
 // @return path
 if(!function_exists('common_get_path_by_url')){
 	function common_get_path_by_url($url){
-
-		$from = trailingslashit(site_url());
+		$from = strtolower(trailingslashit(site_url()));
 		$to = trailingslashit(ABSPATH);
 
 		//query strings and hashes aren't part of files
@@ -522,7 +521,10 @@ if(!function_exists('common_get_path_by_url')){
 			$url = common_array_pop_top($url);
 		}
 
-		return str_replace($from, $to, $url);
+		if(strtolower(substr($url, 0, strlen($from))) === $from)
+			return $to . substr($url, strlen($from));
+
+		return false;
 	}
 }
 
@@ -537,12 +539,14 @@ if(!function_exists('common_get_path_by_url')){
 // @return url
 if(!function_exists('common_get_url_by_path')){
 	function common_get_url_by_path($path){
-
 		$path = common_unixslashit($path);
 		$from = trailingslashit(ABSPATH);
 		$to = trailingslashit(site_url());
 
-		return str_replace($from, $to, $path);
+		if(strtolower(substr($path, 0, strlen($from))) === $from)
+			return $to . substr($path, strlen($from));
+
+		return false;
 	}
 }
 

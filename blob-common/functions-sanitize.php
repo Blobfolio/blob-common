@@ -226,6 +226,10 @@ if(!function_exists('common_utf8')){
 		return (1 === @preg_match('/^./us', $str)) ? $str : false;
 	}
 }
+//alias
+if(!function_exists('common_sanitize_utf8')){
+	function common_sanitize_utf8($str){ return common_utf8($str); }
+}
 
 //-------------------------------------------------
 // Sanitize name (like a person's name)
@@ -258,7 +262,12 @@ if(!function_exists('common_sanitize_printable')){
 // @return field
 if(!function_exists('common_sanitize_csv')){
 	function common_sanitize_csv($str=''){
-		return common_sanitize_whitespace(str_replace('"', '\"', common_sanitize_quotes($str)));
+		$str = common_sanitize_quotes($str);
+		//remove backslashed quotes, if any
+		while(substr_count($str, '\"'))
+			$str = str_replace('\"', '"', $str);
+		//reapply backslashed quotes and sanitize whitespace
+		return common_sanitize_whitespace(str_replace('"', '\"', $str));
 	}
 }
 
@@ -377,7 +386,7 @@ if(!function_exists('common_sanitize_js_variable')){
 // @return email
 if(!function_exists('common_sanitize_email')){
 	function common_sanitize_email($email=''){
-		return strtolower(str_replace(array("'", '"'), '', sanitize_email($email)));
+		return strtolower(str_replace(array("'", '"'), '', common_sanitize_quotes(sanitize_email($email))));
 	}
 }
 
@@ -445,6 +454,10 @@ if(!function_exists('common_sanitize_bool')){
 	function common_sanitize_bool($value=false){
 		return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 	}
+}
+//alias
+if(!function_exists('common_sanitize_boolean')){
+	function common_sanitize_boolean($value=false){ return common_sanitize_bool($value); }
 }
 
 //-------------------------------------------------
@@ -521,7 +534,7 @@ if(!function_exists('common_intval')){
 // @return value
 if(!function_exists('common_sanitize_string')){
 	function common_sanitize_string($value=''){
-		$value = common_utf8($value);
+		$value = (string) common_utf8($value);
 		return $value ? $value : '';
 	}
 }
@@ -595,7 +608,7 @@ if(!function_exists('common_sanitize_phone')){
 if(!function_exists('common_sanitize_domain_name')){
 	function common_sanitize_domain_name($domain){
 		$domain = (string) $domain;
-		$domain = common_sanitize_whitespace(strtolower($domain));
+		$domain = filter_var(common_sanitize_whitespace(strtolower($domain)), FILTER_SANITIZE_URL);
 
 		if(!common_strlen($domain))
 			return false;
@@ -614,6 +627,11 @@ if(!function_exists('common_sanitize_domain_name')){
 			//and/or a query?
 			if(substr_count($host, '?')){
 				$host = explode('?', $host);
+				$host = common_array_pop_top($host);
+			}
+			//maybe a port?
+			if(substr_count($host, ':')){
+				$host = explode(':', $host);
 				$host = common_array_pop_top($host);
 			}
 		}

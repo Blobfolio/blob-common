@@ -11,6 +11,7 @@ Note: some behaviors are modified automatically by activating this plugin, but o
  * Automatic
    * [common_cron_schedules()](#common_cron_schedules)
    * [common_disable_checked_to_top()](#common_disable_checked_to_top)
+   * [common_disable_wp_embed()](#common_disable_wp_embed)
    * [common_svg_media_thumbnail()](#common_svg_media_thumbnail)
    * [common_upload_mimes()](#common_upload_mimes)
    * [Other](#other)
@@ -49,6 +50,12 @@ And create a cronjob like:
 ## common_disable_checked_to_top()
 
 By default, WordPress bubbles taxonomy selections to the top of the list, making it very difficult to differentiate hierarchical relations. Tutan Common automatically disables this; terms are displayed in their default order with no bubbling.
+
+
+
+## common_disable_wp_embed()
+
+WordPress adds a small script to make it easier for other sites to embed your site. Nobody uses this, I swear! Tutan Common automatically disables this bloat.
 
 
 
