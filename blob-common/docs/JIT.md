@@ -2,9 +2,9 @@
 
 By default, WordPress will generate every possible thumbnail size for every image that is uploaded. This is resource-intensive and wasteful on many fronts.
 
-The following JIT functionality alters this behavior so that thumbnails are only generated if and when a particular image/size is actually requested. They are still saved to the server the usual way (i.e. this isn't like `timthumb`), but only if they are needed.
+The following JIT functionality alters this behavior so that thumbnails are only generated if and when a particular image/size is actually requested. They are still saved to the server the usual way (i.e. this isn't another `timthumb`), but only if they are needed.
 
-JIT does not require any modifications to your code; you only need to enable it. There are, however, a couple [Gotchas](#gotchas) noted at the end of this document that you should be aware of.
+JIT does not usually require any modifications to your code; you only need to enable it. There are, however, a couple [Gotchas](#gotchas) noted at the end of this document that you should be aware of.
 
 
 
@@ -38,11 +38,11 @@ Tutan Common maintains full compatibility with all WP src and srcset functions (
 
 #### Plugin Conflicts
 
-Certain image plugins may run into conflicts when JIT is enabled and/or prevent JIT from working properly. Some common examples are noted below, but in general, you'll want to avoid any plugin which attempts to cycle through every size in existence:
+Certain image plugins may run into conflicts when JIT is enabled and/or prevent JIT from working properly. Some common examples are noted below, but in general, you'll want to avoid any plugin which attempts to cycle through every size in existence or modifies media in non-standard ways:
 
- * Advanced Custom Fields - ACF itself is not a problem, however you should avoid defining any image fields that return an object or array, as such data requires ACF to run through every possible size, thus generating every possible size. Instead, you should have image fields return only the attachment ID.
+ * Advanced Custom Fields - ACF itself is not a problem, however you should avoid defining any image fields that return an object or array. Such values require ACF to run through every possible size, thus generating every possible size. Instead, you should have image fields return only the attachment ID.
  * Post Thumbnail Editor - Like ACF, PTE will run through every possible image size and thus generate every single thumbnail size.
 
 Lastly, you should be careful with plugins that attempt to regenerate thumbnails or replace media. Most of these are sloppily written and can corrupt the attachment metadata, which in turn can result in 404 errors.
 
-If you need to regenerate the thumbnails site-wide, we recommend the `wp-cli` command line tool.
+If you need to regenerate your thumbnails site-wide, we recommend the `wp-cli` command line tool.

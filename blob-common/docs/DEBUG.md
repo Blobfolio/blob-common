@@ -22,6 +22,8 @@ define('WP_DB_DEBUG_LOG', true);
 
 If using this on production environments, please remember to restrict access to the log file.
 
+Note: this can be used independently of the main `WP_DEBUG*` constants.
+
 
 
 ## common_debug_mail()
@@ -32,7 +34,7 @@ By default messages are sent to the site administrator's email, but this can be 
 
 ```php
 //set debug recipient
-define('WP_DEBUG_EMAIL', 'me@domain.com');
+define('WP_DEBUG_EMAIL', 'debugger@domain.com');
 ```
 
 #### Arguments

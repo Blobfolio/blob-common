@@ -1,6 +1,6 @@
 # Reference: WebP
 
-The WebP image format offers superior compression over the web staples JPEG, PNG, and GIF. This guide covers functionality that allows WordPress to automatically generate WebP copies of all media you upload and serve them in a way that maintains compatibility with most modern web browsers.
+The WebP image format offers superior compression over the staple formats JPEG, PNG, and GIF. This guide covers functionality that allows WordPress to automatically generate WebP copies of all media you upload and serve them in a way that maintains compatibility with most modern web browsers.
 
 To enable WebP, add the following to `wp-config.php`:
 
@@ -16,6 +16,13 @@ By default, these binaries are assumed to live in `/usr/bin`. If you store them 
 ```php
 define('WP_WEBP_CWEBP', '/path/to/cwebp');
 define('WP_WEBP_GIF2WEBP', '/path/to/gif2webp');
+```
+
+Note: plugins that regenerate thumbnails or replace media will probably not correctly account for the WebP sister files. The quickest way to remove **all** WebP images from your uploads folder is to run a quick command through SSH:
+
+```bash
+# find and delete all xxx.webp files residing in the wp-content/uploads folder
+find /path/to/wp-content/uploads -name "*.webp" -type f -delete
 ```
 
 
@@ -45,7 +52,7 @@ Returns `TRUE` or `FALSE`.
 
 ## common_get_webp_sister()
 
-This function returns the WebP counterpart for the image source provided (e.g. image1.jpeg -> image1.webp). If the WebP source does not exist, it will try to generate it.
+This function returns the WebP counterpart for the image source provided (e.g. image1.jpeg -> image1.webp). If the WebP source does not exist, it will try to generate it. The source must be in JPEG, PNG, or GIF format.
 
 #### Arguments
 
@@ -83,7 +90,7 @@ This function returns a `<picture>` element containing matching sources or false
 
 ## common_get_webp_srcset()
 
-This works just like `common_get_webp_src()` except it supports the `srcset` attribute for responsive image serving.
+This works just like `common_get_webp_src()` except it supports `srcset` and `sizes` attributes for responsive image serving. The `srcset` sources are pulled using WP's `wp_get_attachment_image_srcset()` function.
 
 #### Arguments
 
@@ -97,7 +104,7 @@ array(
 	'sizes'=>array(), //a string or array containing data for the `sizes` attribute, optional
 	'alt'=>get_bloginfo('name'), //alt tag for the <img>
 	'classes'=>array(), //classes to add to the <picture>
-	'default_size'=>null //the size to use for the <img> fallback; defaults to the size passed via 'size'
+	'default_size'=>null //the src size to use for the <img> fallback; defaults to the size passed via 'size'
 )
 ```
 

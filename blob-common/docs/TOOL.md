@@ -1,6 +1,6 @@
-# Reference: Miscellaneous Functions
+# Reference: Main Tools & Functions
 
-This guide documents miscellaneous tools and helper functions that don't really fit in any of the other categories. (Great description, I know.) The code can be located in `functions-tool.php`.
+This guide documents the main tools and helper functions provided by Tutan Common. The code can be located in `functions-tool.php`.
 
 
 
@@ -26,7 +26,7 @@ This guide documents miscellaneous tools and helper functions that don't really 
 
 ## common_array_compare()
 
-This function does an admirable job of comparing two arrays. It may not work as expected with certain types of data.
+This function attempts to check whether two arrays are equal. It does this by comparing each key one at a time, recursively. Note: certain types of non-iterable objects might prevent this from working.
 
 #### Arguments
 
@@ -41,11 +41,11 @@ Returns `TRUE` or `FALSE`.
 
 ## common_array_map_recursive()
 
-Recursively apply a callback function (without breaking array keys). Non-iterable objects are returned as-is.
+Recursively apply a callback function (without breaking array keys). Non-iterable objects are returned as-is. Other handling is up to the callback function.
 
 #### Arguments
 
- * (*callable*) Function
+ * (*callable*) Function (by value)
  * (*mixed*) Variable
 
 #### Return
@@ -56,7 +56,7 @@ Returns the filtered variable.
 
 ## common_array_pop()
 
-Return the last value of an array like `array_pop` without transforming the original variable.
+Return the last value of an array like `array_pop()`, but without altering the original variable.
 
 #### Arguments
 
@@ -70,7 +70,7 @@ Returns the last value of the array or `FALSE` if not possible.
 
 ## common_array_pop_top()
 
-Return the first value of an array without transforming the original variable.
+Return the first value of an array without altering the original variable.
 
 #### Arguments
 
@@ -88,8 +88,8 @@ Generate a random string.
 
 #### Arguments
 
- * (*int*) (*optional*) Length. Default: `10`
- * (*array*) (*optional*) Characters to use. Default: unambiguous uppercase letters and numbers
+ * (*int*) (*optional*) Length. Default `10`
+ * (*array*) (*optional*) Characters to use. Defaults to unambiguous uppercase letters and numbers
 
 #### Return
 
@@ -103,11 +103,11 @@ Return months of the year for e.g. a credit card expiration field.
 
 #### Arguments
 
- * (*string*) (*optional*) Value format (using `date()` syntax). Default: `m - M`
+ * (*string*) (*optional*) Value format (using `date()` syntax). Default `"m - M"`
 
 #### Return
 
-Returns a key=>value array of months. The key is the integer (e.g. `1`), the value is the corresponding date string.
+Returns a key=>value array of months. The key is the month as an integer (e.g. `1`), the value is the corresponding date string.
 
 
 
@@ -117,7 +117,7 @@ Returns years for e.g. a credit card expiration field.
 
 #### Arguments
 
- * (*int*) (*optional*) Number of years to return, including current. Default `10`
+ * (*int*) (*optional*) Number of years to return, beginning with the current. Default `10`
 
 #### Return
 
@@ -172,13 +172,13 @@ Returns integer of count.
 
 ## common_parse_args()
 
-A `wp_parse_args()` wrapper on steroids. The primary difference is it returns an array with all keys from the default and does not allow additional keys to be specified by the user args.
+A `wp_parse_args()` wrapper on steroids. The primary difference is it returns an array containing all (and only) keys from the default. It can also optionally typecast values or parse args recursively.
 
 #### Arguments
 
  * (*array*) User Args
  * (*array*) Defaults
- * (*bool*) (*optional*) Typecast user args to match defaults. Default `FALSE`
+ * (*bool*) (*optional*) Typecast user args to match tye default's type. Be careful with numbers. If the default has a value of `NULL`, no typecasting is performed. Default `FALSE`
  * (*bool*) (*optional*) Recursive. If `TRUE` and the default's value at a given index is a populated array, it will run the corresponding user args back through the function. Default `FALSE`
 
 #### Return
@@ -195,7 +195,7 @@ The same as `common_parse_args()` except the user args can be passed as a JSON s
 
  * (*JSON|array*) User Args
  * (*array*) Defaults
- * (*bool*) (*optional*) Typecast user args to match defaults. Default `FALSE`
+ * (*bool*) (*optional*) Typecast user args to match tye default's type. Be careful with numbers. If the default has a value of `NULL`, no typecasting is performed. Default `FALSE`
  * (*bool*) (*optional*) Recursive. If `TRUE` and the default's value at a given index is a populated array, it will run the corresponding user args back through the function. Default `FALSE`
 
 #### Return
@@ -229,7 +229,7 @@ Returns the (multi-byte safe) length of a string if PHP supports `mbstring`, oth
 
 #### Return
 
-Return the number of characters if `mbstring` is supported, otherwise the number of bytes (which might amount to the same thing).
+Return the number of characters if `mbstring` is supported, otherwise the number of bytes (which often amounts to the same thing).
 
 
 

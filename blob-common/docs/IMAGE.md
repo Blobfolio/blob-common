@@ -26,7 +26,7 @@ Note: this requires `DOMDocument` support.
 #### Arguments
 
  * (*string*) Image path
- * (*bool*) (*optional*) Randomize ID. Default: `FALSE`
+ * (*bool*) (*optional*) Randomize ID. Default `FALSE`
 
 #### Return
 
@@ -53,20 +53,13 @@ Note: this requires `simpleXML` support.
 
 #### Return
 
-This function returns an array containing the width and height of the SVG. If the SVG cannot be parsed, the attributes default to `0`.
-
-```php
-array(
-    'width' => 0,
-    'height' => 0
-)
-```
+This function returns an associative array containing the width and height of the SVG, keyed thusly. If the SVG cannot be parsed, the attributes default to `0`.
 
 
 
 ## common_get_blank_image()
 
-This function returns a data-uri corresponding to a 1x1 transparent GIF.
+This function returns a data-uri of a 1x1 transparent GIF, which can be handy if you are lazy-loading sources or something.
 
 #### Arguments
 
@@ -79,7 +72,7 @@ This function returns a string you can use for an image source.
 #### Example
 
 ```html
-<img src="<?=common_get_blank_image()?>" alt="Invisible" />
+<img src="<?=common_get_blank_image()?>" alt="Invisible Image" />
 ```
 
 
@@ -90,12 +83,12 @@ This function will return the file path to a post's featured image, optionally a
 
 #### Arguments
 
- * (*int*) (*optional*) Post ID. Default: `get_the_ID()`
- * (*string*) (*optional*) Size. Default: `NULL`
+ * (*int*) (*optional*) Post ID. Default `get_the_ID()`
+ * (*string*) (*optional*) Size. Default `NULL`
 
 #### Return
 
-This function returns the file path as a string or false on failure.
+This function returns the file path as a string or `FALSE` on failure.
 
 
 
@@ -105,10 +98,10 @@ This function returns the URL to a post's featured image in one step instead of 
 
 #### Arguments
 
- * (*int*) (*optional*) Post ID. Default: `get_the_ID()`
- * (*string*) (*optional*) Size. Default: `NULL`
- * (*bool*) (*optional*) Return attributes? If `TRUE` is passed, it will return an array formatted like `wp_get_attachment_image_src()`, otherwise it returns just the image URL. Default: `FALSE`
- * (*int*) (*optional*) Fallback image. If the post has no featured image, this image will be used instead. Default: `0`
+ * (*int*) (*optional*) Post ID. Default `get_the_ID()`
+ * (*string*) (*optional*) Size. Default `NULL`
+ * (*bool*) (*optional*) Return attributes? If `TRUE` is passed, it will return an array formatted like the value returned by `wp_get_attachment_image_src()`, otherwise it returns just the image URL. Default `FALSE`
+ * (*int*) (*optional*) Fallback image ID. If the post has no featured image, this image will be used instead. Default `0`
 
 #### Return
 

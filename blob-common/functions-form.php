@@ -23,7 +23,9 @@ if(!function_exists('common_get_form_timestamp')){
 		$time = time();
 		return "$time," . md5($time . NONCE_KEY);
 	}
-	//alias
+}
+//alias
+if(!function_exists('common_generate_form_timestamp')){
 	function common_generate_form_timestamp(){ return common_get_form_timestamp(); }
 }
 
@@ -40,7 +42,9 @@ if(!function_exists('common_check_form_timestamp')){
 		list($t,$h) = explode(',', $hash);
 		return ($h === md5($t . NONCE_KEY) && time() - $t >= $elapsed);
 	}
-	//alias
-	function common_verify_form_timestamp(){ return common_check_form_timestamp(); }
+}
+//alias
+if(!function_exists('common_check_form_timestamp')){
+	function common_verify_form_timestamp($hash='', $elapsed=5){ return common_check_form_timestamp($hash, $elapsed); }
 }
 ?>

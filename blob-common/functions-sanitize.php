@@ -474,12 +474,12 @@ if(!function_exists('common_sanitize_float')){
 		return $num;
 	}
 }
-//these are just wrappers
+//alias
 if(!function_exists('common_doubleval')){
-	function common_doubleval($num){ return common_sanitize_float($num); }
+	function common_doubleval($num=0){ return common_sanitize_float($num); }
 }
 if(!function_exists('common_floatval')){
-	function common_floatval($num){ return common_sanitize_float($num); }
+	function common_floatval($num=0){ return common_sanitize_float($num); }
 }
 
 //-------------------------------------------------
@@ -524,7 +524,7 @@ if(!function_exists('common_sanitize_int')){
 }
 //another wrapper
 if(!function_exists('common_intval')){
-	function common_intval($num){ return common_sanitize_int($num); }
+	function common_intval($num=0){ return common_sanitize_int($num); }
 }
 
 //-------------------------------------------------
@@ -537,6 +537,10 @@ if(!function_exists('common_sanitize_string')){
 		$value = (string) common_utf8($value);
 		return $value ? $value : '';
 	}
+}
+//alias
+if(!function_exists('common_strval')){
+	function common_strval($value=''){ return common_sanitize_string($value); }
 }
 
 //-------------------------------------------------

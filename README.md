@@ -23,10 +23,10 @@ Tutan Common is a collection of under-the-hood functions and behavioral extensio
 
 Because Tutan Common is a developer resource rather than something end users can directly play with, it is not part of the main WordPress plugin repository. Therefore it must be manually installed:
 
- * [Download](https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/blob-common.zip) the latest stable release and either extract the archive contents to your `plugins` folder;
+ * [Download](https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/blob-common.zip) the latest stable release and extract the archive contents to your `plugins` folder;
  * Or use the `Upload Plugin` option from within WordPress to do the dirty work for you;
 
-Plugin updates, however, don't require any special effort. Tutan Common hooks into WordPress' plugin API and will notify you of new releases, allow you to apply them from the Updates page, etc.
+Plugin updates, however, don't require any special effort. Tutan Common hooks into WordPress' plugin API and will notify you of new releases, allow you to apply them from the Updates page, etc., just like any other plugin.
 
 
 

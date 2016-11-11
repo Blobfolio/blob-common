@@ -1,4 +1,4 @@
-# Reference: Sanitizing, Formatting, and Validation Functions
+# Reference: Sanitization, Formatting, and Validation Functions
 
 This guide documents functions for sanitizing, formatting, and validating data. The code can be located in `functions-sanitize.php`.
 
@@ -15,7 +15,7 @@ This guide documents functions for sanitizing, formatting, and validating data. 
    * [common_leadingslashit()](#common_leadingslashit)
    * [common_unixslashit()](#common_unixslashit)
    * [common_unleadingslashit()](#common_unleadingslashit)
- * Sanitizing
+ * Sanitization
    * [common_sanitize_array()](#common_sanitize_array)
    * [common_sanitize_bool()](#common_sanitize_bool)
    * [common_sanitize_by_type()](#common_sanitize_by_type)
@@ -59,7 +59,7 @@ Convert an associative array to an indexed array for e.g. easier handling in Jav
 
 #### Return
 
-Returns an array. Each value is an array containing the original index's key and value, like:
+Returns an array with each value containing an array containing the original key and value (keyed thusly).
 
 ```php
 array(
@@ -68,8 +68,8 @@ array(
         'value'=>'original value'
     ),
     1 => array(
-        'key'=>'original key',
-        'value'=>'original value'
+        'key'=>'another original key',
+        'value'=>'another original value'
     ) ...
 )
 ```
@@ -78,20 +78,20 @@ array(
 
 ## common_format_money()
 
-Format a number as USD.
+Format a number in US dollars.
 
 #### Arguments
 
  * (*mixed*) Number
- * (*bool*) (*optional*) Use ¢ sign if under $1
+ * (*bool*) (*optional*) Use ¢ sign if the amount is under $1. Default `FALSE`
 
 #### Return
 
-Return the amount formatted as USD, e.g. $1.00 or 59¢.
+Returns the amount formatted in USD, e.g. `"$1.00"` or `"59¢"`.
 
 #### Filters
 
- * `common_format_money` - Accepts the same arguments. The eponymous function runs with a priority of 5. You can enqueue additional callbacks before or after to alter its behavior and use `apply_filters()` instead of calling the function directly.
+ * `common_format_money` - Accepts the same arguments. The eponymous function runs with a priority of 5. You can enqueue additional callbacks before or after to alter its behavior and use `apply_filters()` instead of calling the function directly. You can also dequeue the main function if, for example, you wanted to introduce other localities.
 
 
 
@@ -101,7 +101,7 @@ A very simple function for trying to format 10-digit North American phone number
 
 #### Arguments
 
- * (*string*) Phone Number
+ * (*string*) Phone
 
 #### Return
 
@@ -122,7 +122,7 @@ Generate an excerpt from a string based on letter or word length.
 
 #### Return
 
-Returns the original string or a shortened version if it was too long. Note: this function strips tags and reduces whitespace to try and prevent waste or broken output.
+Returns the original string or a shortened version if it was too long. Note: this function strips tags and reduces whitespace to try and prevent waste or broken output. It is still recommended you encode entities before printing.
 
 
 
@@ -133,12 +133,12 @@ Return the singular or plural version of a string given the count. `sprintf()` f
 #### Arguments
 
  * (*int*) Count
- * (*string*) Singular.
- * (*string*) Plural.
+ * (*string*) Singular
+ * (*string*) Plural
 
 #### Return
 
-Return the singular or plural version of a string given the count.
+Returns the singular or plural version of a string given the count.
 
 #### Example
 
@@ -158,7 +158,7 @@ Like WP's `trailingslashit()` function but for the front.
 
 #### Return
 
-Return path with a leading string attached (if not already there).
+Return path with a leading slash attached (if not already there).
 
 
 
@@ -224,7 +224,7 @@ Returns a boolean.
 
 ## common_sanitize_by_type()
 
-Pass the value to the appropriate `common_sanitize_X()` function based on the specified type. Allowed types include:
+Pass the value to the appropriate `common_sanitize_X()` function based on the specified type. Allowed types are:
 
  * array
  * bool
@@ -262,11 +262,11 @@ Returns the sanitized string.
 
 ## common_sanitize_date()
 
-Return a unix-style date string, e.g. YYYY-MM-DD. Invalid dates are returned as `"0000-00-00"` rather than the dawn of 1970.
+Return a Unix-style date string, e.g. YYYY-MM-DD. Invalid dates are returned as `"0000-00-00"` rather than the dawn of 1970.
 
 #### Arguments
 
- * (*mixed*) Date
+ * (*string|int*) Date
 
 #### Return
 
@@ -276,11 +276,11 @@ Returns a date.
 
 ## common_sanitize_date()
 
-Return a unix-style datetime string, e.g. YYYY-MM-DD HH:MM:SS. Invalid dates are returned as `"0000-00-00 00:00:00"` rather than the dawn of 1970.
+Return a Unix-style datetime string, e.g. YYYY-MM-DD HH:MM:SS. Invalid dates are returned as `"0000-00-00 00:00:00"` rather than the dawn of 1970.
 
 #### Arguments
 
- * (*mixed*) Datetime
+ * (*string|int*) Datetime
 
 #### Return
 
@@ -290,7 +290,7 @@ Returns a datetime.
 
 ## common_sanitize_domain_name()
 
-This attempts to pull the hostname from any URL-like string. Along the way it will strip out many invalid characters. Note: this will only work with standard ASCII hosts.
+This attempts to pull the hostname from any URL-like string. Along the way it will strip out most invalid characters. Note: this will only work with standard ASCII domains.
 
 #### Arguments
 
@@ -304,7 +304,7 @@ Return the hostname in lowercase.
 
 ## common_sanitize_email()
 
-In addition to WP's `sanitize_email()` filters, this also strips out quotes and apostrophes.
+In addition to WP's `sanitize_email()` filters, this also strips out quotes and apostrophes, which let's be honest, don't really belong even though they are technically allowed.
 
 #### Arguments
 
@@ -383,7 +383,7 @@ Returns the escaped value.
 
 ## common_sanitize_name()
 
-Sanitize e.g. a person's name. This function isn't perfect, but helps add a bit of sanity to a field that can otherwise run wild. This strips out everything but whitespace, letters, dashes, numbers, quotes, apostrophes, commas, and periods. Whitespace is reduced to a single horizontal space, and Title Case is imposed.
+Sanitize e.g. a person's name. This function isn't perfect, but helps add a bit of sanity to a value that can otherwise run wild. This strips out everything but whitespace, letters, dashes, numbers, quotes, apostrophes, commas, and periods. Whitespace is reduced to a single horizontal space, and Title Case is imposed.
 
 #### Arguments
 
@@ -412,7 +412,7 @@ Return the sanitized string.
 
 ## common_sanitize_number()
 
-Strip non-numbery bits and return a proper float. Will convert a value like `50¢` to `.5`.
+Strip non-numbery bits and return a proper float. This will also convert a value like `50¢` to `.5`.
 
 #### Arguments
 
@@ -420,7 +420,7 @@ Strip non-numbery bits and return a proper float. Will convert a value like `50�
 
 #### Return
 
-Returns a number.
+Returns a (float) number.
 
 
 
@@ -428,7 +428,7 @@ Returns a number.
 
 A simple attempt to sanitize a 10-digit North American phone number. Non-digits are removed. If the end result is 11-digits and begins with a 1, the leading 1 is removed.
 
-For more in depth control, check out a PHP port of `libphonenumber`.
+For more in depth phone number formatting and validation, check out `libphonenumber` ports for PHP.
 
 #### Arguments
 
@@ -456,7 +456,7 @@ Return the printable characters.
 
 ## common_sanitize_quotes()
 
-Try to convert all the different slanty quotes and apostrophes with their standard straight versions. (Slanty quotes mess up everything!)
+Try to convert all the different slanty quotes and apostrophes with their straight versions. (Slanty quotes mess up everything!)
 
 #### Arguments
 
@@ -484,7 +484,7 @@ Return the sanitized string.
 
 ## common_sanitize_string()
 
-Typecast as a UTF-8 string (and convert charset if necessary).
+Typecast as a UTF-8 string (and convert encoding if necessary).
 
 #### Arguments
 
@@ -493,6 +493,10 @@ Typecast as a UTF-8 string (and convert charset if necessary).
 #### Return
 
 Return the sanitized string.
+
+#### Aliases
+
+ * *common_strval()*
 
 
 
@@ -503,7 +507,7 @@ Sanitize both horizontal and vertical whitespace.
 #### Arguments
 
  * (*string*) String
- * (*mixed*) (*optional*) Consecutive newlines. Default `FALSE`
+ * (*mixed*) (*optional*) Max consecutive newlines. Default `FALSE` (i.e. no linebreaks allowed)
 
 #### Return
 
@@ -513,7 +517,7 @@ Return the sanitized string.
 
 ## common_sanitize_zip5()
 
-Sanitize and 0-pad a 5-digit US ZIP Code.
+Sanitize and 0-pad a 5-digit US ZIP Code. If a ZIP+4 is passed, the +4 is stripped off.
 
 #### Arguments
 
@@ -561,7 +565,7 @@ Bools, numbers, and empty strings are passed through unchanged. Otherwise the fu
 
 ## common_is_utf8()
 
-Is a string valid UTF-8?
+Checks whether the string is valid UTF-8.
 
 #### Arguments
 
@@ -575,7 +579,7 @@ Returns `TRUE` if the passed value is an empty string or valid UTF-8; `FALSE` if
 
 ## common_validate_cc()
 
-Validate a credit card number (short of attempting any sort of charge!).
+Validate a credit card number's formatting.
 
 #### Arguments
 
@@ -594,17 +598,17 @@ Checks whether a string is a valid ASCII domain.
 #### Arguments
 
  * (*string*) Domain
- * (*bool*) (*optional*) Registered? If `TRUE`, will attempt to pull DNS information. Default `TRUE`
+ * (*bool*) (*optional*) Registered? If `TRUE`, it will attempt to pull DNS information. Default `TRUE`
 
 #### Return
 
-Returns `TRUE` or `FALSE`.
+Returns `TRUE` or `FALSE`. If checking DNS and no A records are returned, the function will return `FALSE`. Note: the function does not attempt to resolve any IP returned.
 
 
 
 ## common_validate_email()
 
-Checks to see if an email contains valid characters (e.g. *FILTER_VALIDATE_EMAIL*), but also something like a FQDN.
+Checks to see if an email contains valid characters (e.g. *FILTER_VALIDATE_EMAIL*) and a FDQN.
 
 #### Arguments
 
@@ -618,7 +622,7 @@ Returns `TRUE` or `FALSE`.
 
 ## common_validate_phone()
 
-Checks whether a phone number matches North American formatting rules. As mentioned in the other phone-related functions, `libphonenumber` is an awesome library that can give you much stronger control over this. But hey, simple works most of the time.
+Checks whether a phone number matches generic North American formatting rules. For more in depth phone number formatting and validation, check out `libphonenumber` ports for PHP.
 
 #### Arguments
 

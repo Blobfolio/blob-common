@@ -13,7 +13,7 @@ This guide documents functions which can be incorporated into web forms. The cod
 
 ## common_get_form_timestamp()
 
-This function returns a hashed timestamp you can add to your form to help you prevent robots from submitting data too quickly.
+This function returns a hashed timestamp you can add to your form to help prevent robots from submitting data too quickly.
 
 #### Arguments
 
@@ -46,7 +46,7 @@ This function validates the timestamp hash passed with your form data.
 
 #### Return
 
-This function returns `FALSE` if the hash is invalid or less than the limit specified. Otherwise it returns `TRUE`.
+This function returns `FALSE` if the hash is invalid or the form was submitted faster than the time specified. Otherwise it returns `TRUE`.
 
 #### Example
 

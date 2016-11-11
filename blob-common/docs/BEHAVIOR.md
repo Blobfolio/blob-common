@@ -2,7 +2,7 @@
 
 This guide documents functions focusing on core WordPress behaviors. The code can be located in `functions-behavior.php`.
 
-Note: some behaviors are modified automatically by activating this plugin, but only when they are *really* annoying or potentially dangerous. ;)
+Note: some behaviors are modified automatically by activating this plugin, but only when the defaults are *really* annoying or potentially dangerous. ;)
 
 
 
@@ -23,6 +23,7 @@ Note: some behaviors are modified automatically by activating this plugin, but o
 ## common_cron_schedules()
 
 Extend pseudo-cron by adding the following intervals:
+
  * oneminute
  * twominutes
  * fiveminutes
@@ -34,14 +35,16 @@ This function hooks into WordPress automatically; you don't need to do anything.
 To ensure short intervals trigger reliably, you may need to disable WP's built-in triggering and use your system's CRON handler instead:
 
 Add the following to `wp-config.php`:
+
 ```php
 //disable automatic pseudo-cron triggering
 define('DISABLE_WP_CRON', true);
 ```
 
 And create a cronjob like:
+
 ```bash
-# Trigger WordPress pseudo-cron every minute
+# trigger WordPress pseudo-cron every minute
 * * * * * wget https://domain.com/wp-cron.php?doing_wp_cron > /dev/null 2>&1
 ```
 
@@ -49,13 +52,13 @@ And create a cronjob like:
 
 ## common_disable_checked_to_top()
 
-By default, WordPress bubbles taxonomy selections to the top of the list, making it very difficult to differentiate hierarchical relations. Tutan Common automatically disables this; terms are displayed in their default order with no bubbling.
+By default, WordPress bubbles a post's selected terms to the top of the list, making it very difficult to interpret hierarchical relations. Tutan Common automatically disables this; terms are displayed in their default order with no bubbling.
 
 
 
 ## common_disable_wp_embed()
 
-WordPress adds a small script to make it easier for other sites to embed your site. Nobody uses this, I swear! Tutan Common automatically disables this bloat.
+WordPress adds a small script to every page to make it easier for other sites to embed your site. Nobody uses this, I swear! Tutan Common automatically disables this bloat.
 
 
 

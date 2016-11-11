@@ -1,6 +1,6 @@
 # Reference: Email Functions
 
-This guide documents functions which extend email capability. The code can be located in `functions-email.php`.
+This guide documents functions which extend email functionality. The code can be located in `functions-email.php`.
 
 
 

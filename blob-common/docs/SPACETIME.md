@@ -48,7 +48,7 @@ Returns a key=>value array. The keys are the two-digit postal abbreviations, val
 
 ## common_get_countries()
 
-Return an array of (most) official countries. Note: Unlike the state/province functions, names are returned in title case by default.
+Return an array of (most) official countries. Note: Unlike the state/province functions, names are returned in title case by default, but passing `TRUE` will return them in uppercase.
 
 #### Arguments
 
@@ -62,7 +62,7 @@ Returns a key=>value array. The keys are the two-digit ISO codes, values are the
 
 ## common_get_us_states()
 
-Returns an array of US states, and optionally not-quite-states that the post office delivers to anyway. This function originally returned all values in uppercase, but that can now be disabled by passing `FALSE`.
+Returns an array of US states and optionally not-quite-states that the post office delivers to anyway. This function originally returned all values in uppercase, but that can now be disabled by passing `FALSE`.
 
 #### Arguments
 
@@ -85,13 +85,15 @@ Convert a file to a base64-encoded data-uri string.
 
 #### Return
 
-Returns a data-uri string or `FALSE` if the file doesn't exist or can't be opened.
+Returns a data-uri string or `FALSE` if the file doesn't exist or can't be read.
 
 
 
 ## common_get_mime_type()
 
-Why is this so damn hard? PHP's `fileinfo` extension is not reliably present, and even when it is it kinda sucks. WP's built-in function is missing a ton. Oh well, if you need more complete and reliable MIME types by file extension, use this function.
+PHP's `fileinfo` extension is not reliably present and sucks anyway. WP's `wp_check_filetype()` is only really meant for uploaded files and so is missing a ton of data.
+
+TL;DR if you need more complete and reliable extension-to-MIME conversion, use this function instead.
 
 #### Arguments
 
@@ -99,13 +101,13 @@ Why is this so damn hard? PHP's `fileinfo` extension is not reliably present, an
 
 #### Return
 
-Returns the file's appropriate MIME type or `"application/octet-stream"` if it can't figure it out.
+Returns the file's MIME type or `"application/octet-stream"` if it can't figure it out.
 
 
 
 ## common_readfile_chunked()
 
-If you are buffering files through PHP, doing it in chunks can greatly reduce the overhead. This will read and output the file in 1MB chunks.
+If you are buffering files through PHP, doing it in chunks can greatly reduce the overhead. This will read and output a file in 1MB chunks. Note: you will still need to send the appropriate headers ahead of calling this function.
 
 #### Arguments
 
@@ -134,7 +136,7 @@ Returns an array containing the min and max IP (keyed thusly), or `FALSE` if inv
 
 ## common_ip_to_number()
 
-Convert an IPv4 or IPv6 address to its numerical equivalent. You will need a 64-bit operating system to handle IPv6 numbers, most likely.
+Convert an IPv4 or IPv6 address to its numerical equivalent. You will need a 64-bit operating system to handle the massive IPv6 numbers, most likely.
 
 #### Arguments
 
@@ -150,6 +152,8 @@ Returns the numerical equivalent or `FALSE` if invalid.
 
 This is a simple function that will attempt to convert a blog URL to the corresponding path. Obviously this won't work if you are using rewrite trickery, but it will also fail if you are sloppy with your base URLs (e.g. using "domain.com" and "www.domain.com" interchangeably).
 
+PS: www is evil.
+
 #### Arguments
 
  * (*string*) URL
@@ -162,7 +166,7 @@ Returns the (nonconfirmed) path or `FALSE`.
 
 ## common_get_site_hostname()
 
-This returns the lowercase hostname portion of your blog URL, minus any leading "www.".
+This returns the lowercase hostname portion of your blog URL, minus any leading "www.". This can be handy in generating an email address, for example.
 
 #### Arguments
 
@@ -176,7 +180,7 @@ Returns the site hostname.
 
 ## common_get_url_by_path()
 
-This is a simple function that will attempt to convert a path (within your WP base) to its corresponding URL.
+This is a simple function that will attempt to convert a path (within your WP base) to its corresponding URL. If the path is outside `ABSPATH` it will fail.
 
 #### Arguments
 
@@ -221,6 +225,8 @@ Returns `TRUE` if `$dir` is a directory and empty, otherwise `FALSE`.
 
 Checks whether a URL's domain matches the blog's domain. Note: this will fail if you use "domain.com" and "www.domain.com" interchangeably.
 
+PS: www is evil.
+
 #### Arguments
 
  * (*string*) URL
@@ -233,11 +239,15 @@ Returns `TRUE` if the URL's domain matches the site's domain. If the passed URL 
 
 ## common_redirect()
 
-This is a more robust version of `wp_redirect()`. It will redirect users via Javascript if headers have already been sent. It unsets `$_POST`, `$_GET`, and `$_REQUEST` superglobals (to help prevent form resubmissions on reload). It also self-exits, so you can redirect in one step instead of two.
+This is a more robust version of `wp_redirect()`:
+ * It will redirect users via Javascript if headers have already been sent;
+ * It unsets `$_POST`, `$_GET`, and `$_REQUEST` superglobals (to help prevent form resubmissions on reload);
+ * For security reasons, it will not redirect users to off-site locations (this can be toggled);
+ * It also self-exits, so you can redirect in one step instead of two;
 
 #### Arguments
 
- * (*string*) (*optional*) URL. Default `site_url()`
+ * (*int|string*) (*optional*) Post ID or URL. Default `site_url()`
  * (*bool*) (*optional*) Allow off-site redirect. Default `FALSE`
 
 #### Return
@@ -253,7 +263,7 @@ This is more or less like `site_url()` for your theme folder.
 #### Arguments
 
  * (*string*) (*optional*) Sub-path. Default `NULL`
- * (*bool*) (*optional*) Return URL. If `FALSE` a file path is returned. Default `FALSE`
+ * (*bool*) (*optional*) Return as URL. If `FALSE` a file path is returned. Default `FALSE`
 
 #### Return
 
@@ -268,7 +278,7 @@ This is more or less like `site_url()` for your upload folder.
 #### Arguments
 
  * (*string*) (*optional*) Sub-path. Default `NULL`
- * (*bool*) (*optional*) Return URL. If `FALSE` a file path is returned. Default `FALSE`
+ * (*bool*) (*optional*) Return as URL. If `FALSE` a file path is returned. Default `FALSE`
 
 #### Return
 

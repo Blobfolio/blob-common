@@ -612,7 +612,10 @@ if(!function_exists('common_is_current_page')){
 // @return n/a
 if(!function_exists('common_redirect')){
 	function common_redirect($url=null, $offsite=false){
-		if(is_null($url) || (true !== $offsite && !common_is_site_url($url)))
+		if(is_numeric($url))
+			$url = get_permalink($url);
+
+		if(is_null($url) || (!$offsite && !common_is_site_url($url)))
 			$url = site_url();
 
 		unset($_POST);
