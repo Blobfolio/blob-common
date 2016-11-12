@@ -36,7 +36,7 @@ if(!defined('ABSPATH'))
 define('BLOB_COMMON_ROOT', dirname(__FILE__));
 
 @require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');		//wp overrides
-@require_once(BLOB_COMMON_ROOT . '/functions-debug.php');			//email functions
+@require_once(BLOB_COMMON_ROOT . '/functions-debug.php');			//debugging functions
 @require_once(BLOB_COMMON_ROOT . '/functions-email.php');			//email functions
 @require_once(BLOB_COMMON_ROOT . '/functions-form.php');			//web form functions
 @require_once(BLOB_COMMON_ROOT . '/functions-image.php');			//image functions
