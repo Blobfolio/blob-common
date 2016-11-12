@@ -1,5 +1,5 @@
 {
-	"Version" : "1.5.0",
+	"Version" : "1.5.1",
 	"DownloadURI" : "https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/blob-common.zip",
 	"Requires" : "4.5",
 	"Tested" : "4.6.1"

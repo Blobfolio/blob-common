@@ -148,12 +148,12 @@ if(!function_exists('common_array_map_recursive')){
 	function common_array_map_recursive(callable $func, $value){
 		if(is_array($value)){
 			foreach($value AS $k=>$v)
-				$value[$k] = common_array_map_recursive($func, $value);
+				$value[$k] = common_array_map_recursive($func, $value[$k]);
 		}
 		elseif(is_object($value)){
 			try {
 				foreach($value AS $k=>$v){
-					$value->{$k} = common_array_map_recursive($func, $value);
+					$value->{$k} = common_array_map_recursive($func, $value->{$k});
 				}
 			} catch(Exception $e){ return $value; }
 		}
