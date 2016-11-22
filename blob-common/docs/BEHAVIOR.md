@@ -15,8 +15,8 @@ Note: some behaviors are modified automatically by activating this plugin, but o
    * [common_svg_media_thumbnail()](#common_svg_media_thumbnail)
    * [common_upload_mimes()](#common_upload_mimes)
    * [Other](#other)
- * [WP_DISABLE_JQUERY_MIGRATE](#WP_DISABLE_JQUERY_MIGRATE)
- * [WP_DISABLE_EMOJI](#WP_DISABLE_EMOJI)
+ * [WP_DISABLE_JQUERY_MIGRATE](#wp_disable_jquery_migrate)
+ * [WP_DISABLE_EMOJI](#wp_disable_emoji)
 
 
 
