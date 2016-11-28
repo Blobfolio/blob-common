@@ -41,7 +41,9 @@ This guide documents functions for sanitizing, formatting, and validating data. 
    * [common_to_range()](#common_to_range)
    * [common_utf8()](#common_utf8)
  * Validation
+   * [common_in_range()](#common_in_range)
    * [common_is_utf8()](#common_is_utf8)
+   * [common_length_in_range()](#common_length_in_range)
    * [common_validate_cc()](#common_validate_cc)
    * [common_validate_domain_name()](#common_validate_domain_name)
    * [common_validate_email()](#common_validate_email)
@@ -563,6 +565,22 @@ Bools, numbers, and empty strings are passed through unchanged. Otherwise the fu
 
 
 
+## common_in_range()
+
+Check if a value is within a defined range.
+
+#### Arguments
+
+ * (*mixed*) Value
+ * (*mixed*) (*optional*) Min
+ * (*mixed*) (*optional*) Max
+
+#### Return
+
+Returns `TRUE` or `FALSE`.
+
+
+
 ## common_is_utf8()
 
 Checks whether the string is valid UTF-8.
@@ -574,6 +592,22 @@ Checks whether the string is valid UTF-8.
 #### Return
 
 Returns `TRUE` if the passed value is an empty string or valid UTF-8; `FALSE` if not.
+
+
+
+## common_length_in_range()
+
+Check if a string's length is within a defined range. This is multi-byte safe when PHP is compiled with the `mbstring` module.
+
+#### Arguments
+
+ * (*string*) String
+ * (*int*) (*optional*) Minimum length
+ * (*int*) (*optional*) Maximum length
+
+#### Return
+
+Returns `TRUE` or `FALSE`.
 
 
 

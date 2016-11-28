@@ -208,6 +208,40 @@ if(!function_exists('common_to_range')){
 }
 
 //-------------------------------------------------
+// Check if a value is within range
+//
+// @param value
+// @param min
+// @param max
+// @return true/false
+if(!function_exists('common_in_range')){
+	function common_in_range($value, $min=null, $max=null){
+		return $value === common_to_range($value, $min, $max);
+	}
+}
+
+//-------------------------------------------------
+// Check if a string's length is within range
+//
+// @param str
+// @param min
+// @param max
+// @return true/false
+if(!function_exists('common_length_in_range')){
+	function common_length_in_range($str, $min=null, $max=null){
+		$str = (string) $str;
+		$length = common_strlen($str);
+
+		if(!is_null($min))
+			$min = common_sanitize_int($min);
+		if(!is_null($max))
+			$max = common_sanitize_int($max);
+
+		return $length === common_to_range($length, $min, $max);
+	}
+}
+
+//-------------------------------------------------
 // Convert to UTF-8
 //
 // @param string
