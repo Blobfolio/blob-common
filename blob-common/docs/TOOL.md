@@ -10,6 +10,7 @@ This guide documents the main tools and helper functions provided by Tutan Commo
  * [common_array_map_recursive()](#common_array_map_recursive)
  * [common_array_pop()](#common_array_pop)
  * [common_array_pop_top()](#common_array_pop_top)
+ * [common_array_type()](#common_array_type)
  * [common_generate_random_string()](#common_generate_random_string)
  * [common_get_cc_exp_months()](#common_get_cc_exp_months)
  * [common_get_cc_exp_years()](#common_get_cc_exp_years)
@@ -79,6 +80,23 @@ Return the first value of an array without altering the original variable.
 #### Return
 
 Returns the first value of the array or `FALSE` if not possible.
+
+
+
+## common_array_type()
+
+Return the "type" of indexing used by an array.
+
+#### Arguments
+
+ * (*array*) (*reference*) Array
+
+#### Return
+
+ * `"sequential"`: the indexes are squential, e.g. `0`, `1`, `2`, ...
+ * `"indexed"`: the indexes are numeric, e.g. `0`, `5`, `6`, ...
+ * `"associative"`: one or more indexes are strings
+ * `FALSE`: the variable is not an array or has no length
 
 
 

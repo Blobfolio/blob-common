@@ -16,6 +16,31 @@ if(!defined('ABSPATH'))
 //---------------------------------------------------------------------
 
 //-------------------------------------------------
+// Array Type
+//
+// PHP arrays are a bit slutty which can cause
+// issues when encoding for different platforms,
+// etc.
+//
+// @param arr
+// @return true/false
+if(!function_exists('common_array_type')){
+	function common_array_type(&$arr=null){
+		if(!is_array($arr) || !count($arr))
+			return false;
+
+		$keys = array_keys($arr);
+		sort($keys);
+		if($keys === range(0, count($keys)-1))
+			return 'sequential';
+		elseif(count($keys) === count(array_filter($keys, 'is_numeric')))
+			return 'indexed';
+		else
+			return 'associative';
+	}
+}
+
+//-------------------------------------------------
 // Compare Arrays
 //
 // @param arr1
@@ -265,7 +290,7 @@ if(!function_exists('common_parse_args')){
 
 		foreach($defaults AS $k=>$v){
 			if(array_key_exists($k, $args)){
-				if($recursive && is_array($defaults[$k]) && count($defaults[$k]))
+				if($recursive && is_array($defaults[$k]) && common_array_type($defaults[$k]) === 'associative')
 					$defaults[$k] = common_parse_args($args[$k], $defaults[$k], $strict, $recursive);
 				elseif($strict && !is_null($v) && gettype($args[$k]) !== gettype($v))
 					$defaults[$k] = common_sanitize_by_type($args[$k], gettype($v));
