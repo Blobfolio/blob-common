@@ -78,16 +78,16 @@ if(!function_exists('common_get_us_states')){
 
 		$other = array(
 			'AA' => 'Armed Forces Americas',
-			'ae' => 'Armed Forces Europe',
-			'ap' => 'Armed Forces Pacific',
-			'as' => 'American Samoa',
-			'fm' => 'Federated States of Micronesia',
-			'gu' => 'Guam Gu',
-			'mh' => 'Marshall Islands',
-			'mp' => 'Northern Mariana Islands',
-			'pw' => 'Palau',
-			'pr' => 'Puerto Rico',
-			'vi' => 'Virgin Islands'
+			'AE' => 'Armed Forces Europe',
+			'AP' => 'Armed Forces Pacific',
+			'AS' => 'American Samoa',
+			'FM' => 'Federated States of Micronesia',
+			'GU' => 'Guam Gu',
+			'MH' => 'Marshall Islands',
+			'MP' => 'Northern Mariana Islands',
+			'PW' => 'Palau',
+			'PR' => 'Puerto Rico',
+			'VI' => 'Virgin Islands'
 		);
 
 		//originally all results were returned in uppercase,
