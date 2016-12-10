@@ -67,6 +67,9 @@ function _common_image_downsize($downsize, $attachment_id, $size){
 		return false;
 
 	$src_info = pathinfo($src_path);
+	if(!isset($src_info['dirname']) || !isset($src_info['extension']))
+		return false;
+
 	$src_root = trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
 	$src_mime = common_get_mime_type($src_path);
@@ -133,6 +136,10 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 	//all registered sizes
 	global $_wp_additional_image_sizes;
 
+	//ignore non-image things
+	if(!isset($image_meta['width']) || !isset($image_meta['height']))
+		return false;
+
 	//some source file specs we'll use a lot
 	$src_path = get_attached_file($attachment_id);
 
@@ -141,6 +148,9 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 		return false;
 
 	$src_info = pathinfo($src_path);
+	if(!isset($src_info['dirname']) || !isset($src_info['extension']))
+		return false;
+
 	$src_root = trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
 	$src_mime = common_get_mime_type($src_path);
