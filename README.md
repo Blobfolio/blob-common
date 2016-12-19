@@ -38,6 +38,7 @@ Some functionality is toggled by constants defined in `wp-config`. They are expl
 
  * (*bool*) **WP_DB_DEBUG_LOG** - Log database query errors to `wp-content/db-debug.log`
  * (*string*) **WP_DEBUG_EMAIL** - Send debug emails to an address other than the site email
+ * (*string*) **WP_DEBUG_LOG_CAP** - Capability required to view `Tools > Debug Log`; Default: `"manage_options"`
  * (*bool*) **WP_DISABLE_EMOJI** - Disable WP's emoji scripts and styles
  * (*bool*) **WP_DISABLE_JQUERY_MIGRATE** - Disable WP's jQuery Migrate script
  * (*bool*) **WP_JIT_IMAGES** - Enable just-in-time thumbnail generation
