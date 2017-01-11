@@ -96,7 +96,7 @@ if(!function_exists('common_get_us_states')){
 		//backward compatibility
 		if($uppercase){
 			$states = array_map('strtoupper', $states);
-			$other = array_map('strtoupper', $states);
+			$other = array_map('strtoupper', $other);
 		}
 
 		if($include_other)
