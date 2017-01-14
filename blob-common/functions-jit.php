@@ -84,7 +84,7 @@ function _common_image_downsize($downsize, $attachment_id, $size){
 	if($new_size) {
 		$new_w = (int) $new_size[4];
 		$new_h = (int) $new_size[5];
-		$new_f = wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . strtolower($src_ext));
+		$new_f = wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . common_strtolower($src_ext));
 		if(file_exists("{$src_root}{$new_f}"))
 			$made = true;
 	}
@@ -178,7 +178,7 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 				continue;
 
 			//generate a filename the same way WP_Image_Editor would
-			$new_f = wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . strtolower($src_ext));
+			$new_f = wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . common_strtolower($src_ext));
 
 			//finally, add it!
 			$image_meta['sizes'][$k] = array(

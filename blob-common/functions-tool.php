@@ -82,8 +82,8 @@ if(!function_exists('common_array_compare')){
 // @return true/false
 if(!function_exists('common_iin_array()')){
 	function common_iin_array($needle, $haystack){
-		$needle = strtolower($needle);
-		$haystack = array_map('strtolower', $haystack);
+		$needle = common_strtolower($needle);
+		$haystack = array_map('common_strtolower', $haystack);
 		return in_array($needle, $haystack);
 	}
 }
@@ -96,8 +96,8 @@ if(!function_exists('common_iin_array()')){
 // @return true/false
 if(!function_exists('common_iarray_key_exists()')){
 	function common_iarray_key_exists($needle, $haystack){
-		$needle = strtolower($needle);
-		$haystack = array_map('strtolower', array_keys($haystack));
+		$needle = common_strtolower($needle);
+		$haystack = array_map('common_strtolower', array_keys($haystack));
 		return in_array($needle, $haystack);
 	}
 }
@@ -110,8 +110,8 @@ if(!function_exists('common_iarray_key_exists()')){
 // @return true/false
 if(!function_exists('common_isubstr_count()')){
 	function common_isubstr_count($haystack, $needle){
-		$needle = strtolower($needle);
-		$haystack = strtolower($haystack);
+		$needle = common_strtolower($needle);
+		$haystack = common_strtolower($haystack);
 		return substr_count($haystack, $needle);
 	}
 }
@@ -134,9 +134,10 @@ if(!function_exists('common_isubstr_count()')){
 // @return length
 if(!function_exists('common_strlen')){
 	function common_strlen($str){
-		//prefer mb_strlen
+		$str = common_sanitize_string($str);
+		//prefer mbstring
 		if(function_exists('mb_strlen'))
-			$length = mb_strlen($str);
+			$length = mb_strlen($str, 'UTF-8');
 		else
 			$length = strlen($str);
 
@@ -144,6 +145,70 @@ if(!function_exists('common_strlen')){
 			$length = 0;
 
 		return $length;
+	}
+}
+
+//-------------------------------------------------
+// Strpos
+//
+// will return multi-byte substring position if
+// capable or fall back to strpos()
+//
+// @param haystack
+// @param needle
+// @param offset
+// @return position
+if(!function_exists('common_strpos')){
+	function common_strpos($haystack, $needle, $offset=0){
+		$haystack = common_sanitize_string($haystack);
+		$needle = common_sanitize_string($needle);
+
+		//prefer mbstring
+		if(function_exists('mb_strpos'))
+			return mb_strpos($haystack, $needle, $offset, 'UTF-8');
+		else
+			return strpos($haystack, $needle, $offset);
+	}
+}
+
+//-------------------------------------------------
+// Substring
+//
+// will return multi-byte substring if capable or
+// fall back to substr()
+//
+// @param str
+// @param start
+// @param length
+// @return substring
+if(!function_exists('common_substr')){
+	function common_substr($str, $start=0, $length=null){
+		$str = common_sanitize_string($str);
+		//prefer mbstring
+		if(function_exists('mb_substr'))
+			return mb_substr($str, $start, $length, 'UTF-8');
+		else
+			return substr($str, $start, $length);
+	}
+}
+
+//-------------------------------------------------
+// Substring Count
+//
+// will return multi-byte substring count if
+// capable or fall back to substr_count()
+//
+// @param haystack
+// @param needle
+// @return count
+if(!function_exists('common_substr_count')){
+	function common_substr_count($haystack, $needle){
+		//prefer mbstring
+		if(function_exists('mb_substr_count')){
+			return mb_substr_count($haystack, $needle, 'UTF-8');
+		}
+		else
+			return substr($haystack, $needle);
 	}
 }
 

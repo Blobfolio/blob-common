@@ -367,7 +367,7 @@ if(!function_exists('common_get_mime_type')){
 			$mimes = json_decode(@file_get_contents(dirname(__FILE__) . '/mimes.json'), true);
 
 		//extension
-		$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+		$ext = common_strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
 		//done
 		return common_strlen($ext) && isset($mimes[$ext]) ? $mimes[$ext] : 'application/octet-stream';
@@ -508,21 +508,21 @@ if(!function_exists('common_cidr_to_range')){
 // @return path
 if(!function_exists('common_get_path_by_url')){
 	function common_get_path_by_url($url){
-		$from = strtolower(trailingslashit(site_url()));
+		$from = common_strtolower(trailingslashit(site_url()));
 		$to = trailingslashit(ABSPATH);
 
 		//query strings and hashes aren't part of files
-		if(substr_count($url, '?')){
+		if(false !== common_strpos($url, '?')){
 			$url = explode('?', $url);
 			$url = common_array_pop_top($url);
 		}
-		if(substr_count($url, '#')){
+		if(false !== common_strpos($url, '#')){
 			$url = explode('#', $url);
 			$url = common_array_pop_top($url);
 		}
 
-		if(strtolower(substr($url, 0, strlen($from))) === $from)
-			return $to . substr($url, strlen($from));
+		if(common_strtolower(common_substr($url, 0, common_strlen($from))) === $from)
+			return $to . common_substr($url, common_strlen($from));
 
 		return false;
 	}
@@ -543,8 +543,8 @@ if(!function_exists('common_get_url_by_path')){
 		$from = trailingslashit(ABSPATH);
 		$to = trailingslashit(site_url());
 
-		if(strtolower(substr($path, 0, strlen($from))) === $from)
-			return $to . substr($path, strlen($from));
+		if(common_strtolower(common_substr($path, 0, common_strlen($from))) === $from)
+			return $to . common_substr($path, common_strlen($from));
 
 		return false;
 	}
@@ -580,7 +580,7 @@ if(!function_exists('common_is_empty_dir')){
 // @return true/false
 if(!function_exists('common_is_site_url')){
 	function common_is_site_url($url){
-		return filter_var($url, FILTER_VALIDATE_URL) && strtolower(parse_url($url, PHP_URL_HOST)) === strtolower(parse_url(site_url(), PHP_URL_HOST));
+		return filter_var($url, FILTER_VALIDATE_URL) && common_strtolower(parse_url($url, PHP_URL_HOST)) === common_strtolower(parse_url(site_url(), PHP_URL_HOST));
 	}
 }
 
@@ -640,7 +640,7 @@ if(!function_exists('common_redirect')){
 // @return hostname
 if(!function_exists('common_get_site_hostname')){
 	function common_get_site_hostname(){
-		return preg_replace('/^www\./', '', parse_url(strtolower(site_url()), PHP_URL_HOST));
+		return preg_replace('/^www\./', '', parse_url(common_strtolower(site_url()), PHP_URL_HOST));
 	}
 }
 

@@ -6,22 +6,27 @@ This guide documents the main tools and helper functions provided by Tutan Commo
 
 ##### Table of Contents
 
- * [common_array_compare()](#common_array_compare)
- * [common_array_map_recursive()](#common_array_map_recursive)
- * [common_array_pop()](#common_array_pop)
- * [common_array_pop_top()](#common_array_pop_top)
- * [common_array_type()](#common_array_type)
- * [common_generate_random_string()](#common_generate_random_string)
  * [common_get_cc_exp_months()](#common_get_cc_exp_months)
  * [common_get_cc_exp_years()](#common_get_cc_exp_years)
- * [common_iarray_key_exists()](#common_iarray_key_exists)
- * [common_iin_array()](#common_iin_array)
- * [common_isubstr_count()](#common_isubstr_count)
- * [common_parse_args()](#common_parse_args)
- * [common_parse_json_args()](#common_parse_json_args)
  * [common_random_int()](#common_random_int)
- * [common_strlen()](#common_strlen)
  * [common_switcheroo()](#common_switcheroo)
+ * Arrays
+   * [common_array_compare()](#common_array_compare)
+   * [common_array_map_recursive()](#common_array_map_recursive)
+   * [common_array_pop()](#common_array_pop)
+   * [common_array_pop_top()](#common_array_pop_top)
+   * [common_array_type()](#common_array_type)
+   * [common_iarray_key_exists()](#common_iarray_key_exists)
+   * [common_iin_array()](#common_iin_array)
+   * [common_parse_args()](#common_parse_args)
+   * [common_parse_json_args()](#common_parse_json_args)
+ * Strings 
+   * [common_generate_random_string()](#common_generate_random_string)
+   * [common_isubstr_count()](#common_isubstr_count)
+   * [common_strlen()](#common_strlen)
+   * [common_strpos()](#common_strpos)
+   * [common_substr()](#common_substr)
+   * [common_substr_count()](#common_substr_count)
 
 
 
@@ -248,6 +253,53 @@ Returns the (multi-byte safe) length of a string if PHP supports `mbstring`, oth
 #### Return
 
 Return the number of characters if `mbstring` is supported, otherwise the number of bytes (which often amounts to the same thing).
+
+
+
+## common_strpos()
+
+Returns the (multi-byte safe) substring position if PHP supports `mbstring`, otherwise it will fall back to `strpos()`.
+
+#### Arguments
+
+ * (*string*) Haystack
+ * (*string*) Needle
+ * (*int*) (*optional*) Offset
+
+#### Return
+
+Return the substring position using `mb_strpos()` if supported, otherwise `strpos()`. `FALSE` is returned on failure.
+
+
+
+## common_substr()
+
+Returns the (multi-byte safe) substring if PHP supports `mbstring`, otherwise it will fall back to `substr()`.
+
+#### Arguments
+
+ * (*string*) String
+ * (*int*) Start
+ * (*int*) (*optional*) Length
+
+#### Return
+
+Return the substring using `mb_substr()` if supported, otherwise `substr()`.
+
+
+
+## common_substr_count()
+
+Returns the (multi-byte safe) substring count if PHP supports `mbstring`, otherwise it will fall back to `substr_count()`.
+
+#### Arguments
+
+ * (*string*) Haystack
+ * (*string*) Needle
+
+#### Return
+
+Return the substring count using `mb_substr_count()` if supported, otherwise `substr_count()`.
 
 
 

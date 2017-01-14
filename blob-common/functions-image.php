@@ -48,10 +48,10 @@ if(!function_exists('common_get_clean_svg')){
 		$svg = str_replace(array('xmlns="&ns_svg;"','xmlns:xlink="&ns_xlink;"','id="Layer_1"'), array('xmlns="http://www.w3.org/2000/svg"','xmlns:xlink="http://www.w3.org/1999/xlink"',''), $svg);
 
 		//find out where our SVG starts and ends
-		if(false === ($start = strpos($svg, '<svg')) || false === ($end = strpos($svg, '</svg>')))
+		if(false === ($start = common_strpos($svg, '<svg')) || false === ($end = common_strpos($svg, '</svg>')))
 			return false;
 
-		$svg = common_sanitize_whitespace(substr($svg, $start, ($end - $start + 6)));
+		$svg = common_sanitize_whitespace(common_substr($svg, $start, ($end - $start + 6)));
 
 		try {
 			$dom = new DOMDocument('1.0', get_bloginfo('charset'));
@@ -75,9 +75,9 @@ if(!function_exists('common_get_clean_svg')){
 			}
 
 			$svg = $dom->saveXML();
-			if(false === ($start = strpos($svg, '<svg')) || false === ($end = strpos($svg, '</svg>')))
+			if(false === ($start = common_strpos($svg, '<svg')) || false === ($end = common_strpos($svg, '</svg>')))
 				return false;
-			$svg = common_sanitize_whitespace(substr($svg, $start, ($end - $start + 6)));
+			$svg = common_sanitize_whitespace(common_substr($svg, $start, ($end - $start + 6)));
 		}
 		catch(Exception $e){ return false; }
 

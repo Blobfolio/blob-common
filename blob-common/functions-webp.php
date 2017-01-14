@@ -94,10 +94,10 @@ if(!function_exists('common_webp_cleanup')){
 		if(false !== ($dir = opendir($path))){
 			while(false !== ($thumb = readdir($dir))){
 				//wrong base
-				if(substr($thumb, 0, common_strlen($stub['filename'])) !== $stub['filename'])
+				if(common_substr($thumb, 0, common_strlen($stub['filename'])) !== $stub['filename'])
 					continue;
 
-				$suffix = substr($thumb, common_strlen($stub['filename']));
+				$suffix = common_substr($thumb, common_strlen($stub['filename']));
 				if(preg_match('/^(\-\d+x\d+)?\.webp$/', $suffix)){
 					$file = trailingslashit($path) . $thumb;
 					@unlink($file);
@@ -316,7 +316,7 @@ if(!function_exists('common_get_webp_sister')){
 			return false;
 
 		$mode = 'url';
-		if(substr($path, 0, common_strlen(ABSPATH)) === ABSPATH)
+		if(common_substr($path, 0, common_strlen(ABSPATH)) === ABSPATH)
 			$mode = 'path';
 
 		if($mode === 'url')

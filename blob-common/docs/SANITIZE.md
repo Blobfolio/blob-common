@@ -6,15 +6,24 @@ This guide documents functions for sanitizing, formatting, and validating data. 
 
 ##### Table of Contents
 
- * Formatting
+ * (re)Formatting
    * [common_array_to_indexed()](#common_array_to_indexed)
    * [common_format_money()](#common_format_money)
    * [common_format_phone()](#common_format_phone)
    * [common_get_excerpt()](#common_get_excerpt)
    * [common_inflect()](#common_inflect)
-   * [common_leadingslashit()](#common_leadingslashit)
-   * [common_unixslashit()](#common_unixslashit)
-   * [common_unleadingslashit()](#common_unleadingslashit)
+   * Case
+     * [common_strtolower()](#common_strtolower)
+     * [common_strtoupper()](#common_strtoupper)
+     * [common_ucfirst()](#common_ucfirst)
+     * [common_ucwords()](#common_ucwords)
+   * Paths
+     * [common_leadingslashit()](#common_leadingslashit)
+     * [common_unixslashit()](#common_unixslashit)
+     * [common_unleadingslashit()](#common_unleadingslashit)
+   * Spreadsheets
+     * [common_to_csv()](#common_to_csv)
+     * [common_to_xls()](#common_to_xls)
  * Sanitization
    * [common_sanitize_array()](#common_sanitize_array)
    * [common_sanitize_bool()](#common_sanitize_bool)
@@ -161,6 +170,161 @@ Like WP's `trailingslashit()` function but for the front.
 #### Return
 
 Return path with a leading slash attached (if not already there).
+
+
+
+## common_strtolower()
+
+Convert a string to lower case, prefering multi-byte safe operations when `mbstring` support exists. It will also catch additional unicode characters with case distinctions like `Ⅸ` to `ⅸ`.
+
+#### Arguments
+
+ * (*string*) String
+
+#### Return
+
+Return the string in lower case. If `mbstring` is not present, accented characters, etc., will probably be ignored.
+
+
+
+## common_strtoupper()
+
+Convert a string to upper case, prefering multi-byte safe operations when `mbstring` support exists. It will also catch additional unicode characters with case distinctions like `ⅸ` to `Ⅸ`.
+
+#### Arguments
+
+ * (*string*) String
+
+#### Return
+
+Return the string in upper case. If `mbstring` is not present, accented characters, etc., will probably be ignored.
+
+
+
+## common_to_csv()
+
+Convert an array of data to a CSV.
+
+#### Arguments
+
+ * (*array*) Data. this should be an `array` of `array`s, rows => cells
+ * (*array*) (*optional*) Headers. If provided, a row will be inserted at the top of the document containing these values. If absent, a header row can be built using the array keys of the first data row (if that inner array is associative). If neither apply, no header row will be inserted.
+ * (*string*) (*optional*) Delimiter. Default: `","`
+ * (*string*) (*optional*) Line separator. Default: `\n`
+
+#### Return
+
+A string containing the data in CSV format.
+
+#### Example
+
+```php
+//header labels
+$headers = array(
+    'PRODUCT ID',
+    'PRODUCT NAME',
+    'PRICE'
+);
+
+//data
+$data = array(
+    array(
+        12345,
+        'Applesauce',
+        4.99
+    ),
+    array(
+        67890,
+        'Banana',
+        1.25
+    )
+);
+
+$csv = common_to_csv($data, $headers);
+```
+
+
+
+## common_to_xls()
+
+Convert an array of data to a Microsoft Excel document. Note: this returns data in [XML format](https://en.wikipedia.org/wiki/Microsoft_Office_XML_formats), which may be incompatible with *really* ancient versions of Microsoft Office.
+
+#### Arguments
+
+ * (*array*) Data. this should be an `array` of `array`s, rows => cells
+ * (*array*) (*optional*) Headers. If provided, a row will be inserted at the top of the document containing these values. If absent, a header row can be built using the array keys of the first data row (if that inner array is associative). If neither apply, no header row will be inserted.
+
+#### Return
+
+A string containing the data in XML format. The following cell formats are automatically detected:
+
+ * `Currency` (US): `"$5.00"`  or `"99&cent;"`
+ * `General Date`: `"2015-01-03 12:30:33"`
+ * `Long Time`: `"12:30:33"`
+ * `Percent`: `"12%"`
+ * `Short Date`: `"2015-01-03"`
+ * `True/False`: `TRUE`
+ * `Number`: any other kind of numeric value
+ * `String`: everything else
+
+#### Example
+
+```php
+//header labels
+$headers = array(
+    'PRODUCT ID',
+    'PRODUCT NAME',
+    'PRICE'
+);
+
+//data
+$data = array(
+    array(
+        12345,
+        'Applesauce',
+        4.99
+    ),
+    array(
+        67890,
+        'Banana',
+        1.25
+    )
+);
+
+$xls = common_to_xls($data, $headers);
+```
+
+
+
+## common_ucfirst()
+
+Convert a string to sentence case, prefering multi-byte safe operations when `mbstring` support exists. It will also catch additional unicode characters with case distinctions like `ⅸ` to `Ⅸ`.
+
+As with the built-in `ucfirst()` function, this does not affect quoted content.
+
+#### Arguments
+
+ * (*string*) String
+
+#### Return
+
+Return the string in sentence case. If `mbstring` is not present, accented characters, etc., will probably be ignored.
+
+
+
+## common_ucwords()
+
+Convert a string to title case (e.g. the first letter of each word is upper case), prefering multi-byte safe operations when `mbstring` support exists. It will also catch additional unicode characters with case distinctions like `ⅸ` to `Ⅸ`.
+
+As with the built-in `ucfirst()` function, this does not affect quoted content.
+
+#### Arguments
+
+ * (*string*) String
+
+#### Return
+
+Return the string in title case. If `mbstring` is not present, accented characters, etc., will probably be ignored.
 
 
 
