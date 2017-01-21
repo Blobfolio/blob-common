@@ -326,7 +326,7 @@ if(!function_exists('common_readfile_chunked')){
 
 		$status = fclose($handle);
 
- 		//return number of bytes delivered like readfile() does
+		//return number of bytes delivered like readfile() does
 		if($retbytes && $status)
 			return $cnt;
 
@@ -705,12 +705,17 @@ if(!function_exists('common_theme_path')){
 // @return days
 if(!function_exists('common_datediff')){
 	function common_datediff($date1, $date2){
-		$date1 = date('Y-m-d', strtotime($date1));
-		$date2 = date('Y-m-d', strtotime($date2));
+		$date1 = common_sanitize_date($date1);
+		$date2 = common_sanitize_date($date2);
 
 		//same date, tricky tricky!
-		if($date1 === $date2)
+		if(
+			$date1 === $date2 ||
+			$date1 === '0000-00-00 00:00:00' ||
+			$date2 === '0000-00-00 00:00:00'
+		){
 			return 0;
+		}
 
 		try {
 			$date1 = new DateTime($date1);
@@ -719,6 +724,14 @@ if(!function_exists('common_datediff')){
 
 			return abs($diff->days);
 		}
+		catch(Throwable $e){
+			//this is a simple fallback using unix timestamps
+			//however it will fail to consider things like
+			//daylight saving
+			$date1 = strtotime($date1);
+			$date2 = strtotime($date2);
+			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
+		}
 		catch(Exception $e){
 			//this is a simple fallback using unix timestamps
 			//however it will fail to consider things like
@@ -726,6 +739,96 @@ if(!function_exists('common_datediff')){
 			$date1 = strtotime($date1);
 			$date2 = strtotime($date2);
 			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
+		}
+	}
+}
+
+//-------------------------------------------------
+// Local Time
+//
+// get a proper timezone for the blog
+//
+// @param n/a
+// @return timezone
+if(!function_exists('common_get_blog_timezone')){
+	function common_get_blog_timezone(){
+		static $tz;
+
+		if(is_null($tz)){
+			//try the timezone string
+			if (false === $tz = get_option('timezone_string', false)){
+
+				//try a gmt offset
+				if (0.0 === ($utc_offset = (float) get_option('gmt_offset', 0.0))){
+					$tz = 'UTC';
+				}
+				//pull proper tz abbreviation from the offset, or default to UTC
+				elseif(false === $tz = timezone_name_from_abbr('', ($utc_offset * 3600), 0)) {
+					$tz = 'UTC';
+				}
+			}
+		}
+
+		return $tz;
+	}
+}
+
+//-------------------------------------------------
+// To Local Time
+//
+// convert a datestring from one timezone to the
+// blog timezone
+//
+// @param date
+// @param original timezone
+// @return date
+if(!function_exists('common_to_blogtime')){
+	function common_to_blogtime($date, $from='UTC'){
+		$date = common_sanitize_datetime($date);
+		if($date === '0000-00-00 00:00:00'){
+			return $date;
+		}
+
+		try {
+			$date_new = new DateTime($date, new DateTimeZone($from));
+			$date_new->setTimezone(new DateTimeZone(common_get_blog_timezone()));
+			return $date_new->format('Y-m-d H:i:s');
+		}
+		catch(Throwable $e){
+			return $date;
+		}
+		catch(Exception $e){
+			return $date;
+		}
+	}
+}
+
+//-------------------------------------------------
+// From Local Time
+//
+// convert a datestring from one timezone to the
+// blog timezone
+//
+// @param date
+// @param new timezone
+// @return date
+if(!function_exists('common_from_blogtime')){
+	function common_from_blogtime($date, $to='UTC'){
+		$date = common_sanitize_datetime($date);
+		if($date === '0000-00-00 00:00:00'){
+			return $date;
+		}
+
+		try {
+			$date_new = new DateTime($date, new DateTimeZone(common_get_blog_timezone()));
+			$date_new->setTimezone(new DateTimeZone($to));
+			return $date_new->format('Y-m-d H:i:s');
+		}
+		catch(Throwable $e){
+			return $date;
+		}
+		catch(Exception $e){
+			return $date;
 		}
 	}
 }

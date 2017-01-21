@@ -29,6 +29,9 @@ This guide documents functions having to do (broadly) with space and time. The c
    * [common_upload_path()](#common_upload_path)
  * Time
    * [common_datediff()](#common_datediff)
+   * [common_get_blog_timezone()](#common_get_blog_timezone)
+   * [common_from_blogtime()](#common_from_blogtime)
+   * [common_to_blogtime()](#common_to_blogtime)
 
 
 
@@ -298,3 +301,47 @@ Calculate the number of days between two dates.
 #### Return
 
 Returns an integer representing the number of days between two dates. `DateTime` is preferred, but if unavailable the value will be approximated by counting up the seconds. The latter can be inaccurate if a range contains a Daylight Saving adjustment.
+
+
+
+## common_get_blogtimezone()
+
+Returns the blog's timezone as a string, e.g. `"America/Los_Angeles"`.
+
+#### Arguments
+
+N/A
+
+#### Return
+
+Returns the blog's timezone as a string, using (in order of priority) WP's timezone setting or a GMT offset. On failure it assumes UTC.
+
+
+
+## common_from_blogtime()
+
+Convert a datetime string in the blog's timezone to another timezone. Note: this requires `DateTime`.
+
+#### Arguments
+
+ * (*string*) Date
+ * (*string*) (*optional*) New Timezone. Default: `"UTC"`
+
+#### Return
+
+This will return the datetime string in the specified timezone.
+
+
+
+## common_to_blogtime()
+
+Convert a datetime string in one timezone to the blog's local timezone. Note: this requires `DateTime`.
+
+#### Arguments
+
+ * (*string*) Date
+ * (*string*) (*optional*) Original Timezone. Default: `"UTC"`
+
+#### Return
+
+This wil return the datetime string in the local timezone.
