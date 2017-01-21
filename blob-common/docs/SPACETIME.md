@@ -304,7 +304,7 @@ Returns an integer representing the number of days between two dates. `DateTime`
 
 
 
-## common_get_blogtimezone()
+## common_get_blog_timezone()
 
 Returns the blog's timezone as a string, e.g. `"America/Los_Angeles"`.
 
