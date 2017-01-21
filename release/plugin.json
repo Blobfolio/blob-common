@@ -1,6 +1,6 @@
 {
-	"Version" : "1.5.4",
-	"DownloadURI" : "https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/blob-common.zip",
+	"Version" : "1.5.5",
+	"DownloadURI" : "https://github.com/Blobfolio/blob-common/raw/1.5/release/blob-common.zip",
 	"Requires" : "4.5",
-	"Tested" : "4.7"
+	"Tested" : "4.7.2"
 }
