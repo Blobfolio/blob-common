@@ -2,7 +2,7 @@
 
 This guide documents image-related functions. The code can be located in `functions-image.php`.
 
-See also: [JIT Thumbnails](https://github.com/Blobfolio/blob-common/blob/master/blob-common/docs/JIT.md) and [WebP](https://github.com/Blobfolio/blob-common/blob/master/blob-common/docs/WEBP.md).
+See also: [JIT Thumbnails](https://github.com/Blobfolio/blob-common/blob/1.5/blob-common/docs/JIT.md) and [WebP](https://github.com/Blobfolio/blob-common/blob/1.5/blob-common/docs/WEBP.md).
 
 
 
