@@ -92,7 +92,7 @@ foreach ($data as $d) {
 
 $data = array(
 	'1234567890',
-	'5556182086'
+	'(800) 331-0500'
 );
 foreach ($data as $d) {
 	\blobfolio\test\cli::record('format::phone', array($d, false), \blobfolio\common\format::phone($d, false));
