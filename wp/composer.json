@@ -1,16 +1,13 @@
 {
 	"require": {
-		"neitanod/forceutf8": "dev-master",
-        "giggsey/libphonenumber-for-php" : "*"
+		"blobfolio/blob-common": "dev-master",
+		"neitanod/forceutf8": "dev-master"
 	},
 	"config": {
 		"vendor-dir": "lib/vendor",
 		"preferred-install": "dist"
 	},
 	"autoload": {
-		"psr-4": {
-			"blobfolio\\common\\": "lib/blobfolio/common"
-		},
         "files": [
         	"functions-behavior.php",
         	"functions-debug.php",
