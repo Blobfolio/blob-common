@@ -192,8 +192,6 @@ class constants {
 	//-------------------------------------------------
 	// MIME Types
 
-	const BY_MIME_FILE = 'extensions_by_mime.json';
-	const BY_EXT_FILE = 'mimes_by_extension.json';
 	const MIME_DEFAULT = 'application/octet-stream';
 
 
