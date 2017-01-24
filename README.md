@@ -19,7 +19,7 @@ For information about the plugin Tutan Common, which repackages and extends thes
  * [MIME Types & File Extensions](https://github.com/Blobfolio/blob-common/blob/master/docs/MIME.md)
  * [Multi-byte Wrappers](https://github.com/Blobfolio/blob-common/blob/master/docs/MB.md)
  * [Sanitizing](https://github.com/Blobfolio/blob-common/blob/master/docs/SANITIZE.md)
- * [Typecasting](https://github.com/Blobfolio/blob-common/blob/master/docs/CASt.md)
+ * [Typecasting](https://github.com/Blobfolio/blob-common/blob/master/docs/CAST.md)
 4. [License](#license)
 
 
@@ -61,7 +61,7 @@ This work is free. You can redistribute it and/or modify it under the terms of t
     DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
     Version 2, December 2004
     
-    Copyright (C) 2016 Sam Hocevar <sam@hocevar.net>
+    Copyright (C) 2017 Sam Hocevar <sam@hocevar.net>
     
     Everyone is permitted to copy and distribute verbatim or modified
     copies of this license document, and changing it is allowed as long
