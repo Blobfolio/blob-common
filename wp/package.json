@@ -1,5 +1,5 @@
 {
-  "name": "blob-common",
+  "name": "blob-common-wp",
   "devDependencies": {
     "grunt": "*",
     "grunt-contrib-clean": "*",

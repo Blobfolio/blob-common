@@ -1,6 +1,6 @@
 {
 	"require": {
-		"blobfolio/blob-common": "dev-master",
+		"blobfolio/blob-common": "^7.",
 		"neitanod/forceutf8": "dev-master"
 	},
 	"config": {
