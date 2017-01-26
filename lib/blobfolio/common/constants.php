@@ -152,6 +152,50 @@ class constants {
 		"\xF0\x90\xA7"=>"\xF0\x91\x8F"	//66599=>66639
 	);
 
+	//weird numbers
+	const NUMBER_CHARS = array(
+		"\xef\xbc\x90" => 0,
+		"\xef\xbc\x91" => 1,
+		"\xef\xbc\x92" => 2,
+		"\xef\xbc\x93" => 3,
+		"\xef\xbc\x94" => 4,
+		"\xef\xbc\x95" => 5,
+		"\xef\xbc\x96" => 6,
+		"\xef\xbc\x97" => 7,
+		"\xef\xbc\x98" => 8,
+		"\xef\xbc\x99" => 9,
+		"\xd9\xa0" => 0,
+		"\xd9\xa1" => 1,
+		"\xd9\xa2" => 2,
+		"\xd9\xa3" => 3,
+		"\xd9\xa4" => 4,
+		"\xd9\xa5" => 5,
+		"\xd9\xa6" => 6,
+		"\xd9\xa7" => 7,
+		"\xd9\xa8" => 8,
+		"\xd9\xa9" => 9,
+		"\xdb\xb0" => 0,
+		"\xdb\xb1" => 1,
+		"\xdb\xb2" => 2,
+		"\xdb\xb3" => 3,
+		"\xdb\xb4" => 4,
+		"\xdb\xb5" => 5,
+		"\xdb\xb6" => 6,
+		"\xdb\xb7" => 7,
+		"\xdb\xb8" => 8,
+		"\xdb\xb9" => 9,
+		"\xe1\xa0\x90" => 0,
+		"\xe1\xa0\x91" => 1,
+		"\xe1\xa0\x92" => 2,
+		"\xe1\xa0\x93" => 3,
+		"\xe1\xa0\x94" => 4,
+		"\xe1\xa0\x95" => 5,
+		"\xe1\xa0\x96" => 6,
+		"\xe1\xa0\x97" => 7,
+		"\xe1\xa0\x98" => 8,
+		"\xe1\xa0\x99" => 9,
+	);
+
 	//quote and apostrophe curly=>straight
 	const QUOTE_CHARS = array(
 		//Windows codepage 1252
