@@ -113,6 +113,13 @@ class cast {
 		}
 		else {
 			if (is_string($value)) {
+				static::string($value);
+
+				//replace number chars
+				$from = array_keys(\blobfolio\common\constants::NUMBER_CHARS);
+				$to = array_values(\blobfolio\common\constants::NUMBER_CHARS);
+				$value = str_replace($from, $to, $value);
+
 				//convert from cents
 				if (preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
 					$value = preg_replace('/[^\-\d\.]/', '', $value) * 100;
