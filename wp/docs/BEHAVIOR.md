@@ -14,6 +14,7 @@ Note: some behaviors are modified automatically by activating this plugin, but o
    * [common_disable_wp_embed()](#common_disable_wp_embed)
    * [common_svg_media_thumbnail()](#common_svg_media_thumbnail)
    * [common_upload_mimes()](#common_upload_mimes)
+   * [common_upload_real_mimes()](#common_upload_real_mimes)
    * [Other](#other)
  * [WP_DISABLE_JQUERY_MIGRATE](#wp_disable_jquery_migrate)
  * [WP_DISABLE_EMOJI](#wp_disable_emoji)
@@ -73,6 +74,18 @@ This function hooks into WordPress automatically; you don't need to do anything.
 ## common_upload_mimes()
 
 This adds SVG and WebP to the list of MIME types whitelisted by WordPress for upload.
+
+This function hooks into WordPress automatically; you don't need to do anything.
+
+
+
+## common_upload_real_mimes()
+
+WordPress `4.7.1` introduced [Magic MIME](https://en.wikipedia.org/wiki/File_format#Magic_number) detection as a security measure, but its implementation was flawed and as a result many valid files can no longer be uploaded.
+
+blob-common automatically hooks into the `wp_check_filetype_and_ext` filter and if needed runs its own analysis, which is both more thorough and more conservative. If a file's true type doesn't match its extension, it will be renamed.
+
+All uploads are still subject to the built-in whitelist of allowed types, so if your project requires something unusual (aside from SVG and WebP, which this plugin enables automatically), be sure to add it via the `upload_mimes` filter.
 
 This function hooks into WordPress automatically; you don't need to do anything.
 
