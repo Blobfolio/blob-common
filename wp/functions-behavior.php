@@ -14,6 +14,58 @@ if (!defined('ABSPATH')) {
 
 
 //---------------------------------------------------------------------
+// MIME Fix
+//---------------------------------------------------------------------
+
+//-------------------------------------------------
+// Fix Upload MIME detection
+//
+// this is an out-and-out bug in 4.7.1 - ..2, but
+// in general could use some extra love
+//
+// @param checked [ext, type, proper_filename]
+// @param file
+// @param filename
+// @param mimes
+if (!function_exists('common_upload_real_mimes')) {
+	function common_upload_real_mimes($checked, $file, $filename, $mimes) {
+
+		//only worry if the first check failed
+		if (!$checked['type'] || !$checked['ext']) {
+			$finfo = \blobfolio\common\mime::finfo($file, $filename);
+
+			//the time for checking non-svg images has passed already
+			//but everything else should be re-examined
+			if (
+				0 !== \blobfolio\common\mb::strpos($finfo['mime'], 'image/') ||
+				$finfo['extension'] === 'svg'
+			) {
+				//was the extension wrong?
+				if (count($finfo['suggested_filename'])) {
+					$filename = \blobfolio\common\data::array_pop_top($finfo['suggested_filename']);
+				}
+
+				//what does WP think?
+				$wp_filetype = wp_check_filetype($filename, $mimes);
+				if ($wp_filetype['ext'] && $wp_filetype['type']) {
+					$checked['ext'] = $wp_filetype['ext'];
+					$checked['type'] = $wp_filetype['type'];
+					$checked['proper_filename'] = $filename;
+				}
+			}
+		}
+
+		return $checked;
+
+	}
+	add_filter('wp_check_filetype_and_ext', 'common_upload_real_mimes', 10, 4);
+}
+
+//--------------------------------------------------------------------- end MIME fix
+
+
+
+//---------------------------------------------------------------------
 // Automatic Overrides
 //---------------------------------------------------------------------
 
