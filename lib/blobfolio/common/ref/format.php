@@ -114,12 +114,13 @@ class format {
 	// Phone
 	//
 	// @param str
-	// @param mobile only
+	// @param country
+	// @param types
 	// @return str
-	public static function phone(&$str='', bool $mobile=false) {
+	public static function phone(&$str='', $country='', $types=array()) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::phone($str[$k], $mobile);
+				static::phone($str[$k], $country, $types);
 			}
 		}
 		else {
@@ -131,31 +132,16 @@ class format {
 				return false;
 			}
 
-			try {
-				$strUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-				$str = $strUtil->parse($str, 'US');
-				if (!$strUtil->isValidNumber($str)) {
-					$str = '';
-					return false;
-				}
+			cast::string($country);
+			cast::array($types);
 
-				//should be mobile
-				if ($mobile) {
-					$type = $strUtil->getNumberType($str);
-					if (
-						\libphonenumber\PhoneNumberType::MOBILE !== $type &&
-						\libphonenumber\PhoneNumberType::FIXED_LINE_OR_MOBILE !== $type
-					) {
-						$str = '';
-						return false;
-					}
-				}
-
-				$str = $strUtil->format($str, \libphonenumber\PhoneNumberFormat::INTERNATIONAL);
-			} catch (\Throwable $e) {
+			$str = new \blobfolio\phone\phone($str, $country);
+			if (!$str->is_phone($types)) {
 				$str = '';
 				return false;
 			}
+
+			$str = (string) $str;
 		}
 
 		return true;

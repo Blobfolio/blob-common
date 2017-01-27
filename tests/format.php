@@ -91,8 +91,8 @@ foreach ($data as $d) {
 // Phone
 
 $data = array(
-	'1234567890',
-	'(800) 331-0500'
+	'2015550123',
+	'(204) 234-5678'
 );
 foreach ($data as $d) {
 	\blobfolio\test\cli::record('format::phone', array($d, false), \blobfolio\common\format::phone($d, false));
