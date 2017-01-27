@@ -37,7 +37,7 @@ $url = common_get_url_by_path($img);
 
 \blobfolio\test\cli::record('common_theme_path', array('pics'), common_theme_path('pics'));
 
-\blobfolio\test\cli::record('common_datediff', array('2015-01-01','2015-02-01'), common_datediff('2015-01-01','2015-02-01'));
+\blobfolio\test\cli::record('common_datediff', array('2015-01-01','2015-02-01'), common_datediff('2015-01-01', '2015-02-01'));
 
 \blobfolio\test\cli::record('common_get_blog_timezone', array(), common_get_blog_timezone());
 

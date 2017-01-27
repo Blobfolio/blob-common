@@ -220,7 +220,17 @@ Format and verify a phone number using international formatting. This uses `libp
 #### Arguments
 
  * (*string*) Phone number
- * (*bool*) Mobile only. If `TRUE`, the number will be rejected if it is determined to be a landline.
+ * (*string*) (*optional*) Country (suspected). Providing a suspected country of origin helps with identification. Default: `"US"`
+ * (*array*) (*optional*) Optionally require the number be of a certain type or types:
+   * `"fixed"`, i.e. landline
+   * `"mobile"`
+   * `"pager"`
+   * `"personal_number"`
+   * `"premium_rate"`, e.g. your favorite party line
+   * `"shared_cost"`
+   * `"toll_free"`
+   * `"voicemail"`
+   * `"voip"`, e.g. Google Voice
 
 #### Returns
 

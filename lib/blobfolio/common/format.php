@@ -195,10 +195,11 @@ class format {
 	// Phone
 	//
 	// @param str
-	// @param mobile only
+	// @param country
+	// @param types
 	// @return str
-	public static function phone($str='', bool $mobile=false) {
-		ref\format::phone($str, $mobile);
+	public static function phone($str='', $country='', $types=array()) {
+		ref\format::phone($str, $country, $types);
 		return $str;
 	}
 
