@@ -1,7 +1,61 @@
 {
-	"Version" : "7.0.3",
-	"DownloadURI" : "https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/blob-common.zip",
-	"Requires" : "4.7",
-	"Tested" : "4.7.2",
-	"Branch" : "Current"
+  "Name": "Tutan Common",
+  "Version": "7.0.3",
+  "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
+  "Requires": "4.7",
+  "Tested": "4.7.2",
+  "License": "WTFPL",
+  "First": "2015-03-31",
+  "Branch": "Current",
+  "Home": "https:\/\/github.com\/Blobfolio\/blob-common\/tree\/master\/wp\/",
+  "About": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/README.md",
+  "Icon": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/icon-256x256.png",
+  "Banner": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/banner-1544x500.png",
+  "Screenshots": [
+    {
+      "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
+    }
+  ],
+  "Changelog": [
+    {
+      "version": "7.0.3",
+      "notes": [
+        {
+          "type": "new",
+          "note": "Implement Magic MIME workaround to fix WP upload handling."
+        }
+      ]
+    },
+    {
+      "version": "7.0.2",
+      "notes": [
+        {
+          "type": "misc",
+          "note": "Swap libphonenumber for blob-phone."
+        }
+      ]
+    },
+    {
+      "version": "7.0.1",
+      "notes": [
+        {
+          "type": "misc",
+          "note": "Use blob-mimes for MIME type handling."
+        }
+      ]
+    },
+    {
+      "version": "7.0.0",
+      "notes": [
+        {
+          "type": "misc",
+          "note": "Use blob-common PHP library for non-WP-specific helpers."
+        },
+        {
+          "type": "change",
+          "note": "Start new major branch! PHP 7.0+ is now required. v1.5x is now deprecated."
+        }
+      ]
+    }
+  ]
 }
