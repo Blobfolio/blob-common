@@ -11,11 +11,9 @@
   "About": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/README.md",
   "Icon": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/icon-256x256.png",
   "Banner": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/banner-1544x500.png",
-  "Screenshots": [
-    {
-      "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
-    }
-  ],
+  "Screenshots": {
+    "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
+  },
   "Changelog": [
     {
       "version": "7.0.3",
