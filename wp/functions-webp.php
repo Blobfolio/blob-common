@@ -128,24 +128,27 @@ if (!function_exists('common_get_webp_src')) {
 			'alt'=>get_bloginfo('name'),
 			'classes'=>array()
 		);
-		$data = common_parse_args($args, $defaults);
+		$data = common_parse_args($args, $defaults, true);
 
 		//sanitize
-		$data['attachment_id'] = (int) $data['attachment_id'];
-		if (!$data['attachment_id']) {
+		if ($data['attachment_id'] < 1) {
 			return false;
 		}
 
-		if (is_string($data['classes']) && common_strlen($data['classes'])) {
-			$data['classes'] = explode(' ', common_sanitize_whitespace($data['classes']));
+		//sanitize classes
+		foreach ($data['classes'] as $k=>$v) {
+			\blobfolio\common\ref\cast::string($data['classes'][$k]);
+			\blobfolio\common\ref\sanitize::whitespace($data['classes'][$k]);
+			if (false !== common_strpos($data['classes'][$k], ' ')) {
+				$tmp = explode(' ', $data['classes'][$k]);
+				foreach ($tmp as $t) {
+					$data['classes'][] = $tmp;
+				}
+				unset($data['classes'][$k]);
+			}
 		}
-		elseif (!is_array($data['classes'])) {
-			$data['classes'] = array();
-		}
-
-		if (!common_strlen($data['alt'])) {
-			$data['alt'] = $defaults['alt'];
-		}
+		$data['classes'] = array_unique($data['classes']);
+		$data['classes'] = array_filter($data['classes'], 'strlen');
 
 		//all right, let's get started!
 		$sources = array();
@@ -155,14 +158,14 @@ if (!function_exists('common_get_webp_src')) {
 
 		//add in webp
 		if (common_supports_webp() && false !== ($w = common_get_webp_sister($image[0]))) {
-			$sources[] = '<source type="image/webp" srcset="' . $w . '" />';
+			$sources[] = '<source type="image/webp" srcset="' . esc_attr($w) . '" />';
 		}
 
 		//add in regular image
-		$sources[] = '<img src="' . $image[0] . '" alt="' . esc_attr($data['alt']) . '" width="' . $image[1] . '" height="' . $image[2] . '" />';
+		$sources[] = '<img src="' . esc_attr($image[0]) . '" alt="' . esc_attr($data['alt']) . '" width="' . $image[1] . '" height="' . $image[2] . '" />';
 
 		//wrap in a picture and we're done
-		return '<picture class="' . implode(' ', $data['classes']) . '">' . implode('', $sources) . '</picture>';
+		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
 	}
 }
 
@@ -173,6 +176,10 @@ if (!function_exists('common_get_webp_src')) {
 // @return picture or false
 if (!function_exists('common_get_webp_srcset')) {
 	function common_get_webp_srcset($args) {
+		//preparse sizes
+		if(isset($args['sizes']) && is_string($args['sizes'])){
+			$args['sizes'] = explode(',', $args['sizes']);
+		}
 
 		$defaults = array(
 			'attachment_id'=>0,
@@ -182,32 +189,27 @@ if (!function_exists('common_get_webp_srcset')) {
 			'classes'=>array(),
 			'default_size'=>null
 		);
-		$data = common_parse_args($args, $defaults);
+		$data = common_parse_args($args, $defaults, true);
 
 		//sanitize
-		$data['attachment_id'] = (int) $data['attachment_id'];
-		if (!$data['attachment_id']) {
+		if ($data['attachment_id'] < 1) {
 			return false;
 		}
 
-		if (is_string($data['sizes']) && common_strlen($data['sizes'])) {
-			$data['sizes'] = explode(',', $data['sizes']);
-			$data['sizes'] = array_map('common_sanitize_whitespace', $data['sizes']);
+		//sanitize classes
+		foreach ($data['classes'] as $k=>$v) {
+			\blobfolio\common\ref\cast::string($data['classes'][$k]);
+			\blobfolio\common\ref\sanitize::whitespace($data['classes'][$k]);
+			if (false !== common_strpos($data['classes'][$k], ' ')) {
+				$tmp = explode(' ', $data['classes'][$k]);
+				foreach ($tmp as $t) {
+					$data['classes'][] = $tmp;
+				}
+				unset($data['classes'][$k]);
+			}
 		}
-		if (!is_array($data['sizes'])) {
-			$data['sizes'] = array();
-		}
-
-		if (is_string($data['classes']) && common_strlen($data['classes'])) {
-			$data['classes'] = explode(' ', common_sanitize_whitespace($data['classes']));
-		}
-		elseif (!is_array($data['classes'])) {
-			$data['classes'] = array();
-		}
-
-		if (!common_strlen($data['alt'])) {
-			$data['alt'] = $defaults['alt'];
-		}
+		$data['classes'] = array_unique($data['classes']);
+		$data['classes'] = array_filter($data['classes'], 'strlen');
 
 		//all right, let's get started!
 		$sources = array();
@@ -226,7 +228,7 @@ if (!function_exists('common_get_webp_srcset')) {
 		$type = common_get_mime_type($image[0]);
 		if ($type === 'image/gif') {
 			if (common_supports_webp() && false !== ($w = common_get_webp_sister($image[0]))) {
-				$sources[] = sprintf($source, 'image/webp', "$w {$image[1]}w", '');
+				$sources[] = sprintf($source, 'image/webp', esc_attr("$w {$image[1]}w"), '');
 			}
 		}
 		//try srcset
@@ -260,19 +262,134 @@ if (!function_exists('common_get_webp_srcset')) {
 				}
 
 				if (count($source_webp)) {
-					$sources[] = sprintf($source, 'image/webp', implode(', ', $source_webp), implode(', ', $data['sizes']));
+					$sources[] = sprintf($source, 'image/webp', esc_attr(implode(', ', $source_webp)), esc_attr(implode(', ', $data['sizes'])));
 				}
 				if (count($source_normal)) {
-					$sources[] = sprintf($source, $type, implode(', ', $source_normal), implode(', ', $data['sizes']));
+					$sources[] = sprintf($source, $type, esc_attr(implode(', ', $source_normal)), esc_attr(implode(', ', $data['sizes'])));
 				}
 			}
 		}
 
 		//add in regular image
-		$sources[] = '<img src="' . $default_image[0] . '" alt="' . esc_attr($data['alt']) . '" width="' . $default_image[1] . '" height="' . $default_image[2] . '" />';
+		$sources[] = '<img src="' . esc_attr($default_image[0]) . '" alt="' . esc_attr($data['alt']) . '" width="' . $default_image[1] . '" height="' . $default_image[2] . '" />';
 
 		//wrap in a picture and we're done
-		return '<picture class="' . implode(' ', $data['classes']) . '">' . implode('', $sources) . '</picture>';
+		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
+	}
+}
+
+//-------------------------------------------------
+// Generate <picture>
+//
+// this allows for specifying different attachment
+// sources at different breakpoints, versus the
+// more automatic srcset version
+//
+// @param args(s)
+// @return picture or false
+if(!function_exists('common_get_webp_picture')){
+	function common_get_webp_picture($args) {
+		$defaults = array(
+			'attachment_id'=>0,
+			'sources'=>array(),
+			'alt'=>get_bloginfo('name'),
+			'classes'=>array(),
+			'default_size'=>'full'
+		);
+		$data = common_parse_args($args, $defaults, true);
+
+		$source_defaults = array(
+			'attachment_id'=>0,
+			'size'=>'full',
+			'media'=>''
+		);
+
+		//before we get too into it, let's make sure the default exists
+		if (false === $default_image = wp_get_attachment_image_src($data['attachment_id'], $data['default_size'])) {
+			return false;
+		}
+
+		//sanitize classes
+		foreach ($data['classes'] as $k=>$v) {
+			\blobfolio\common\ref\cast::string($data['classes'][$k]);
+			\blobfolio\common\ref\sanitize::whitespace($data['classes'][$k]);
+			if (false !== common_strpos($data['classes'][$k], ' ')) {
+				$tmp = explode(' ', $data['classes'][$k]);
+				foreach ($tmp as $t) {
+					$data['classes'][] = $tmp;
+				}
+				unset($data['classes'][$k]);
+			}
+		}
+		$data['classes'] = array_unique($data['classes']);
+		$data['classes'] = array_filter($data['classes'], 'strlen');
+
+		$sources = array();
+
+		//build and sanitize sources
+		foreach ($data['sources'] as $k=>$v) {
+			$data['sources'][$k] = common_parse_args($v, $source_defaults, true);
+
+			if ($data['sources'][$k]['attachment_id'] < 1) {
+				$data['sources'][$k]['attachment_id'] = $data['attachment_id'];
+			}
+
+			//multiple sources
+			if (false !== $tmp = wp_get_attachment_image_srcset($data['sources'][$k]['attachment_id'], $data['sources'][$k]['size'])) {
+				$srcset = explode(',', $tmp);
+				$srcset = array_map('common_sanitize_whitespace', $srcset);
+				usort($srcset, '_common_sort_srcset');
+
+				$tmp_webp = array();
+				$tmp_normal = array();
+				$type_normal = null;
+				foreach ($srcset as $src) {
+					$src = explode(' ', $src);
+					$url = $src[0];
+					$size = count($src) > 1 ? $src[1] : '';
+
+					$path = common_get_path_by_url($url);
+					if (file_exists($path)) {
+						$tmp_normal[] = trim("$url $size");
+						if (is_null($type_normal)) {
+							$type_normal = common_get_mime_type($url);
+						}
+
+						if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
+							$tmp_webp[] = trim("$w $size");
+						}
+					}
+				}
+
+				if (count($tmp_webp)) {
+					$sources[] = '<source type="image/webp" srcset="' . esc_attr(implode(', ', $tmp_webp)) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+				}
+
+				if (count($tmp_normal)) {
+					$sources[] = '<source type="' . $type_normal . '" srcset="' . esc_attr(implode(', ', $tmp_normal)) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+				}
+			}
+			//single source
+			elseif (false !== $tmp = wp_get_attachment_image_src($data['sources'][$k]['attachment_id'], $data['sources'][$k]['size'])) {
+				$url = common_array_pop_top($tmp);
+
+				$path = common_get_path_by_url($url);
+				if (file_exists($path)) {
+					if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
+						$sources[] = '<source type="image/webp" srcset="' . esc_attr($w) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+					}
+					$sources[] = '<source type="' . $type_normal . '" srcset="' . esc_attr($url) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+				}
+			}
+			else {
+				continue;
+			}
+		}
+
+		//add a fallback img to the end
+		$sources[] = '<img src="' . esc_attr($default_image[0]) . '" alt="' . esc_attr($data['alt']) . '" width="' . $default_image[1] . '" height="' . $default_image[2] . '" />';
+
+		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
 	}
 }
 
