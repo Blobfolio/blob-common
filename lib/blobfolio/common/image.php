@@ -55,6 +55,40 @@ class image {
 			$dom->preserveWhiteSpace = false;
 			$dom->loadXML("{$headers}\n{$svg}");
 
+			//create svg: prefixed namespace, which can help isolate
+			//properties from greedy scripts like Vue.js
+			$svgs = $dom->getElementsByTagName('svg');
+			if ($svgs->length) {
+				foreach ($svgs as $s) {
+					$s->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+					$s->setAttribute('svg:xmlns', 'http://www.w3.org/2000/svg');
+
+					//look for styles. we'll merge them along the way
+					//in case the file ended up with several
+					$styles = $s->getElementsByTagName('style');
+					if ($styles->length) {
+						$parent = $styles->item(0)->parentNode;
+						$svgstyle = $dom->createElement('svg:style');
+						$style = $dom->createElement('style');
+						while ($styles->length) {
+							$tmp = $styles->item(0);
+							//copy children
+							if ($tmp->childNodes->length) {
+								foreach ($tmp->childNodes as $t) {
+									$t->nodeValue .= ' ';
+									$clone = $t->cloneNode(true);
+									$style->appendChild($clone);
+									$svgstyle->appendChild($t);
+								}
+							}
+							$tmp->parentNode->removeChild($tmp);
+						}
+						$parent->appendChild($style);
+						$parent->appendChild($svgstyle);
+					}
+				}
+			}
+
 			$options = data::parse_args($args, constants::SVG_CLEAN_OPTIONS);
 
 			//are we randomizing the id?
@@ -215,12 +249,15 @@ class image {
 
 		//try to open the process
 		try {
+			$tmp_dir = sys_get_temp_dir();
+			$error_log = file::trailingslash($tmp_dir) . 'cwebp-error_' . microtime(true) . '.txt';
+
 			//proc setup
 			$descriptors = array(
 				0=>array('pipe', 'w'), //stdout
-				1=>array('file', '/tmp/error-output.txt', 'a') //stderr
+				1=>array('file', $error_log, 'a') //stderr
 			);
-			$cwd = '/tmp';
+			$cwd = $tmp_dir;
 			$pipes = array();
 
 			$type = $info['mime'];
@@ -242,6 +279,10 @@ class image {
 				$life = stream_get_contents($pipes[0]);
 				fclose($pipes[0]);
 				$return_value = proc_close($process);
+
+				if (file_exists($error_log)) {
+					@unlink($error_log);
+				}
 
 				return file_exists($out);
 			}
