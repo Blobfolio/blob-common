@@ -639,6 +639,18 @@ if (!function_exists('common_validate_cc')) {
 }
 
 //-------------------------------------------------
+// Sanitize a URL
+//
+// @param url
+// @return url
+if (!function_exists('common_sanitize_url')) {
+	function common_sanitize_url($url='') {
+		\blobfolio\common\ref\sanitize::url($url);
+		return $url;
+	}
+}
+
+//-------------------------------------------------
 // Validate domain name
 //
 // @param domain

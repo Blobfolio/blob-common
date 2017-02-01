@@ -46,6 +46,7 @@ This guide documents functions for sanitizing, formatting, and validating data. 
    * [common_sanitize_spaces()](#common_sanitize_spaces)
    * [common_sanitize_string()](#common_sanitize_string)
    * [common_sanitize_whitespace()](#common_sanitize_whitespace)
+   * [common_sanitize_url()](#common_sanitize_url)
    * [common_sanitize_zip5()](#common_sanitize_zip5)
    * [common_to_range()](#common_to_range)
    * [common_utf8()](#common_utf8)
@@ -678,6 +679,20 @@ Sanitize both horizontal and vertical whitespace.
 #### Return
 
 Return the sanitized string.
+
+
+
+## common_sanitize_url()
+
+Strip invalid characters and ensure a scheme exists (e.g. `http://`). URLs beginning `//` will be prefixed with `https:`.
+
+#### Arguments
+
+ * (*string*) URL
+
+#### Return
+
+Return the sanitized string. Invalid URLs are returned as an empty string.
 
 
 

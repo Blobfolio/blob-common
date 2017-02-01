@@ -27,6 +27,9 @@ if (!defined('ABSPATH')) {
 // @return true/false
 if (!function_exists('common_array_type')) {
 	function common_array_type(&$arr=null) {
+		if (!is_array($arr)) {
+			return false;
+		}
 		return \blobfolio\common\cast::array_type($arr);
 	}
 }
@@ -39,6 +42,9 @@ if (!function_exists('common_array_type')) {
 // @return true/false
 if (!function_exists('common_array_compare')) {
 	function common_array_compare(&$arr1, &$arr2) {
+		if (!is_array($arr) || !is_array($arr2)) {
+			return false;
+		}
 		return \blobfolio\common\data::array_compare($arr1, $arr2);
 	}
 }
@@ -65,6 +71,9 @@ if (!function_exists('common_iin_array()')) {
 // @return true/false
 if (!function_exists('common_iarray_key_exists()')) {
 	function common_iarray_key_exists($needle, $haystack) {
+		if (!is_array($haystack)) {
+			return false;
+		}
 		$needle = common_strtolower($needle);
 		$haystack = array_map('common_strtolower', array_keys($haystack));
 		return in_array($needle, $haystack);
@@ -208,6 +217,9 @@ if (!function_exists('common_random_int')) {
 // @return mixed or false
 if (!function_exists('common_array_pop_top')) {
 	function common_array_pop_top(&$arr) {
+		if (!is_array($arr)) {
+			return false;
+		}
 		return \blobfolio\common\data::array_pop_top($arr);
 	}
 }
@@ -222,6 +234,9 @@ if (!function_exists('common_array_pop_top')) {
 // @return mixed or false
 if (!function_exists('common_array_pop')) {
 	function common_array_pop(&$arr) {
+		if (!is_array($arr)) {
+			return false;
+		}
 		return \blobfolio\common\data::array_pop($arr);
 	}
 }

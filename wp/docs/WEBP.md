@@ -31,6 +31,7 @@ find /path/to/wp-content/uploads -name "*.webp" -type f -delete
 
  * [common_webp_cleanup()](#common_webp_cleanup)
  * [common_get_webp_sister()](#common_get_webp_sister)
+ * [common_get_webp_picture()](#common_get_webp_picture)
  * [common_get_webp_src()](#common_get_webp_src)
  * [common_get_webp_srcset()](#common_get_webp_srcset)
 
@@ -61,6 +62,41 @@ This function returns the WebP counterpart for the image source provided (e.g. i
 #### Return
 
 This function returns the corresponding WebP's path or URL (depending on what you passed), or `FALSE` on failure.
+
+
+
+## common_get_webp_picture()
+
+The [common_get_webp_src()](#common_get_webp_src) and [common_get_webp_srcset()](#common_get_webp_srcset) function below are based on their WP counterparts, largely automating the image selections. But the `<picture>` element can serve entirely different sources at arbitrary breakpoints (not just different resolutions). That's what this function is for.
+
+WebP support is not universal. This function will return a `<picture>` element with both WebP and original sources. An old fashioned `<img>` tag is included as a fallback for browsers that do not support `<picture>`.
+
+#### Arguments
+
+ * (*array*) Arguments
+
+```php
+//argument defaults
+array(
+	'attachment_id'=>0, //the fallback/default attachment id
+	'sources'=>array(
+		array(
+			'attachment_id'=>0, //if this source pulls from a different attachment than the default provided above...
+			'size'=>'full', //the size to pull
+			'sizes'=>array(), //a string or array containing data for the `sizes` attribute, optional
+			'media'=>'' //e.g. (min-width: 75em)
+		),
+		array()...
+	),
+	'alt'=>get_bloginfo('name'), //alt tag for the <img>
+	'classes'=>array() //classes to add to the <picture>
+	'default_size'=>'full' //the fallback size
+)
+```
+
+#### Return
+
+This function returns a `<picture>` element containing matching sources or false on failure. If WebP's cannot be located or generated, the element will only contain standard sources. If any individual source has multiple aspect ratios, all matches will be used (e.g. `srcset`).
 
 
 
