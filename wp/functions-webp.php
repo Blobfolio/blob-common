@@ -177,7 +177,7 @@ if (!function_exists('common_get_webp_src')) {
 if (!function_exists('common_get_webp_srcset')) {
 	function common_get_webp_srcset($args) {
 		//preparse sizes
-		if(isset($args['sizes']) && is_string($args['sizes'])){
+		if (isset($args['sizes']) && is_string($args['sizes'])) {
 			$args['sizes'] = explode(',', $args['sizes']);
 		}
 
@@ -210,6 +210,10 @@ if (!function_exists('common_get_webp_srcset')) {
 		}
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
+
+		if (!count($data['sizes'])) {
+			$data['sizes'] = array('100vw');
+		}
 
 		//all right, let's get started!
 		$sources = array();
@@ -262,10 +266,20 @@ if (!function_exists('common_get_webp_srcset')) {
 				}
 
 				if (count($source_webp)) {
-					$sources[] = sprintf($source, 'image/webp', esc_attr(implode(', ', $source_webp)), esc_attr(implode(', ', $data['sizes'])));
+					$sources[] = sprintf(
+						$source,
+						'image/webp',
+						esc_attr(implode(', ', $source_webp)),
+						esc_attr(implode(', ', $data['sizes']))
+					);
 				}
 				if (count($source_normal)) {
-					$sources[] = sprintf($source, $type, esc_attr(implode(', ', $source_normal)), esc_attr(implode(', ', $data['sizes'])));
+					$sources[] = sprintf(
+						$source,
+						$type,
+						esc_attr(implode(', ', $source_normal)),
+						esc_attr(implode(', ', $data['sizes']))
+					);
 				}
 			}
 		}
@@ -287,7 +301,7 @@ if (!function_exists('common_get_webp_srcset')) {
 //
 // @param args(s)
 // @return picture or false
-if(!function_exists('common_get_webp_picture')){
+if (!function_exists('common_get_webp_picture')) {
 	function common_get_webp_picture($args) {
 		$defaults = array(
 			'attachment_id'=>0,
@@ -301,6 +315,7 @@ if(!function_exists('common_get_webp_picture')){
 		$source_defaults = array(
 			'attachment_id'=>0,
 			'size'=>'full',
+			'sizes'=>array(),
 			'media'=>''
 		);
 
@@ -325,6 +340,7 @@ if(!function_exists('common_get_webp_picture')){
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
 		$sources = array();
+		$source = '<source type="%s" srcset="%s" sizes="%s" media="%s" />';
 
 		//build and sanitize sources
 		foreach ($data['sources'] as $k=>$v) {
@@ -332,6 +348,10 @@ if(!function_exists('common_get_webp_picture')){
 
 			if ($data['sources'][$k]['attachment_id'] < 1) {
 				$data['sources'][$k]['attachment_id'] = $data['attachment_id'];
+			}
+
+			if (!count($data['sources'][$k]['sizes'])) {
+				$data['sources'][$k]['sizes'] = array('100vw');
 			}
 
 			//multiple sources
@@ -362,11 +382,23 @@ if(!function_exists('common_get_webp_picture')){
 				}
 
 				if (count($tmp_webp)) {
-					$sources[] = '<source type="image/webp" srcset="' . esc_attr(implode(', ', $tmp_webp)) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+					$sources[] = sprintf(
+						$source,
+						'image/webp',
+						esc_attr(implode(', ', $tmp_webp)),
+						esc_attr(implode(', ', $data['sources'][$k]['sizes'])),
+						esc_attr($data['sources'][$k]['media'])
+					);
 				}
 
 				if (count($tmp_normal)) {
-					$sources[] = '<source type="' . $type_normal . '" srcset="' . esc_attr(implode(', ', $tmp_normal)) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+					$sources[] = sprintf(
+						$source,
+						$type_normal,
+						esc_attr(implode(', ', $tmp_normal)),
+						esc_attr(implode(', ', $data['sources'][$k]['sizes'])),
+						esc_attr($data['sources'][$k]['media'])
+					);
 				}
 			}
 			//single source
@@ -376,9 +408,21 @@ if(!function_exists('common_get_webp_picture')){
 				$path = common_get_path_by_url($url);
 				if (file_exists($path)) {
 					if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
-						$sources[] = '<source type="image/webp" srcset="' . esc_attr($w) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+						$sources[] = sprintf(
+							$source,
+							'image/webp',
+							esc_attr($w),
+							'',
+							esc_attr($data['sources'][$k]['media'])
+						);
 					}
-					$sources[] = '<source type="' . $type_normal . '" srcset="' . esc_attr($url) . '" media="' . esc_attr($data['sources'][$k]['media']) . '" />';
+					$sources[] = sprintf(
+						$source,
+						$type_normal,
+						esc_attr($url),
+						'',
+						esc_attr($data['sources'][$k]['media'])
+					);
 				}
 			}
 			else {
@@ -389,7 +433,10 @@ if(!function_exists('common_get_webp_picture')){
 		//add a fallback img to the end
 		$sources[] = '<img src="' . esc_attr($default_image[0]) . '" alt="' . esc_attr($data['alt']) . '" width="' . $default_image[1] . '" height="' . $default_image[2] . '" />';
 
-		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
+		$sources = implode('', $sources);
+		$sources = str_replace(array('media=""', 'sizes=""'), '', $sources);
+
+		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . $sources . '</picture>';
 	}
 }
 

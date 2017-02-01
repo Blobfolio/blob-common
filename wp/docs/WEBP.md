@@ -83,6 +83,7 @@ array(
 		array(
 			'attachment_id'=>0, //if this source pulls from a different attachment than the default provided above...
 			'size'=>'full', //the size to pull
+			'sizes'=>array(), //a string or array containing data for the `sizes` attribute, optional
 			'media'=>'' //e.g. (min-width: 75em)
 		),
 		array()...
