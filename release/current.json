@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.0.3",
+  "Version": "7.0.4",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.2",
@@ -15,6 +15,31 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.0.4",
+      "notes": [
+        {
+          "type": "new",
+          "note": "common_sanitize_url() wrapper."
+        },
+        {
+          "type": "fix",
+          "note": "WebP uses `sys_get_temp_dir` instead of assuming `\/tmp`."
+        },
+        {
+          "type": "improvement",
+          "note": "WebP error log no longer uses set name (better for multi-site environments)."
+        },
+        {
+          "type": "improvement",
+          "note": "SVG cleaning now combines `style` tags."
+        },
+        {
+          "type": "improvement",
+          "note": "SVG cleaning adds svg:xmlns to workaround Vue.JS's bad habit of removing inline styles."
+        }
+      ]
+    },
     {
       "version": "7.0.3",
       "notes": [
