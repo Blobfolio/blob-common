@@ -643,8 +643,8 @@ if (!function_exists('common_validate_cc')) {
 //
 // @param url
 // @return url
-if(!function_exists('common_sanitize_url')){
-	function common_sanitize_url($url=''){
+if (!function_exists('common_sanitize_url')) {
+	function common_sanitize_url($url='') {
 		\blobfolio\common\ref\sanitize::url($url);
 		return $url;
 	}
