@@ -42,7 +42,7 @@ if (!function_exists('common_array_type')) {
 // @return true/false
 if (!function_exists('common_array_compare')) {
 	function common_array_compare(&$arr1, &$arr2) {
-		if (!is_array($arr) || !is_array($arr2)) {
+		if (!is_array($arr1) || !is_array($arr2)) {
 			return false;
 		}
 		return \blobfolio\common\data::array_compare($arr1, $arr2);
