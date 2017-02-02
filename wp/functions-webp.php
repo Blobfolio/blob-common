@@ -136,17 +136,7 @@ if (!function_exists('common_get_webp_src')) {
 		}
 
 		//sanitize classes
-		foreach ($data['classes'] as $k=>$v) {
-			\blobfolio\common\ref\cast::string($data['classes'][$k]);
-			\blobfolio\common\ref\sanitize::whitespace($data['classes'][$k]);
-			if (false !== common_strpos($data['classes'][$k], ' ')) {
-				$tmp = explode(' ', $data['classes'][$k]);
-				foreach ($tmp as $t) {
-					$data['classes'][] = $tmp;
-				}
-				unset($data['classes'][$k]);
-			}
-		}
+		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
@@ -197,20 +187,13 @@ if (!function_exists('common_get_webp_srcset')) {
 		}
 
 		//sanitize classes
-		foreach ($data['classes'] as $k=>$v) {
-			\blobfolio\common\ref\cast::string($data['classes'][$k]);
-			\blobfolio\common\ref\sanitize::whitespace($data['classes'][$k]);
-			if (false !== common_strpos($data['classes'][$k], ' ')) {
-				$tmp = explode(' ', $data['classes'][$k]);
-				foreach ($tmp as $t) {
-					$data['classes'][] = $tmp;
-				}
-				unset($data['classes'][$k]);
-			}
-		}
+		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
+		//and sizes
+		\blobfolio\common\ref\sanitize::whitespace($data['sizes']);
+		$data['sizes'] = array_filter($data['sizes'], 'strlen');
 		if (!count($data['sizes'])) {
 			$data['sizes'] = array('100vw');
 		}
@@ -325,17 +308,7 @@ if (!function_exists('common_get_webp_picture')) {
 		}
 
 		//sanitize classes
-		foreach ($data['classes'] as $k=>$v) {
-			\blobfolio\common\ref\cast::string($data['classes'][$k]);
-			\blobfolio\common\ref\sanitize::whitespace($data['classes'][$k]);
-			if (false !== common_strpos($data['classes'][$k], ' ')) {
-				$tmp = explode(' ', $data['classes'][$k]);
-				foreach ($tmp as $t) {
-					$data['classes'][] = $tmp;
-				}
-				unset($data['classes'][$k]);
-			}
-		}
+		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
@@ -350,6 +323,9 @@ if (!function_exists('common_get_webp_picture')) {
 				$data['sources'][$k]['attachment_id'] = $data['attachment_id'];
 			}
 
+			//sanitize sizes
+			\blobfolio\common\ref\sanitize::whitespace($data['sources'][$k]['sizes']);
+			$data['sources'][$k]['sizes'] = array_filter($data['sources'][$k]['sizes'], 'strlen');
 			if (!count($data['sources'][$k]['sizes'])) {
 				$data['sources'][$k]['sizes'] = array('100vw');
 			}
