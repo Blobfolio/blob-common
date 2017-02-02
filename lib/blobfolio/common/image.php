@@ -61,7 +61,7 @@ class image {
 			if ($svgs->length) {
 				foreach ($svgs as $s) {
 					$s->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-					$s->setAttribute('svg:xmlns', 'http://www.w3.org/2000/svg');
+					$s->setAttribute('xmlns:svg', 'http://www.w3.org/2000/svg');
 
 					//look for styles. we'll merge them along the way
 					//in case the file ended up with several

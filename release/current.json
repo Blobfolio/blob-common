@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.0.5",
+  "Version": "7.0.6",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.2",
@@ -15,6 +15,15 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.0.6",
+      "notes": [
+        {
+          "type": "fix",
+          "note": "SVG namespace parts ordered incorrectly in declaration."
+        }
+      ]
+    },
     {
       "version": "7.0.5",
       "notes": [
