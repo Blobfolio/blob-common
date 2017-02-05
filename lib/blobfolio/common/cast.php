@@ -51,9 +51,10 @@ class cast {
 	// Bool
 	//
 	// @param value
+	// @param flatten
 	// @return true/false
-	public static function bool($value=false) {
-		ref\cast::bool($value);
+	public static function bool($value=false, bool $flatten=false) {
+		ref\cast::bool($value, $flatten);
 		return $value;
 	}
 
@@ -61,9 +62,10 @@ class cast {
 	// Float
 	//
 	// @param value
+	// @param flatten
 	// @return true/false
-	public static function float($value=0) {
-		ref\cast::float($value);
+	public static function float($value=0, bool $flatten=false) {
+		ref\cast::float($value, $flatten);
 		return $value;
 	}
 
@@ -71,9 +73,10 @@ class cast {
 	// Int
 	//
 	// @param value
+	// @param flatten
 	// @return true/false
-	public static function int($value=0) {
-		ref\cast::int($value);
+	public static function int($value=0, bool $flatten=false) {
+		ref\cast::int($value, $flatten);
 		return $value;
 	}
 
@@ -81,9 +84,10 @@ class cast {
 	// Number
 	//
 	// @param value
+	// @param flatten
 	// @return value
-	public static function number($value=0) {
-		ref\cast::number($value);
+	public static function number($value=0, bool $flatten=false) {
+		ref\cast::number($value, $flatten);
 		return $value;
 	}
 
@@ -91,9 +95,10 @@ class cast {
 	// String
 	//
 	// @param value
+	// @param flatten
 	// @return value
-	public static function string($value='') {
-		ref\cast::string($value);
+	public static function string($value='', bool $flatten=false) {
+		ref\cast::string($value, $flatten);
 		return $value;
 	}
 
@@ -102,9 +107,10 @@ class cast {
 	//
 	// @param value
 	// @param type
+	// @param flatten
 	// @return value
-	public static function to_type($value, string $type=null) {
-		ref\cast::to_type($value, $type);
+	public static function to_type($value, string $type=null, bool $flatten=false) {
+		ref\cast::to_type($value, $type, $flatten);
 		return $value;
 	}
 }
