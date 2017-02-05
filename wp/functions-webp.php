@@ -48,32 +48,6 @@ if (!function_exists('common_supports_webp')) {
 }
 
 //-------------------------------------------------
-// Sort SRCSET by size
-//
-// @param a
-// @param b
-if (!function_exists('_common_sort_srcset')) {
-	function _common_sort_srcset($a, $b) {
-		$a1 = explode(' ', common_sanitize_whitespace($a));
-		$b1 = explode(' ', common_sanitize_whitespace($b));
-
-		//can't compute, leave it alone
-		if (count($a1) !== 2 || count($b1) !== 2) {
-			return 0;
-		}
-
-		$a2 = round(preg_replace('/[^\d]/', '', $a1[1]));
-		$b2 = round(preg_replace('/[^\d]/', '', $b1[1]));
-
-		if ($a2 === $b2) {
-			return 0;
-		}
-
-		return $a2 < $b2 ? -1 : 1;
-	}
-}
-
-//-------------------------------------------------
 // WebP Cleanup
 //
 // when an attachment image is deleted, delete the
@@ -173,11 +147,11 @@ if (!function_exists('common_get_webp_srcset')) {
 
 		$defaults = array(
 			'attachment_id'=>0,
-			'size'=>'full',
+			'size'=>array('full'),
 			'sizes'=>array(),
 			'alt'=>get_bloginfo('name'),
 			'classes'=>array(),
-			'default_size'=>null
+			'default_size'=>null,
 		);
 		$data = common_parse_args($args, $defaults, true);
 
@@ -202,12 +176,39 @@ if (!function_exists('common_get_webp_srcset')) {
 		$sources = array();
 		$source = '<source type="%s" srcset="%s" sizes="%s" />';
 
-		//make sure the main size is good
-		if (false === ($image = wp_get_attachment_image_src($data['attachment_id'], $data['size']))) {
+		//sort out our srcset size(s)
+		\blobfolio\common\ref\sanitize::whitespace($data['size']);
+		$data['size'] = array_unique($data['size']);
+		$data['size'] = array_filter($data['size'], 'strlen');
+		$data['size'] = array_values($data['size']);
+		if (!count($data['size'])) {
+			$data['size'][] = 'full';
+		}
+
+		//can't do it
+		if (false === $srcset = common_get_image_srcset($data['attachment_id'], $data['size'])) {
 			return false;
 		}
-		//but is a different default preferred?
-		if (is_null($data['default_size']) || false === ($default_image = wp_get_attachment_image_src($data['attachment_id'], $data['size']))) {
+
+		//convert srcset to an array
+		$srcset = explode(',', $srcset);
+		\blobfolio\common\ref\sanitize::whitespace($srcset);
+
+		//our default default image
+		if (false === $image = wp_get_attachment_image_src($data['attachment_id'], $data['size'][0])) {
+			//have to wing it
+			$image = explode(' ', $srcset[0]);
+			if (count($image) > 1) {
+				$image[1] = preg_replace('/[^\d]/', '', $image[1]);
+			}
+			else {
+				$image[1] = '';
+			}
+			$image[2] = '';
+		}
+
+		//is a specific default image preferred?
+		if (is_null($data['default_size']) || false === ($default_image = wp_get_attachment_image_src($data['attachment_id'], $data['default_size']))) {
 			$default_image = $image;
 		}
 
@@ -220,50 +221,38 @@ if (!function_exists('common_get_webp_srcset')) {
 		}
 		//try srcset
 		else {
-			//if there is no srcset, let the src function handle it
-			//not sure why WP's function just explodes when it could return *something*
-			if (false === $srcset = wp_get_attachment_image_srcset($data['attachment_id'], $data['size'])) {
-				return common_get_webp_src($data);
-			}
+			$source_normal = array();
+			$source_webp = array();
+			foreach ($srcset as $src) {
+				$src = explode(' ', $src);
+				$url = $src[0];
+				$size = count($src) > 1 ? $src[1] : '';
 
-			if (is_string($srcset) && common_strlen($srcset)) {
-				$srcset = explode(',', $srcset);
-				$srcset = array_map('common_sanitize_whitespace', $srcset);
-				usort($srcset, '_common_sort_srcset');
+				$path = common_get_path_by_url($url);
+				if (file_exists($path)) {
+					$source_normal[] = trim("$url $size");
 
-				$source_normal = array();
-				$source_webp = array();
-				foreach ($srcset as $src) {
-					$src = explode(' ', $src);
-					$url = $src[0];
-					$size = count($src) > 1 ? $src[1] : '';
-
-					$path = common_get_path_by_url($url);
-					if (file_exists($path)) {
-						$source_normal[] = trim("$url $size");
-
-						if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
-							$source_webp[] = trim("$w $size");
-						}
+					if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
+						$source_webp[] = trim("$w $size");
 					}
 				}
+			}
 
-				if (count($source_webp)) {
-					$sources[] = sprintf(
-						$source,
-						'image/webp',
-						esc_attr(implode(', ', $source_webp)),
-						esc_attr(implode(', ', $data['sizes']))
-					);
-				}
-				if (count($source_normal)) {
-					$sources[] = sprintf(
-						$source,
-						$type,
-						esc_attr(implode(', ', $source_normal)),
-						esc_attr(implode(', ', $data['sizes']))
-					);
-				}
+			if (count($source_webp)) {
+				$sources[] = sprintf(
+					$source,
+					'image/webp',
+					esc_attr(implode(', ', $source_webp)),
+					esc_attr(implode(', ', $data['sizes']))
+				);
+			}
+			if (count($source_normal)) {
+				$sources[] = sprintf(
+					$source,
+					$type,
+					esc_attr(implode(', ', $source_normal)),
+					esc_attr(implode(', ', $data['sizes']))
+				);
 			}
 		}
 
@@ -297,7 +286,7 @@ if (!function_exists('common_get_webp_picture')) {
 
 		$source_defaults = array(
 			'attachment_id'=>0,
-			'size'=>'full',
+			'size'=>array('full'),
 			'sizes'=>array(),
 			'media'=>''
 		);
@@ -330,79 +319,64 @@ if (!function_exists('common_get_webp_picture')) {
 				$data['sources'][$k]['sizes'] = array('100vw');
 			}
 
-			//multiple sources
-			if (false !== $tmp = wp_get_attachment_image_srcset($data['sources'][$k]['attachment_id'], $data['sources'][$k]['size'])) {
-				$srcset = explode(',', $tmp);
-				$srcset = array_map('common_sanitize_whitespace', $srcset);
-				usort($srcset, '_common_sort_srcset');
-
-				$tmp_webp = array();
-				$tmp_normal = array();
-				$type_normal = null;
-				foreach ($srcset as $src) {
-					$src = explode(' ', $src);
-					$url = $src[0];
-					$size = count($src) > 1 ? $src[1] : '';
-
-					$path = common_get_path_by_url($url);
-					if (file_exists($path)) {
-						$tmp_normal[] = trim("$url $size");
-						if (is_null($type_normal)) {
-							$type_normal = common_get_mime_type($url);
-						}
-
-						if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
-							$tmp_webp[] = trim("$w $size");
-						}
-					}
-				}
-
-				if (count($tmp_webp)) {
-					$sources[] = sprintf(
-						$source,
-						'image/webp',
-						esc_attr(implode(', ', $tmp_webp)),
-						esc_attr(implode(', ', $data['sources'][$k]['sizes'])),
-						esc_attr($data['sources'][$k]['media'])
-					);
-				}
-
-				if (count($tmp_normal)) {
-					$sources[] = sprintf(
-						$source,
-						$type_normal,
-						esc_attr(implode(', ', $tmp_normal)),
-						esc_attr(implode(', ', $data['sources'][$k]['sizes'])),
-						esc_attr($data['sources'][$k]['media'])
-					);
-				}
+			//sort out our srcset size(s)
+			\blobfolio\common\ref\sanitize::whitespace($data['sources'][$k]['size']);
+			$data['sources'][$k]['size'] = array_unique($data['sources'][$k]['size']);
+			$data['sources'][$k]['size'] = array_filter($data['sources'][$k]['size'], 'strlen');
+			$data['sources'][$k]['size'] = array_values($data['sources'][$k]['size']);
+			if (!count($data['sources'][$k]['size'])) {
+				$data['sources'][$k]['size'][] = 'full';
 			}
-			//single source
-			elseif (false !== $tmp = wp_get_attachment_image_src($data['sources'][$k]['attachment_id'], $data['sources'][$k]['size'])) {
-				$url = common_array_pop_top($tmp);
+
+			//bad size(s)
+			if (false === $srcset = common_get_image_srcset($data['sources'][$k]['attachment_id'], $data['sources'][$k]['size'])) {
+				continue;
+			}
+
+			//multiple sources
+			$srcset = explode(',', $srcset);
+			\blobfolio\common\ref\sanitize::whitespace($srcset);
+			usort($srcset, '_common_sort_srcset');
+
+			$tmp_webp = array();
+			$tmp_normal = array();
+			$type_normal = null;
+			foreach ($srcset as $src) {
+				$src = explode(' ', $src);
+				$url = $src[0];
+				$size = count($src) > 1 ? $src[1] : '';
 
 				$path = common_get_path_by_url($url);
 				if (file_exists($path)) {
-					if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
-						$sources[] = sprintf(
-							$source,
-							'image/webp',
-							esc_attr($w),
-							'',
-							esc_attr($data['sources'][$k]['media'])
-						);
+					$tmp_normal[] = trim("$url $size");
+					if (is_null($type_normal)) {
+						$type_normal = common_get_mime_type($url);
 					}
-					$sources[] = sprintf(
-						$source,
-						$type_normal,
-						esc_attr($url),
-						'',
-						esc_attr($data['sources'][$k]['media'])
-					);
+
+					if (common_supports_webp() && false !== ($w = common_get_webp_sister($url))) {
+						$tmp_webp[] = trim("$w $size");
+					}
 				}
 			}
-			else {
-				continue;
+
+			if (count($tmp_webp)) {
+				$sources[] = sprintf(
+					$source,
+					'image/webp',
+					esc_attr(implode(', ', $tmp_webp)),
+					esc_attr(implode(', ', $data['sources'][$k]['sizes'])),
+					esc_attr($data['sources'][$k]['media'])
+				);
+			}
+
+			if (count($tmp_normal)) {
+				$sources[] = sprintf(
+					$source,
+					$type_normal,
+					esc_attr(implode(', ', $tmp_normal)),
+					esc_attr(implode(', ', $data['sources'][$k]['sizes'])),
+					esc_attr($data['sources'][$k]['media'])
+				);
 			}
 		}
 
