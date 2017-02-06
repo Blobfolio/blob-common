@@ -112,27 +112,35 @@ class mb {
 		else {
 			cast::string($str);
 
-			if (function_exists('mb_convert_case')) {
-				$str = mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
-			}
-			else {
-				$str = ucwords($str);
+			//don't use the built-in case functions as those
+			//kinda suck. instead let's adjust manually
+			$extra = array();
+
+			//the first letter
+			preg_match_all('/^(\p{L})/u', $str, $matches);
+			if (count($matches[0])) {
+				static::strtoupper($matches[1][0]);
+				if ($matches[0][0] !== $matches[1][0]) {
+					$extra[$matches[0][0]] = $matches[1][0];
+				}
 			}
 
-			//let's also deal with some common breaks like dashes and slashes
-			preg_match_all('/(\p{Pd}|\/)(\p{L})/u', $str, $matches);
+			//any letter following a dash, space, or forward slash
+			preg_match_all('/(\s|\p{Pd}|\/)(.)/u', $str, $matches);
 			if (count($matches[0])) {
-				$extra = array();
 				foreach ($matches[0] as $k=>$v) {
-					$new = $matches[1][$k] . \blobfolio\common\mb::strtoupper($matches[2][$k]);
+					static::strtoupper($matches[2][$k]);
+					$new = $matches[1][$k] . $matches[2][$k];
 					if ($v !== $new) {
 						$extra[$v] = $new;
 					}
 				}
-				if (count($extra)) {
-					$extra = array_unique($extra);
-					$str = str_replace(array_keys($extra), array_values($extra), $str);
-				}
+			}
+
+			//make replacement(s)
+			if (count($extra)) {
+				$extra = array_unique($extra);
+				$str = str_replace(array_keys($extra), array_values($extra), $str);
 			}
 		}
 

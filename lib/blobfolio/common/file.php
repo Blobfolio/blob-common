@@ -16,6 +16,7 @@ class file {
 	// @param path
 	// @return uri or false
 	public static function data_uri($path='') {
+		ref\cast::string($path, true);
 		ref\file::path($path, true);
 		try {
 			if (false !== $path && is_file($path)) {
@@ -38,6 +39,7 @@ class file {
 	// @return true/false
 	public static function empty_dir($path='') {
 		try {
+			ref\cast::string($path);
 			if (!is_readable($path) || !is_dir($path)) {
 				return false;
 			}
