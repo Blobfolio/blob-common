@@ -63,12 +63,10 @@ class image {
 					$s->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 					$s->setAttribute('xmlns:svg', 'http://www.w3.org/2000/svg');
 
-					//look for styles. we'll merge them along the way
-					//in case the file ended up with several
+					//combine style tags into a single block
 					$styles = $s->getElementsByTagName('style');
 					if ($styles->length) {
 						$parent = $styles->item(0)->parentNode;
-						$svgstyle = $dom->createElement('svg:style');
 						$style = $dom->createElement('style');
 						while ($styles->length) {
 							$tmp = $styles->item(0);
@@ -76,14 +74,73 @@ class image {
 							if ($tmp->childNodes->length) {
 								foreach ($tmp->childNodes as $t) {
 									$t->nodeValue .= ' ';
-									$clone = $t->cloneNode(true);
-									$style->appendChild($clone);
-									$svgstyle->appendChild($t);
+									$style->appendChild($t);
 								}
 							}
 							$tmp->parentNode->removeChild($tmp);
 						}
 						$parent->appendChild($style);
+					}
+
+					//now we can clean up the style formatting
+					$styles = $s->getElementsByTagName('style');
+					if ($styles->length) {
+						$style = $styles->item(0);
+
+						//make the formatting consistent
+						$css = new \Sabberworm\CSS\Parser($style->nodeValue);
+						$css_parsed = $css->parse();
+						$css_format = \Sabberworm\CSS\OutputFormat::create()->setSpaceAfterRuleName('')->setSpaceBeforeOpeningBrace('')->setSpaceAfterSelectorSeparator('')->setSpaceBetweenRules("\n");
+						$css = $css_parsed->render($css_format);
+
+						//join identical rules
+						if (false !== mb::strpos($css, "\n")) {
+							$lines = explode("\n", $css);
+							$rules = array();
+							foreach ($lines as $k=>$v) {
+								//ignore lines with @ rules
+								if (false !== strpos($v, '@')) {
+									continue;
+								}
+
+								//look for xxx{yyy} patterns
+								preg_match_all('/^([^\{]+)\{([^\}]+)\}$/', $v, $matches);
+								if (!count($matches[0])) {
+									continue;
+								}
+
+								$rule = $matches[2][0];
+								if (!isset($rules[$rule])) {
+									$rules[$rule] = array();
+								}
+
+								$selectors = explode(',', $matches[1][0]);
+								foreach ($selectors as $selector) {
+									$selector = preg_replace('/\s/', '', $selector);
+									$rules[$rule][] = $selector;
+								}
+
+								unset($lines[$k]);
+							}
+
+							//add our merged rules back to the output
+							foreach ($rules as $rule=>$selectors) {
+								$selectors = array_unique($selectors);
+								$lines[] = implode(',', $selectors) . '{' . $rule . '}';
+							}
+							$css = implode(' ', $lines);
+						}
+						$style->nodeValue = $css;
+
+						//set up an alternate namespace to workaround vue.js
+						$parent = $style->parentNode;
+						$svgstyle = $dom->createElement('svg:style');
+						if ($style->childNodes->length) {
+							foreach ($style->childNodes as $t) {
+								$clone = $t->cloneNode(true);
+								$svgstyle->appendChild($clone);
+							}
+						}
 						$parent->appendChild($svgstyle);
 					}
 				}
@@ -173,7 +230,7 @@ class image {
 	// @param svg
 	// @return dimensions or false
 	public static function svg_dimensions($svg) {
-		ref\cast::string($svg);
+		ref\cast::string($svg, true);
 
 		try {
 			//is this a file path?
