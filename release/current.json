@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.0.7",
+  "Version": "7.0.8",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.2",
@@ -15,6 +15,27 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.0.8",
+      "notes": [
+        {
+          "type": "improvement",
+          "note": "CSS formatting in get_clean_svg()."
+        },
+        {
+          "type": "change",
+          "note": "Ability to flatten while typecasting."
+        },
+        {
+          "type": "change",
+          "note": "WebP functions can now accept multiple sizes for use in srcset."
+        },
+        {
+          "type": "new",
+          "note": "Added common_get_image_srcset(), a friendlier version of WP's function."
+        }
+      ]
+    },
     {
       "version": "7.0.7",
       "notes": [

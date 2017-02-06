@@ -378,6 +378,7 @@ Typecast as boolean, but additionally catch values like `"1"` and `"true"`.
 #### Arguments
 
  * (*mixed*) Value
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Return
 
@@ -406,6 +407,7 @@ Pass the value to the appropriate `common_sanitize_X()` function based on the sp
 
  * (*mixed*) Value
  * (*string*) Type
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Return
 
@@ -490,6 +492,7 @@ Typecast as a float, stripping out non-numbery things.
 #### Arguments
 
  * (*mixed*) Number
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Return
 
@@ -509,6 +512,7 @@ Typecast as an integer, stripping out non-numbery things.
 #### Arguments
 
  * (*mixed*) Number
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Return
 
@@ -584,6 +588,7 @@ Strip non-numbery bits and return a proper float. This will also convert a value
 #### Arguments
 
  * (*mixed*) Number
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Return
 
@@ -655,7 +660,8 @@ Typecast as a UTF-8 string (and convert encoding if necessary).
 
 #### Arguments
 
- * (*string*) String
+ * (*mixed*) Array/String
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Return
 

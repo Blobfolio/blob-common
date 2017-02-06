@@ -25,7 +25,6 @@ class file {
 				return 'data:' . $finfo['mime'] . ';base64,' . $content;
 			}
 		} catch (\Throwable $e) {
-			print_r($e);
 			return false;
 		}
 
