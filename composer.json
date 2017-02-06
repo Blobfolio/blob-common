@@ -8,7 +8,7 @@
         "data",
         "parsing"
     ],
-    "version": "7.0.6",
+    "version": "7.0.8",
     "type": "library",
     "homepage": "https://github.com/Blobfolio/blob-common",
     "license": "WTFPL",
@@ -22,7 +22,8 @@
     "require": {
         "neitanod/forceutf8": "dev-master",
         "blobfolio/blob-mimes": "*",
-        "blobfolio/blob-phone": "*"
+        "blobfolio/blob-phone": "*",
+        "sabberworm/php-css-parser": "*"
     },
     "config": {
         "vendor-dir": "lib/vendor",
