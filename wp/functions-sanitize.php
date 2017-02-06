@@ -425,10 +425,11 @@ if (!function_exists('common_sanitize_ip')) {
 // Remove non-numeric chars from str
 //
 // @param num
+// @param flatten
 // @return num (float)
 if (!function_exists('common_sanitize_number')) {
-	function common_sanitize_number($num) {
-		return \blobfolio\common\cast::number($num);
+	function common_sanitize_number($num, $flatten=false) {
+		return \blobfolio\common\cast::number($num, $flatten);
 	}
 }
 
@@ -436,16 +437,17 @@ if (!function_exists('common_sanitize_number')) {
 // Bool
 //
 // @param value
+// @param flatten
 // @return true/false
 if (!function_exists('common_sanitize_bool')) {
-	function common_sanitize_bool($value=false) {
-		return \blobfolio\common\cast::bool($value);
+	function common_sanitize_bool($value=false, $flatten=false) {
+		return \blobfolio\common\cast::bool($value, $flatten);
 	}
 }
 //alias
 if (!function_exists('common_sanitize_boolean')) {
-	function common_sanitize_boolean($value=false) {
-		return common_sanitize_bool($value);
+	function common_sanitize_boolean($value=false, $flatten=false) {
+		return common_sanitize_bool($value, $flatten);
 	}
 }
 
@@ -453,21 +455,22 @@ if (!function_exists('common_sanitize_boolean')) {
 // Float
 //
 // @param value
+// @param flatten
 // @return true/false
 if (!function_exists('common_sanitize_float')) {
-	function common_sanitize_float($num=0) {
-		return \blobfolio\common\cast::float($num);
+	function common_sanitize_float($num=0, $flatten=false) {
+		return \blobfolio\common\cast::float($num, $flatten);
 	}
 }
 //alias
 if (!function_exists('common_doubleval')) {
-	function common_doubleval($num=0) {
-		return common_sanitize_float($num);
+	function common_doubleval($num=0, $flatten=false) {
+		return common_sanitize_float($num, $flatten);
 	}
 }
 if (!function_exists('common_floatval')) {
-	function common_floatval($num=0) {
-		return common_sanitize_float($num);
+	function common_floatval($num=0, $flatten=false) {
+		return common_sanitize_float($num, $flatten);
 	}
 }
 
@@ -476,10 +479,11 @@ if (!function_exists('common_floatval')) {
 //
 // @param value
 // @param type
+// @param flatten
 // @return value
 if (!function_exists('common_sanitize_by_type')) {
-	function common_sanitize_by_type($value, $type=null) {
-		return \blobfolio\common\cast::to_type($value, $type);
+	function common_sanitize_by_type($value, $type=null, $flatten=false) {
+		return \blobfolio\common\cast::to_type($value, $type, $flatten);
 	}
 }
 
@@ -489,13 +493,13 @@ if (!function_exists('common_sanitize_by_type')) {
 // @param value
 // @return true/false
 if (!function_exists('common_sanitize_int')) {
-	function common_sanitize_int($num=0) {
-		return \blobfolio\common\cast::int($num);
+	function common_sanitize_int($num=0, $flatten=false) {
+		return \blobfolio\common\cast::int($num, $flatten);
 	}
 }
 //another wrapper
 if (!function_exists('common_intval')) {
-	function common_intval($num=0) { return common_sanitize_int($num);
+	function common_intval($num=0, $flatten=false) { return common_sanitize_int($num, $flatten);
 	}
 }
 
@@ -503,16 +507,17 @@ if (!function_exists('common_intval')) {
 // String
 //
 // @param value
+// @param flatten
 // @return value
 if (!function_exists('common_sanitize_string')) {
-	function common_sanitize_string($value='') {
-		return \blobfolio\common\cast::string($value);
+	function common_sanitize_string($value='', $flatten=false) {
+		return \blobfolio\common\cast::string($value, $flatten);
 	}
 }
 //alias
 if (!function_exists('common_strval')) {
-	function common_strval($value='') {
-		return common_sanitize_string($value);
+	function common_strval($value='', $flatten=false) {
+		return common_sanitize_string($value, $flatten);
 	}
 }
 
