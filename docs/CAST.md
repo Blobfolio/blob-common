@@ -103,6 +103,7 @@ Typecast to boolean. This is like `(bool)` hinting, but will also properly inter
 #### Arguments 
 
  * (*mixed*) Bool. If an array is passed, each value will be recursively cast.
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Returns
 
@@ -134,6 +135,7 @@ Typecast to float.  This is like `(float)` hinting, but will strip out non-numer
 #### Arguments
 
  * (*mixed*) Float. If an array is passed, each value will be recursively cast.
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Returns
 
@@ -165,6 +167,7 @@ Typecast to integer.  This is like `(int)` hinting, but again, will strip out no
 #### Arguments
 
  * (*mixed*) Int. If an array is passed, each value will be recursively cast.
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Returns
 
@@ -196,6 +199,7 @@ This strips out non-numerical data and returns a float.
 #### Arguments
 
  * (*mixed*) Number. If an array is passed, each value will be recursively cast.
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Returns
 
@@ -228,6 +232,7 @@ This typecasts the variable to the specified type, mapping to one of the above f
 
  * (*mixed*) Variable. If an array is passed an the type is not `"array"`, each value will be recursively cast.
  * (*string*) Type: `"boolean"`, `"bool"`, `"integer"`, `"int"`, `"double"`, `"float"`, `"string"`, or `"array"`
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
 
 #### Returns
 

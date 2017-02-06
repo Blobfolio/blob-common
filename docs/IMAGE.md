@@ -23,7 +23,12 @@ $svg = blobfolio\common\image::clean_svg('path/to/img.svg');
 
 ## clean_svg()
 
-Retrieve and tidy up the source of an SVG file for, e.g., inclusion in HTML.
+Retrieve and tidy up the source of an SVG file for, e.g., inclusion in HTML:
+ * If multiple `<style>` tags exist, the rules will be joined under a single tag;
+ * CSS formatting is cleaned up;
+ * Identical CSS rules are joined by selector;
+ * An `xmlns:svg` namespace is created, and the `<style>` tag if any is copied to that namespace. This will help work around frontends that strip inline styles (like `Vue.js`);
+ * Whitespace is collapsed;
 
 #### Arguments
 

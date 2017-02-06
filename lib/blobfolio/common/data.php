@@ -138,6 +138,8 @@ class data {
 
 		//same or bad dates
 		if (
+			!is_string($date1) ||
+			!is_string($date2) ||
 			$date1 === $date2 ||
 			$date1 === '0000-00-00' ||
 			$date2 === '0000-00-00'
@@ -265,7 +267,7 @@ class data {
 				else {
 					$defaults[$k] = $args[$k];
 					if ($strict && !is_null($v)) {
-						ref\cast::to_type($defaults[$k], gettype($v));
+						ref\cast::to_type($defaults[$k], gettype($v), true);
 					}
 				}
 			}

@@ -103,6 +103,88 @@ if (!function_exists('common_get_featured_image_src')) {
 }
 
 //-------------------------------------------------
+// Sort SRCSET by size
+//
+// @param a
+// @param b
+if (!function_exists('_common_sort_srcset')) {
+	function _common_sort_srcset($a, $b) {
+		$a1 = explode(' ', common_sanitize_whitespace($a));
+		$b1 = explode(' ', common_sanitize_whitespace($b));
+
+		//can't compute, leave it alone
+		if (count($a1) !== 2 || count($b1) !== 2) {
+			return 0;
+		}
+
+		$a2 = round(preg_replace('/[^\d]/', '', $a1[1]));
+		$b2 = round(preg_replace('/[^\d]/', '', $b1[1]));
+
+		if ($a2 === $b2) {
+			return 0;
+		}
+
+		return $a2 < $b2 ? -1 : 1;
+	}
+}
+
+//-------------------------------------------------
+// Srcset Wrapper
+//
+// @param attachment_id
+// @param sizes
+// @return srcset string or false
+if (!function_exists('common_get_image_srcset')) {
+	function common_get_image_srcset(int $attachment_id=0, $size) {
+		if ($attachment_id < 1) {
+			return false;
+		}
+
+		\blobfolio\common\ref\cast::array($size);
+		\blobfolio\common\ref\sanitize::whitespace($size);
+		$size = array_unique($size);
+		$size = array_filter($size, 'strlen');
+		$size = array_values($size);
+
+		//no size or bad attachment
+		if (!count($size)) {
+			$size[] = 'full';
+		}
+
+		//if there's just one, try to let WP do it
+		$srcset = false;
+		if (count($size) === 1) {
+			$srcset = wp_get_attachment_image_srcset($attachment_id, $size[0]);
+		}
+
+		//no srcset yet?
+		if (false === $srcset) {
+			$srcset = array();
+			foreach ($size as $s) {
+				if (false !== $tmp = wp_get_attachment_image_src($attachment_id, $s)) {
+					$srcset[] = "{$tmp[0]} {$tmp[1]}w";
+				}
+			}
+
+			if (!count($srcset)) {
+				return false;
+			}
+		}
+		//convert WP's answer to an array
+		else {
+			$srcset = explode(',', $srcset);
+			\blobfolio\common\ref\sanitize::whitespace($srcset);
+		}
+
+		//sort
+		usort($srcset, '_common_sort_srcset');
+
+		//return
+		return implode(', ', $srcset);
+	}
+}
+
+//-------------------------------------------------
 // Get Featured Image Path
 //
 // @param post id

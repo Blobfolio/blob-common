@@ -39,7 +39,7 @@ class sanitize {
 	// @return str
 	public static function cc(&$ccnum='') {
 		//digits only
-		cast::string($ccnum);
+		cast::string($ccnum, true);
 
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
 		$str = $ccnum;
@@ -338,7 +338,7 @@ class sanitize {
 	// @param keep www
 	// @return host or false
 	public static function hostname(string &$domain, bool $www=false) {
-		cast::string($domain);
+		cast::string($domain, true);
 		static::whitespace($domain);
 		mb::strtolower($domain);
 

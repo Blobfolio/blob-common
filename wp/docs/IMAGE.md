@@ -14,6 +14,7 @@ See also: [JIT Thumbnails](https://github.com/Blobfolio/blob-common/blob/master/
  * [common_get_blank_image()](#common_get_blank_image)
  * [common_get_featured_image_path()](#common_get_featured_image_path)
  * [common_get_featured_image_src()](#common_get_featured_image_src)
+ * [common_get_image_srcset()](#common_get_image_srcset)
 
 
 
@@ -106,3 +107,18 @@ This function returns the URL to a post's featured image in one step instead of 
 #### Return
 
 If `$attributes` is `FALSE`, the URL for the image is returned; otherwise an array containing the URL, width, and height is returned. `FALSE` is returned on failure.
+
+
+
+## common_get_image_srcset()
+
+This function returns a string that can be used for an image's `srcset` attribute, like `wp_get_attachment_image_srcset()`. However it will not return `FALSE` in the event fewer than two sources exist, and you can optionally pass more than one size, in which case the `srcset` will only contain those specific sizes (rather than letting WP calculate matches).
+
+#### Arguments
+
+ * (*int*) Attachment ID
+ * (*mixed*) (*optional*) Size(s). If one size is passed, WordPress will calculate an `srcset` from aspect ratios. If more than one size is passed, only those sources will be used. Default `"full"`
+
+#### Return
+
+Returns the `srcset` string or `FALSE` on failure.

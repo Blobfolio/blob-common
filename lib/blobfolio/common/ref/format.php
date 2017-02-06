@@ -40,7 +40,7 @@ class format {
 	// @param ip
 	// @return number or false
 	public static function ip_to_number(&$ip) {
-		cast::string($ip);
+		cast::string($ip, true);
 
 		if (!filter_var($ip, FILTER_VALIDATE_IP)) {
 			$ip = false;
@@ -155,9 +155,9 @@ class format {
 	// @param to
 	// @return true
 	public static function to_timezone(&$date, $from='UTC', $to='UTC') {
-		cast::string($date);
-		cast::string($from);
-		cast::string($to);
+		cast::string($date, true);
+		cast::string($from, true);
+		cast::string($to, true);
 
 		sanitize::datetime($date);
 		sanitize::timezone($from);

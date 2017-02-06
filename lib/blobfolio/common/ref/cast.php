@@ -30,8 +30,8 @@ class cast {
 	//
 	// @param value
 	// @return true/false
-	public static function bool(&$value=false) {
-		if (is_array($value)) {
+	public static function bool(&$value=false, bool $flatten=false) {
+		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::bool($value[$k]);
 			}
@@ -51,7 +51,11 @@ class cast {
 				}
 			}
 			else {
-				$value = (bool) $value;
+				try {
+					$value = (bool) $value;
+				} catch (\Throwable $e) {
+					$value = false;
+				}
 			}
 		}
 
@@ -62,15 +66,16 @@ class cast {
 	// Float
 	//
 	// @param value
+	// @param flatten
 	// @return true/false
-	public static function float(&$value=0) {
-		if (is_array($value)) {
+	public static function float(&$value=0, bool $flatten=false) {
+		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::float($value[$k]);
 			}
 		}
 		else {
-			static::number($value);
+			static::number($value, true);
 			try {
 				$value = (float) $value;
 			} catch (\Throwable $e) {
@@ -85,15 +90,16 @@ class cast {
 	// Int
 	//
 	// @param value
+	// @param flatten
 	// @return true/false
-	public static function int(&$value=0) {
-		if (is_array($value)) {
+	public static function int(&$value=0, bool $flatten=false) {
+		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::int($value[$k]);
 			}
 		}
 		else {
-			static::number($value);
+			static::number($value, true);
 			$value = (int) $value;
 		}
 
@@ -104,9 +110,10 @@ class cast {
 	// Number
 	//
 	// @param value
+	// @param flatten
 	// @return value
-	public static function number(&$value=0) {
-		if (is_array($value)) {
+	public static function number(&$value=0, bool $flatten=false) {
+		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::number($value[$k]);
 			}
@@ -130,7 +137,11 @@ class cast {
 				}
 			}
 
-			$value = (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+			try {
+				$value = (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+			} catch (\Throwable $e) {
+				$value = 0.0;
+			}
 		}
 
 		return true;
@@ -140,9 +151,10 @@ class cast {
 	// String
 	//
 	// @param value
+	// @param flatten
 	// @return value
-	public static function string(&$value='') {
-		if (is_array($value)) {
+	public static function string(&$value='', bool $flatten=false) {
+		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::string($value[$k]);
 			}
@@ -164,8 +176,9 @@ class cast {
 	//
 	// @param value
 	// @param type
+	// @param flatten
 	// @return value
-	public static function to_type(&$value, string $type=null) {
+	public static function to_type(&$value, string $type=null, bool $flatten=false) {
 		if (!\blobfolio\common\mb::strlen($type)) {
 			return true;
 		}
@@ -173,16 +186,16 @@ class cast {
 		mb::strtolower($type);
 
 		if ($type === 'boolean' || $type === 'bool') {
-			static::bool($value);
+			static::bool($value, $flatten);
 		}
 		elseif ($type === 'integer' || $type === 'int') {
-			static::int($value);
+			static::int($value, $flatten);
 		}
 		elseif ($type === 'double' || $type === 'float') {
-			static::float($value);
+			static::float($value, $flatten);
 		}
 		elseif ($type === 'string') {
-			static::string($value);
+			static::string($value, $flatten);
 		}
 		elseif ($type === 'array') {
 			static::array($value);

@@ -251,7 +251,7 @@ echo blobfolio\common\mb::ucfirst($foo); //QuEen BjöRk Ⅷ loVes aPplEs.
 
 ## ucwords()
 
-Title-case a string. This function additionally catches various unicode characters with upper/lower variants that `mbstring` doesn't bother checking for.
+Title-case a string. This function additionally catches various unicode characters with upper/lower variants that `mbstring` doesn't bother checking for, and will also adjust letters following dashes and forward slashes.
 
 #### Versions
 

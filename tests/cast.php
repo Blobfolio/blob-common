@@ -18,7 +18,8 @@ $data = array(
 	'$5.00',
 	true,
 	'5%',
-	'off'
+	'off',
+	array(1,2,3)
 );
 
 //array
@@ -32,30 +33,35 @@ foreach ($data as $v) {
 	\blobfolio\test\cli::record('cast::bool', array($v), \blobfolio\common\cast::bool($v));
 }
 \blobfolio\test\cli::record('cast::bool', array($data), \blobfolio\common\cast::bool($data));
+\blobfolio\test\cli::record('cast::bool', array($data, true), \blobfolio\common\cast::bool($data, true));
 
 //float
 foreach ($data as $v) {
 	\blobfolio\test\cli::record('cast::float', array($v), \blobfolio\common\cast::float($v));
 }
 \blobfolio\test\cli::record('cast::float', array($data), \blobfolio\common\cast::float($data));
+\blobfolio\test\cli::record('cast::float', array($data, true), \blobfolio\common\cast::float($data, true));
 
 //integers
 foreach ($data as $v) {
 	\blobfolio\test\cli::record('cast::int', array($v), \blobfolio\common\cast::int($v));
 }
 \blobfolio\test\cli::record('cast::int', array($data), \blobfolio\common\cast::int($data));
+\blobfolio\test\cli::record('cast::int', array($data, true), \blobfolio\common\cast::int($data, true));
 
 //number
 foreach ($data as $v) {
 	\blobfolio\test\cli::record('cast::number', array($v), \blobfolio\common\cast::number($v));
 }
 \blobfolio\test\cli::record('cast::number', array($data), \blobfolio\common\cast::number($data));
+\blobfolio\test\cli::record('cast::number', array($data, true), \blobfolio\common\cast::number($data, true));
 
 //string
 foreach ($data as $v) {
 	\blobfolio\test\cli::record('cast::string', array($v), \blobfolio\common\cast::string($v));
 }
 \blobfolio\test\cli::record('cast::string', array($data), \blobfolio\common\cast::string($data));
+\blobfolio\test\cli::record('cast::string', array($data, true), \blobfolio\common\cast::string($data, true));
 
 
 
@@ -64,6 +70,7 @@ foreach ($data as $v) {
 
 \blobfolio\test\cli::record('cast::to_type', array($data, 'bool'), \blobfolio\common\cast::to_type($data, 'bool'));
 \blobfolio\test\cli::record('cast::to_type', array($data, 'string'), \blobfolio\common\cast::to_type($data, 'string'));
+\blobfolio\test\cli::record('cast::to_type', array($data, 'string', true), \blobfolio\common\cast::to_type($data, 'string', true));
 
 
 

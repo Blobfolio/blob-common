@@ -12,7 +12,7 @@
 // Case
 
 $data = array(
-	'quEen BjöRk Ⅷ loVes aPplEs.',
+	'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 	'THE lazY Rex ⅸ eAtS f00d.'
 );
 

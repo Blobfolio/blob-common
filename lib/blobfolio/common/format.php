@@ -29,7 +29,7 @@ class format {
 	// @param cidr
 	// @return range or false
 	public static function cidr_to_range($cidr) {
-		ref\cast::string($cidr);
+		ref\cast::string($cidr, true);
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = explode('/', $cidr);
@@ -113,7 +113,7 @@ class format {
 	// @param string
 	// @param args
 	public static function excerpt($str='', $args=null) {
-		ref\cast::string($str);
+		ref\cast::string($str, true);
 		ref\sanitize::whitespace($str);
 		$str = strip_tags($str);
 
@@ -225,6 +225,9 @@ class format {
 
 		//output headers, if applicable
 		if (count($headers)) {
+			foreach ($headers as $k=>$v) {
+				ref\cast::string($headers[$k], true);
+			}
 			ref\sanitize::csv($headers);
 			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
 		}
@@ -232,6 +235,9 @@ class format {
 		//output data
 		if (count($data)) {
 			foreach ($data as $line) {
+				foreach ($line as $k=>$v) {
+					ref\cast::string($line[$k], true);
+				}
 				ref\sanitize::csv($line);
 				$out[] = '"' . implode('"' . $delimiter . '"', $line) . '"';
 			}
@@ -300,6 +306,10 @@ class format {
 
 		//output headers, if applicable
 		if (count($headers)) {
+			foreach ($headers as $k=>$v) {
+				ref\cast::string($headers[$k], true);
+			}
+
 			$out[] = '<Row>';
 			foreach ($headers as $cell) {
 				$cell = htmlspecialchars(strip_tags(sanitize::quotes(sanitize::whitespace($cell))), ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
@@ -326,6 +336,7 @@ class format {
 						ref\cast::number($cell);
 					}
 					else {
+						ref\cast::string($cell, true);
 						ref\sanitize::whitespace($cell, 2);
 						//date and time
 						if (preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {

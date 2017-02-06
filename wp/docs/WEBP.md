@@ -82,7 +82,7 @@ array(
 	'sources'=>array(
 		array(
 			'attachment_id'=>0, //if this source pulls from a different attachment than the default provided above...
-			'size'=>'full', //the size to pull
+			'size'=>array('full'), //one more more sizes to use for the srcset. if one size is passed, WP will calculate the srcset, otherwise only the specific sizes will be used.
 			'sizes'=>array(), //a string or array containing data for the `sizes` attribute, optional
 			'media'=>'' //e.g. (min-width: 75em)
 		),
@@ -136,7 +136,7 @@ This works just like `common_get_webp_src()` except it supports `srcset` and `si
 //argument defaults
 array(
 	'attachment_id'=>0,
-	'size'=>'full',
+	'size'=>array('full'),//one or more sizes for the srcset. if one size is passed, WP will calculate the srcset the usual way, otherwise only the specific sizes will be used
 	'sizes'=>array(), //a string or array containing data for the `sizes` attribute, optional
 	'alt'=>get_bloginfo('name'), //alt tag for the <img>
 	'classes'=>array(), //classes to add to the <picture>

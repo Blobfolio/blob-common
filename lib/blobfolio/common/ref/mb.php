@@ -112,11 +112,35 @@ class mb {
 		else {
 			cast::string($str);
 
-			if (function_exists('mb_convert_case')) {
-				$str = mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
+			//don't use the built-in case functions as those
+			//kinda suck. instead let's adjust manually
+			$extra = array();
+
+			//the first letter
+			preg_match_all('/^(\p{L})/u', $str, $matches);
+			if (count($matches[0])) {
+				static::strtoupper($matches[1][0]);
+				if ($matches[0][0] !== $matches[1][0]) {
+					$extra[$matches[0][0]] = $matches[1][0];
+				}
 			}
-			else {
-				$str = ucwords($str);
+
+			//any letter following a dash, space, or forward slash
+			preg_match_all('/(\s|\p{Pd}|\/)(.)/u', $str, $matches);
+			if (count($matches[0])) {
+				foreach ($matches[0] as $k=>$v) {
+					static::strtoupper($matches[2][$k]);
+					$new = $matches[1][$k] . $matches[2][$k];
+					if ($v !== $new) {
+						$extra[$v] = $new;
+					}
+				}
+			}
+
+			//make replacement(s)
+			if (count($extra)) {
+				$extra = array_unique($extra);
+				$str = str_replace(array_keys($extra), array_values($extra), $str);
 			}
 		}
 
