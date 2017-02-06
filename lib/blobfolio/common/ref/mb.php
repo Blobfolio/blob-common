@@ -118,6 +118,22 @@ class mb {
 			else {
 				$str = ucwords($str);
 			}
+
+			//let's also deal with some common breaks like dashes and slashes
+			preg_match_all('/(\p{Pd}|\/)(\p{L})/u', $str, $matches);
+			if (count($matches[0])) {
+				$extra = array();
+				foreach ($matches[0] as $k=>$v) {
+					$new = $matches[1][$k] . \blobfolio\common\mb::strtoupper($matches[2][$k]);
+					if ($v !== $new) {
+						$extra[$v] = $new;
+					}
+				}
+				if (count($extra)) {
+					$extra = array_unique($extra);
+					$str = str_replace(array_keys($extra), array_values($extra), $str);
+				}
+			}
 		}
 
 		return true;
