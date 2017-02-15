@@ -58,11 +58,11 @@ class format {
 			try {
 				$ip_n = inet_pton($ip);
 				$bin = '';
-				for ($bit = \blobfolio\common\mb::strlen($ip_n) - 1; $bit >= 0; $bit--) {
+				for ($bit = strlen($ip_n) - 1; $bit >= 0; $bit--) {
 					$bin = sprintf('%08b', ord($ip_n[$bit])) . $bin;
 				}
 				$dec = '0';
-				for ($i = 0; $i < \blobfolio\common\mb::strlen($bin); $i++) {
+				for ($i = 0; $i < strlen($bin); $i++) {
 					$dec = bcmul($dec, '2', 0);
 					$dec = bcadd($dec, $bin[$i], 0);
 				}

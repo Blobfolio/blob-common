@@ -1,5 +1,5 @@
 /wp export-ignore
 /release export-ignore
 /tests export-ignore
-/Gruntfile.js
-/package.json
+/Gruntfile.js export-ignore
+/package.json export-ignore
