@@ -13,77 +13,6 @@ class image {
 	protected static $svg_ids = array();
 
 	//-------------------------------------------------
-	// Get DomDocument SVG
-	//
-	// this is an internal function for parsing an SVG
-	// string into a DomDocument object.
-	//
-	// @param code
-	// @return dom
-	protected static function get_domdocument_svg(string $svg='') {
-		try {
-			//first thing first, lowercase all tags
-			$svg = preg_replace('/<svg/i', '<svg', $svg);
-			$svg = preg_replace('/<\/svg>/i', '</svg>', $svg);
-
-			//find the start and end tags so we can cut out miscellaneous garbage
-			if (
-				false === ($start = mb::strpos($svg, '<svg')) ||
-				false === ($end = mb::strrpos($svg, '</svg>'))
-			) {
-				return false;
-			}
-			$svg = mb::substr($svg, $start, ($end - $start + 6));
-
-			//parse and resave it
-			$dom = new \DOMDocument('1.0', 'UTF-8');
-			$dom->formatOutput = false;
-			$dom->preserveWhiteSpace = false;
-			$dom->loadXML(constants::SVG_HEADER . "\n{$svg}");
-
-			return $dom;
-		} catch (\Throwable $e) {
-			return $dom = new \DOMDocument('1.0', 'UTF-8');
-		}
-	}
-
-	//-------------------------------------------------
-	// Get Nodes by Class
-	//
-	// this is an internal function to retrieve all
-	// DomElement nodes containing a certain CSS class
-	//
-	// @param starter
-	// @return nodes
-	protected static function get_domdocument_nodes_by_class($parent, string $class='') {
-		$nodes = array();
-		try {
-			if ($parent->childNodes && $parent->childNodes->length) {
-				foreach ($parent->childNodes as $child) {
-					if ($child->hasAttribute('class')) {
-						$classes = $child->getAttribute('class');
-						ref\sanitize::whitespace($classes);
-						$classes = explode(' ', $classes);
-						if (in_array($class, $classes)) {
-							$nodes[] = $child;
-						}
-					}
-					if ($child->childNodes && $child->childNodes->length) {
-						$deep = static::get_domdocument_nodes_by_class($child, $class);
-						foreach ($deep as $d) {
-							$nodes[] = $d;
-						}
-					}
-				}
-			}
-		} catch (\Throwable $e) {
-			return $nodes;
-		}
-
-		return $nodes;
-	}
-
-	//-------------------------------------------------
 	// Clean SVG
 	//
 	// @param path
@@ -108,6 +37,14 @@ class image {
 			);
 
 			//options
+			ref\cast::array($args);
+
+			//strip_js is a deprecated alias for sanitize
+			//pass its value on if sanitize isn't set
+			if (isset($args['strip_js']) && !isset($args['sanitize'])) {
+				$args['sanitize'] = $args['strip_js'];
+			}
+
 			$options = data::parse_args($args, constants::SVG_CLEAN_OPTIONS);
 			//some options imply or override others
 			if ($options['strip_style']) {
@@ -124,18 +61,15 @@ class image {
 			}
 
 			//do a quick pass through DomDoc to standardize formatting
-			$dom = static::get_domdocument_svg($svg);
-			$tmp = $dom->getElementsByTagName('svg');
-			if ($tmp->length) {
-				$svg = $tmp->item(0)->ownerDocument->saveXML($tmp->item(0));
-			}
-			else {
+			$dom = dom::load_svg($svg);
+			$svg = dom::save_svg($dom);
+			if (!strlen($svg)) {
 				return false;
 			}
 
 			//if this SVG is marked "passthrough", don't process it
 			$passthrough_key = hash('crc32', json_encode($options));
-			$dom = static::get_domdocument_svg($svg);
+			$dom = dom::load_svg($svg);
 			$tmp = $dom->getElementsByTagName('svg');
 			if ($tmp->item(0)->hasAttribute('data-cleaned') && $tmp->item(0)->getAttribute('data-cleaned') === $passthrough_key) {
 				if ($output === 'DATA_URI') {
@@ -150,13 +84,13 @@ class image {
 			}
 
 			//make sure SVGs have the current standard
-			$dom = static::get_domdocument_svg($svg);
+			$dom = dom::load_svg($svg);
 			$tmp = $dom->getElementsByTagName('svg');
 			foreach ($tmp as $t) {
 				$t->setAttribute('version', '1.1');
 				$t->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 			}
-			$svg = $dom->saveXML();
+			$svg = dom::save_svg($dom);
 
 			//let's get some early stripping done
 			if ($options['strip_data']) {
@@ -165,31 +99,26 @@ class image {
 			if ($options['strip_id']) {
 				$svg = preg_replace('/(\sid\s*=\s*"[^"]*")/i', '', $svg);
 			}
-			if ($options['strip_js']) {
-				$svg = preg_replace('/(\son[a-z\d_\-]+\s*=\s*"[^"]*")/i', '', $svg);
-				$dom = static::get_domdocument_svg($svg);
-				$tmp = $dom->getElementsByTagName('script');
-				while ($tmp->length) {
-					$tmp->item(0)->parentNode->removeChild($tmp->item(0));
-				}
-				$svg = $dom->saveXML();
-			}
 			if ($options['strip_style']) {
 				$svg = preg_replace('/(\s(style|class)\s*=\s*"[^"]*")/i', '', $svg);
-				$dom = static::get_domdocument_svg($svg);
-				$tmp = $dom->getElementsByTagName('style');
-				while ($tmp->length) {
-					$tmp->item(0)->parentNode->removeChild($tmp->item(0));
-				}
-				$svg = $dom->saveXML();
 			}
-			if ($options['strip_title']) {
-				$dom = static::get_domdocument_svg($svg);
-				$tmp = $dom->getElementsByTagName('title');
-				while ($tmp->length) {
-					$tmp->item(0)->parentNode->removeChild($tmp->item(0));
+
+			//let's do the dom tasks in one swoop
+			if ($options['strip_title'] || $options['strip_style']) {
+				$dom = dom::load_svg($svg);
+
+				if ($options['strip_style']) {
+					dom::remove_nodes($dom->getElementsByTagName('style'));
 				}
-				$svg = $dom->saveXML();
+				if ($options['strip_title']) {
+					dom::remove_nodes($dom->getElementsByTagName('title'));
+				}
+
+				$svg = dom::save_svg($dom);
+			}
+
+			if ($options['sanitize']) {
+				ref\sanitize::svg($svg);
 			}
 
 			//randomize IDs?
@@ -245,7 +174,7 @@ class image {
 				}
 
 				//tags supporting viewBox, width, and height
-				$dom = static::get_domdocument_svg($svg);
+				$dom = dom::load_svg($svg);
 				foreach (array('svg','pattern') as $tag) {
 					$tmp = $dom->getElementsByTagName($tag);
 					if ($tmp->length) {
@@ -255,17 +184,24 @@ class image {
 							$vb = $t->hasAttribute('viewBox') ? $t->getAttribute('viewBox') : null;
 
 							//make sure width and height are numbers
-							if (!is_numeric($width) && !preg_match('/^[\d\.]+%$/', $width)) {
+							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
 								ref\cast::float($width);
 								if ($width <= 0) {
 									$width = null;
 								}
 							}
-							if (!is_numeric($height) && !preg_match('/^[\d\.]+%$/', $height)) {
+							else {
+								$width = null;
+							}
+
+							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
 								ref\cast::float($height);
 								if ($height <= 0) {
 									$height = null;
 								}
+							}
+							else {
+								$height = null;
 							}
 
 							//all there or none there? can't help it
@@ -289,12 +225,12 @@ class image {
 						}
 					}
 				}
-				$svg = $dom->saveXML();
+				$svg = dom::save_svg($dom);
 			}
 
 			//now styles
 			if ($options['clean_styles'] || $options['namespace']) {
-				$dom = static::get_domdocument_svg($svg);
+				$dom = dom::load_svg($svg);
 				$svgs = $dom->getElementsByTagName('svg');
 				if ($svgs->length) {
 					foreach ($svgs as $s) {
@@ -319,7 +255,7 @@ class image {
 										$t->nodeValue .= ' ';
 										$style->appendChild($t);
 									}
-									$tmp->item(0)->parentNode->removeChild($tmp->item(0));
+									dom::remove_node($tmp->item(0));
 								}
 								$parent->appendChild($style);
 
@@ -417,47 +353,40 @@ class image {
 						if (count($rewrites)) {
 							//first pass, add new classes
 							foreach ($rewrites as $k=>$v) {
-								foreach ($v as $v2) {
-									$children = static::get_domdocument_nodes_by_class($s, $v2);
-									if (count($children)) {
-										foreach ($children as $child) {
-											$classes = $child->getAttribute('class');
-											$classes .= " $k";
-											$child->setAttribute('class', $classes);
-										}
+								$children = dom::get_nodes_by_class($s, $v);
+								if (count($children)) {
+									foreach ($children as $child) {
+										$classes = $child->getAttribute('class');
+										$classes .= " $k";
+										$child->setAttribute('class', $classes);
 									}
 								}
 							}
 
 							//second pass, remove old classes
 							foreach ($rewrites as $k=>$v) {
-								foreach ($v as $v2) {
-									$children = static::get_domdocument_nodes_by_class($s, $v2);
-									if (count($children)) {
-										foreach ($children as $child) {
-											$classes = $child->getAttribute('class');
-											ref\sanitize::whitespace($classes);
-											$classes = explode(' ', $classes);
-											unset($classes[array_search($v2, $classes)]);
-											$child->setAttribute('class', implode(' ', $classes));
-										}
+								$children = dom::get_nodes_by_class($s, $v);
+								if (count($children)) {
+									foreach ($children as $child) {
+										$classes = $child->getAttribute('class');
+										ref\sanitize::whitespace($classes);
+										$classes = explode(' ', $classes);
+										$classes = array_unique($classes);
+										$classes = array_diff($classes, $v);
+										$child->setAttribute('class', implode(' ', $classes));
 									}
 								}
 							}
 						}
 					}
 				}
-				$svg = $dom->saveXML();
+				$svg = dom::save_svg($dom);
 			}
 
 			//get back to just the object
-			$dom = static::get_domdocument_svg($svg);
-			$tmp = $dom->getElementsByTagName('svg');
-			if ($tmp->length) {
-				$tmp->item(0)->setAttribute('data-cleaned', $passthrough_key);
-				$svg = $tmp->item(0)->ownerDocument->saveXML($tmp->item(0));
-			}
-			else {
+			$dom = dom::load_svg($svg);
+			$svg = dom::save_svg($dom);
+			if (!strlen($svg)) {
 				return false;
 			}
 
@@ -532,7 +461,7 @@ class image {
 				}
 			}
 
-			$dom = static::get_domdocument_svg($svg);
+			$dom = dom::load_svg($svg);
 			$svgs = $dom->getElementsByTagName('svg');
 			if (!$svgs->length) {
 				return false;

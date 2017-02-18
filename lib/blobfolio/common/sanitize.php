@@ -214,6 +214,18 @@ class sanitize {
 	}
 
 	//-------------------------------------------------
+	// SVG
+	//
+	// @param str
+	// @param whitelisted tags
+	// @param whitelisted attributes
+	// @return str
+	public static function svg($str='', $tags=null, $attr=null) {
+		ref\sanitize::svg($str, $tags, $attr);
+		return $str;
+	}
+
+	//-------------------------------------------------
 	// Timezone
 	//
 	// @param timezone
