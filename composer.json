@@ -1,38 +1,46 @@
 {
-    "name": "blobfolio/blob-common",
-    "description": "An expansive PHP toolkit with functions for sanitizing, formatting, parsing, etc.",
-    "keywords": [
-        "PHP",
-        "sanitizing",
-        "formatting",
-        "data",
-        "parsing"
-    ],
-    "version": "7.1.0",
-    "type": "library",
-    "homepage": "https://github.com/Blobfolio/blob-common",
-    "license": "WTFPL",
-    "authors": [
-        {
-            "name": "Josh Stoik",
-            "email": "josh@blobfolio.com",
-            "homepage": "https://blobfolio.com"
-        }
-    ],
-    "require": {
-        "neitanod/forceutf8": "dev-master",
-        "blobfolio/blob-mimes": "*",
-        "blobfolio/blob-phone": "*",
-        "sabberworm/php-css-parser": "*"
-    },
-    "config": {
-        "vendor-dir": "lib/vendor",
-        "preferred-install": "dist"
-    },
-    "minimum-stability": "dev",
-    "autoload": {
-        "psr-4": {
-            "blobfolio\\common\\": "lib/blobfolio/common"
-        }
+  "name": "blobfolio\/blob-common",
+  "description": "An expansive PHP toolkit with functions for sanitizing, formatting, parsing, etc.",
+  "keywords": [
+    "PHP",
+    "sanitizing",
+    "formatting",
+    "data",
+    "parsing"
+  ],
+  "version": "7.1.0",
+  "type": "library",
+  "homepage": "https:\/\/github.com\/Blobfolio\/blob-common",
+  "license": "WTFPL",
+  "authors": [
+    {
+      "name": "Josh Stoik",
+      "email": "josh@blobfolio.com",
+      "homepage": "https:\/\/blobfolio.com"
     }
+  ],
+  "require": {
+    "php": ">= 7.0",
+    "ext-filter": "*",
+    "ext-dom": "*",
+    "ext-mbstring": "*",
+    "ext-json": "*",
+    "ext-bcmath": "*",
+    "ext-hash": "*",
+
+    "blobfolio\/blob-mimes": "*",
+    "blobfolio\/blob-phone": "*",
+    "neitanod\/forceutf8": "*",
+    "sabberworm\/php-css-parser": "*"
+  },
+  "config": {
+    "vendor-dir": "lib\/vendor",
+    "preferred-install": "dist"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "blobfolio\\common\\":"lib\/blobfolio\/common"
+    }
+  }
 }
