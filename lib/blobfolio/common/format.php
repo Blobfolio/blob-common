@@ -108,6 +108,16 @@ class format {
 	}
 
 	//-------------------------------------------------
+	// Decode HTML Entities
+	//
+	// @param str
+	// @return true
+	public static function decode_entities($str='') {
+		ref\format::decode_entities($str);
+		return $str;
+	}
+
+	//-------------------------------------------------
 	// Excerpt
 	//
 	// @param string

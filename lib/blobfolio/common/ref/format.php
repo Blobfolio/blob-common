@@ -35,6 +35,33 @@ class format {
 	}
 
 	//-------------------------------------------------
+	// Decode HTML Entities
+	//
+	// @param str
+	// @return true
+	public static function decode_entities(&$str='') {
+		cast::string($str, true);
+
+		$last = '';
+		while ($str !== $last) {
+			$last = $str;
+
+			$str = preg_replace_callback('/&#([0-9]+);/', array(get_called_class(), 'decode_entities_chr'), $str);
+			$str = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', array(get_called_class(), 'decode_entities_hex'), $str);
+			$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
+		}
+
+		return true;
+	}
+
+	protected static function decode_entities_chr($matches) {
+		return chr($match[1]);
+	}
+	protected static function decode_entities_hex($matches) {
+		return chr(hexdec($match[1]));
+	}
+
+	//-------------------------------------------------
 	// IP to Number
 	//
 	// @param ip
