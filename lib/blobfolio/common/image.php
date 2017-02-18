@@ -149,6 +149,15 @@ class image {
 				}
 			}
 
+			//make sure SVGs have the current standard
+			$dom = static::get_domdocument_svg($svg);
+			$tmp = $dom->getElementsByTagName('svg');
+			foreach ($tmp as $t) {
+				$t->setAttribute('version', '1.1');
+				$t->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+			}
+			$svg = $dom->saveXML();
+
 			//let's get some early stripping done
 			if ($options['strip_data']) {
 				$svg = preg_replace('/(\sdata\-[a-z\d_\-]+\s*=\s*"[^"]*")/i', '', $svg);
@@ -235,9 +244,9 @@ class image {
 					}
 				}
 
-				//tags supporting viewBox
+				//tags supporting viewBox, width, and height
 				$dom = static::get_domdocument_svg($svg);
-				foreach (array('svg','symbol','image','marker','pattern','view') as $tag) {
+				foreach (array('svg','pattern') as $tag) {
 					$tmp = $dom->getElementsByTagName($tag);
 					if ($tmp->length) {
 						foreach ($tmp as $t) {
@@ -291,7 +300,6 @@ class image {
 					foreach ($svgs as $s) {
 						//add namespace
 						if ($options['namespace']) {
-							$s->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 							$s->setAttribute('xmlns:svg', 'http://www.w3.org/2000/svg');
 						}
 

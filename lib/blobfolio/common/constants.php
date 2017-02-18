@@ -988,7 +988,7 @@ class constants {
 		'fragment'=>''
 	);
 
-	const SVG_HEADER = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">';
+	const SVG_HEADER = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
 	//svg attribute corrections
 	const SVG_ATTR_CORRECTIONS = array(
