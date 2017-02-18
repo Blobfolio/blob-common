@@ -988,6 +988,8 @@ class constants {
 		'fragment'=>''
 	);
 
+	const SVG_HEADER = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">';
+
 	//svg attribute corrections
 	const SVG_ATTR_CORRECTIONS = array(
 		'xmlns="&ns_svg;"'=>'xmlns="http://www.w3.org/2000/svg"',
@@ -997,8 +999,17 @@ class constants {
 
 	//clean svg options
 	const SVG_CLEAN_OPTIONS = array(
-		'random_id'=>false,
-		'strip_title'=>false
+		'clean_styles'=>false,		//consistent formatting, group like rules
+		'fix_dimensions'=>true,		//supply missing width, height, viewBox
+		'namespace'=>false,			//add an svg: namespace
+		'random_id'=>false,			//randomize IDs
+		'rewrite_styles'=>false,	//redo classes for overlaps
+		'save'=>false,				//overwrite the original file with a cleaned version
+		'strip_data'=>false,		//remove data-X attributes
+		'strip_id'=>false,			//remove all IDs
+		'strip_js'=>true,			//remove all Javascript
+		'strip_style'=>false,		//remove all styles
+		'strip_title'=>false		//remove all titles
 	);
 
 	//blank image

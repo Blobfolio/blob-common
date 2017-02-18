@@ -26,6 +26,7 @@ blobfolio\common\ref\mb::strtolower($foo);
  * [strlen()](#strlen)
  * [str_pad()](#str_pad)
  * [strpos()](#strpos)
+ * [strrpos()](#strrpos)
  * [strtolower()](#strtolower)
  * [strtoupper()](#strtoupper)
  * [substr()](#substr)
@@ -137,6 +138,22 @@ Find the first occurrence of the needle in the haystack.
 #### Returns
 
 Returns the starting position of the needle of `FALSE` if not found.
+
+
+
+## strrpos()
+
+Find the last occurrence of the needle in the haystack.
+
+#### Arguments
+
+ * (*string*) Haystack
+ * (*string*) Needle
+ * (*int*) (*optional*) Offset
+
+#### Returns
+
+Returns the last starting position of the needle of `FALSE` if not found.
 
 
 
