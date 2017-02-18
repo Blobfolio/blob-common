@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.0.10",
+  "Version": "7.1.0",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.2",
@@ -16,7 +16,7 @@
   },
   "Changelog": [
     {
-      "version": "7.0.10",
+      "version": "7.1.0",
       "notes": [
         {
           "type": "new",
