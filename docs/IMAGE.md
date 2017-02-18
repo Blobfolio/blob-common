@@ -23,19 +23,14 @@ $svg = blobfolio\common\image::clean_svg('path/to/img.svg');
 
 ## clean_svg()
 
-Retrieve and tidy up the source of an SVG file for, e.g., inclusion in HTML:
- * If multiple `<style>` tags exist, the rules will be joined under a single tag;
- * CSS formatting is cleaned up;
- * Identical CSS rules are joined by selector;
- * An `xmlns:svg` namespace is created, and the `<style>` tag if any is copied to that namespace. This will help work around frontends that strip inline styles (like `Vue.js`);
- * Whitespace is collapsed;
+This function cleans up SVG code for safer inline insertion into your document. It fixes some common Illustrator bugs (like broken reference links and the generic `id="Layer_1"` definition), strips `DOCTYPE` headers, and reduces whitespace. Many additional options are available (see below).
+
+Note: this requires `DOMDocument` support.
 
 #### Arguments
 
  * (*string*) Path
- * (*array*) (*optional*) Arguments. Default: `NULL`
-   * (*bool*) (*optional*) Randomize ID. If `TRUE`, a random ID will be generated on the fly, replacing e.g. `"Layer_1"`. Default: `FALSE`
-   * (*bool*) (*optional*) Strip Title. Default: `FALSE`
+ * (*array*) (*optional*) Arguments. See below for more details. Default: `NULL`
  * (*string*) (*optional*) Output, either `"HTML"` or `"DATA_URI"`. Default: `"HTML"`
 
 #### Returns
@@ -43,6 +38,59 @@ Retrieve and tidy up the source of an SVG file for, e.g., inclusion in HTML:
 Returns the SVG source code or `FALSE` on error.
 
 #### Example
+
+```php
+//possible arguments
+$args = array(
+    //clean up <style> tag(s):
+    //  merge tags, group identical rules, clean up formatting
+    'clean_styles'=>false,
+
+    //build viewBox from width/height or vice versa
+    //for every tag which supports viewBox
+    'fix_dimensions'=>true,
+
+    //set up an xmlns:svg namespace as a workaround for
+    //frameworks like Vue.JS which remove stray <style>
+    //tags
+    'namespace'=>false,
+
+    //randomize any ID attributes to ensure that e.g.
+    //a million things aren't all named "layer_1"
+    'random_id'=>false,
+
+    //rename and merge all defined classes. for example,
+    //an SVG sprite might have a hundred identical
+    //classes; this will generate a new class name for
+    //each unique rule and remove all others.
+    'rewrite_styles'=>false,
+
+    //cleaning SVGs in PHP can be slow. this option will
+    //save the cleaned output so on subsequent calls
+    //the file can be delivered as-is. the original file
+    //is renamed *.dirty.123123123 in case you need to
+    //revert.
+    'save'=>false,
+
+    //remove any data-* attributes
+    'strip_data'=>false,
+
+    //remove all ID attributes
+    'strip_id'=>false,
+
+    //remove all <script> tags and on* attributes. note:
+    //for performance reasons this does not sanitize
+    //sneaky stuff like embedding script in an unexpected
+    //attribute like a src or href.
+    'strip_js'=>true,
+
+    //remove all <style> tags and style/class attributes
+    'strip_style'=>false,
+
+    //remove all <title> tags
+    'strip_title'=>false
+)
+```
 
 ```html
 <div class="logo-wrapper">

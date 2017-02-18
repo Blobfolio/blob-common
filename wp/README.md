@@ -39,6 +39,7 @@ All functions are prefixed with `common_` or `_common_` to help separate namespa
 
 Some functionality is toggled by constants defined in `wp-config`. They are explained in more detail in the corresponding function documentation, but quickly, they are:
 
+ * (*array*) **WP_CLEAN_SVG** - Default arguments to use when not explicitly passing any arguments to `common_get_clean_svg()`.
  * (*bool*) **WP_DB_DEBUG_LOG** - Log database query errors to `wp-content/db-debug.log`
  * (*string*) **WP_DEBUG_EMAIL** - Send debug emails to an address other than the site email
  * (*string*) **WP_DEBUG_LOG_CAP** - Capability required to view `Tools > Debug Log`; Default: `"manage_options"`

@@ -33,11 +33,22 @@ if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
 // better inline inclusion
 //
 // @param file path
-// prevent randomize id
+// prevent args
 // @return svg data or false
 if (!function_exists('common_get_clean_svg')) {
-	function common_get_clean_svg($path, $random_id=false) {
-		return \blobfolio\common\image::clean_svg($path, array('random_id'=>$random_id));
+	function common_get_clean_svg($path, $args=null) {
+		//for historical reasons, $args used to just be one arg: random_id.
+		//if a bool, we'll assume that's what was meant.
+		if (is_bool($args)) {
+			$args = array('random_id'=>$args);
+		}
+		elseif (is_null($args) && defined('WP_CLEAN_SVG')) {
+			$args = WP_CLEAN_SVG;
+		}
+
+		\blobfolio\common\ref\cast::array($args);
+
+		return \blobfolio\common\image::clean_svg($path, $args);
 	}
 }
 
