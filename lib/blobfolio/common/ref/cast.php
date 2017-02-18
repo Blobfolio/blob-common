@@ -99,6 +99,17 @@ class cast {
 			}
 		}
 		else {
+			//evaluate special cases
+			if (is_string($value)) {
+				mb::strtolower($value);
+				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS)) {
+					$value = 1;
+				}
+				elseif (in_array($value, \blobfolio\common\constants::FALSE_BOOLS)) {
+					$value = 0;
+				}
+			}
+
 			static::number($value, true);
 			$value = (int) $value;
 		}
