@@ -11,7 +11,7 @@
 //-------------------------------------------------
 // SVGs
 
-$path = dirname(__FILE__) . '/img/mail.svg';
+$path = dirname(__FILE__) . '/img/monogram.svg';
 $args = array(
 	'clean_styles'=>true,		//consistent formatting, group like rules
 	'fix_dimensions'=>true,		//supply missing width, height, viewBox
@@ -20,7 +20,7 @@ $args = array(
 	'rewrite_styles'=>true,		//redo classes for overlaps
 	'strip_data'=>true,			//remove data-X attributes
 	'strip_id'=>true,			//remove all IDs
-	'strip_js'=>true,			//remove all Javascript
+	'sanitize'=>true,			//remove all Javascript
 	'strip_style'=>false,		//remove all styles
 	'strip_title'=>true			//remove all titles
 );
