@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.1.0",
+  "Version": "7.1.1",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.2",
@@ -16,15 +16,28 @@
   },
   "Changelog": [
     {
+      "version": "7.1.1",
+      "notes": [
+        {
+          "type": "improvement",
+          "note": "Various performance and spec-related additions to image::clean_svg()."
+        },
+        {
+          "type": "drop",
+          "note": "Remove sabberworm library dependency."
+        }
+      ]
+    },
+    {
       "version": "7.1.0",
       "notes": [
         {
           "type": "new",
-          "note": "Lots of new parsing options for image::clean_svg()."
+          "note": "Lots of new parsing options for common_get_clean_svg()."
         },
         {
-          "type": "change",
-          "note": "image::svg_dimensions() no longer relies on SimpleXML."
+          "type": "drop",
+          "note": "common_get_svg_dimensions() no longer relies on SimpleXML."
         }
       ]
     },
@@ -33,7 +46,7 @@
       "notes": [
         {
           "type": "fix",
-          "note": "IPv6 calculations in format::ip_to_number()."
+          "note": "IPv6 calculations in common_ip_to_number()."
         }
       ]
     },
@@ -42,7 +55,7 @@
       "notes": [
         {
           "type": "improvement",
-          "note": "CSS formatting in get_clean_svg()."
+          "note": "CSS formatting in common_get_clean_svg()."
         },
         {
           "type": "change",
