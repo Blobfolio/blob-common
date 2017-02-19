@@ -16,6 +16,7 @@ $foo = blobfolio\common\dom::get_nodes_by_class($dom, 'apples');
 
  * [get_nodes_by_class()](#get_nodes_by_class)
  * [load_svg()](#load_svg)
+ * [parse_css()](#parse_css)
  * [remove_node()](#remove_node)
  * [remove_nodes()](#remove_nodes)
  * [save_svg()](#save_svg)
@@ -60,6 +61,97 @@ Returns a DOMDocument object (empty on failure).
 
 ```php
 $dom = blobfolio\common\dom::load_svg($svg);
+```
+
+
+
+## parse_css()
+
+This is a handy little parser that will take the bits between `<style>` tags and hand it back to you in parseable array format.
+
+#### Arguments
+
+ * (*string*) Style code.
+
+#### Returns
+
+Returns an array containing the parsed styles.
+
+#### Example
+
+```php
+//from a .css file
+$css = @file_get_contents('css/styles.css');
+//or something like...
+$css = $dom->getElementsByTagName('style')->item(0)->nodeValue;
+
+//then parse
+$foo = blobfolio\common\dom::parse_css($css);
+
+/*
+Array(
+    //example of a regular old rule
+    0 => Array(
+        [@] => FALSE
+        [nested] => FALSE
+        [selectors] => Array(
+            0 => .blobfolio-about-logo svg
+        )
+        [rules] => Array(
+            [transition] => color .3s ease;
+            [display] => block;
+            [width] => 100%;
+            [height] => auto;
+        )
+        [raw] => .blobfolio-about-logo svg{transition:color .3s ease;display:block;width:100%;height:auto;}
+    ),
+    //example @ rule with regular definitions
+    1 => Array(
+        [@] => font-face
+        [nested] => FALSE
+        [selectors] => Array(
+            0 => @font-face
+        )
+        [rules] => Array(
+            [font-family] => "TotallyRealFont";
+            [src] => url ("../font/3197DB_0_0.woff2") format ("woff2"), url ("../font/3197DB_0_0.woff") format ("woff"), url ("../font/3197DB_0_0.ttf") format ("truetype");
+            [font-weight] => 700;
+            [font-style] => normal;
+        )
+        [raw] => @font-face{font-family:"TotallyRealFont";src:url ("../font/3197DB_0_0.woff2") format ("woff2"), url ("../font/3197DB_0_0.woff") format ("woff"), url ("../font/3197DB_0_0.ttf") format ("truetype");font-weight:700;font-style:normal;}
+    ),
+    //example @ rule without any {...} block
+    2 => Array(
+        [@] => import
+        [nested] => FALSE
+        [selectors] => Array()
+        [rules] => Array(
+            0 => @import url (https://fonts.googleapis.com/css?family=Open+Sans);
+        )
+        [raw] => @import url (https://fonts.googleapis.com/css?family=Open+Sans);
+    ),
+    //example nested @ rule
+    3 => Array(
+        [@] => media
+        [nested] => TRUE
+        [selector] => @media screen only and (min-width: 10em)
+        [nest] => Array (
+            0 => Array(
+                [@] => FALSE
+                [nested] => FALSE
+                [selectors] => Array(
+                    0 => #debug-log
+                )
+                [rules] => Array(
+                    [background] => red;
+                )
+                [raw] => #debug-log{background:red;}
+            )
+        )
+        [raw] => @media screen only and (min-width: 10em){#debug-log{background:red;}}
+    )
+)
+*/
 ```
 
 

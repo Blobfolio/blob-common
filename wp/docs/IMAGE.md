@@ -61,6 +61,12 @@ $args = array(
     //each unique rule and remove all others.
     'rewrite_styles'=>false,
 
+    //remove invalid tags and attributes, strip script-y
+    //things. note: this does not remove CSS properties
+    //like behavior or extension, not does it strip
+    //embedded data:
+    'sanitize'=>true,
+
     //cleaning SVGs in PHP can be slow. this option will
     //save the cleaned output so on subsequent calls
     //the file can be delivered as-is. the original file
@@ -73,12 +79,6 @@ $args = array(
 
     //remove all ID attributes
     'strip_id'=>false,
-
-    //remove all <script> tags and on* attributes. note:
-    //for performance reasons this does not sanitize
-    //sneaky stuff like embedding script in an unexpected
-    //attribute like a src or href.
-    'strip_js'=>true,
 
     //remove all <style> tags and style/class attributes
     'strip_style'=>false,
