@@ -85,6 +85,8 @@ WordPress `4.7.1` introduced [Magic MIME](https://en.wikipedia.org/wiki/File_for
 
 blob-common automatically hooks into the `wp_check_filetype_and_ext` filter and if needed runs its own analysis, which is both more thorough and more conservative. If a file's true type doesn't match its extension, it will be renamed.
 
+SVG uploads are run through an XSS/formatting sanitizer which strips out invalid tags, attributes, and scripty things. Files are not run through the full battery of possible optimizations found in `common_get_clean_svg`; it is left to the user to call that function at runtime with the desired options.
+
 All uploads are still subject to the built-in whitelist of allowed types, so if your project requires something unusual (aside from SVG and WebP, which this plugin enables automatically), be sure to add it via the `upload_mimes` filter.
 
 This function hooks into WordPress automatically; you don't need to do anything.

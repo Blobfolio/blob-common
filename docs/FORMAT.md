@@ -23,6 +23,7 @@ blobfolio\common\ref\format::money($foo);
 
  * [array_to_indexed()](#array_to_indexed)
  * [cidr_to_range()](#cidr_to_range)
+ * [decode_entities()](#decode_entities)
  * [excerpt()](#excerpt)
  * [inflect()](#inflect)
  * [ip_to_number()](#ip_to_number)
@@ -97,6 +98,31 @@ array(
     [max] => 2600:3c00::ffff:ffff:ffff:ffff
 )
 */
+```
+
+
+
+## decode_entities()
+
+Convert as many HTML entities to their character counterpoints as possible with as many passes as it takes to get them all.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) HTML
+
+#### Returns
+
+If passing by value a decoded string is returned, otherwise `TRUE`.
+
+#### Example
+
+```php
+\blobfolio\common\format::decode_entities('&quot;Happy Days&quot;'); //"Happy Days"
 ```
 
 

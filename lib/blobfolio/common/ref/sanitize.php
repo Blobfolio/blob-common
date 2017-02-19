@@ -603,6 +603,83 @@ class sanitize {
 	}
 
 	//-------------------------------------------------
+	// SVG
+	//
+	// @param str
+	// @param whitelisted tags
+	// @param whitelisted attributes
+	// @return str
+	public static function svg(&$str='', $tags=null, $attr=null) {
+		cast::string($str, true);
+		cast::array($tags);
+		cast::array($attr);
+
+		$tags = array_merge(\blobfolio\common\constants::SVG_WHITELIST_TAGS, $tags);
+		mb::strtolower($tags);
+		$tags = array_filter($tags, 'strlen');
+		$tags = array_unique($tags);
+		sort($tags);
+
+		$attr = array_merge(\blobfolio\common\constants::SVG_WHITELIST_ATTR, $attr);
+		mb::strtolower($attr);
+		$attr = array_filter($attr, 'strlen');
+		$attr = array_unique($attr);
+		sort($attr);
+
+		$dom = \blobfolio\common\dom::load_svg($str);
+		$svg = $dom->getElementsByTagName('svg');
+		if (!$svg->length) {
+			$str = '';
+			return false;
+		}
+
+		//remove invalid tags and attributes
+		$tmp = $dom->getElementsByTagName('*');
+		for ($x = $tmp->length - 1; $x >= 0; $x--) {
+			$tag = \blobfolio\common\mb::strtolower($tmp->item($x)->tagName);
+			$tag2 = false;
+			//maybe it is namespaced?
+			if (false !== $pos = \blobfolio\common\mb::strpos($tag, ':')) {
+				$tag2 = \blobfolio\common\mb::substr($tag, $pos + 1);
+			}
+			if (!in_array($tag, $tags) && ($tag2 === false || !in_array($tag2, $tags))) {
+				\blobfolio\common\dom::remove_node($tmp->item($x));
+				continue;
+			}
+
+			//now go through attributes
+			for ($y = $tmp->item($x)->attributes->length - 1; $y >= 0; $y--) {
+				$att = $tmp->item($x)->attributes->item($y);
+				$attName = \blobfolio\common\mb::strtolower($att->name);
+
+				//first check, does it match straight off?
+				if (true === ($valid = (preg_match('/^(xmlns\:|data\-)/', $attName) || in_array($attName, $attr)))) {
+
+					//strip \0
+					$attValue = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $att->value);
+					if ($attValue !== $att->value) {
+						$tmp->item($x)->setAttribute($att->name, $attValue);
+					}
+
+					format::decode_entities($attValue);
+
+					//strip scripts
+					if (!strlen($attValue) || preg_match('/(?:\w+script):/xi', $attValue)) {
+						$valid = false;
+					}
+				}
+
+				if (!$valid) {
+					$tmp->item($x)->removeAttribute($att->name);
+				}
+			}
+		}
+
+		$str = \blobfolio\common\dom::save_svg($dom);
+		return strlen($str) > 0;
+	}
+
+	//-------------------------------------------------
 	// Timezone
 	//
 	// @param timezone

@@ -41,6 +41,7 @@ blobfolio\common\ref\sanitize::email($foo);
  * [province()](#province)
  * [quotes()](#quotes)
  * [state()](#state)
+ * [svg()](#svg)
  * [timezone()](#timezone)
  * [to_range()](#to_range)
  * [url()](#url)
@@ -524,6 +525,32 @@ $foo = blobfolio\common\sanitize::state('TX'); //TX
 
 //by reference
 blobfolio\common\ref\sanitize::state($foo);
+```
+
+
+
+## svg()
+
+Sanitize a block of SVG code for e.g. insertion into a web page. This removes invalid tags and attributes and many common routes for XSS attacks. This function is called by [image::clean_svg()](https://github.com/Blobfolio/blob-common/blob/master/docs/IMAGE.md#clean_svg) when the `"sanitize"` argument is `TRUE`. If the more advanced handling of `image::clean_svg()` isn't needed, this can be called on its own.
+
+#### Arguments
+
+ * (*string*) SVG code.
+ * (*array*) (*optional*) Additional whitelisted tags. Default: `NULL`
+ * (*array*) (*optional*) Additional whitelisted attributes. Default: `NULL`
+
+#### Returns
+
+Returns sanitized SVG code or an empty string on failure by value, otherwise `TRUE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\sanitize::svg('<svg ... />');
+
+//by reference
+blobfolio\common\ref\sanitize::svg($foo);
 ```
 
 
