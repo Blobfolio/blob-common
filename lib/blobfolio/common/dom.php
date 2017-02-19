@@ -61,7 +61,7 @@ class dom {
 			if (!$svgs->length) {
 				return '';
 			}
-			$svg = $svgs->item(0)->ownerDocument->saveXML($svgs->item(0), LIBXML_NOEMPTYTAG);
+			$svg = $svgs->item(0)->ownerDocument->saveXML($svgs->item(0), LIBXML_NOBLANKS);
 
 			return $svg;
 		} catch (\Throwable $e) {
