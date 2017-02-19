@@ -34,11 +34,17 @@ if (!function_exists('common_upload_real_mimes')) {
 		if (!$checked['type'] || !$checked['ext']) {
 			$finfo = \blobfolio\common\mime::finfo($file, $filename);
 
-			//the time for checking non-svg images has passed already
-			//but everything else should be re-examined
+			//the time for checking certain image types has passed already
+			$mime_to_ext = apply_filters('getimagesize_mimes_to_exts', array(
+				'image/jpeg'=>'jpg',
+				'image/png'=>'png',
+				'image/gif'=>'gif',
+				'image/bmp'=>'bmp',
+				'image/tiff'=>'tif',
+			));
 			if (
 				0 !== \blobfolio\common\mb::strpos($finfo['mime'], 'image/') ||
-				$finfo['extension'] === 'svg'
+				!in_array($finfo['extension'], $mime_to_ext)
 			) {
 				//was the extension wrong?
 				if (count($finfo['suggested_filename'])) {
@@ -55,8 +61,20 @@ if (!function_exists('common_upload_real_mimes')) {
 			}
 		}
 
-		return $checked;
+		//sanitize SVGs
+		if ($checked['type'] = 'image/svg+xml') {
+			$contents = @file_get_contents($file);
+			\blobfolio\common\ref\sanitize::svg($contents);
+			if (strlen($contents)) {
+				@file_put_contents($file, $contents);
+			}
+			else {
+				$checked['type'] = false;
+				$checked['ext'] = false;
+			}
+		}
 
+		return $checked;
 	}
 	add_filter('wp_check_filetype_and_ext', 'common_upload_real_mimes', 10, 4);
 }
