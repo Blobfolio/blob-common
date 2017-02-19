@@ -1113,6 +1113,24 @@ AACAkQBADs=';
 		'false',
 		'no'
 	);
+
+	//flat CSS rule
+	const CSS_FLAT = array(
+		'@'=>false,
+		'nested'=>false,
+		'selectors'=>array(),
+		'rules'=>array(),
+		'raw'=>''
+	);
+
+	//nested CSS rule
+	const CSS_NESTED = array(
+		'@'=>false,
+		'nested'=>true,
+		'selector'=>'',
+		'nest'=>array(),
+		'raw'=>''
+	);
 }
 
 ?>

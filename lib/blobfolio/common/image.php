@@ -11,6 +11,7 @@ namespace blobfolio\common;
 class image {
 
 	protected static $svg_ids = array();
+	protected static $svg_classes = array();
 
 	//-------------------------------------------------
 	// Clean SVG
@@ -240,7 +241,7 @@ class image {
 						}
 
 						//store a list of classes to rewrite, if any
-						$rewrites = array();
+						$classes_old = array();
 
 						//cleaning styles?
 						if ($options['clean_styles']) {
@@ -262,74 +263,92 @@ class image {
 								//now fix formatting
 								$style = $s->getElementsByTagName('style')->item(0);
 
-								$css = new \Sabberworm\CSS\Parser($style->nodeValue);
-								$css_parsed = $css->parse();
-								$css_format = \Sabberworm\CSS\OutputFormat::create()->setSpaceAfterRuleName('')->setSpaceBeforeOpeningBrace('')->setSpaceAfterSelectorSeparator('')->setSpaceBetweenRules("\n");
-								$css = $css_parsed->render($css_format);
+								//parse the styles
+								$parsed = dom::parse_css($style->nodeValue);
+								if (is_array($parsed) && count($parsed)) {
+									$style_new = array();
 
-								//join identical rules
-								if (false !== mb::strpos($css, "\n")) {
-									$lines = explode("\n", $css);
-									$rules = array();
-									foreach ($lines as $k=>$v) {
-										//ignore lines with @ rules
-										if (false !== strpos($v, '@')) {
-											continue;
+									if ($options['rewrite_styles']) {
+										//let's try to join identical rules
+										$rules = array();
+
+										foreach ($parsed as $p) {
+											//if it is an @ rule, just throw it in wholesale
+											if (false !== $p['@']) {
+												$rules[$p['raw']] = array();
+											}
+											else {
+												foreach ($p['rules'] as $rk=>$rv) {
+													$r = "$rk:$rv";
+
+													if (!isset($rules[$r])) {
+														$rules[$r] = array();
+													}
+
+													$rules[$r] = array_merge($rules[$r], array_values($p['selectors']));
+												}
+											}
 										}
 
-										//look for xxx{yyy} patterns
-										preg_match_all('/^([^\{]+)\{([^\}]+)\}$/', $v, $matches);
-										if (!count($matches[0])) {
-											continue;
+										//clean up the rules a touch
+										foreach ($rules as $rule=>$selectors) {
+											$rules[$rule] = array_unique($rules[$rule]);
+											sort($rules[$rule]);
 										}
 
-										$rule = $matches[2][0];
-										if (!isset($rules[$rule])) {
-											$rules[$rule] = array();
-										}
+										//great, now build the output
+										foreach ($rules as $rule=>$selectors) {
+											//something like an @media, out of scope here
+											if (!count($selectors)) {
+												$style_new[] = $rule;
+												continue;
+											}
 
-										$selectors = explode(',', $matches[1][0]);
-										foreach ($selectors as $selector) {
-											$selector = preg_replace('/\s/', '', $selector);
-											$rules[$rule][] = $selector;
-										}
-
-										unset($lines[$k]);
-									}
-
-									//add our merged rules back to the output
-									foreach ($rules as $rule=>$selectors) {
-										$selectors = array_unique($selectors);
-
-										//rewriting classes? this is a bit of a pain
-										if ($options['rewrite_styles']) {
+											//look for class selectors, ignoring the weird
+											//adobe ones with illegal starting characters
 											$classes = array();
 											foreach ($selectors as $k=>$selector) {
-												if (preg_match('/^\.[a-z0-9_\-]+$/i', $selector)) {
+												if (preg_match('/^\.[a-z0-9_\-]+$/i', $selector) && false === mb::strpos($selector, '\\')) {
+													$classes[] = $selector;
 													unset($selectors[$k]);
-													$classes[] = mb::substr($selector, 1);
 												}
 											}
 
 											if (count($classes)) {
-												$class_new = 'c' . mb::strtolower(data::random_string(4));
-												while (isset($rewrites[$class_new])) {
-													$class_new = 'c' . mb::strtolower(data::random_string(4));
+												$class_new = mb::strtolower('c' . data::random_string(4));
+												while (in_array($class_new, static::$svg_classes)) {
+													$class_new = mb::strtolower('c' . data::random_string(4));
+												}
+												$selectors[] = '.' . $class_new;
+
+												//add this class to all affected nodes
+												$nodes = dom::get_nodes_by_class($s, $classes);
+												foreach ($nodes as $node) {
+													$class = $node->getAttribute('class');
+													$class .= " $class_new";
+													$node->setAttribute('class', $class);
 												}
 
-												//only replace straight classes
-												$rewrites[$class_new] = $classes;
-												$selectors[] = ".$class_new";
+												foreach ($classes as $class) {
+													$classes_old[] = ltrim($class, '.');
+												}
 											}
-										}
 
-										$lines[] = implode(',', $selectors) . '{' . $rule . '}';
+											$style_new[] = implode(',', $selectors) . '{' . $rule . '}';
+										}
+									}//end cleanup/rewrite
+									else {
+										//just add the rules
+										foreach ($parsed as $p) {
+											$style_new[] = $p['raw'];
+										}
 									}
-									$css = implode(' ', $lines);
-								}
-								$style->nodeValue = $css;
-							}
-						}
+
+									//and save it
+									$style->nodeValue = implode('', $style_new);
+								}//parseable styles
+							}//if styles
+						}//clean styles
 
 						//add namespaced style
 						if ($options['namespace']) {
@@ -349,37 +368,23 @@ class image {
 							}
 						}
 
-						//now fix our classes, if applicable
-						if (count($rewrites)) {
-							//first pass, add new classes
-							foreach ($rewrites as $k=>$v) {
-								$children = dom::get_nodes_by_class($s, $v);
-								if (count($children)) {
-									foreach ($children as $child) {
-										$classes = $child->getAttribute('class');
-										$classes .= " $k";
-										$child->setAttribute('class', $classes);
-									}
-								}
-							}
+						//remove old classes, if applicable
+						if (count($classes_old)) {
+							sort($classes_old);
+							$classes_old = array_unique($classes_old);
 
-							//second pass, remove old classes
-							foreach ($rewrites as $k=>$v) {
-								$children = dom::get_nodes_by_class($s, $v);
-								if (count($children)) {
-									foreach ($children as $child) {
-										$classes = $child->getAttribute('class');
-										ref\sanitize::whitespace($classes);
-										$classes = explode(' ', $classes);
-										$classes = array_unique($classes);
-										$classes = array_diff($classes, $v);
-										$child->setAttribute('class', implode(' ', $classes));
-									}
-								}
+							$nodes = dom::get_nodes_by_class($s, $classes_old);
+							foreach ($nodes as $node) {
+								$classes = $node->getAttribute('class');
+								ref\sanitize::whitespace($classes);
+								$classes = explode(' ', $classes);
+								$classes = array_unique($classes);
+								$classes = array_diff($classes, $classes_old);
+								$node->setAttribute('class', implode(' ', $classes));
 							}
-						}
-					}
-				}
+						}//rewriting
+					}//each svg
+				}//if svgs
 				$svg = dom::save_svg($dom);
 			}
 
@@ -392,6 +397,12 @@ class image {
 
 			//should we save the clean version?
 			if ($options['save']) {
+				//add our passthrough header
+				$dom = dom::load_svg($svg);
+				$tmp = $dom->getElementsByTagName('svg');
+				$tmp->item(0)->setAttribute('data-cleaned', $passthrough_key);
+				$svg = dom::save_svg($dom);
+
 				$path_old = $path . '.dirty.' . microtime(true);
 				$num = 0;
 				while (file_exists($path_old)) {

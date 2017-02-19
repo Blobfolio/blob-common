@@ -1,8 +1,7 @@
 {
 	"require": {
 		"blobfolio/blob-common": "^7.",
-		"neitanod/forceutf8": "dev-master",
-		"sabberworm/php-css-parser": "dev-master"
+		"neitanod/forceutf8": "dev-master"
 	},
 	"config": {
 		"vendor-dir": "lib/vendor",
