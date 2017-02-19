@@ -304,13 +304,24 @@ class image {
 												continue;
 											}
 
-											//look for class selectors, ignoring the weird
-											//adobe ones with illegal starting characters
+											//look for class selectors, ignoring complex chains
 											$classes = array();
 											foreach ($selectors as $k=>$selector) {
-												if (preg_match('/^\.[a-z0-9_\-]+$/i', $selector) && false === mb::strpos($selector, '\\')) {
+												//a valid class
+												if (preg_match('/^\.[a-z\d_\-]+$/i', $selector)) {
 													$classes[] = $selector;
 													unset($selectors[$k]);
+												}
+												//a broken Adobe class
+												//e.g. .\38 ab9678e-54ee-493d-b19f-2215c5549034
+												else {
+													$selector = str_replace('.\\3', '.', $selector);
+													//fix weird adobe rules
+													preg_match_all('/^\.([\d]) ([a-z\d\-]+)$/', $selector, $matches);
+													if (count($matches[0])) {
+														$classes[] = preg_replace('/\s/', '', $matches[0][0]);
+														unset($selectors[$k]);
+													}
 												}
 											}
 
