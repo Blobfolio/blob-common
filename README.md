@@ -12,6 +12,7 @@ For information about the plugin Tutan Common, which repackages and extends thes
 2. [Installation](#installation)
 3. Reference
  * [Constants](https://github.com/Blobfolio/blob-common/blob/master/docs/CONSTANTS.md)
+ * [DOM Helpers](https://github.com/Blobfolio/blob-common/blob/master/docs/DOM.md)
  * [Files and Paths](https://github.com/Blobfolio/blob-common/blob/master/docs/FILE.md)
  * [Formatting](https://github.com/Blobfolio/blob-common/blob/master/docs/FORMAT.md)
  * [General/Data](https://github.com/Blobfolio/blob-common/blob/master/docs/DATA.md)

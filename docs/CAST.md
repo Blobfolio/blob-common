@@ -157,7 +157,7 @@ blobfolio\common\ref\cast::float($foo);
 
 ## int()
 
-Typecast to integer.  This is like `(int)` hinting, but again, will strip out non-numeric data and attempt to convert values like percents, etc.
+Typecast to integer.  This is like `(int)` hinting, but again, will strip out non-numeric data and attempt to convert values like percents, etc. This function will also properly interpret things like `"true"`, `"on"`, etc.
 
 #### Versions
 
