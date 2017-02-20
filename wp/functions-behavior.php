@@ -62,7 +62,7 @@ if (!function_exists('common_upload_real_mimes')) {
 		}
 
 		//sanitize SVGs
-		if ($checked['type'] = 'image/svg+xml') {
+		if ($checked['type'] === 'image/svg+xml') {
 			$contents = @file_get_contents($file);
 			\blobfolio\common\ref\sanitize::svg($contents);
 			if (strlen($contents)) {
