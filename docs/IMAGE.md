@@ -48,7 +48,7 @@ $args = array(
 
     //build viewBox from width/height or vice versa
     //for every tag which supports viewBox
-    'fix_dimensions'=>true,
+    'fix_dimensions'=>false,
 
     //set up an xmlns:svg namespace as a workaround for
     //frameworks like Vue.JS which remove stray <style>
