@@ -1000,7 +1000,7 @@ class constants {
 	//clean svg options
 	const SVG_CLEAN_OPTIONS = array(
 		'clean_styles'=>false,		//consistent formatting, group like rules
-		'fix_dimensions'=>true,		//supply missing width, height, viewBox
+		'fix_dimensions'=>false,	//supply missing width, height, viewBox
 		'namespace'=>false,			//add an svg: namespace
 		'random_id'=>false,			//randomize IDs
 		'rewrite_styles'=>false,	//redo classes for overlaps
