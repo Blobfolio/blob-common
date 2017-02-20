@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.1.1",
+  "Version": "7.1.2",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.2",
@@ -16,11 +16,20 @@
   },
   "Changelog": [
     {
+      "version": "7.1.2",
+      "notes": [
+        {
+          "type": "change",
+          "note": "Default 'fix_dimensions' to FALSE for common_get_clean_svg()."
+        }
+      ]
+    },
+    {
       "version": "7.1.1",
       "notes": [
         {
           "type": "improvement",
-          "note": "Various performance and spec-related additions to image::clean_svg()."
+          "note": "Various performance and spec-related additions to common_get_clean_svg()."
         },
         {
           "type": "drop",
