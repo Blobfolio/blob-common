@@ -1,4 +1,5 @@
 {
+	"name": "blobfolio\/tutan-common",
 	"require": {
 		"blobfolio/blob-common": "^7.",
 		"neitanod/forceutf8": "dev-master"
