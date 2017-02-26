@@ -47,7 +47,7 @@ class file {
 			$handle = opendir($path);
 			while (false !== ($entry = readdir($handle))) {
 				//anything but a dot === not empty
-				if ($entry !== '.' && $entry !== '..') {
+				if ('.' !== $entry && '..' !== $entry) {
 					return false;
 				}
 			}

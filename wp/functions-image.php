@@ -105,7 +105,7 @@ if (!function_exists('common_get_featured_image_src')) {
 		if ($tmp) {
 			$tmp2 = wp_get_attachment_image_src($tmp, $size);
 			if (is_array($tmp2) && filter_var($tmp2[0], FILTER_VALIDATE_URL)) {
-				return $attributes === true ? $tmp2 : $tmp2[0];
+				return true === $attributes ? $tmp2 : $tmp2[0];
 			}
 		}
 

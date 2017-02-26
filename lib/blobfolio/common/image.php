@@ -73,10 +73,10 @@ class image {
 			$dom = dom::load_svg($svg);
 			$tmp = $dom->getElementsByTagName('svg');
 			if ($tmp->item(0)->hasAttribute('data-cleaned') && $tmp->item(0)->getAttribute('data-cleaned') === $passthrough_key) {
-				if ($output === 'DATA_URI') {
+				if ('DATA_URI' === $output) {
 					return 'data:image/svg+xml;base64,' . base64_encode($svg);
 				}
-				elseif ($output === 'HTML') {
+				elseif ('HTML' === $output) {
 					return $svg;
 				}
 				else {
@@ -427,10 +427,10 @@ class image {
 				@file_put_contents($path, constants::SVG_HEADER . "\n{$svg}");
 			}
 
-			if ($output === 'DATA_URI') {
+			if ('DATA_URI' === $output) {
 				return 'data:image/svg+xml;base64,' . base64_encode($svg);
 			}
-			elseif ($output === 'HTML') {
+			elseif ('HTML' === $output) {
 				return $svg;
 			}
 			else {
@@ -594,7 +594,7 @@ class image {
 			$pipes = array();
 
 			$type = $info['mime'];
-			if ($type === 'image/gif') {
+			if ('image/gif' === $type) {
 				$cmd = escapeshellarg($gif2webp) . ' -m 6 -quiet ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
 			}
 			else {

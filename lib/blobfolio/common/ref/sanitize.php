@@ -245,16 +245,18 @@ class sanitize {
 			}
 
 			//we only want ASCII domains
-			if ($host !== filter_var($host, FILTER_SANITIZE_URL)) {
+			if (filter_var($host, FILTER_SANITIZE_URL) !== $host) {
 				$str = '';
 				return true;
 			}
 
 			//does our host kinda match domain standards?
+			// @codingStandardsIgnoreStart
 			if (!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host)) {
 				$str = '';
 				return true;
 			}
+			// @codingStandardsIgnoreEnd
 
 			$str = $host;
 		}
@@ -436,10 +438,10 @@ class sanitize {
 			sanitize::quotes($str);
 			sanitize::whitespace($str);
 
-			if ($quote === "'") {
+			if ("'" === $quote) {
 				$str = str_replace("'", "\'", $str);
 			}
-			elseif ($quote === '"') {
+			elseif ('"' === $quote) {
 				$str = str_replace('"', '\"', $str);
 			}
 		}
@@ -642,7 +644,7 @@ class sanitize {
 			if (false !== $pos = \blobfolio\common\mb::strpos($tag, ':')) {
 				$tag2 = \blobfolio\common\mb::substr($tag, $pos + 1);
 			}
-			if (!in_array($tag, $tags) && ($tag2 === false || !in_array($tag2, $tags))) {
+			if (!in_array($tag, $tags) && (false === $tag2 || !in_array($tag2, $tags))) {
 				\blobfolio\common\dom::remove_node($tmp->item($x));
 				continue;
 			}
@@ -891,7 +893,7 @@ class sanitize {
 				$str = \blobfolio\common\mb::substr($str, 0, 5);
 			}
 
-			if ($str === '00000') {
+			if ('00000' === $str) {
 				$str = '';
 			}
 		}

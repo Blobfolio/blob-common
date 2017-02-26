@@ -141,8 +141,8 @@ class data {
 			!is_string($date1) ||
 			!is_string($date2) ||
 			$date1 === $date2 ||
-			$date1 === '0000-00-00' ||
-			$date2 === '0000-00-00'
+			'0000-00-00' === $date1 ||
+			'0000-00-00' === $date2
 		) {
 			return 0;
 		}
@@ -169,7 +169,7 @@ class data {
 	// @param min
 	// @param max
 	public static function in_range($value, $min=null, $max=null) {
-		return $value === sanitize::to_range($value, $min, $max);
+		return sanitize::to_range($value, $min, $max) === $value;
 	}
 
 	//-------------------------------------------------
@@ -208,7 +208,7 @@ class data {
 		}
 
 		if (is_array($defaults)) {
-			return static::parse_args($json, $defaults);
+			return static::parse_args($json, $defaults, $strict, $recursive);
 		}
 		else {
 			return $json;

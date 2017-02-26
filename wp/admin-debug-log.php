@@ -18,6 +18,7 @@ if (!current_user_can($requires)) {
 $logpath = trailingslashit(ABSPATH) . 'wp-content/debug.log';
 $log = file_exists($logpath) ? @file_get_contents($logpath) : '';
 
+// @codingStandardsIgnoreStart
 ?><style type="text/css">
 	.blobfolio-about-logo {
 		transition: color .3s ease;
@@ -266,3 +267,4 @@ jQuery(document).ready(function(){
 
 });
 </script>
+<?php // @codingStandardsIgnoreEnd ?>

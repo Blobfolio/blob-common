@@ -55,10 +55,10 @@ class format {
 	}
 
 	protected static function decode_entities_chr($matches) {
-		return chr($match[1]);
+		return chr($matches[1]);
 	}
 	protected static function decode_entities_hex($matches) {
-		return chr(hexdec($match[1]));
+		return chr(hexdec($matches[1]));
 	}
 
 	//-------------------------------------------------
@@ -126,7 +126,7 @@ class format {
 				$value = abs($value);
 			}
 
-			if ($value >= 1 || $cents === false) {
+			if ($value >= 1 || false === $cents) {
 				$value = ($negative ? '-' : '') . '$' . number_format($value, 2, '.', $separator);
 			}
 			else {
@@ -190,7 +190,7 @@ class format {
 		sanitize::timezone($from);
 		sanitize::timezone($to);
 
-		if ($date === '0000-00-00 00:00:00' || $from === $to) {
+		if ('0000-00-00 00:00:00' === $date || $from === $to) {
 			return true;
 		}
 

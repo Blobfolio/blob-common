@@ -44,7 +44,7 @@ if (!function_exists('common_check_form_timestamp')) {
 			return false;
 		}
 		list($t,$h) = explode(',', $hash);
-		return ($h === md5($t . NONCE_KEY) && time() - $t >= $elapsed);
+		return (md5($t . NONCE_KEY) === $h && time() - $t >= $elapsed);
 	}
 }
 //alias

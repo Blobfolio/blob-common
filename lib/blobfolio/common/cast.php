@@ -36,7 +36,7 @@ class cast {
 		}
 
 		$keys = array_keys($arr);
-		if ($keys === range(0, count($keys) - 1)) {
+		if (range(0, count($keys) - 1) === $keys) {
 			return 'sequential';
 		}
 		elseif (count($keys) === count(array_filter($keys, 'is_numeric'))) {
