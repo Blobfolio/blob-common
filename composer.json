@@ -32,6 +32,9 @@
     "blobfolio\/blob-phone": "*",
     "neitanod\/forceutf8": "*"
   },
+  "require-dev": {
+    "phpunit\/phpunit": "5.7.*"
+  },
   "config": {
     "vendor-dir": "lib\/vendor",
     "preferred-install": "dist"

@@ -353,7 +353,7 @@ class sanitize {
 		$host = parse_url($domain, PHP_URL_HOST);
 
 		//nope...
-		if (is_null($host)) {
+		if (!$host) {
 			$host = $domain;
 			//maybe there's a path?
 			if (false !== \blobfolio\common\mb::strpos($host, '/')) {
@@ -366,9 +366,6 @@ class sanitize {
 				$host = \blobfolio\common\data::array_pop_top($host);
 			}
 		}
-		else {
-			$domain = $host;
-		}
 
 		//remove leading www.
 		if (\blobfolio\common\mb::strlen($host) && !$www) {
@@ -378,6 +375,8 @@ class sanitize {
 		if (!$host) {
 			$host = false;
 		}
+
+		$domain = $host;
 
 		return true;
 	}

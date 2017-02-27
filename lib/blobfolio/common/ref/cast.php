@@ -140,7 +140,7 @@ class cast {
 
 				//convert from cents
 				if (preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
-					$value = preg_replace('/[^\-\d\.]/', '', $value) * 100;
+					$value = preg_replace('/[^\-\d\.]/', '', $value) / 100;
 				}
 				//convert from percent
 				elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $value)) {
