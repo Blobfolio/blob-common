@@ -7,6 +7,18 @@ notifications:
     on_success: never
     on_failure: change
 
+matrix:
+  include:
+    - os: linux
+      dist: yakkety
+      sudo: false
+
+addons:
+  apt:
+    packages:
+    - libwebp6
+    - webp
+
 branches:
   only:
     - master

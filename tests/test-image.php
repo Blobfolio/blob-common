@@ -25,6 +25,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$gif2webp = self::ASSETS . 'webp/bin/gif2webp';
 
 		$this->assertEquals(true, \blobfolio\common\image::has_webp($cwebp, $gif2webp));
+		$this->assertEquals(true, \blobfolio\common\image::has_webp());
 	}
 
 	//-------------------------------------------------
@@ -43,15 +44,13 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 
 	function test_to_webp() {
 		$in = static::ASSETS . 'space.jpg';
-		$cwebp = self::ASSETS . 'webp/bin/cwebp';
-		$gif2webp = self::ASSETS . 'webp/bin/gif2webp';
 
-		\blobfolio\common\image::to_webp($in, null, $cwebp, $gif2webp);
+		\blobfolio\common\image::to_webp($in);
 		$this->assertEquals(true, file_exists(self::ASSETS . 'space.webp'));
 		@unlink(self::ASSETS . 'space.webp');
 
 		$out = static::ASSETS . 'space2.webp';
-		\blobfolio\common\image::to_webp($in, $out, $cwebp, $gif2webp);
+		\blobfolio\common\image::to_webp($in, $out);
 		$this->assertEquals(true, file_exists($out));
 		@unlink($out);
 	}
