@@ -4,9 +4,11 @@ A PHP library with handy, reusable functions for sanitizing, formatting, and man
 
 For information about the plugin Tutan Common, which repackages and extends these functions for WordPress environments, click [here](https://github.com/Blobfolio/blob-common/tree/master/wp/).
 
+[![Build Status](https://travis-ci.org/Blobfolio/blob-common.svg?branch=master)](https://travis-ci.org/Blobfolio/blob-common)
 
+&nbsp;
 
-##### Table of Contents
+## Table of Contents
 
 1. [Requirements](#requirements)
 2. [Installation](#installation)
@@ -23,7 +25,7 @@ For information about the plugin Tutan Common, which repackages and extends thes
  * [Typecasting](https://github.com/Blobfolio/blob-common/blob/master/docs/CAST.md)
 4. [License](#license)
 
-
+&nbsp;
 
 ## Requirements
 
@@ -41,7 +43,7 @@ UTF-8 is used for all string encoding. This could create conflicts on environmen
 
 The [WebP](https://github.com/Blobfolio/blob-common/blob/master/docs/IMAGE.md) functionality additionally requires access to server-side `cwebp` and `gif2webp` binaries. See the linked reference for more details.
 
-
+&nbsp;
 
 ## Installation
 
@@ -51,7 +53,7 @@ Use Composer:
 composer require "blobfolio/blob-common:dev-master"
 ```
 
-
+&nbsp;
 
 ## License
 
