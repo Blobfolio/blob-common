@@ -25,7 +25,6 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$gif2webp = self::ASSETS . 'webp/bin/gif2webp';
 
 		$this->assertEquals(true, \blobfolio\common\image::has_webp($cwebp, $gif2webp));
-		$this->assertEquals(true, \blobfolio\common\image::has_webp());
 	}
 
 	//-------------------------------------------------
@@ -45,14 +44,19 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	function test_to_webp() {
 		$in = static::ASSETS . 'space.jpg';
 
-		\blobfolio\common\image::to_webp($in);
-		$this->assertEquals(true, file_exists(self::ASSETS . 'space.webp'));
-		@unlink(self::ASSETS . 'space.webp');
+		if (!\blobfolio\common\image::has_webp()) {
+			$this->markTestSkipped('Native WebP binaries not detected.');
+		}
+		else {
+			\blobfolio\common\image::to_webp($in, null);
+			$this->assertEquals(true, file_exists(self::ASSETS . 'space.webp'));
+			@unlink(self::ASSETS . 'space.webp');
 
-		$out = static::ASSETS . 'space2.webp';
-		\blobfolio\common\image::to_webp($in, $out);
-		$this->assertEquals(true, file_exists($out));
-		@unlink($out);
+			$out = static::ASSETS . 'space2.webp';
+			\blobfolio\common\image::to_webp($in, $out);
+			$this->assertEquals(true, file_exists($out));
+			@unlink($out);
+		}
 	}
 }
 

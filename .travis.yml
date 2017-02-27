@@ -7,24 +7,13 @@ notifications:
     on_success: never
     on_failure: change
 
-matrix:
-  include:
-    - os: linux
-      dist: yakkety
-      sudo: false
-
-addons:
-  apt:
-    packages:
-    - libwebp-dev
-    - webp
-
 branches:
   only:
     - master
 
 php:
-  - 7
+  - 7.0
+  - 7.1
 
 install: travis_retry composer install --no-interaction
 
