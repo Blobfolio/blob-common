@@ -59,7 +59,7 @@ if (!function_exists('common_iin_array()')) {
 	function common_iin_array($needle, $haystack) {
 		$needle = common_strtolower($needle);
 		$haystack = array_map('common_strtolower', $haystack);
-		return in_array($needle, $haystack);
+		return in_array($needle, $haystack, true);
 	}
 }
 
@@ -76,7 +76,7 @@ if (!function_exists('common_iarray_key_exists()')) {
 		}
 		$needle = common_strtolower($needle);
 		$haystack = array_map('common_strtolower', array_keys($haystack));
-		return in_array($needle, $haystack);
+		return in_array($needle, $haystack, true);
 	}
 }
 

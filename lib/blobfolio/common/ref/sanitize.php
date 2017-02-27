@@ -55,7 +55,7 @@ class sanitize {
 				break;
 			//Visa
 			case 4:
-				if (!in_array(\blobfolio\common\mb::strlen($ccnum), array(13,16))) {
+				if (!in_array(\blobfolio\common\mb::strlen($ccnum), array(13,16), true)) {
 					$ccnum = false;
 					return false;
 				}
@@ -547,7 +547,7 @@ class sanitize {
 			mb::strtoupper($str);
 
 			if (!isset(\blobfolio\common\constants::PROVINCES[$str])) {
-				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::PROVINCES))) {
+				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::PROVINCES), true)) {
 					$str = '';
 				}
 			}
@@ -594,7 +594,7 @@ class sanitize {
 			mb::strtoupper($str);
 
 			if (!isset(\blobfolio\common\constants::STATES[$str])) {
-				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::STATES))) {
+				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::STATES), true)) {
 					$str = '';
 				}
 			}
@@ -643,7 +643,10 @@ class sanitize {
 			if (false !== $pos = \blobfolio\common\mb::strpos($tag, ':')) {
 				$tag2 = \blobfolio\common\mb::substr($tag, $pos + 1);
 			}
-			if (!in_array($tag, $tags) && (false === $tag2 || !in_array($tag2, $tags))) {
+			if (
+				!in_array($tag, $tags, true) &&
+				(false === $tag2 || !in_array($tag2, $tags, true))
+			) {
 				\blobfolio\common\dom::remove_node($tmp->item($x));
 				continue;
 			}
@@ -654,7 +657,7 @@ class sanitize {
 				$attName = \blobfolio\common\mb::strtolower($att->name);
 
 				//first check, does it match straight off?
-				if (true === ($valid = (preg_match('/^(xmlns\:|data\-)/', $attName) || in_array($attName, $attr)))) {
+				if (true === ($valid = (preg_match('/^(xmlns\:|data\-)/', $attName) || in_array($attName, $attr, true)))) {
 
 					//strip \0
 					$attValue = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $att->value);

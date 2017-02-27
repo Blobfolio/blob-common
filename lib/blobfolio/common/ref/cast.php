@@ -40,10 +40,10 @@ class cast {
 			//evaluate special cases
 			if (is_string($value)) {
 				mb::strtolower($value);
-				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS)) {
+				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS, true)) {
 					$value = true;
 				}
-				elseif (in_array($value, \blobfolio\common\constants::FALSE_BOOLS)) {
+				elseif (in_array($value, \blobfolio\common\constants::FALSE_BOOLS, true)) {
 					$value = false;
 				}
 				else {
@@ -102,10 +102,10 @@ class cast {
 			//evaluate special cases
 			if (is_string($value)) {
 				mb::strtolower($value);
-				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS)) {
+				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS, true)) {
 					$value = 1;
 				}
-				elseif (in_array($value, \blobfolio\common\constants::FALSE_BOOLS)) {
+				elseif (in_array($value, \blobfolio\common\constants::FALSE_BOOLS, true)) {
 					$value = 0;
 				}
 			}

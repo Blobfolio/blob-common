@@ -72,7 +72,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$year = (int) date('Y');
 
 		$this->assertEquals(10, count($thing));
-		$this->assertEquals(true, in_array($year, $thing));
+		$this->assertEquals(true, in_array($year, $thing, true));
 
 		$thing = \blobfolio\common\data::cc_exp_years(3);
 		$this->assertEquals(3, count($thing));

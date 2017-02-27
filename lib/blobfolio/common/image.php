@@ -130,7 +130,7 @@ class image {
 						$id_string = $v;
 						$id_value = $matches[1][$k];
 						$id_new = 's' . mb::strtolower(data::random_string(4));
-						while (in_array($id_new, static::$svg_ids)) {
+						while (in_array($id_new, static::$svg_ids, true)) {
 							$id_new = 's' . mb::strtolower(data::random_string(4));
 						}
 						static::$svg_ids[] = $id_new;
@@ -327,7 +327,7 @@ class image {
 
 											if (count($classes)) {
 												$class_new = mb::strtolower('c' . data::random_string(4));
-												while (in_array($class_new, static::$svg_classes)) {
+												while (in_array($class_new, static::$svg_classes, true)) {
 													$class_new = mb::strtolower('c' . data::random_string(4));
 												}
 												$selectors[] = '.' . $class_new;

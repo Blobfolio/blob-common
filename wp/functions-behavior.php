@@ -44,7 +44,7 @@ if (!function_exists('common_upload_real_mimes')) {
 			));
 			if (
 				0 !== \blobfolio\common\mb::strpos($finfo['mime'], 'image/') ||
-				!in_array($finfo['extension'], $mime_to_ext)
+				!in_array($finfo['extension'], $mime_to_ext, true)
 			) {
 				//was the extension wrong?
 				if (count($finfo['suggested_filename'])) {
@@ -253,7 +253,7 @@ if (!function_exists('common_svg_media_thumbnail')) {
 if (!function_exists('common_disable_jquery_migrate')) {
 	function common_disable_jquery_migrate(&$scripts) {
 		//keep migrate for admin and admin-adjacent pages
-		if (is_admin() || in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'))) {
+		if (is_admin() || in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'), true)) {
 			return;
 		}
 
@@ -261,7 +261,7 @@ if (!function_exists('common_disable_jquery_migrate')) {
 			return;
 		}
 
-		if (false !== $index = array_search('jquery-migrate', $scripts->registered['jquery']->deps)) {
+		if (false !== $index = array_search('jquery-migrate', $scripts->registered['jquery']->deps, true)) {
 			unset($scripts->registered['jquery']->deps[$index]);
 			$scripts->registered['jquery']->deps = array_values($scripts->registered['jquery']->deps);
 		}
