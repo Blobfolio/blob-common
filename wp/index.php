@@ -91,7 +91,7 @@ function blobcommon_get_release_branch() {
 		}
 	}
 
-	if ($branch === 'current') {
+	if ('current' === $branch) {
 		return 'https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/current.json';
 	}
 	else {
@@ -171,7 +171,7 @@ function blobcommon_get_latest_version() {
 //
 // @param $options
 // @return $options
-function blobcommon_check_update($option, $cache=true) {
+function blobcommon_check_update($option) {
 
 	//make sure arguments make sense
 	if (!is_object($option)) {
@@ -183,7 +183,7 @@ function blobcommon_check_update($option, $cache=true) {
 	$remote = blobcommon_get_latest_version();
 
 	//bad data and/or match, nothing to do!
-	if ($remote === false || $installed === false || $remote <= $installed) {
+	if (false === $remote || false === $installed || $remote <= $installed) {
 		return $option;
 	}
 

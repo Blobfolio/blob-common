@@ -141,11 +141,11 @@ class format {
 		}
 
 		//character limit
-		if ($options['unit'] === 'character' && mb::strlen($str) > $options['length']) {
+		if ('character' === $options['unit'] && mb::strlen($str) > $options['length']) {
 			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
 		}
 		//word limit
-		elseif ($options['unit'] === 'word' && mb::substr_count($str, ' ') > $options['length'] - 1) {
+		elseif ('word' === $options['unit'] && mb::substr_count($str, ' ') > $options['length'] - 1) {
 			$str = explode(' ', $str);
 			$str = array_slice($str, 0, $options['length']);
 			$str = implode(' ', $str) . $options['suffix'];
@@ -171,7 +171,7 @@ class format {
 		ref\sanitize::utf8($single);
 		ref\sanitize::utf8($plural);
 
-		if ($count === (float) 1) {
+		if (((float) 1) === $count) {
 			return sprintf($single, $count);
 		}
 		else {
@@ -281,6 +281,7 @@ class format {
 		$data = array_values(array_filter($data, 'is_array'));
 		ref\cast::array($headers);
 
+		// @codingStandardsIgnoreStart
 		$out = array(
 			'<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>',
 			'<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">',
@@ -308,6 +309,7 @@ class format {
 			'<Table>',
 			'<Column ss:Index="1" ss:AutoFitWidth="0" ss:Width="110"/>'
 		);
+		// @codingStandardsIgnoreEnd
 
 		//grab headers from data?
 		if (!count($headers) && count($data) && cast::array_type($data[0]) === 'associative') {
@@ -336,7 +338,7 @@ class format {
 					//different types of data need to be treated differently
 					$type = gettype($cell);
 					$format = null;
-					if ($type === 'boolean' || $type === 'bool') {
+					if ('boolean' === $type || 'bool' === $type) {
 						$type = 'Boolean';
 						$format = '0';
 						$cell = $cell ? 1 : 0;

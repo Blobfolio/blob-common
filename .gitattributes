@@ -1,5 +1,8 @@
-/wp export-ignore
-/release export-ignore
-/tests export-ignore
+/.gitignore export-ignore
+/.travis.yml export-ignore
 /Gruntfile.js export-ignore
 /package.json export-ignore
+/phpunit.xml.dist export-ignore
+/release export-ignore
+/tests export-ignore
+/wp export-ignore

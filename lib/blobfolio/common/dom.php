@@ -21,8 +21,8 @@ class dom {
 	public static function load_svg(string $svg='') {
 		try {
 			//first thing first, lowercase all tags
-			$svg = preg_replace('/<svg/i', '<svg', $svg);
-			$svg = preg_replace('/<\/svg>/i', '</svg>', $svg);
+			$svg = preg_replace('/<svg/ui', '<svg', $svg);
+			$svg = preg_replace('/<\/svg>/ui', '</svg>', $svg);
 
 			//find the start and end tags so we can cut out miscellaneous garbage
 			if (
@@ -282,7 +282,7 @@ class dom {
 					//build the raw
 					$tmp['raw'] = implode(',', $tmp['selectors']) . '{';
 					foreach ($tmp['rules'] as $k=>$v) {
-						if ($k === '__NONE__') {
+						if ('__NONE__' === $k) {
 							$tmp['raw'] .= $v;
 						}
 						else {

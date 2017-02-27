@@ -140,7 +140,7 @@ class cast {
 
 				//convert from cents
 				if (preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
-					$value = preg_replace('/[^\-\d\.]/', '', $value) * 100;
+					$value = preg_replace('/[^\-\d\.]/', '', $value) / 100;
 				}
 				//convert from percent
 				elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $value)) {
@@ -196,19 +196,19 @@ class cast {
 
 		mb::strtolower($type);
 
-		if ($type === 'boolean' || $type === 'bool') {
+		if ('boolean' === $type || 'bool' === $type) {
 			static::bool($value, $flatten);
 		}
-		elseif ($type === 'integer' || $type === 'int') {
+		elseif ('integer' === $type || 'int' === $type) {
 			static::int($value, $flatten);
 		}
-		elseif ($type === 'double' || $type === 'float') {
+		elseif ('double' === $type || 'float' === $type) {
 			static::float($value, $flatten);
 		}
-		elseif ($type === 'string') {
+		elseif ('string' === $type) {
 			static::string($value, $flatten);
 		}
-		elseif ($type === 'array') {
+		elseif ('array' === $type) {
 			static::array($value);
 		}
 

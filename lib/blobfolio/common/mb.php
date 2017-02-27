@@ -83,7 +83,7 @@ class mb {
 		}
 
 		//pad left
-		if ($pad_type === STR_PAD_LEFT) {
+		if (STR_PAD_LEFT === $pad_type) {
 			$str = str_repeat($pad_string, ceil(($pad_length - $current_length) / $pad_string_length)) . $str;
 			$new_length = static::strlen($str);
 			if ($new_length > $pad_length) {
@@ -91,11 +91,11 @@ class mb {
 			}
 		}
 		//pad both
-		elseif ($pad_type === STR_PAD_BOTH) {
+		elseif (STR_PAD_BOTH === $pad_type) {
 			$leftright = 'right';
 			while (static::strlen($str) < $pad_length) {
-				$leftright = $leftright === 'left' ? 'right' : 'left';
-				if ($leftright === 'left') {
+				$leftright = 'left' === $leftright ? 'right' : 'left';
+				if ('left' === $leftright) {
 					$str = "{$pad_string}{$str}";
 				}
 				else {
@@ -105,7 +105,7 @@ class mb {
 
 			$new_length = static::strlen($str);
 			if ($new_length > $pad_length) {
-				if ($leftright === 'left') {
+				if ('left' === $leftright) {
 					$str = static::substr($str, $new_length - $pad_length);
 				}
 				else {

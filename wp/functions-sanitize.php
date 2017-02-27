@@ -318,7 +318,7 @@ if (!function_exists('common_sanitize_printable')) {
 // Sanitize CSV
 //
 // @param field
-// @param allow newlines
+// @param allow newlines (deprecated)
 // @return field
 if (!function_exists('common_sanitize_csv')) {
 	function common_sanitize_csv($str='', $newlines=false) {
@@ -668,14 +668,16 @@ if (!function_exists('common_validate_domain_name')) {
 		}
 
 		//we only want ASCII domains
-		if ($host !== filter_var($host, FILTER_SANITIZE_URL)) {
+		if (filter_var($host, FILTER_SANITIZE_URL) !== $host) {
 			return false;
 		}
 
 		//does our host kinda match domain standards?
+		// @codingStandardsIgnoreStart
 		if (!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host)) {
 			return false;
 		}
+		// @codingStandardsIgnoreEnd
 
 		//does it have an A record?
 		if ($live && !filter_var(gethostbyname($host), FILTER_VALIDATE_IP)) {

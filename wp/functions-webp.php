@@ -131,6 +131,12 @@ if (!function_exists('common_get_webp_src')) {
 		//wrap in a picture and we're done
 		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
 	}
+
+	//and shortcode
+	function common_shortcode_webp_src($args=null) {
+		return common_get_webp_src($args);
+	}
+	add_shortcode('common-webp-src', 'common_shortcode_webp_src');
 }
 
 //-------------------------------------------------
@@ -214,7 +220,7 @@ if (!function_exists('common_get_webp_srcset')) {
 
 		//no srcset for GIFs
 		$type = common_get_mime_type($image[0]);
-		if ($type === 'image/gif') {
+		if ('image/gif' === $type) {
 			if (common_supports_webp() && false !== ($w = common_get_webp_sister($image[0]))) {
 				$sources[] = sprintf($source, 'image/webp', esc_attr("$w {$image[1]}w"), '');
 			}
@@ -262,6 +268,12 @@ if (!function_exists('common_get_webp_srcset')) {
 		//wrap in a picture and we're done
 		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
 	}
+
+	//and shortcode
+	function common_shortcode_webp_srcset($args=null) {
+		return common_get_webp_srcset($args);
+	}
+	add_shortcode('common-webp-srcset', 'common_shortcode_webp_srcset');
 }
 
 //-------------------------------------------------
@@ -388,6 +400,12 @@ if (!function_exists('common_get_webp_picture')) {
 
 		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . $sources . '</picture>';
 	}
+
+	//and shortcode
+	function common_shortcode_webp_picture($args=null) {
+		return common_get_webp_picture($args);
+	}
+	add_shortcode('common-webp-picture', 'common_shortcode_webp_picture');
 }
 
 //-------------------------------------------------
@@ -418,7 +436,7 @@ if (!function_exists('common_get_webp_sister')) {
 			$mode = 'path';
 		}
 
-		if ($mode === 'url') {
+		if ('url' === $mode) {
 			$path = common_get_path_by_url($path);
 		}
 
@@ -430,7 +448,7 @@ if (!function_exists('common_get_webp_sister')) {
 		$webp = trailingslashit($bits['dirname']) . "{$bits['filename']}.webp";
 
 		if (file_exists($webp) || common_generate_webp($path, $webp)) {
-			return $mode === 'path' ? $webp : common_get_url_by_path($webp);
+			return 'path' === $mode ? $webp : common_get_url_by_path($webp);
 		}
 		else {
 			return false;

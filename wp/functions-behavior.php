@@ -62,7 +62,7 @@ if (!function_exists('common_upload_real_mimes')) {
 		}
 
 		//sanitize SVGs
-		if ($checked['type'] === 'image/svg+xml') {
+		if ('image/svg+xml' === $checked['type']) {
 			$contents = @file_get_contents($file);
 			\blobfolio\common\ref\sanitize::svg($contents);
 			if (strlen($contents)) {
@@ -208,7 +208,11 @@ if (!function_exists('common_svg_media_thumbnail')) {
 			return $response;
 		}
 
-		if ($response['type'] === 'image' && $response['subtype'] === 'svg+xml' && class_exists('SimpleXMLElement')) {
+		if (
+			'image' === $response['type'] &&
+			'svg+xml' === $response['subtype'] &&
+			class_exists('SimpleXMLElement')
+		) {
 			try {
 				$path = get_attached_file($attachment->ID);
 				if (@file_exists($path)) {
