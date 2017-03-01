@@ -1,10 +1,14 @@
 <?php
-// ---------------------------------------------------------------------
-// FUNCTIONS: BEHAVIORAL OVERRIDES
-// ---------------------------------------------------------------------
-// This file contains certain behavioral overrides that fix common
-// annoyances with WordPress. Some of them are automatic, some of them
-// are controlled via CONSTANTS or direct calls.
+/**
+ * Behavioral Overrides
+ *
+ * This file contains certain behavioral overrides that fix common
+ * annoyances with WordPress. Some of them are automatic, some are
+ * controlled via constants or direct calls.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 // This must be called through WordPress.
 if (!defined('ABSPATH')) {
@@ -17,24 +21,31 @@ if (!defined('ABSPATH')) {
 // MIME Fix
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Fix Upload MIME detection
-//
-// this is an out-and-out bug in 4.7.1 - ..2, but
-// in general could use some extra love
-//
-// @param checked [ext, type, proper_filename]
-// @param file
-// @param filename
-// @param mimes
 if (!function_exists('common_upload_real_mimes')) {
+	/**
+	 * Fix/Improve Upload MIME Detection
+	 *
+	 * WordPress 4.7.1 and 4.7.2 contain a bug
+	 * preventing non-normal images from being
+	 * uploaded.
+	 *
+	 * This also allows for Magic MIME-based
+	 * renaming in cases where a file's name
+	 * does not match its content.
+	 *
+	 * @param array $checked Checked data.
+	 * @param str $file File path.
+	 * @param str $filename File name.
+	 * @param mixed $mimes Allowed MIMEs.
+	 * @return array Checked data.
+	 */
 	function common_upload_real_mimes($checked, $file, $filename, $mimes) {
 
-		// only worry if the first check failed
+		// Only worry if the first check failed.
 		if (!$checked['type'] || !$checked['ext']) {
 			$finfo = \blobfolio\common\mime::finfo($file, $filename);
 
-			// the time for checking certain image types has passed already
+			// The time for checking certain image types has passed already.
 			$mime_to_ext = apply_filters('getimagesize_mimes_to_exts', array(
 				'image/jpeg'=>'jpg',
 				'image/png'=>'png',
@@ -46,12 +57,12 @@ if (!function_exists('common_upload_real_mimes')) {
 				0 !== \blobfolio\common\mb::strpos($finfo['mime'], 'image/') ||
 				!in_array($finfo['extension'], $mime_to_ext, true)
 			) {
-				// was the extension wrong?
+				// Was the extension wrong?
 				if (count($finfo['suggested_filename'])) {
 					$filename = \blobfolio\common\data::array_pop_top($finfo['suggested_filename']);
 				}
 
-				// what does WP think?
+				// What does WP think?
 				$wp_filetype = wp_check_filetype($filename, $mimes);
 				if ($wp_filetype['ext'] && $wp_filetype['type']) {
 					$checked['ext'] = $wp_filetype['ext'];
@@ -61,7 +72,7 @@ if (!function_exists('common_upload_real_mimes')) {
 			}
 		}
 
-		// sanitize SVGs
+		// Sanitize SVGs.
 		if ('image/svg+xml' === $checked['type']) {
 			$contents = @file_get_contents($file);
 			\blobfolio\common\ref\sanitize::svg($contents);
@@ -87,31 +98,34 @@ if (!function_exists('common_upload_real_mimes')) {
 // Automatic Overrides
 // ---------------------------------------------------------------------
 
-// do not include back/next links in meta
+// Do not include back/next links in meta.
 add_filter('previous_post_rel_link', '__return_false');
 add_filter('next_post_rel_link', '__return_false');
 
-// -------------------------------------------------
-// Disable WP-Embed
-//
-// nobody uses this, I swear!
-//
-// @param n/a
-// @return n/a
 if (!function_exists('common_disable_wp_embed')) {
+	/**
+	 * Disable WP-Embed Scripts
+	 *
+	 * @return void Nothing.
+	 */
 	function common_disable_wp_embed() {
 		wp_deregister_script('wp-embed');
 	}
 	add_action('wp', 'common_disable_wp_embed');
 }
 
-// -------------------------------------------------
-// Don't bubble selected terms to top on edit
-// post pages (nobody likes this, haha)
-//
-// @param args
-// @return args
 if (!function_exists('common_disable_checked_to_top')) {
+	/**
+	 * Don't Re-Order Post Taxonomy
+	 *
+	 * Keep checkbox-style terms ordered
+	 * alphabetically, otherwise the
+	 * hierarchy breaks when a child is
+	 * selected.
+	 *
+	 * @param array $args Arguments.
+	 * @return array Arguments.
+	 */
 	function common_disable_checked_to_top($args) {
 		$args['checked_ontop'] = false;
 		return $args;
@@ -119,49 +133,49 @@ if (!function_exists('common_disable_checked_to_top')) {
 	add_filter('wp_terms_checklist_args', 'common_disable_checked_to_top');
 }
 
-// -------------------------------------------------
-// Extend WordPress CRON Scheduling
-//
-// you might need to manually trigger WP cron
-// through the operating system's scheduler to
-// faithfully hit these higher frequencies.
-//
-// wp-config.php:
-// define('DISABLE_WP_CRON', true);
-//
-// crontab entry:
-// * * * * * wget https://domain.com/wp-cron.php?doing_wp_cron > /dev/null 2>&1
-//
-// @param schedules
-// @return schedules
 if (!function_exists('common_cron_schedules')) {
+	/**
+	 * More WP CRON Schedules
+	 *
+	 * Using the shorter invertvals will probably
+	 * require moving from pseudo-cron to real-cron.
+	 *
+	 * In wp-config.php:
+	 * define('DISABLE_WP_CRON', true);
+	 *
+	 * Crontab entry:
+	 * * * * * * wget -O- https://domain.com/wp-cron.php?doing_wp_cron > /dev/null 2>&1
+	 *
+	 * @param array $schedules Schedules.
+	 * @return array Schedules.
+	 */
 	function common_cron_schedules($schedules) {
 
-		// every minute
+		// Every minute.
 		$schedules['oneminute'] = array(
 			'interval'=>60,
 			'display'=>'Every 1 minute'
 		);
 
-		// every other minute
+		// Every other minute.
 		$schedules['twominutes'] = array(
 			'interval'=>120,
 			'display'=>'Every 2 minutes'
 		);
 
-		// every five minutes
+		// Every five minutes.
 		$schedules['fiveminutes'] = array(
 			'interval'=>300,
 			'display'=>'Every 5 minutes'
 		);
 
-		// every ten minutes
+		// Every ten minutes.
 		$schedules['tenminutes'] = array(
 			'interval'=>600,
 			'display'=>'Every 10 minutes'
 		);
 
-		// ever half hour
+		// Ever half hour.
 		$schedules['halfhour'] = array(
 			'interval'=>1800,
 			'display'=>'Every 30 minutes'
@@ -180,12 +194,13 @@ if (!function_exists('common_cron_schedules')) {
 // Optional Overrides
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Allow SVG and WebP Uploads
-//
-// @param image types
-// @return image types
 if (!function_exists('common_upload_mimes')) {
+	/**
+	 * Allow SVG/WebP Uploads
+	 *
+	 * @param array $existing_mimes MIMEs.
+	 * @return array MIMEs.
+	 */
 	function common_upload_mimes ($existing_mimes=array()) {
 		$existing_mimes['svg'] = 'image/svg+xml';
 		$existing_mimes['webp'] = 'image/webp';
@@ -194,14 +209,15 @@ if (!function_exists('common_upload_mimes')) {
 	add_filter('upload_mimes', 'common_upload_mimes');
 }
 
-// -------------------------------------------------
-// SVG Previews in Media Library
-//
-// @param response
-// @param attachment
-// @param meta
-// @return response
 if (!function_exists('common_svg_media_thumbnail')) {
+	/**
+	 * SVG Thumbnail Support in Media Library Grid
+	 *
+	 * @param array $response Response.
+	 * @param object $attachment Attachment.
+	 * @param array $meta Meta data.
+	 * @return array Response.
+	 */
 	function common_svg_media_thumbnails($response, $attachment, $meta) {
 
 		if (!is_array($response) || !isset($response['type'], $response['subtype'])) {
@@ -221,11 +237,11 @@ if (!function_exists('common_svg_media_thumbnail')) {
 					$width = (int) $svg['width'];
 					$height = (int) $svg['height'];
 
-					// media gallery
+					// Media gallery.
 					$response['image'] = compact('src', 'width', 'height');
 					$response['thumb'] = compact('src', 'width', 'height');
 
-					// media single
+					// Media single.
 					$response['sizes']['full'] = array(
 						'height'=>$height,
 						'width'=>$width,
@@ -243,16 +259,18 @@ if (!function_exists('common_svg_media_thumbnail')) {
 	add_filter('wp_prepare_attachment_for_js', 'common_svg_media_thumbnails', 10, 3);
 }
 
-// -------------------------------------------------
-// Disable jQuery Migrate
-//
-// define('WP_DISABLE_JQUERY_MIGRATE', true);
-//
-// @param scripts
-// @return n/a
 if (!function_exists('common_disable_jquery_migrate')) {
+	/**
+	 * Disable jQuery Migrate
+	 *
+	 * Enable via wp-config:
+	 * define('WP_DISABLE_JQUERY_MIGRATE', true);
+	 *
+	 * @param array $scripts Enqueued scripts.
+	 * @return void Nothing.
+	 */
 	function common_disable_jquery_migrate(&$scripts) {
-		// keep migrate for admin and admin-adjacent pages
+		// Keep migrate for admin and admin-adjacent pages.
 		if (is_admin() || in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'), true)) {
 			return;
 		}
@@ -271,16 +289,17 @@ if (!function_exists('common_disable_jquery_migrate')) {
 	}
 }
 
-// -------------------------------------------------
-// Disable Emoji
-//
-// define('WP_DISABLE_EMOJI', true);
-//
-// @param n/a
-// @return n/a
 if (!function_exists('common_disable_wp_emojicons')) {
+	/**
+	 * Disable WP-Emoji Scripts
+	 *
+	 * Enable via wp-config:
+	 * define('WP_DISABLE_EMOJI', true);
+	 *
+	 * @return void Nothing.
+	 */
 	function common_disable_wp_emojicons() {
-		// all actions related to emojis
+		// All actions related to emojis.
 		remove_action('admin_print_styles', 'print_emoji_styles');
 		remove_action('wp_head', 'print_emoji_detection_script', 7 );
 		remove_action('admin_print_scripts', 'print_emoji_detection_script');
@@ -289,14 +308,19 @@ if (!function_exists('common_disable_wp_emojicons')) {
 		remove_filter('the_content_feed', 'wp_staticize_emoji');
 		remove_filter('comment_text_rss', 'wp_staticize_emoji');
 
-		// filter to remove TinyMCE emojis
+		// Filter to remove TinyMCE emojis.
 		add_filter('tiny_mce_plugins', 'common_disable_emojicons_tinymce');
 	}
 	if (defined('WP_DISABLE_EMOJI') && WP_DISABLE_EMOJI) {
 		add_action('init', 'common_disable_wp_emojicons');
 	}
 
-	// and remove from TinyMCE
+	/**
+	 * Disable WP-Emoji (TinyMCE)
+	 *
+	 * @param array $plugins Plugins.
+	 * @return array Plugins.
+	 */
 	function common_disable_emojicons_tinymce($plugins) {
 		if (is_array($plugins)) {
 			return array_diff($plugins, array('wpemoji'));

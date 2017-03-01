@@ -1,9 +1,13 @@
 <?php
-// ---------------------------------------------------------------------
-// FUNCTIONS: SANITIZE/VALIDATE
-// ---------------------------------------------------------------------
-// This file contains functions related to sanitizing, validating,
-// and formatting data
+/**
+ * Sanitizing Functions
+ *
+ * This file contains functions for sanitizing and
+ * formatting various kinds of data.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 // This must be called through WordPress.
 if (!defined('ABSPATH')) {
@@ -16,57 +20,61 @@ if (!defined('ABSPATH')) {
 // Case Conversion
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Lower Case
-//
-// will return multi-byte lowercase if capabale,
-// otherwise regular lowercase
-//
-// @param str
-// @return str
 if (!function_exists('common_strtolower')) {
+	/**
+	 * Wrapper For strtolower()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_strtolower($str='') {
 		return \blobfolio\common\mb::strtolower($str);
 	}
 }
 
-// -------------------------------------------------
-// Upper Case
-//
-// will return multi-byte uppercase if capabale,
-// otherwise regular uppercase
-//
-// @param str
-// @return str
 if (!function_exists('common_strtoupper')) {
+	/**
+	 * Wrapper For strtoupper()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_strtoupper($str='') {
 		return \blobfolio\common\mb::strtoupper($str);
 	}
 }
 
-// -------------------------------------------------
-// Title Case
-//
-// will return multi-byte title case if capabale,
-// otherwise regular title case
-//
-// @param str
-// @return str
 if (!function_exists('common_ucwords')) {
+	/**
+	 * Wrapper For ucwords()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_ucwords($str='') {
 		return \blobfolio\common\mb::ucwords($str);
 	}
 }
 
-// -------------------------------------------------
-// Sentence Case
-//
-// will return multi-byte sentence case if capabale,
-// otherwise regular sentence case
-//
-// @param str
-// @return str
 if (!function_exists('common_ucfirst')) {
+	/**
+	 * Wrapper For ucfirst()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_ucfirst($str='') {
 		return \blobfolio\common\mb::ucfirst($str);
 	}
@@ -74,31 +82,36 @@ if (!function_exists('common_ucfirst')) {
 
 // --------------------------------------------------------------------- end case
 
+
+
 // ---------------------------------------------------------------------
 // Misc Formatting
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Format money
-//
-// @param amount
-// @param cents (if under $1, use ¢ sign)
-// @return money
 if (!function_exists('common_format_money')) {
-	function common_format_money($amount, $cents=false) {
-		return \blobfolio\common\format::money($amount, $cents);
+	/**
+	 * Money (USD)
+	 *
+	 * @param float $value Value.
+	 * @param bool $cents Return sub-$1 values with ¢.
+	 * @return string Value.
+	 */
+	function common_format_money($value, $cents=false) {
+		return \blobfolio\common\format::money($value, $cents);
 	}
 	add_filter('common_format_money', 'common_format_money', 5, 2);
 }
 
-// -------------------------------------------------
-// Format phone
-//
-// again, this assumes north american formatting
-//
-// @param n/a
-// @return phone (pretty)
 if (!function_exists('common_format_phone')) {
+	/**
+	 * Phone
+	 *
+	 * Format a North American phone number
+	 * like (123) 456-7890.
+	 *
+	 * @param string $value Phone number.
+	 * @return string Phone number.
+	 */
 	function common_format_phone($value='') {
 		$value = common_sanitize_phone($value);
 
@@ -111,28 +124,34 @@ if (!function_exists('common_format_phone')) {
 	}
 }
 
-// -------------------------------------------------
-// Singular/Plural inflection based on number
-//
-// @param number
-// @param single
-// @param plural
-// @return string
 if (!function_exists('common_inflect')) {
-	function common_inflect($num, $single='', $plural='') {
-		return \blobfolio\common\format::inflect($num, $single, $plural);
+	/**
+	 * Inflect
+	 *
+	 * Inflect a phrase given a count. `sprintf` formatting
+	 * is supported. If an array is passed as $count, its
+	 * size will be used for inflection.
+	 *
+	 * @param int|array $count Count.
+	 * @param string $single Singular.
+	 * @param string $plural Plural.
+	 * @return string Inflected string.
+	 */
+	function common_inflect($count, $single='', $plural='') {
+		return \blobfolio\common\format::inflect($count, $single, $plural);
 	}
 }
 
-// -------------------------------------------------
-// Make excerpt (character length)
-//
-// @param string
-// @param length
-// @param append
-// @param chop method (chars or words)
-// @return excerpt
 if (!function_exists('common_get_excerpt')) {
+	/**
+	 * Generate Text Except
+	 *
+	 * @param string $str String.
+	 * @param int $length Length limit.
+	 * @param string $append Suffix.
+	 * @param string $method Method (chars or words).
+	 * @return string Excerpt.
+	 */
 	function common_get_excerpt($str, $length=200, $append='...', $method='chars') {
 		\blobfolio\common\mb::strtolower($method);
 
@@ -147,83 +166,85 @@ if (!function_exists('common_get_excerpt')) {
 	}
 }
 
-// -------------------------------------------------
-// Unix slashes
-//
-// fix backward Windows slashes, and also get
-// rid of double slashes and dot paths
-//
-// @param path
-// @return path
 if (!function_exists('common_unixslashit')) {
+	/**
+	 * Fix Path Slashes
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	function common_unixslashit($path='') {
 		return \blobfolio\common\file::unixslash($path);
 	}
 }
 
-// -------------------------------------------------
-// Unleading Slash
-//
-// WP doesn't have leading slash functions for
-// some reason
-//
-// @param path
-// @return path
 if (!function_exists('common_unleadingslashit')) {
+	/**
+	 * Strip Leading Slash
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	function common_unleadingslashit($path='') {
 		return \blobfolio\common\file::unleadingslash($path);
 	}
 }
 
-// -------------------------------------------------
-// Leading Slash
-//
-// WP doesn't have leading slash functions for
-// some reason
-//
-// @param path
-// @return path
 if (!function_exists('common_leadingslashit')) {
+	/**
+	 * Add Leading Slash
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	function common_leadingslashit($path='') {
 		return \blobfolio\common\file::leadingslash($path);
 	}
 }
 
-// -------------------------------------------------
-// Convert a k=>v associative array to an indexed
-// array
-//
-// @param arr
-// @return arr
 if (!function_exists('common_array_to_indexed')) {
+	/**
+	 * Create Index Array
+	 *
+	 * This will convert a {k:v} associative array
+	 * into an indexed array with {key: k, value: v}
+	 * as the values. Useful when exporting sorted
+	 * data to Javascript, which doesn't preserve
+	 * object key ordering.
+	 *
+	 * @param array $arr Array.
+	 * @return array Array.
+	 */
 	function common_array_to_indexed($arr) {
 		return \blobfolio\common\format::array_to_indexed($arr);
 	}
 }
 
-// -------------------------------------------------
-// CSV
-//
-// @param data
-// @param headers
-// @param delimiter
-// @param EOL
-// @return CSV
 if (!function_exists('common_to_csv')) {
+	/**
+	 * Generate CSV from Data
+	 *
+	 * @param array $data Data (row=>cells).
+	 * @param array $headers Headers.
+	 * @param string $delimiter Delimiter.
+	 * @param string $eol Line ending type.
+	 * @return string CSV content.
+	 */
 	function common_to_csv($data=null, $headers=null, $delimiter=',', $eol="\n") {
 		return \blobfolio\common\format::to_csv($data, $headers, $delimiter, $eol);
 	}
 }
 
-// -------------------------------------------------
-// XLS
-//
-// use Microsoft's XML format
-//
-// @param data
-// @param headers
-// @return XLS
 if (!function_exists('common_to_xls')) {
+	/**
+	 * Generate XLS from Data
+	 *
+	 * This uses Microsoft's XML spreadsheet format.
+	 *
+	 * @param array $data Data (row=>cells).
+	 * @param array $headers Headers.
+	 * @return string XLS content.
+	 */
 	function common_to_xls($data=null, $headers=null) {
 		return \blobfolio\common\format::to_xls($data, $headers);
 	}
@@ -237,332 +258,434 @@ if (!function_exists('common_to_xls')) {
 // Sanitization
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Force a value to fall within a range
-//
-// @param value
-// @param min
-// @param max
-// @return value
 if (!function_exists('common_to_range')) {
+	/**
+	 * Confine a Value to a Range
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return mixed Value.
+	 */
 	function common_to_range($value, $min=null, $max=null) {
 		return \blobfolio\common\sanitize::to_range($value, $min, $max);
 	}
 }
 
-// -------------------------------------------------
-// Check if a value is within range
-//
-// @param value
-// @param min
-// @param max
-// @return true/false
 if (!function_exists('common_in_range')) {
+	/**
+	 * Is Value In Range?
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return bool True/false.
+	 */
 	function common_in_range($value, $min=null, $max=null) {
 		return \blobfolio\common\data::in_range($value, $min, $max);
 	}
 }
 
-// -------------------------------------------------
-// Check if a string's length is within range
-//
-// @param str
-// @param min
-// @param max
-// @return true/false
 if (!function_exists('common_length_in_range')) {
+	/**
+	 * Length in Range
+	 *
+	 * See if the length of a string is between two extremes.
+	 *
+	 * @param string $str String.
+	 * @param int $min Min length.
+	 * @param int $max Max length.
+	 * @return bool True/false.
+	 */
 	function common_length_in_range($str, $min=null, $max=null) {
 		return \blobfolio\common\data::length_in_range($str, $min, $max);
 	}
 }
 
-// -------------------------------------------------
-// Convert to UTF-8
-//
-// @param string
-// @return string or false
 if (!function_exists('common_utf8')) {
+	/**
+	 * UTF-8
+	 *
+	 * Ensure string contains valid UTF-8 encoding.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_utf8($str) {
 		return \blobfolio\common\sanitize::utf8($str);
 	}
 }
-// alias
+
+// Alias.
 if (!function_exists('common_sanitize_utf8')) {
+	/**
+	 * UTF-8
+	 *
+	 * Ensure string contains valid UTF-8 encoding.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_sanitize_utf8($str) { return common_utf8($str);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize name (like a person's name)
-//
-// @param name
-// @return name
 if (!function_exists('common_sanitize_name')) {
+	/**
+	 * (Person's) Name
+	 *
+	 * A bit of a fool's goal, but this will attempt to
+	 * strip out obviously bad data and convert to title
+	 * casing.
+	 *
+	 * @param string $str Name.
+	 * @return string Name.
+	 */
 	function common_sanitize_name($str='') {
 		return \blobfolio\common\sanitize::name($str);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize printable
-//
-// @param str
-// @return str
 if (!function_exists('common_sanitize_printable')) {
+	/**
+	 * Printable
+	 *
+	 * Remove non-printable characters (except spaces).
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_sanitize_printable($str='') {
 		return \blobfolio\common\sanitize::printable($str);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize CSV
-//
-// @param field
-// @param allow newlines (deprecated)
-// @return field
 if (!function_exists('common_sanitize_csv')) {
+	/**
+	 * CSV Cell Data
+	 *
+	 * @param string $str String.
+	 * @param bool $newlines Deprecated.
+	 * @return string String.
+	 */
 	function common_sanitize_csv($str='', $newlines=false) {
 		return \blobfolio\common\sanitize::csv($str);
 	}
 }
 
-// -------------------------------------------------
-// Consistent new lines (\n)
-//
-// @param str
-// @return str
 if (!function_exists('common_sanitize_newlines')) {
+	/**
+	 * Whitespace
+	 *
+	 * Trim edges, replace all consecutive horizontal whitespace
+	 * with a single space, and constrict consecutive newlines.
+	 *
+	 * @param string $str String.
+	 * @param int $newlines Consecutive newlines allowed.
+	 * @return string String.
+	 */
 	function common_sanitize_newlines($str='', $newlines=2) {
 		return \blobfolio\common\sanitize::whitespace($str, $newlines);
 	}
 }
 
-// -------------------------------------------------
-// Single spaces
-//
-// @param str
-// @return str
 if (!function_exists('common_sanitize_spaces')) {
+	/**
+	 * Horizontal Whitespace
+	 *
+	 * Trim edges, replace all consecutive horizontal whitespace
+	 * with a single space.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_sanitize_spaces($str='') {
 		$str = common_utf8($str);
 		return trim(preg_replace('/\h{1,}/u', ' ', $str));
 	}
 }
 
-// -------------------------------------------------
-// Sanitize all white space
-//
-// @param str
-// @param multiline
-// @return str
 if (!function_exists('common_sanitize_whitespace')) {
+	/**
+	 * Whitespace
+	 *
+	 * Trim edges, replace all consecutive horizontal whitespace
+	 * with a single space, and constrict consecutive newlines.
+	 *
+	 * @param string $str String.
+	 * @param bool $multiline Allow linebreaks.
+	 * @return string String.
+	 */
 	function common_sanitize_whitespace($str='', $multiline=false) {
 		$newlines = $multiline ? 2 : 0;
 		return \blobfolio\common\sanitize::whitespace($str, $newlines);
 	}
 }
 
-// -------------------------------------------------
-// Make consistent quotes
-//
-// @param str
-// @return str
 if (!function_exists('common_sanitize_quotes')) {
+	/**
+	 * Quotes
+	 *
+	 * Replace those damn curly quotes with the straight
+	 * ones Athena intended!
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	function common_sanitize_quotes($str='') {
 		return \blobfolio\common\sanitize::quotes($str);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize JS variable
-//
-// this should be used for var = 'variable';
-//
-// @param str
-// @return str
 if (!function_exists('common_sanitize_js_variable')) {
-	function common_sanitize_js_variable($str='') {
-		return \blobfolio\common\sanitize::js($str);
+	/**
+	 * JS Variable
+	 *
+	 * @param string $str String.
+	 * @param string $quote Quote type.
+	 * @return string String.
+	 */
+	function common_sanitize_js_variable($str='', $quote="'") {
+		return \blobfolio\common\sanitize::js($str, $quote);
 	}
 }
 
-// -------------------------------------------------
-// Better email sanitizing
-//
-// @param email
-// @return email
 if (!function_exists('common_sanitize_email')) {
-	function common_sanitize_email($email='') {
-		return \blobfolio\common\sanitize::email($email);
+	/**
+	 * Email
+	 *
+	 * Converts the email to lowercase, strips
+	 * invalid characters, quotes, and apostrophes.
+	 *
+	 * @param string $str Email.
+	 * @return string Email.
+	 */
+	function common_sanitize_email($str='') {
+		return \blobfolio\common\sanitize::email($str);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize a US zip5 code
-//
-// @param zip
-// @return zip
 if (!function_exists('common_sanitize_zip5')) {
-	function common_sanitize_zip5($zip) {
-		return \blobfolio\common\sanitize::zip5($zip);
+	/**
+	 * US ZIP5
+	 *
+	 * @param string $str ZIP Code.
+	 * @return string ZIP Code.
+	 */
+	function common_sanitize_zip5($str) {
+		return \blobfolio\common\sanitize::zip5($str);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize IP
-//
-// IPv6 addresses are compacted for consistency
-//
-// @param IP
-// @return IP
 if (!function_exists('common_sanitize_ip')) {
-	function common_sanitize_ip($ip) {
-		return \blobfolio\common\sanitize::ip($ip, true);
+	/**
+	 * IP Address
+	 *
+	 * @param string $str IP.
+	 * @return string IP.
+	 */
+	function common_sanitize_ip($str) {
+		return \blobfolio\common\sanitize::ip($str, true);
 	}
 }
 
-// -------------------------------------------------
-// Remove non-numeric chars from str
-//
-// @param num
-// @param flatten
-// @return num (float)
 if (!function_exists('common_sanitize_number')) {
-	function common_sanitize_number($num, $flatten=false) {
-		return \blobfolio\common\cast::number($num, $flatten);
+	/**
+	 * To Number
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return float Number.
+	 */
+	function common_sanitize_number($value, $flatten=false) {
+		return \blobfolio\common\cast::number($value, $flatten);
 	}
 }
 
-// -------------------------------------------------
-// Bool
-//
-// @param value
-// @param flatten
-// @return true/false
 if (!function_exists('common_sanitize_bool')) {
+	/**
+	 * To Bool
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool Bool.
+	 */
 	function common_sanitize_bool($value=false, $flatten=false) {
 		return \blobfolio\common\cast::bool($value, $flatten);
 	}
 }
-// alias
+
+// Alias.
 if (!function_exists('common_sanitize_boolean')) {
+	/**
+	 * To Bool
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool Bool.
+	 */
 	function common_sanitize_boolean($value=false, $flatten=false) {
 		return common_sanitize_bool($value, $flatten);
 	}
 }
 
-// -------------------------------------------------
-// Float
-//
-// @param value
-// @param flatten
-// @return true/false
 if (!function_exists('common_sanitize_float')) {
-	function common_sanitize_float($num=0, $flatten=false) {
-		return \blobfolio\common\cast::float($num, $flatten);
-	}
-}
-// alias
-if (!function_exists('common_doubleval')) {
-	function common_doubleval($num=0, $flatten=false) {
-		return common_sanitize_float($num, $flatten);
-	}
-}
-if (!function_exists('common_floatval')) {
-	function common_floatval($num=0, $flatten=false) {
-		return common_sanitize_float($num, $flatten);
+	/**
+	 * To Float
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return float Float.
+	 */
+	function common_sanitize_float($value=0, $flatten=false) {
+		return \blobfolio\common\cast::float($value, $flatten);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize by Type
-//
-// @param value
-// @param type
-// @param flatten
-// @return value
+// Alias.
+if (!function_exists('common_doubleval')) {
+	/**
+	 * To Float
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return float Float.
+	 */
+	function common_doubleval($value=0, $flatten=false) {
+		return common_sanitize_float($value, $flatten);
+	}
+}
+
+// Alias.
+if (!function_exists('common_floatval')) {
+	/**
+	 * To Float
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return float Float.
+	 */
+	function common_floatval($value=0, $flatten=false) {
+		return common_sanitize_float($value, $flatten);
+	}
+}
+
 if (!function_exists('common_sanitize_by_type')) {
+	/**
+	 * To X Type
+	 *
+	 * @param mixed $value Variable.
+	 * @param string $type Type.
+	 * @param bool $flatten Do not recurse.
+	 * @return mixed Cast value.
+	 */
 	function common_sanitize_by_type($value, $type=null, $flatten=false) {
 		return \blobfolio\common\cast::to_type($value, $type, $flatten);
 	}
 }
 
-// -------------------------------------------------
-// Int
-//
-// @param value
-// @return true/false
 if (!function_exists('common_sanitize_int')) {
-	function common_sanitize_int($num=0, $flatten=false) {
-		return \blobfolio\common\cast::int($num, $flatten);
+	/**
+	 * To Int
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return int Int.
+	 */
+	function common_sanitize_int($value=0, $flatten=false) {
+		return \blobfolio\common\cast::int($value, $flatten);
 	}
 }
-// another wrapper
+// Alias.
 if (!function_exists('common_intval')) {
-	function common_intval($num=0, $flatten=false) { return common_sanitize_int($num, $flatten);
+	/**
+	 * To Int
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return int Int.
+	 */
+	function common_intval($value=0, $flatten=false) {
+		return common_sanitize_int($value, $flatten);
 	}
 }
 
-// -------------------------------------------------
-// String
-//
-// @param value
-// @param flatten
-// @return value
 if (!function_exists('common_sanitize_string')) {
+	/**
+	 * To String
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return string String.
+	 */
 	function common_sanitize_string($value='', $flatten=false) {
 		return \blobfolio\common\cast::string($value, $flatten);
 	}
 }
-// alias
+// Alias.
 if (!function_exists('common_strval')) {
+	/**
+	 * To String
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return string String.
+	 */
 	function common_strval($value='', $flatten=false) {
 		return common_sanitize_string($value, $flatten);
 	}
 }
 
-// -------------------------------------------------
-// Array
-//
-// @param value
-// @return value
 if (!function_exists('common_sanitize_array')) {
+	/**
+	 * To Array
+	 *
+	 * @param mixed $value Variable.
+	 * @return array Array.
+	 */
 	function common_sanitize_array($value=null) {
 		return \blobfolio\common\cast::array($value);
 	}
 }
 
-// -------------------------------------------------
-// Datetime
-//
-// @param date
-// @return date
 if (!function_exists('common_sanitize_datetime')) {
+	/**
+	 * Datetime
+	 *
+	 * @param string|int $date Date or timestamp.
+	 * @return string Date.
+	 */
 	function common_sanitize_datetime($date) {
 		return \blobfolio\common\sanitize::datetime($date);
 	}
 }
-// wrapper for just the date half
+
 if (!function_exists('common_sanitize_date')) {
+	/**
+	 * Date
+	 *
+	 * @param string|int $date Date or timestamp.
+	 * @return string Date.
+	 */
 	function common_sanitize_date($date) {
 		return \blobfolio\common\sanitize::date($date);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize phone number
-//
-// this function should only be used on north
-// american numbers, like: (123) 456-7890 x12345
-//
-// @param phone
-// @return phone
 if (!function_exists('common_sanitize_phone')) {
+	/**
+	 * Phone Number
+	 *
+	 * Sanitize a North American telephone number.
+	 *
+	 * @param string $value Phone number.
+	 * @return string Phone number.
+	 */
 	function common_sanitize_phone($value='') {
 		$value = common_sanitize_string($value);
 		$value = preg_replace('/[^\d]/', '', $value);
 
-		// if this looks like a 10-digit number with the +1 on it, chop it off
+		// If this looks like a 10-digit number with the +1 on it, chop it off.
 		if (strlen($value) === 11 && intval(substr($value, 0, 1)) === 1) {
 			$value = substr($value, 1);
 		}
@@ -571,18 +694,19 @@ if (!function_exists('common_sanitize_phone')) {
 	}
 }
 
-// -------------------------------------------------
-// Sanitize domain name
-//
-// this does not strip invalid characters; it
-// merely attempts to extract the hostname portion
-// of a URL-like string
-//
-// @param domain
-// @return domain or false
 if (!function_exists('common_sanitize_domain_name')) {
-	function common_sanitize_domain_name($domain) {
-		return \blobfolio\common\sanitize::domain($domain);
+	/**
+	 * Domain Name.
+	 *
+	 * This locates the domain name portion of a URL,
+	 * removes leading "www." subdomains, and ignores
+	 * IP addresses.
+	 *
+	 * @param string $str Domain.
+	 * @return string Domain.
+	 */
+	function common_sanitize_domain_name($str) {
+		return \blobfolio\common\sanitize::domain($str);
 	}
 }
 
@@ -594,92 +718,102 @@ if (!function_exists('common_sanitize_domain_name')) {
 // Validate
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Check for UTF-8
-//
-// @param string
-// @return true/false
 if (!function_exists('common_is_utf8')) {
+	/**
+	 * Is Value Valid UTF-8?
+	 *
+	 * @param string $str String.
+	 * @return bool True/false.
+	 */
 	function common_is_utf8($str) {
 		return \blobfolio\common\data::is_utf8($str);
 	}
 }
 
-// -------------------------------------------------
-// Validate an email (FQDN)
-//
-// @param email
-// @return true/false
 if (!function_exists('common_validate_email')) {
+	/**
+	 * Is Email Valid
+	 *
+	 * @param string $email String.
+	 * @return bool True/false.
+	 */
 	function common_validate_email($email='') {
 		return filter_var($email, FILTER_VALIDATE_EMAIL) && preg_match('/^.+\@.+\..+$/', $email);
 	}
 }
 
-// -------------------------------------------------
-// Validate north american phone number
-//
-// the first 10 digits must match standards
-//
-// @param phone
-// @return true/false
 if (!function_exists('common_validate_phone')) {
+	/**
+	 * Is Phone Valid
+	 *
+	 * This only applies to North American numbers.
+	 *
+	 * @param string $value Phone number.
+	 * @return bool True/false.
+	 */
 	function common_validate_phone($value='') {
-		// match the first 10
+		// Match the first 10.
 		$value = common_sanitize_string($value);
 		$first10 = common_substr($value, 0, 10);
 		return preg_match('/^[2-9][0-8][0-9][2-9][0-9]{2}[0-9]{4}$/i', $first10);
 	}
 }
 
-// -------------------------------------------------
-// Validate credit card
-//
-// @param card
-// @return true/false
 if (!function_exists('common_validate_cc')) {
+	/**
+	 * Credit Card
+	 *
+	 * @param string $ccnum Card number.
+	 * @return bool True/false.
+	 */
 	function common_validate_cc($ccnum='') {
 		return false !== \blobfolio\common\sanitize::cc($ccnum);
 	}
 }
 
-// -------------------------------------------------
-// Sanitize a URL
-//
-// @param url
-// @return url
 if (!function_exists('common_sanitize_url')) {
+	/**
+	 * URL
+	 *
+	 * Validate URLishness and convert // schemas.
+	 *
+	 * @param string $url URL.
+	 * @return string URL.
+	 */
 	function common_sanitize_url($url='') {
 		\blobfolio\common\ref\sanitize::url($url);
 		return $url;
 	}
 }
 
-// -------------------------------------------------
-// Validate domain name
-//
-// @param domain
-// @param live (does it have an IP?)
-// @return true/false
 if (!function_exists('common_validate_domain_name')) {
+	/**
+	 * Validate Domain Name
+	 *
+	 * Check if domain name appears valid.
+	 *
+	 * @param string $domain Domain.
+	 * @param bool $live Check DNS.
+	 * @return bool True/false.
+	 */
 	function common_validate_domain_name($domain, $live=true) {
 		if (false === $host = common_sanitize_domain_name($domain)) {
 			return false;
 		}
 
-		// we only want ASCII domains
+		// We only want ASCII domains.
 		if (filter_var($host, FILTER_SANITIZE_URL) !== $host) {
 			return false;
 		}
 
-		// does our host kinda match domain standards?
+		// Does our host kinda match domain standards?
 		// @codingStandardsIgnoreStart
 		if (!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host)) {
 			return false;
 		}
 		// @codingStandardsIgnoreEnd
 
-		// does it have an A record?
+		// Does it have an A record?
 		if ($live && !filter_var(gethostbyname($host), FILTER_VALIDATE_IP)) {
 			return false;
 		}

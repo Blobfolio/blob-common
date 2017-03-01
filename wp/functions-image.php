@@ -1,20 +1,24 @@
 <?php
-// ---------------------------------------------------------------------
-// FUNCTIONS: IMAGES
-// ---------------------------------------------------------------------
-// This file contains functions relating to images, thumbnails, etc.
+/**
+ * Image Functions
+ *
+ * This file contains helpers for images, thumbnails, etc.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 // This must be called through WordPress.
 if (!defined('ABSPATH')) {
 	exit;
 }
 
-// JIT images is split off into its own file
+// JIT images is split off into its own file.
 if (defined('WP_JIT_IMAGES') && WP_JIT_IMAGES) {
 	@require_once(BLOB_COMMON_ROOT . '/functions-jit.php');
 }
 
-// WebP is likewise in its own file
+// WebP is likewise in its own file.
 if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
 	@require_once(BLOB_COMMON_ROOT . '/functions-webp.php');
 }
@@ -25,20 +29,32 @@ if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
 // SVG
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Clean SVG
-//
-// strip out XML headers and garbage that might be
-// collected at the top of the file to make for
-// better inline inclusion
-//
-// @param file path
-// prevent args
-// @return svg data or false
 if (!function_exists('common_get_clean_svg')) {
+	/**
+	 * Clean SVG for Inline Embedding
+	 *
+	 * @param string $path Source path.
+	 * @param mixed $args Arguments.
+	 *
+	 * @arg bool $clean_styles Fix <style> formatting, combine tags.
+	 * @arg bool $fix_dimensions Fix missing width, height, viewBox.
+	 * @arg bool $namespace Generate an xmlns:svg namespace.
+	 * @arg bool $random_id Randomize IDs.
+	 * @arg bool $rewrite_styles Redo class assignments to group like rules.
+	 * @arg bool $sanitize Sanitize content.
+	 * @arg bool $save Save cleaned file for faster repeat processing.
+	 * @arg bool $strip_data Remove data-x attributes.
+	 * @arg bool $strip_id Remove IDs.
+	 * @arg bool $strip_style Remove styles.
+	 * @arg bool $strip_title Remove titles.
+	 * @arg array $whitelist_attr Additional attributes to allow.
+	 * @arg array $whitelist_tags Additional tags to allow.
+	 *
+	 * @return string|bool SVG code or false.
+	 */
 	function common_get_clean_svg($path, $args=null) {
-		// for historical reasons, $args used to just be one arg: random_id.
-		// if a bool, we'll assume that's what was meant.
+		// For historical reasons, $args used to just be one arg: random_id.
+		// If a bool, we'll assume that's what was meant.
 		if (is_bool($args)) {
 			$args = array('random_id'=>$args);
 		}
@@ -52,14 +68,15 @@ if (!function_exists('common_get_clean_svg')) {
 	}
 }
 
-// -------------------------------------------------
-// SVG Dimensions
-//
-// @param svg path
-// @return return width/height
 if (!function_exists('common_get_svg_dimensions')) {
-	function common_get_svg_dimensions($path) {
-		if (false === ($out = \blobfolio\common\image::svg_dimensions($path))) {
+	/**
+	 * Determine SVG Dimensions
+	 *
+	 * @param string $svg SVG content or file path.
+	 * @return array Dimensions.
+	 */
+	function common_get_svg_dimensions($svg) {
+		if (false === ($out = \blobfolio\common\image::svg_dimensions($svg))) {
 			$out = array('width'=>0, 'height'=>0);
 		}
 		return $out;
@@ -74,22 +91,19 @@ if (!function_exists('common_get_svg_dimensions')) {
 // Misc
 // ---------------------------------------------------------------------
 
-// -------------------------------------------------
-// Get Featured Image SRC
-//
-// A shorthand function for returning a post's
-// default image at a particular size.
-//
-// @param post id
-// @param size
-// @param return attributes (keys correspond to wp_get_attachment_image_src)
-// 0 URL
-// 1 width
-// 2 height
-// 3 is resized
-// @param fallback to use if no featured thumb is set
-// @return array, src or false
 if (!function_exists('common_get_featured_image_src')) {
+	/**
+	 * Get Featured Image SRC
+	 *
+	 * A shorthand function for returning a post's featured
+	 * image at a particular size.
+	 *
+	 * @param int $id Post ID.
+	 * @param string $size Size.
+	 * @param bool $attributes Return attributes or just URL.
+	 * @param int $fallback Attachment ID to use as fallback image.
+	 * @return mixed Image URL. If $attributes, an array containing the URL, width, and height. False on failure.
+	 */
 	function common_get_featured_image_src($id=0, $size=null, $attributes=false, $fallback=0) {
 		$id = (int) $id;
 		if (!$id) {
@@ -97,7 +111,7 @@ if (!function_exists('common_get_featured_image_src')) {
 		}
 		$tmp = (int) get_post_thumbnail_id($id);
 
-		// using a fallback?
+		// Using a fallback?
 		if (!$tmp && $fallback > 0) {
 			$tmp = $fallback;
 		}
@@ -113,17 +127,22 @@ if (!function_exists('common_get_featured_image_src')) {
 	}
 }
 
-// -------------------------------------------------
-// Sort SRCSET by size
-//
-// @param a
-// @param b
 if (!function_exists('_common_sort_srcset')) {
+	/**
+	 * Sort SRCSET by Size
+	 *
+	 * This is a usort() callback for sorting an
+	 * array of SRCSET sources by size.
+	 *
+	 * @param string $a Source.
+	 * @param string $b Source.
+	 * @return int Order: -1, 0, 1.
+	 */
 	function _common_sort_srcset($a, $b) {
 		$a1 = explode(' ', common_sanitize_whitespace($a));
 		$b1 = explode(' ', common_sanitize_whitespace($b));
 
-		// can't compute, leave it alone
+		// Can't compute, leave it alone.
 		if (count($a1) !== 2 || count($b1) !== 2) {
 			return 0;
 		}
@@ -139,13 +158,18 @@ if (!function_exists('_common_sort_srcset')) {
 	}
 }
 
-// -------------------------------------------------
-// Srcset Wrapper
-//
-// @param attachment_id
-// @param sizes
-// @return srcset string or false
 if (!function_exists('common_get_image_srcset')) {
+	/**
+	 * SRCSET Wrapper
+	 *
+	 * Generate a list of SRCSET sources using specific
+	 * sizes, or have WordPress come up with the list
+	 * using a single size.
+	 *
+	 * @param int $attachment_id Attachment ID.
+	 * @param array|string $size Size(s).
+	 * @return string|bool SRCSET string or false.
+	 */
 	function common_get_image_srcset(int $attachment_id=0, $size) {
 		if ($attachment_id < 1) {
 			return false;
@@ -157,18 +181,18 @@ if (!function_exists('common_get_image_srcset')) {
 		$size = array_filter($size, 'strlen');
 		$size = array_values($size);
 
-		// no size or bad attachment
+		// No size or bad attachment.
 		if (!count($size)) {
 			$size[] = 'full';
 		}
 
-		// if there's just one, try to let WP do it
+		// If there's just one, try to let WP do it.
 		$srcset = false;
 		if (count($size) === 1) {
 			$srcset = wp_get_attachment_image_srcset($attachment_id, $size[0]);
 		}
 
-		// no srcset yet?
+		// No srcset yet?
 		if (false === $srcset) {
 			$srcset = array();
 			foreach ($size as $s) {
@@ -181,30 +205,34 @@ if (!function_exists('common_get_image_srcset')) {
 				return false;
 			}
 		}
-		// convert WP's answer to an array
+		// Convert WP's answer to an array.
 		else {
 			$srcset = explode(',', $srcset);
 			\blobfolio\common\ref\sanitize::whitespace($srcset);
 		}
 
-		// sort
+		// Sort.
 		usort($srcset, '_common_sort_srcset');
 
-		// return
+		// Return.
 		return implode(', ', $srcset);
 	}
 }
 
-// -------------------------------------------------
-// Get Featured Image Path
-//
-// @param post id
-// @param size
-// @return path or false
 if (!function_exists('common_get_featured_image_path')) {
+	/**
+	 * Get Featured Image Path
+	 *
+	 * This works like `common_get_featured_image_src()`
+	 * but returns a file path instead of a URL.
+	 *
+	 * @param int $id Post ID.
+	 * @param string $size Size.
+	 * @return string|bool File path or false.
+	 */
 	function common_get_featured_image_path($id=0, $size=null) {
-		// surprisingly, there isn't a built-in function for this, so
-		// let's just convert the URL back into the path
+		// Surprisingly, there isn't a built-in function for this, so
+		// let's just convert the URL back into the path.
 		if (false === ($url = common_get_featured_image_src($id, $size))) {
 			return false;
 		}
@@ -213,14 +241,15 @@ if (!function_exists('common_get_featured_image_path')) {
 	}
 }
 
-// -------------------------------------------------
-// Blank Image
-//
-// return a simple 1x1 transparent GIF
-//
-// @param n/a
-// @return src
 if (!function_exists('common_get_blank_image')) {
+	/**
+	 * Blank Image
+	 *
+	 * Get a Data-URI representing a simple 1x1
+	 * transparent GIF.
+	 *
+	 * @return string Data-URI.
+	 */
 	function common_get_blank_image() {
 		return \blobfolio\common\constants::BLANK_IMAGE;
 	}
