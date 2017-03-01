@@ -142,7 +142,7 @@ class format {
 	 * @arg string $unit Unit to examine, "character" or "word".
 	 * @arg string $suffix Suffix, e.g. ...
 	 *
-	 * @return bool True.
+	 * @return string Excerpt.
 	 */
 	public static function excerpt($str='', $args=null) {
 		ref\cast::string($str, true);
@@ -243,14 +243,6 @@ class format {
 		return $str;
 	}
 
-	// -------------------------------------------------
-	// To CSV
-	//
-	// @param data
-	// @param headers
-	// @param delimiter
-	// @param eol
-	// @return csv
 	/**
 	 * Generate CSV from Data
 	 *
