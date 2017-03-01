@@ -1,23 +1,29 @@
 <?php
-//---------------------------------------------------------------------
-// FORMAT
-//---------------------------------------------------------------------
-// format data
-
-
+/**
+ * Formatting - By Reference
+ *
+ * Functions for formatting data.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common\ref;
 
 class format {
 
-	//-------------------------------------------------
-	// Array to Indexed
-	//
-	// convert a k=>v array to an array containing as
-	// values the k=>v pair
-	//
-	// @param array
-	// @return true
+	/**
+	 * Create Index Array
+	 *
+	 * This will convert a {k:v} associative array
+	 * into an indexed array with {key: k, value: v}
+	 * as the values. Useful when exporting sorted
+	 * data to Javascript, which doesn't preserve
+	 * object key ordering.
+	 *
+	 * @param array $arr Array.
+	 * @return bool True.
+	 */
 	public static function array_to_indexed(&$arr) {
 		cast::array($arr);
 		if (count($arr)) {
@@ -34,11 +40,16 @@ class format {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Decode HTML Entities
-	//
-	// @param str
-	// @return true
+	/**
+	 * Decode HTML Entities
+	 *
+	 * Decode all HTML entities back into their char
+	 * counterparts, recursively until every last one
+	 * is captured.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
 	public static function decode_entities(&$str='') {
 		cast::string($str, true);
 
@@ -54,18 +65,32 @@ class format {
 		return true;
 	}
 
+	/**
+	 * Decode HTML Entities Callback - Chr
+	 *
+	 * @param array $matches Matches.
+	 * @return string ASCII.
+	 */
 	protected static function decode_entities_chr($matches) {
 		return chr($matches[1]);
 	}
+
+	/**
+	 * Decode HTML Entities Callback - Hex
+	 *
+	 * @param array $matches Matches.
+	 * @return string ASCII.
+	 */
 	protected static function decode_entities_hex($matches) {
 		return chr(hexdec($matches[1]));
 	}
 
-	//-------------------------------------------------
-	// IP to Number
-	//
-	// @param ip
-	// @return number or false
+	/**
+	 * IP to Number
+	 *
+	 * @param string $ip IP.
+	 * @return bool True.
+	 */
 	public static function ip_to_number(&$ip) {
 		cast::string($ip, true);
 
@@ -74,13 +99,13 @@ class format {
 			return true;
 		}
 
-		//ipv4 is easy
+		// IPv4 is easy.
 		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
 			$ip = ip2long($ip);
 			return true;
 		}
 
-		//ipv6 is a little more roundabout
+		// IPv6 is a little more roundabout.
 		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 			try {
 				$ip_n = inet_pton($ip);
@@ -105,13 +130,14 @@ class format {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Money
-	//
-	// @param value
-	// @param cents
-	// @param separator
-	// @return value
+	/**
+	 * Money (USD)
+	 *
+	 * @param float $value Value.
+	 * @param bool $cents Return sub-$1 values with ¢.
+	 * @param string $separator Separator.
+	 * @return bool True.
+	 */
 	public static function money(&$value=0, bool $cents=false, string $separator='') {
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
@@ -137,13 +163,14 @@ class format {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Phone
-	//
-	// @param str
-	// @param country
-	// @param types
-	// @return str
+	/**
+	 * Phone
+	 *
+	 * @param string $str Phone.
+	 * @param string $country Country.
+	 * @param array $types Types, e.g. Mobile.
+	 * @return bool True.
+	 */
 	public static function phone(&$str='', $country='', $types=array()) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -174,13 +201,14 @@ class format {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Convert Timezones
-	//
-	// @param date
-	// @param from
-	// @param to
-	// @return true
+	/**
+	 * Convert Timezones
+	 *
+	 * @param string $date Date.
+	 * @param string $from Original Timezone.
+	 * @param string $to New Timezone.
+	 * @return bool True.
+	 */
 	public static function to_timezone(&$date, $from='UTC', $to='UTC') {
 		cast::string($date, true);
 		cast::string($from, true);
@@ -208,4 +236,4 @@ class format {
 
 }
 
-?>
+

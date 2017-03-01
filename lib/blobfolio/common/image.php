@@ -1,10 +1,12 @@
 <?php
-//---------------------------------------------------------------------
-// IMAGE HELPERS
-//---------------------------------------------------------------------
-// various functions for managing images
-
-
+/**
+ * Image Helpers
+ *
+ * Functions for managing images.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common;
 
@@ -13,13 +15,29 @@ class image {
 	protected static $svg_ids = array();
 	protected static $svg_classes = array();
 
-	//-------------------------------------------------
-	// Clean SVG
-	//
-	// @param path
-	// @param args
-	// @param output
-	// @return svg or false
+	/**
+	 * Clean SVG for Inline Embedding
+	 *
+	 * @param string $path SVG path.
+	 * @param mixed $args Arguments.
+	 * @param string $output Output format.
+	 *
+	 * @arg bool $clean_styles Fix <style> formatting, combine tags.
+	 * @arg bool $fix_dimensions Fix missing width, height, viewBox.
+	 * @arg bool $namespace Generate an xmlns:svg namespace.
+	 * @arg bool $random_id Randomize IDs.
+	 * @arg bool $rewrite_styles Redo class assignments to group like rules.
+	 * @arg bool $sanitize Sanitize content.
+	 * @arg bool $save Save cleaned file for faster repeat processing.
+	 * @arg bool $strip_data Remove data-x attributes.
+	 * @arg bool $strip_id Remove IDs.
+	 * @arg bool $strip_style Remove styles.
+	 * @arg bool $strip_title Remove titles.
+	 * @arg array $whitelist_attr Additional attributes to allow.
+	 * @arg array $whitelist_tags Additional tags to allow.
+	 *
+	 * @return string|bool Clean SVG code. False on failure.
+	 */
 	public static function clean_svg(string $path, $args=null, string $output='HTML') {
 		try {
 			if (!is_file($path)) {
@@ -30,24 +48,23 @@ class image {
 
 			$svg = sanitize::whitespace(@file_get_contents($path));
 
-			//bugs from old versions of Illustrator
+			// Bugs from old versions of Illustrator.
 			$svg = str_replace(
 				array_keys(constants::SVG_ATTR_CORRECTIONS),
 				array_values(constants::SVG_ATTR_CORRECTIONS),
 				$svg
 			);
 
-			//options
+			// Options.
 			ref\cast::array($args);
 
-			//strip_js is a deprecated alias for sanitize
-			//pass its value on if sanitize isn't set
+			// The strip_js option is a deprecated alias of sanitize.
 			if (isset($args['strip_js']) && !isset($args['sanitize'])) {
 				$args['sanitize'] = $args['strip_js'];
 			}
 
 			$options = data::parse_args($args, constants::SVG_CLEAN_OPTIONS);
-			//some options imply or override others
+			// Some options imply or override others.
 			if ($options['strip_style']) {
 				$options['clean_styles'] = false;
 				$options['namespace'] = false;
@@ -61,14 +78,14 @@ class image {
 				$options['clean_styles'] = true;
 			}
 
-			//do a quick pass through DomDoc to standardize formatting
+			// Do a quick pass through DomDoc to standardize formatting.
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!strlen($svg)) {
 				return false;
 			}
 
-			//if this SVG is marked "passthrough", don't process it
+			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
 			$dom = dom::load_svg($svg);
 			$tmp = $dom->getElementsByTagName('svg');
@@ -84,7 +101,7 @@ class image {
 				}
 			}
 
-			//make sure SVGs have the current standard
+			// Make sure SVGs have the current standard.
 			$dom = dom::load_svg($svg);
 			$tmp = $dom->getElementsByTagName('svg');
 			foreach ($tmp as $t) {
@@ -93,7 +110,7 @@ class image {
 			}
 			$svg = dom::save_svg($dom);
 
-			//let's get some early stripping done
+			// Let's get some early stripping done.
 			if ($options['strip_data']) {
 				$svg = preg_replace('/(\sdata\-[a-z\d_\-]+\s*=\s*"[^"]*")/i', '', $svg);
 			}
@@ -104,7 +121,7 @@ class image {
 				$svg = preg_replace('/(\s(style|class)\s*=\s*"[^"]*")/i', '', $svg);
 			}
 
-			//let's do the dom tasks in one swoop
+			// Let's do the dom tasks in one swoop.
 			if ($options['strip_title'] || $options['strip_style']) {
 				$dom = dom::load_svg($svg);
 
@@ -122,7 +139,7 @@ class image {
 				ref\sanitize::svg($svg);
 			}
 
-			//randomize IDs?
+			// Randomize IDs?
 			if ($options['random_id']) {
 				preg_match_all('/\sid\s*=\s*"([^"]*)"/i', $svg, $matches);
 				if (count($matches[0])) {
@@ -135,15 +152,15 @@ class image {
 						}
 						static::$svg_ids[] = $id_new;
 
-						//replace just the first occurrence
+						// Replace just the first occurrence.
 						$svg = preg_replace('/' . preg_quote($id_string, '/') . '/', ' id="' . $id_new . '"', $svg, 1);
 					}
 				}
 			}
 
-			//fix dimensions?
+			// Fix dimensions?
 			if ($options['fix_dimensions']) {
-				//before we dive in, fix existing viewbox values
+				// Before we dive in, fix existing viewbox values.
 				preg_match_all('/\sviewbox\s*=\s*"([^"]*)"/i', $svg, $matches);
 				if (count($matches[0])) {
 					foreach ($matches[0] as $k=>$v) {
@@ -160,13 +177,13 @@ class image {
 						$vb_new = array_filter($vb_new, 'strlen');
 						$vb_new = array_filter($vb_new, 'is_numeric');
 
-						//remove invalid entries entirely
+						// Remove invalid entries entirely.
 						if (count($vb_new) !== 4) {
 							$svg = preg_replace('/' . preg_quote($vb_string, '/') . '/', '', $svg, 1);
 						}
 						else {
 							$vb_new = implode(' ', $vb_new);
-							//update it
+							// Update it.
 							if ($vb_new !== $vb_value) {
 								$svg = preg_replace('/' . preg_quote($vb_string, '/') . '/', ' viewBox="' . $vb_new . '"', $svg, 1);
 							}
@@ -174,7 +191,7 @@ class image {
 					}
 				}
 
-				//tags supporting viewBox, width, and height
+				// Tags supporting viewBox, width, and height.
 				$dom = dom::load_svg($svg);
 				foreach (array('svg','pattern') as $tag) {
 					$tmp = $dom->getElementsByTagName($tag);
@@ -184,7 +201,7 @@ class image {
 							$height = $t->hasAttribute('height') ? $t->getAttribute('height') : null;
 							$vb = $t->hasAttribute('viewBox') ? $t->getAttribute('viewBox') : null;
 
-							//make sure width and height are numbers
+							// Make sure width and height are numbers.
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
 								ref\cast::float($width);
 								if ($width <= 0) {
@@ -205,7 +222,7 @@ class image {
 								$height = null;
 							}
 
-							//all there or none there? can't help it
+							// All there or none there? Can't help it.
 							if (
 								(!is_null($width) && !is_null($height) && !is_null($vb)) ||
 								(is_null($width) && is_null($height) && is_null($vb))
@@ -213,13 +230,13 @@ class image {
 								continue;
 							}
 
-							//width and height from viewbox
+							// Width and height from viewbox.
 							if (!is_null($vb)) {
 								$d = explode(' ', $vb);
 								$t->setAttribute('width', $d[2]);
 								$t->setAttribute('height', $d[3]);
 							}
-							//viewbox from width and height
+							// Viewbox from width and height.
 							elseif (is_numeric($width) && is_numeric($height)) {
 								$t->setAttribute('viewBox', "0 0 $width $height");
 							}
@@ -229,24 +246,24 @@ class image {
 				$svg = dom::save_svg($dom);
 			}
 
-			//now styles
+			// Now styles.
 			if ($options['clean_styles'] || $options['namespace']) {
 				$dom = dom::load_svg($svg);
 				$svgs = $dom->getElementsByTagName('svg');
 				if ($svgs->length) {
 					foreach ($svgs as $s) {
-						//add namespace
+						// Add namespace.
 						if ($options['namespace']) {
 							$s->setAttribute('xmlns:svg', 'http://www.w3.org/2000/svg');
 						}
 
-						//store a list of classes to rewrite, if any
+						// Store a list of classes to rewrite, if any.
 						$classes_old = array();
 
-						//cleaning styles?
+						// Cleaning styles?
 						if ($options['clean_styles']) {
 
-							//first, combine them
+							// First, combine them.
 							$tmp = $s->getElementsByTagName('style');
 							if ($tmp->length) {
 								$parent = $tmp->item(0)->parentNode;
@@ -260,20 +277,20 @@ class image {
 								}
 								$parent->appendChild($style);
 
-								//now fix formatting
+								// Now fix formatting.
 								$style = $s->getElementsByTagName('style')->item(0);
 
-								//parse the styles
+								// Parse the styles.
 								$parsed = dom::parse_css($style->nodeValue);
 								if (is_array($parsed) && count($parsed)) {
 									$style_new = array();
 
 									if ($options['rewrite_styles']) {
-										//let's try to join identical rules
+										// Let's try to join identical rules.
 										$rules = array();
 
 										foreach ($parsed as $p) {
-											//if it is an @ rule, just throw it in wholesale
+											// If it is an @ rule, just throw it in wholesale.
 											if (false !== $p['@']) {
 												$rules[$p['raw']] = array();
 											}
@@ -290,33 +307,33 @@ class image {
 											}
 										}
 
-										//clean up the rules a touch
+										// Clean up the rules a touch.
 										foreach ($rules as $rule=>$selectors) {
 											$rules[$rule] = array_unique($rules[$rule]);
 											sort($rules[$rule]);
 										}
 
-										//great, now build the output
+										// Great, now build the output.
 										foreach ($rules as $rule=>$selectors) {
-											//something like an @media, out of scope here
+											// Something like an @media, out of scope here.
 											if (!count($selectors)) {
 												$style_new[] = $rule;
 												continue;
 											}
 
-											//look for class selectors, ignoring complex chains
+											// Look for class selectors, ignoring complex chains.
 											$classes = array();
 											foreach ($selectors as $k=>$selector) {
-												//a valid class
+												// A valid class.
 												if (preg_match('/^\.[a-z\d_\-]+$/i', $selector)) {
 													$classes[] = $selector;
 													unset($selectors[$k]);
 												}
-												//a broken Adobe class
-												//e.g. .\38 ab9678e-54ee-493d-b19f-2215c5549034
+												// A broken Adobe class,
+												// e.g. .\38 ab9678e-54ee-493d-b19f-2215c5549034.
 												else {
 													$selector = str_replace('.\\3', '.', $selector);
-													//fix weird adobe rules
+													// Fix weird adobe rules.
 													preg_match_all('/^\.([\d]) ([a-z\d\-]+)$/', $selector, $matches);
 													if (count($matches[0])) {
 														$classes[] = preg_replace('/\s/', '', $matches[0][0]);
@@ -332,7 +349,7 @@ class image {
 												}
 												$selectors[] = '.' . $class_new;
 
-												//add this class to all affected nodes
+												// Add this class to all affected nodes.
 												$nodes = dom::get_nodes_by_class($s, $classes);
 												foreach ($nodes as $node) {
 													$class = $node->getAttribute('class');
@@ -347,21 +364,21 @@ class image {
 
 											$style_new[] = implode(',', $selectors) . '{' . $rule . '}';
 										}
-									}//end cleanup/rewrite
+									}// End cleanup/rewrite.
 									else {
-										//just add the rules
+										// Just add the rules.
 										foreach ($parsed as $p) {
 											$style_new[] = $p['raw'];
 										}
 									}
 
-									//and save it
+									// And save it!
 									$style->nodeValue = implode('', $style_new);
-								}//parseable styles
-							}//if styles
-						}//clean styles
+								}// Parseable styles.
+							}// If styles.
+						}// Clean styles.
 
-						//add namespaced style
+						// Add namespaced style.
 						if ($options['namespace']) {
 							$styles = $s->getElementsByTagName('style');
 							if ($styles->length) {
@@ -379,7 +396,7 @@ class image {
 							}
 						}
 
-						//remove old classes, if applicable
+						// Remove old classes, if applicable.
 						if (count($classes_old)) {
 							sort($classes_old);
 							$classes_old = array_unique($classes_old);
@@ -393,22 +410,22 @@ class image {
 								$classes = array_diff($classes, $classes_old);
 								$node->setAttribute('class', implode(' ', $classes));
 							}
-						}//rewriting
-					}//each svg
-				}//if svgs
+						}// Rewriting.
+					}// Each SVG.
+				}// If SVGs.
 				$svg = dom::save_svg($dom);
 			}
 
-			//get back to just the object
+			// Get back to just the string.
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!strlen($svg)) {
 				return false;
 			}
 
-			//should we save the clean version?
+			// Should we save the clean version?
 			if ($options['save']) {
-				//add our passthrough header
+				// Add our passthrough header.
 				$dom = dom::load_svg($svg);
 				$tmp = $dom->getElementsByTagName('svg');
 				$tmp->item(0)->setAttribute('data-cleaned', $passthrough_key);
@@ -441,11 +458,16 @@ class image {
 		}
 	}
 
-	//-------------------------------------------------
-	// Supports WebP?
-	//
-	// @param n/a
-	// @return true/false
+	/**
+	 * Check Probable WebP Support
+	 *
+	 * This attempts to check whether the required
+	 * WebP binaries exist and are accessible to PHP.
+	 *
+	 * @param string $cwebp Path to cwebp.
+	 * @param string $gif2webp Path to gif2webp.
+	 * @return bool True/false.
+	 */
 	public static function has_webp(string $cwebp=null, string $gif2webp=null) {
 		try {
 			if (is_null($cwebp)) {
@@ -466,18 +488,19 @@ class image {
 		}
 	}
 
-	//-------------------------------------------------
-	// SVG Dimensions
-	//
-	// @param svg
-	// @return dimensions or false
+	/**
+	 * Determine SVG Dimensions
+	 *
+	 * @param string $svg SVG content or file path.
+	 * @return array|bool Dimensions or false.
+	 */
 	public static function svg_dimensions($svg) {
 		ref\cast::string($svg, true);
 
 		try {
-			//$svg might be a string
+			// $svg might be a string.
 			if (false === mb::strpos(mb::strtolower($svg), '<svg')) {
-				//or a file path
+				// Or a file path.
 				if (false === $svg = static::clean_svg($svg)) {
 					return false;
 				}
@@ -495,7 +518,7 @@ class image {
 			$height = $svg->hasAttribute('height') ? $svg->getAttribute('height') : null;
 			$vb = $svg->hasAttribute('viewBox') ? $svg->getAttribute('viewBox') : null;
 
-			//make sure width and height are numbers
+			// Make sure width and height are numbers.
 			if (!is_numeric($width) && !preg_match('/^[\d\.]+%$/', $width)) {
 				ref\cast::float($width);
 				if ($width <= 0) {
@@ -509,7 +532,7 @@ class image {
 				}
 			}
 
-			//pull width and height from viewbox
+			// Pull width and height from viewbox.
 			if ((is_null($width) || is_null($height)) && !is_null($vb)) {
 				$vb = str_replace(',', ' ', $vb);
 				$vb = explode(' ', $vb);
@@ -532,16 +555,20 @@ class image {
 		}
 	}
 
-	//-------------------------------------------------
-	// Generate WebP
-	//
-	// @param source
-	// @param destination
-	// @param refresh
-	// @param cwebp
-	// @param gif2webp
-	// @param refresh
-	// @return true/false
+	/**
+	 * Generate WebP From Source
+	 *
+	 * This uses system WebP binaries to generate
+	 * a copy of a source file. It uses `proc()`
+	 * instead of `exec()`.
+	 *
+	 * @param string $source Source file.
+	 * @param string $out Output file.
+	 * @param string $cwebp Path to cwebp.
+	 * @param string $gif2webp Path to gif2webp.
+	 * @param bool $refresh Recreate it.
+	 * @return bool True/false.
+	 */
 	public static function to_webp(string $source, string $out=null, string $cwebp=null, string $gif2webp=null, bool $refresh=false) {
 		if (false === $source = file::path($source, true)) {
 			return false;
@@ -552,11 +579,11 @@ class image {
 			return false;
 		}
 
-		//do we need to build an out file?
+		// Do we need to build an out file?
 		if (is_null($out)) {
 			$out = "{$info['dirname']}/{$info['filename']}.webp";
 		}
-		//needs to have the right extension
+		// Needs to have the right extension.
 		elseif (!preg_match('/\.webp$/i', $out)) {
 			return false;
 		}
@@ -564,12 +591,12 @@ class image {
 			$out = file::path($out, false);
 		}
 
-		//already exists?
+		// Already exists?
 		if (!$refresh && file_exists($out)) {
 			return true;
 		}
 
-		//can't do it?
+		// Can't do it?
 		if (is_null($cwebp)) {
 			$cwebp = constants::CWEBP;
 		}
@@ -580,15 +607,15 @@ class image {
 			return false;
 		}
 
-		//try to open the process
+		// Try to open the process.
 		try {
 			$tmp_dir = sys_get_temp_dir();
 			$error_log = file::trailingslash($tmp_dir) . 'cwebp-error_' . microtime(true) . '.txt';
 
-			//proc setup
+			// Proc setup.
 			$descriptors = array(
-				0=>array('pipe', 'w'), //stdout
-				1=>array('file', $error_log, 'a') //stderr
+				0=>array('pipe', 'w'), // STDOUT.
+				1=>array('file', $error_log, 'a') // STDERR.
 			);
 			$cwd = $tmp_dir;
 			$pipes = array();
@@ -628,4 +655,4 @@ class image {
 
 }
 
-?>
+

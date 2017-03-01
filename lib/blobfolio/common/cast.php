@@ -1,35 +1,39 @@
 <?php
-//---------------------------------------------------------------------
-// TYPECAST & TYPE HANDLING
-//---------------------------------------------------------------------
-// functions for typecasting and detecting type
-
-
+/**
+ * Type Handling.
+ *
+ * Functions for typecasting and type detection.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common;
 
 class cast {
 
-	//-------------------------------------------------
-	// Array
-	//
-	// @param value
-	// @return value
+	/**
+	 * To Array
+	 *
+	 * @param mixed $value Variable.
+	 * @return array Array.
+	 */
 	public static function array($value=null) {
 		ref\cast::array($value);
 		return $value;
 	}
 
-	//-------------------------------------------------
-	// Array Type
-	//
-	// this will return "associative" if there are any
-	// string keys, "sequential" if the keys are
-	// sequential numbers, "index" if all keys are
-	// numeric, or false if empty or not an array
-	//
-	// @param array
-	// @return sequential/indexed/associative/false
+	/**
+	 * Array Type
+	 *
+	 * "associative": If there are string keys.
+	 * "sequential": If the keys are sequential numbers.
+	 * "indexed": If the keys are at least numeric.
+	 * FALSE: Any other condition.
+	 *
+	 * @param array $arr Array.
+	 * @return string|bool Type. False on failure.
+	 */
 	public static function array_type(&$arr=null) {
 		if (!is_array($arr) || !count($arr)) {
 			return false;
@@ -47,72 +51,78 @@ class cast {
 		}
 	}
 
-	//-------------------------------------------------
-	// Bool
-	//
-	// @param value
-	// @param flatten
-	// @return true/false
+	/**
+	 * To Bool
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool Bool.
+	 */
 	public static function bool($value=false, bool $flatten=false) {
 		ref\cast::bool($value, $flatten);
 		return $value;
 	}
 
-	//-------------------------------------------------
-	// Float
-	//
-	// @param value
-	// @param flatten
-	// @return true/false
+	/**
+	 * To Float
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return float Float.
+	 */
 	public static function float($value=0, bool $flatten=false) {
 		ref\cast::float($value, $flatten);
 		return $value;
 	}
 
-	//-------------------------------------------------
-	// Int
-	//
-	// @param value
-	// @param flatten
-	// @return true/false
+	/**
+	 * To Int
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return int Int.
+	 */
 	public static function int($value=0, bool $flatten=false) {
 		ref\cast::int($value, $flatten);
 		return $value;
 	}
 
-	//-------------------------------------------------
-	// Number
-	//
-	// @param value
-	// @param flatten
-	// @return value
+	/**
+	 * To Number
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return float Number.
+	 */
 	public static function number($value=0, bool $flatten=false) {
 		ref\cast::number($value, $flatten);
 		return $value;
 	}
 
-	//-------------------------------------------------
-	// String
-	//
-	// @param value
-	// @param flatten
-	// @return value
+	/**
+	 * To String
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return string String.
+	 */
 	public static function string($value='', bool $flatten=false) {
 		ref\cast::string($value, $flatten);
 		return $value;
 	}
 
-	//-------------------------------------------------
-	// Sanitize by Type
-	//
-	// @param value
-	// @param type
-	// @param flatten
-	// @return value
+	/**
+	 * To X Type
+	 *
+	 * @param mixed $value Variable.
+	 * @param string $type Type.
+	 * @param bool $flatten Do not recurse.
+	 * @return mixed Cast value.
+	 */
 	public static function to_type($value, string $type=null, bool $flatten=false) {
 		ref\cast::to_type($value, $type, $flatten);
 		return $value;
 	}
 }
 
-?>
+

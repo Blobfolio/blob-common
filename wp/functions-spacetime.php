@@ -1,21 +1,21 @@
 <?php
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // FUNCTIONS: LOCALITY, SPACE, TIME, ETC.
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // This file includes functions related to space, time, etc.
 
-//this must be called through WordPress
+// This must be called through WordPress.
 if (!defined('ABSPATH')) {
 	exit;
 }
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Geography
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Return US States
 //
 // @param include other?
@@ -26,15 +26,15 @@ if (!function_exists('common_get_us_states')) {
 		$states = \blobfolio\common\constants::STATES;
 		$other = array('AA','AE','AP','AS','FM','GU','MH','MP','PW','PR','VI');
 
-		//originally all results were returned in uppercase,
-		//but this is a bit limiting. raw data is now stored
-		//in title case, but can be uppercased as needed for
-		//backward compatibility
+		// originally all results were returned in uppercase,
+		// but this is a bit limiting. raw data is now stored
+		// in title case, but can be uppercased as needed for
+		// backward compatibility
 		if ($uppercase) {
 			$states = array_map('strtoupper', $states);
 		}
 
-		//remove others
+		// remove others
 		if (!$include_other) {
 			$states = array_diff_key($states, array_flip($other));
 		}
@@ -43,7 +43,7 @@ if (!function_exists('common_get_us_states')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Return Canadian Provinces
 //
 // @param uppercase (for backward compatibility)
@@ -52,10 +52,10 @@ if (!function_exists('common_get_ca_provinces')) {
 	function common_get_ca_provinces($uppercase=true) {
 		$provinces = \blobfolio\common\constants::PROVINCES;
 
-		//originally all results were returned in uppercase,
-		//but this is a bit limiting. raw data is now stored
-		//in title case, but can be uppercased as needed for
-		//backward compatibility
+		// originally all results were returned in uppercase,
+		// but this is a bit limiting. raw data is now stored
+		// in title case, but can be uppercased as needed for
+		// backward compatibility
 		if ($uppercase) {
 			$provinces = array_map('strtoupper', $provinces);
 		}
@@ -64,7 +64,7 @@ if (!function_exists('common_get_ca_provinces')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Return Countries
 //
 // ISO Code => Name
@@ -78,9 +78,9 @@ if (!function_exists('common_get_countries')) {
 			$countries[$k] = $v['name'];
 		}
 
-		//unlike state/province functions, these have always
-		//been stored in title case. however for the sake of
-		//consistency, an uppercase flag has been added.
+		// unlike state/province functions, these have always
+		// been stored in title case. however for the sake of
+		// consistency, an uppercase flag has been added.
 		if ($uppercase) {
 			$countries = array_map('strtoupper', $countries);
 		}
@@ -89,16 +89,16 @@ if (!function_exists('common_get_countries')) {
 	}
 }
 
-//--------------------------------------------------------------------- end geography
+// --------------------------------------------------------------------- end geography
 
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // File Handling
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Readfile() in chunks
 //
 // this greatly reduces the server resource demands
@@ -113,7 +113,7 @@ if (!function_exists('common_readfile_chunked')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Return Data URI
 //
 // @param path
@@ -124,7 +124,7 @@ if (!function_exists('common_get_data_uri')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Get Mime Type by file path
 //
 // why is this so hard?! the fileinfo extension is
@@ -141,15 +141,15 @@ if (!function_exists('common_get_mime_type')) {
 	}
 }
 
-//--------------------------------------------------------------------- end files
+// --------------------------------------------------------------------- end files
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // IPs
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // IP as Number
 //
 // convert an IP to a number for cleaner comparison
@@ -162,7 +162,7 @@ if (!function_exists('common_ip_to_number')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Convert Netblock to Min/Max IPs
 //
 // @param cidr
@@ -173,15 +173,15 @@ if (!function_exists('common_cidr_to_range')) {
 	}
 }
 
-//--------------------------------------------------------------------- end IPs
+// --------------------------------------------------------------------- end IPs
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Paths & URLs
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Get File Path From URL
 //
 // this will only work for web-accessible files,
@@ -195,7 +195,7 @@ if (!function_exists('common_get_path_by_url')) {
 		$from = common_strtolower(trailingslashit(site_url()));
 		$to = trailingslashit(ABSPATH);
 
-		//query strings and hashes aren't part of files
+		// query strings and hashes aren't part of files
 		if (false !== common_strpos($url, '?')) {
 			$url = explode('?', $url);
 			$url = common_array_pop_top($url);
@@ -213,7 +213,7 @@ if (!function_exists('common_get_path_by_url')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Get URL From Path
 //
 // this will only work for web-accessible files,
@@ -236,7 +236,7 @@ if (!function_exists('common_get_url_by_path')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Is a Directory Empty?
 //
 // @param path
@@ -247,7 +247,7 @@ if (!function_exists('common_is_empty_dir')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Check whether a URL is local
 //
 // @param url
@@ -260,7 +260,7 @@ if (!function_exists('common_is_site_url')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Is a given URL being viewed?
 //
 // @param url to check against
@@ -273,16 +273,16 @@ if (!function_exists('common_is_current_page')) {
 			return false;
 		}
 
-		//ready the test URL for comparison
+		// ready the test URL for comparison
 		$url = parse_url($url, PHP_URL_PATH);
 		$url2 = parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
 
-		//and check for a match
+		// and check for a match
 		return $subpages ? substr($url2, 0, common_strlen($url)) === $url : $url === $url2;
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Redirect wrapper
 //
 // clear $_REQUEST and exit
@@ -304,7 +304,7 @@ if (!function_exists('common_redirect')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Get Site Hostname
 //
 // strip www., lowercase
@@ -317,7 +317,7 @@ if (!function_exists('common_get_site_hostname')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Upload Path
 //
 // this works like site_url for upload directory
@@ -339,7 +339,7 @@ if (!function_exists('common_upload_path')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Theme Path
 //
 // this works like site_url for theme directory
@@ -350,7 +350,7 @@ if (!function_exists('common_upload_path')) {
 // @return path or url
 if (!function_exists('common_theme_path')) {
 	function common_theme_path($subpath=null, $url=false) {
-		//this is a URL
+		// this is a URL
 		$dir = trailingslashit(get_stylesheet_directory_uri());
 		$path = trailingslashit($dir);
 		if (!is_null($subpath)) {
@@ -361,15 +361,15 @@ if (!function_exists('common_theme_path')) {
 	}
 }
 
-//--------------------------------------------------------------------- end paths
+// --------------------------------------------------------------------- end paths
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Time
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Datediff
 //
 // a simple function to count the number of days
@@ -384,7 +384,7 @@ if (!function_exists('common_datediff')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Local Time
 //
 // get a proper timezone for the blog
@@ -396,14 +396,14 @@ if (!function_exists('common_get_blog_timezone')) {
 		static $tz;
 
 		if (is_null($tz)) {
-			//try the timezone string
+			// try the timezone string
 			if (false === $tz = get_option('timezone_string', false)) {
 
-				//try a gmt offset
+				// try a gmt offset
 				if (0.0 === ($utc_offset = (float) get_option('gmt_offset', 0.0))) {
 					$tz = 'UTC';
 				}
-				//pull proper tz abbreviation from the offset, or default to UTC
+				// pull proper tz abbreviation from the offset, or default to UTC
 				elseif (false === $tz = timezone_name_from_abbr('', ($utc_offset * 3600), 0)) {
 					$tz = 'UTC';
 				}
@@ -416,7 +416,7 @@ if (!function_exists('common_get_blog_timezone')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // To Local Time
 //
 // convert a datestring from one timezone to the
@@ -431,7 +431,7 @@ if (!function_exists('common_to_blogtime')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // From Local Time
 //
 // convert a datestring from one timezone to the
@@ -446,5 +446,5 @@ if (!function_exists('common_from_blogtime')) {
 	}
 }
 
-//--------------------------------------------------------------------- end time
-?>
+// --------------------------------------------------------------------- end time
+

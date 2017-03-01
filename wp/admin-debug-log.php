@@ -1,11 +1,15 @@
 <?php
-//---------------------------------------------------------------------
-// ADMIN: DEBUG LOG VIEWER
-//---------------------------------------------------------------------
-// This allows developers to view the debug.log in cases where a server
-// rule might prevent direct access.
+/**
+ * Admin Debug Log Viewer
+ *
+ * This allows the contents of debug.log to be parsed/displayed
+ * in environments where direct access may not be possible.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
-//this must be called through WordPress
+// This must be called through WordPress.
 if (!defined('ABSPATH')) {
 	exit;
 }

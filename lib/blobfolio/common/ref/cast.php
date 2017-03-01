@@ -1,20 +1,23 @@
 <?php
-//---------------------------------------------------------------------
-// TYPECAST & TYPE HANDLING
-//---------------------------------------------------------------------
-// functions for typecasting and detecting type
-
-
+/**
+ * Type Handling - By Reference
+ *
+ * Functions for typecasting and type detection.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common\ref;
 
 class cast {
 
-	//-------------------------------------------------
-	// Array
-	//
-	// @param value
-	// @return value
+	/**
+	 * To Array
+	 *
+	 * @param mixed $value Variable.
+	 * @return bool True.
+	 */
 	public static function array(&$value=null) {
 		try {
 			$value = (array) $value;
@@ -25,11 +28,13 @@ class cast {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Bool
-	//
-	// @param value
-	// @return true/false
+	/**
+	 * To Bool
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool True.
+	 */
 	public static function bool(&$value=false, bool $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
@@ -37,7 +42,7 @@ class cast {
 			}
 		}
 		else {
-			//evaluate special cases
+			// Evaluate special cases.
 			if (is_string($value)) {
 				mb::strtolower($value);
 				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS, true)) {
@@ -62,12 +67,13 @@ class cast {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Float
-	//
-	// @param value
-	// @param flatten
-	// @return true/false
+	/**
+	 * To Float
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool True.
+	 */
 	public static function float(&$value=0, bool $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
@@ -86,12 +92,13 @@ class cast {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Int
-	//
-	// @param value
-	// @param flatten
-	// @return true/false
+	/**
+	 * To Int
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool True.
+	 */
 	public static function int(&$value=0, bool $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
@@ -99,7 +106,7 @@ class cast {
 			}
 		}
 		else {
-			//evaluate special cases
+			// Evaluate special cases.
 			if (is_string($value)) {
 				mb::strtolower($value);
 				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS, true)) {
@@ -117,12 +124,13 @@ class cast {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Number
-	//
-	// @param value
-	// @param flatten
-	// @return value
+	/**
+	 * To Number
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool True.
+	 */
 	public static function number(&$value=0, bool $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
@@ -133,16 +141,16 @@ class cast {
 			if (is_string($value)) {
 				static::string($value);
 
-				//replace number chars
+				// Replace number chars.
 				$from = array_keys(\blobfolio\common\constants::NUMBER_CHARS);
 				$to = array_values(\blobfolio\common\constants::NUMBER_CHARS);
 				$value = str_replace($from, $to, $value);
 
-				//convert from cents
+				// Convert from cents.
 				if (preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
 					$value = preg_replace('/[^\-\d\.]/', '', $value) / 100;
 				}
-				//convert from percent
+				// Convert from percent.
 				elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $value)) {
 					$value = preg_replace('/[^\-\d\.]/', '', $value) / 100;
 				}
@@ -158,12 +166,13 @@ class cast {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// String
-	//
-	// @param value
-	// @param flatten
-	// @return value
+	/**
+	 * To String
+	 *
+	 * @param mixed $value Variable.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool True.
+	 */
 	public static function string(&$value='', bool $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
@@ -182,13 +191,14 @@ class cast {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Sanitize by Type
-	//
-	// @param value
-	// @param type
-	// @param flatten
-	// @return value
+	/**
+	 * To X Type
+	 *
+	 * @param mixed $value Variable.
+	 * @param string $type Type.
+	 * @param bool $flatten Do not recurse.
+	 * @return bool True.
+	 */
 	public static function to_type(&$value, string $type=null, bool $flatten=false) {
 		if (!\blobfolio\common\mb::strlen($type)) {
 			return true;
@@ -216,4 +226,4 @@ class cast {
 	}
 }
 
-?>
+

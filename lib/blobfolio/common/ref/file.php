@@ -1,20 +1,23 @@
 <?php
-//---------------------------------------------------------------------
-// FILE
-//---------------------------------------------------------------------
-// files and paths
-
-
+/**
+ * Files - By Reference
+ *
+ * Functions for sanitizing and handling files.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common\ref;
 
 class file {
 
-	//-------------------------------------------------
-	// Leadingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Add Leading Slash
+	 *
+	 * @param string $path Path.
+	 * @return bool True.
+	 */
 	public static function leadingslash(&$path='') {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
@@ -30,12 +33,13 @@ class file {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Path
-	//
-	// @param path
-	// @param validate
-	// @return path
+	/**
+	 * Fix Path Formatting
+	 *
+	 * @param string $path Path.
+	 * @param bool $validate Require valid file.
+	 * @return bool True.
+	 */
 	public static function path(&$path='', bool $validate=true) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
@@ -58,7 +62,7 @@ class file {
 				return false;
 			}
 			elseif (false === $path) {
-				//try just the directory
+				// Try just the directory.
 				try {
 					$path = $original;
 					if (false !== $dir = realpath(dirname($path))) {
@@ -86,11 +90,12 @@ class file {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Trailingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Add Trailing Slash
+	 *
+	 * @param string $path Path.
+	 * @return bool True.
+	 */
 	public static function trailingslash(&$path='') {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
@@ -106,11 +111,12 @@ class file {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Fix Slashes
-	//
-	// @param path
-	// @return path
+	/**
+	 * Fix Path Slashes
+	 *
+	 * @param string $path Path.
+	 * @return bool True.
+	 */
 	public static function unixslash(&$path='') {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
@@ -127,11 +133,12 @@ class file {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Unleadingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Strip Leading Slash
+	 *
+	 * @param string $path Path.
+	 * @return bool True.
+	 */
 	public static function unleadingslash(&$path='') {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
@@ -147,11 +154,12 @@ class file {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Untrailingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Strip Trailing Slash
+	 *
+	 * @param string $path Path.
+	 * @return bool True.
+	 */
 	public static function untrailingslash(&$path='') {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
@@ -169,4 +177,4 @@ class file {
 
 }
 
-?>
+

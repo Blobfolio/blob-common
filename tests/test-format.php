@@ -1,21 +1,33 @@
 <?php
-//---------------------------------------------------------------------
-// format:: tests
-//---------------------------------------------------------------------
+/**
+ * Format tests.
+ *
+ * PHPUnit tests for \blobfolio\common\format.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
+/**
+ * Test Suite
+ */
 class format_tests extends \PHPUnit\Framework\TestCase {
 
-	//-------------------------------------------------
-	// format::array_to_indexed()
-
+	/**
+	 * ::array_to_indexed()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_array_to_indexed() {
 		$thing = array(1);
 		$this->assertEquals(array(array('key'=>0, 'value'=>1)), \blobfolio\common\format::array_to_indexed($thing));
 	}
 
-	//-------------------------------------------------
-	// format::cidr_to_range()
-
+	/**
+	 * ::cidr_to_range()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_cidr_to_range() {
 		$thing = '50.116.18.174/24';
 		$match = array('min'=>'50.116.18.0', 'max'=>'50.116.19.173');
@@ -26,9 +38,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($match, \blobfolio\common\format::cidr_to_range($thing));
 	}
 
-	//-------------------------------------------------
-	// format::decode_entities()
-
+	/**
+	 * ::decode_entities()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_decode_entities() {
 		$thing = 'Happy & Healthy';
 		for ($x = 0; $x < 3; $x++) {
@@ -37,9 +51,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('Happy & Healthy', \blobfolio\common\format::decode_entities($thing));
 	}
 
-	//-------------------------------------------------
-	// format::excerpt()
-
+	/**
+	 * ::excerpt()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_excerpt() {
 		$thing = 'It ẉẩṩ a dark and stormy night.';
 
@@ -48,9 +64,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('It ẉẩṩ…', \blobfolio\common\format::excerpt($thing, array('unit'=>'char', 'length'=>6)));
 	}
 
-	//-------------------------------------------------
-	// format::inflect()
-
+	/**
+	 * ::inflect()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_inflect() {
 		$count = 1;
 		$single = '%d book';
@@ -65,9 +83,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('0 books', \blobfolio\common\format::inflect($count, $single, $plural));
 	}
 
-	//-------------------------------------------------
-	// format::ip_to_number()
-
+	/**
+	 * ::ip_to_number()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_ip_to_number() {
 		$thing = '50.116.18.174';
 		$this->assertEquals(846467758, \blobfolio\common\format::ip_to_number($thing));
@@ -76,9 +96,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(50511880784403022287880976722111107058, \blobfolio\common\format::ip_to_number($thing));
 	}
 
-	//-------------------------------------------------
-	// format::money()
-
+	/**
+	 * ::money()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_money() {
 		$thing = 2.5;
 		$this->assertEquals('$2.50', \blobfolio\common\format::money($thing));
@@ -97,9 +119,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('23¢', \blobfolio\common\format::money($thing, true));
 	}
 
-	//-------------------------------------------------
-	// format::phone()
-
+	/**
+	 * ::phone()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_phone() {
 		$thing = '2015550123';
 		$this->assertEquals('+1 201-555-0123', \blobfolio\common\format::phone($thing));
@@ -107,9 +131,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('+1 201-555-0123', \blobfolio\common\format::phone($thing, 'US'));
 	}
 
-	//-------------------------------------------------
-	// format::to_csv()
-
+	/**
+	 * ::to_csv()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_to_csv() {
 		$data = array(array('NAME'=>'John', 'PHONE'=>'+1 201-555-0123'));
 		$headers = array('FIRST NAME', 'PHONE NUMBER');
@@ -124,9 +150,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, false !== strpos($csv, "\t"));
 	}
 
-	//-------------------------------------------------
-	// format::to_timezone()
-
+	/**
+	 * ::to_timezone()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_to_timezone() {
 		$thing = '2015-01-15 01:12:23';
 
@@ -134,9 +162,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('2015-01-14 17:12:23', \blobfolio\common\format::to_timezone($thing, 'UTC', 'America/Los_Angeles'));
 	}
 
-	//-------------------------------------------------
-	// format::to_xls()
-
+	/**
+	 * ::to_xls()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_to_xls() {
 		$data = array(array('NAME'=>'John', 'PHONE'=>'+1 201-555-0123'));
 		$headers = array('FIRST NAME', 'PHONE NUMBER');
@@ -149,4 +179,4 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 }
 
-?>
+

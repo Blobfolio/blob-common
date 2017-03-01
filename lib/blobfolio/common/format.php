@@ -1,40 +1,50 @@
 <?php
-//---------------------------------------------------------------------
-// FORMAT
-//---------------------------------------------------------------------
-// format data
-
-
+/**
+ * Formatting
+ *
+ * Functions for formatting data.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common;
 
 class format {
 
-	//-------------------------------------------------
-	// Array to Indexed
-	//
-	// convert a k=>v array to an array containing as
-	// values the k=>v pair
-	//
-	// @param array
-	// @return true
+	/**
+	 * Create Index Array
+	 *
+	 * This will convert a {k:v} associative array
+	 * into an indexed array with {key: k, value: v}
+	 * as the values. Useful when exporting sorted
+	 * data to Javascript, which doesn't preserve
+	 * object key ordering.
+	 *
+	 * @param array $arr Array.
+	 * @return array Array.
+	 */
 	public static function array_to_indexed($arr) {
 		ref\format::array_to_indexed($arr);
 		return $arr;
 	}
 
-	//-------------------------------------------------
-	// CIDR to Range
-	//
-	// @param cidr
-	// @return range or false
+	/**
+	 * CIDR to IP Range
+	 *
+	 * Find the minimum and maximum IPs in a
+	 * given CIDR range.
+	 *
+	 * @param string $cidr CIDR.
+	 * @return array|bool Range or false.
+	 */
 	public static function cidr_to_range($cidr) {
 		ref\cast::string($cidr, true);
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = explode('/', $cidr);
 
-		//ipv4?
+		// IPv4?
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
 			if (count($cidr) === 1) {
 				$range['min'] = $range['max'] = sanitize::ip($cidr[0]);
@@ -46,59 +56,59 @@ class format {
 			return $range;
 		}
 
-		//ipv6?  of course a little more complicated
+		// IPv6? Of course a little more complicated.
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 			if (count($cidr) === 1) {
 				$range['min'] = $range['max'] = sanitize::ip($cidr[0]);
 				return $range;
 			}
 
-			//parse the address into a binary string
+			// Parse the address into a binary string.
 			$firstaddrbin = inet_pton($cidr[0]);
 
-			//convert the binary string to a string with hexadecimal characters (bin2hex)
+			// Convert the binary string to a string with hexadecimal characters (bin2hex).
 			$tmp = unpack('H*', $firstaddrbin);
 			$firstaddrhex = reset($tmp);
 
-			//overwriting first address string to make sure notation is optimal
+			// Overwriting first address string to make sure notation is optimal.
 			$cidr[0] = inet_ntop($firstaddrbin);
 
-			//calculate the number of 'flexible' bits
+			// Calculate the number of 'flexible' bits.
 			$flexbits = 128 - $cidr[1];
 
-			//build the hexadecimal string of the last address
+			// Build the hexadecimal string of the last address.
 			$lastaddrhex = $firstaddrhex;
 
-			//we start at the end of the string (which is always 32 characters long)
+			// We start at the end of the string (which is always 32 characters long).
 			$pos = 31;
 			while ($flexbits > 0) {
-				//get the character at this position
+				// Get the character at this position.
 				$orig = substr($lastaddrhex, $pos, 1);
 
-				//convert it to an integer
+				// Convert it to an integer.
 				$origval = hexdec($orig);
 
-				//OR it with (2^flexbits)-1, with flexbits limited to 4 at a time
+				// OR it with (2^flexbits)-1, with flexbits limited to 4 at a time.
 				$newval = $origval | (pow(2, min(4, $flexbits)) - 1);
 
-				//convert it back to a hexadecimal character
+				// Convert it back to a hexadecimal character.
 				$new = dechex($newval);
 
-				//and put that character back in the string
+				// And put that character back in the string.
 				$lastaddrhex = substr_replace($lastaddrhex, $new, $pos, 1);
 
-				//we processed one nibble, move to previous position
+				// We processed one nibble, move to previous position.
 				$flexbits -= 4;
 				$pos -= 1;
 			}
 
-			//convert the hexadecimal string to a binary string (hex2bin)
+			// Convert the hexadecimal string to a binary string (hex2bin).
 			$lastaddrbin = pack('H*', $lastaddrhex);
 
-			//and create an IPv6 address from the binary string
+			// And create an IPv6 address from the binary string.
 			$lastaddrstr = inet_ntop($lastaddrbin);
 
-			//pack and done!
+			// Pack and done!
 			$range['min'] = sanitize::ip($cidr[0]);
 			$range['max'] = sanitize::ip($lastaddrstr);
 			return $range;
@@ -107,21 +117,33 @@ class format {
 		return false;
 	}
 
-	//-------------------------------------------------
-	// Decode HTML Entities
-	//
-	// @param str
-	// @return true
+	/**
+	 * Decode HTML Entities
+	 *
+	 * Decode all HTML entities back into their char
+	 * counterparts, recursively until every last one
+	 * is captured.
+	 *
+	 * @param string $str String.
+	 * @return string HTML.
+	 */
 	public static function decode_entities($str='') {
 		ref\format::decode_entities($str);
 		return $str;
 	}
 
-	//-------------------------------------------------
-	// Excerpt
-	//
-	// @param string
-	// @param args
+	/**
+	 * Generate Text Except
+	 *
+	 * @param string $str String.
+	 * @param mixed $args Arguments.
+	 *
+	 * @arg int $length Length limit.
+	 * @arg string $unit Unit to examine, "character" or "word".
+	 * @arg string $suffix Suffix, e.g. ...
+	 *
+	 * @return bool True.
+	 */
 	public static function excerpt($str='', $args=null) {
 		ref\cast::string($str, true);
 		ref\sanitize::whitespace($str);
@@ -140,11 +162,11 @@ class format {
 			$options['unit'] = 'word';
 		}
 
-		//character limit
+		// Character limit.
 		if ('character' === $options['unit'] && mb::strlen($str) > $options['length']) {
 			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
 		}
-		//word limit
+		// Word limit.
 		elseif ('word' === $options['unit'] && mb::substr_count($str, ' ') > $options['length'] - 1) {
 			$str = explode(' ', $str);
 			$str = array_slice($str, 0, $options['length']);
@@ -154,13 +176,18 @@ class format {
 		return $str;
 	}
 
-	//-------------------------------------------------
-	// Inflect
-	//
-	// @param count
-	// @param single
-	// @param plural
-	// @return inflection
+	/**
+	 * Inflect
+	 *
+	 * Inflect a phrase given a count. `sprintf` formatting
+	 * is supported. If an array is passed as $count, its
+	 * size will be used for inflection.
+	 *
+	 * @param int|array $count Count.
+	 * @param string $single Singular.
+	 * @param string $plural Plural.
+	 * @return string Inflected string.
+	 */
 	public static function inflect($count, string $single, string $plural) {
 		if (is_array($count)) {
 			$count = count($count);
@@ -171,7 +198,7 @@ class format {
 		ref\sanitize::utf8($single);
 		ref\sanitize::utf8($plural);
 
-		if (((float) 1) === $count) {
+		if (( (float) 1) === $count) {
 			return sprintf($single, $count);
 		}
 		else {
@@ -179,41 +206,44 @@ class format {
 		}
 	}
 
-	//-------------------------------------------------
-	// IP to Number
-	//
-	// @param ip
-	// @return number or false
+	/**
+	 * IP to Number
+	 *
+	 * @param string $ip IP.
+	 * @return int|bool IP or false.
+	 */
 	public static function ip_to_number($ip) {
 		ref\format::ip_to_number($ip);
 		return $ip;
 	}
 
-	//-------------------------------------------------
-	// Money
-	//
-	// @param value
-	// @param cents
-	// @param separator
-	// @return value
+	/**
+	 * Money (USD)
+	 *
+	 * @param float $value Value.
+	 * @param bool $cents Return sub-$1 values with ¢.
+	 * @param string $separator Separator.
+	 * @return string Value.
+	 */
 	public static function money($value=0, bool $cents=false, string $separator='') {
 		ref\format::money($value, $cents, $separator);
 		return $value;
 	}
 
-	//-------------------------------------------------
-	// Phone
-	//
-	// @param str
-	// @param country
-	// @param types
-	// @return str
+	/**
+	 * Phone
+	 *
+	 * @param string $str Phone.
+	 * @param string $country Country.
+	 * @param array $types Types, e.g. Mobile.
+	 * @return string Phone in International Format.
+	 */
 	public static function phone($str='', $country='', $types=array()) {
 		ref\format::phone($str, $country, $types);
 		return $str;
 	}
 
-	//-------------------------------------------------
+	// -------------------------------------------------
 	// To CSV
 	//
 	// @param data
@@ -221,6 +251,15 @@ class format {
 	// @param delimiter
 	// @param eol
 	// @return csv
+	/**
+	 * Generate CSV from Data
+	 *
+	 * @param array $data Data (row=>cells).
+	 * @param array $headers Headers.
+	 * @param string $delimiter Delimiter.
+	 * @param string $eol Line ending type.
+	 * @return string CSV content.
+	 */
 	public static function to_csv($data=null, $headers=null, string $delimiter=',', string $eol="\n") {
 		ref\cast::array($data);
 		$data = array_values(array_filter($data, 'is_array'));
@@ -228,12 +267,12 @@ class format {
 
 		$out = array();
 
-		//grab headers from data?
+		// Grab headers from data?
 		if (!count($headers) && count($data) && cast::array_type($data[0]) === 'associative') {
 			$headers = array_keys($data[0]);
 		}
 
-		//output headers, if applicable
+		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
 				ref\cast::string($headers[$k], true);
@@ -242,7 +281,7 @@ class format {
 			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
 		}
 
-		//output data
+		// Output data.
 		if (count($data)) {
 			foreach ($data as $line) {
 				foreach ($line as $k=>$v) {
@@ -256,26 +295,28 @@ class format {
 		return implode($eol, $out);
 	}
 
-	//-------------------------------------------------
-	// Convert Timezones
-	//
-	// @param date
-	// @param from
-	// @param to
-	// @return date
+	/**
+	 * Convert Timezones
+	 *
+	 * @param string $date Date.
+	 * @param string $from Original Timezone.
+	 * @param string $to New Timezone.
+	 * @return string Date.
+	 */
 	public static function to_timezone($date, $from='UTC', $to='UTC') {
 		ref\format::to_timezone($date, $from, $to);
 		return $date;
 	}
 
-	//-------------------------------------------------
-	// To XLS
-	//
-	// use Microsoft's XML format
-	//
-	// @param data
-	// @param headers
-	// @return xls
+	/**
+	 * Generate XLS from Data
+	 *
+	 * This uses Microsoft's XML spreadsheet format.
+	 *
+	 * @param array $data Data (row=>cells).
+	 * @param array $headers Headers.
+	 * @return string XLS content.
+	 */
 	public static function to_xls($data=null, $headers=null) {
 		ref\cast::array($data);
 		$data = array_values(array_filter($data, 'is_array'));
@@ -311,12 +352,12 @@ class format {
 		);
 		// @codingStandardsIgnoreEnd
 
-		//grab headers from data?
+		// Grab headers from data?
 		if (!count($headers) && count($data) && cast::array_type($data[0]) === 'associative') {
 			$headers = array_keys($data[0]);
 		}
 
-		//output headers, if applicable
+		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
 				ref\cast::string($headers[$k], true);
@@ -330,12 +371,12 @@ class format {
 			$out[] = '</Row>';
 		}
 
-		//output data
+		// Output data.
 		if (count($data)) {
 			foreach ($data as $line) {
 				$out[] = '<Row>';
 				foreach ($line as $cell) {
-					//different types of data need to be treated differently
+					// Different types of data need to be treated differently.
 					$type = gettype($cell);
 					$format = null;
 					if ('boolean' === $type || 'bool' === $type) {
@@ -350,19 +391,19 @@ class format {
 					else {
 						ref\cast::string($cell, true);
 						ref\sanitize::whitespace($cell, 2);
-						//date and time
+						// Date and time.
 						if (preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {
 							$type = 'DateTime';
 							$format = '1';
 							$cell = str_replace(' ', 'T', $cell);
 						}
-						//date
+						// Date.
 						elseif (preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $cell)) {
 							$type = 'DateTime';
 							$format = '2';
 							$cell .= 'T00:00:00';
 						}
-						//time
+						// Time.
 						elseif (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $cell)) {
 							$type = 'DateTime';
 							$format = '3';
@@ -371,19 +412,19 @@ class format {
 								$cell .= ':00';
 							}
 						}
-						//percent
+						// Percent.
 						elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $cell)) {
 							$type = 'Number';
 							$format = '4';
 							ref\cast::number($cell);
 						}
-						//currency
+						// Currency.
 						elseif (preg_match('/^\-\$?[\d,]*\.?\d+$/', $cell) || preg_match('/^\-?[\d,]*\.?\d+¢$/', $cell)) {
 							$type = 'Number';
 							$format = '5';
 							ref\cast::number($cell);
 						}
-						//everything else
+						// Everything else.
 						else {
 							$type = 'String';
 							$cell = htmlspecialchars(strip_tags(sanitize::quotes($cell)), ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
@@ -396,7 +437,7 @@ class format {
 			}
 		}
 
-		//close it off
+		// Close it off.
 		$out[] = '</Table>';
 		$out[] = '</Worksheet>';
 		$out[] = '</Workbook>';
@@ -405,4 +446,4 @@ class format {
 	}
 }
 
-?>
+

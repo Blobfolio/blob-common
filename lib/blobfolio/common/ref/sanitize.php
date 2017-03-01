@@ -1,20 +1,23 @@
 <?php
-//---------------------------------------------------------------------
-// SANITIZE
-//---------------------------------------------------------------------
-// sanitize data
-
-
+/**
+ * Sanitizing - By Reference
+ *
+ * Functions for sanitizing data.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common\ref;
 
 class sanitize {
 
-	//-------------------------------------------------
-	// Strip Accents
-	//
-	// @param str
-	// @return str
+	/**
+	 * Strip Accents
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function accents(&$str) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -32,55 +35,55 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Credit Card
-	//
-	// @param str
-	// @return str
+	/**
+	 * Credit Card
+	 *
+	 * @param string $ccnum Card number.
+	 * @return string|bool Card number or false.
+	 */
 	public static function cc(&$ccnum='') {
-		//digits only
+		// Digits only.
 		cast::string($ccnum, true);
-
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
 		$str = $ccnum;
 
-		//different cards have different length requirements
+		// Different cards have different length requirements.
 		switch (\blobfolio\common\mb::substr($ccnum, 0, 1)) {
-			//Amex
+			// Amex.
 			case 3:
 				if (\blobfolio\common\mb::strlen($ccnum) !== 15 || !preg_match('/3[47]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
-			//Visa
+			// Visa.
 			case 4:
 				if (!in_array(\blobfolio\common\mb::strlen($ccnum), array(13,16), true)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
-			//MC
+			// MC.
 			case 5:
 				if (\blobfolio\common\mb::strlen($ccnum) !== 16 || !preg_match('/5[1-5]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
-			//Disc
+			// Disc.
 			case 6:
 				if (\blobfolio\common\mb::strlen($ccnum) !== 16 || intval(\blobfolio\common\mb::substr($ccnum, 0, 4)) !== 6011) {
 					$ccnum = false;
 					return false;
 				}
 				break;
-			//There is nothing else...
+			// There is nothing else...
 			default:
 				$ccnum = false;
 				return false;
 		}
 
-		//MOD10 checks
+		// MOD10 checks.
 		$dig = \blobfolio\common\mb::str_split($ccnum);
 		$numdig = count($dig);
 		$j = 0;
@@ -111,11 +114,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Country
-	//
-	// @param str
-	// @return str
+	/**
+	 * Country
+	 *
+	 * @param string $str Country.
+	 * @return string ISO country code.
+	 */
 	public static function country(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -127,7 +131,7 @@ class sanitize {
 			static::whitespace($str);
 			mb::strtoupper($str);
 			if (!isset(\blobfolio\common\constants::COUNTRIES[$str])) {
-				//maybe a name?
+				// Maybe a name?
 				$found = false;
 				foreach (\blobfolio\common\constants::COUNTRIES as $k=>$v) {
 					if (\blobfolio\common\mb::strtoupper($v['name']) === $str) {
@@ -145,11 +149,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Sanitize CSV
-	//
-	// @param str
-	// @return str
+	/**
+	 * CSV Cell Data
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function csv(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -161,23 +166,24 @@ class sanitize {
 			static::quotes($str);
 			static::whitespace($str);
 
-			//strip existing double quotes
+			// Strip existing double quotes.
 			while (false !== \blobfolio\common\mb::strpos($str, '""')) {
 				$str = str_replace('""', '"', $str);
 			}
 
-			//double quotes
+			// Double quotes.
 			$str = str_replace('"', '""', $str);
 		}
 
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Datetime
-	//
-	// @param date
-	// @return date
+	/**
+	 * Datetime
+	 *
+	 * @param string|int $str Date or timestamp.
+	 * @return string Date.
+	 */
 	public static function datetime(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -206,11 +212,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Date
-	//
-	// @param str
-	// @return str
+	/**
+	 * Date
+	 *
+	 * @param string|int $str Date or timestamp.
+	 * @return string Date.
+	 */
 	public static function date(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -225,11 +232,16 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Domain Name
-	//
-	// @param str
-	// @return str
+	/**
+	 * Domain Name.
+	 *
+	 * This locates the domain name portion of a URL,
+	 * removes leading "www." subdomains, and ignores
+	 * IP addresses.
+	 *
+	 * @param string $str Domain.
+	 * @return string Domain.
+	 */
 	public static function domain(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -244,13 +256,13 @@ class sanitize {
 				return true;
 			}
 
-			//we only want ASCII domains
+			// We only want ASCII domains.
 			if (filter_var($host, FILTER_SANITIZE_URL) !== $host) {
 				$str = '';
 				return true;
 			}
 
-			//does our host kinda match domain standards?
+			// Does our host kinda match domain standards?
 			// @codingStandardsIgnoreStart
 			if (!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host)) {
 				$str = '';
@@ -264,11 +276,15 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Email
-	//
-	// @param str
-	// @return str
+	/**
+	 * Email
+	 *
+	 * Converts the email to lowercase, strips
+	 * invalid characters, quotes, and apostrophes.
+	 *
+	 * @param string $str Email.
+	 * @return string Email.
+	 */
 	public static function email(&$str=null) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -292,11 +308,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Sanitize File Extension
-	//
-	// @param str
-	// @return str
+	/**
+	 * File Extension
+	 *
+	 * @param string $str Extension.
+	 * @return string Extension.
+	 */
 	public static function file_extension(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -314,11 +331,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// HTML
-	//
-	// @param str
-	// @return str
+	/**
+	 * HTML
+	 *
+	 * @param string $str HTML.
+	 * @return string HTML.
+	 */
 	public static function html(&$str=null) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -333,12 +351,13 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Get Domain Host
-	//
-	// @param domain
-	// @param keep www
-	// @return host or false
+	/**
+	 * Hostname
+	 *
+	 * @param string $domain Hostname.
+	 * @param bool $www Keep leading www.
+	 * @return string|bool Hostname or false.
+	 */
 	public static function hostname(string &$domain, bool $www=false) {
 		cast::string($domain, true);
 		static::whitespace($domain);
@@ -349,25 +368,25 @@ class sanitize {
 			return false;
 		}
 
-		//maybe it is a full URL
+		// Maybe it is a full URL?
 		$host = parse_url($domain, PHP_URL_HOST);
 
-		//nope...
+		// Nope...
 		if (!$host) {
 			$host = $domain;
-			//maybe there's a path?
+			// Maybe there's a path?
 			if (false !== \blobfolio\common\mb::strpos($host, '/')) {
 				$host = explode('/', $host);
 				$host = \blobfolio\common\data::array_pop_top($host);
 			}
-			//and/or a query?
+			// And/or a query?
 			if (false !== \blobfolio\common\mb::strpos($host, '?')) {
 				$host = explode('?', $host);
 				$host = \blobfolio\common\data::array_pop_top($host);
 			}
 		}
 
-		//remove leading www.
+		// Remove leading www.
 		if (\blobfolio\common\mb::strlen($host) && !$www) {
 			$host = preg_replace('/^www\./', '', $host);
 		}
@@ -381,12 +400,13 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// IP
-	//
-	// @param str
-	// @param allow restricted range?
-	// @return str
+	/**
+	 * IP Address
+	 *
+	 * @param string $str IP.
+	 * @param bool $restricted Allow private/restricted values.
+	 * @return string IP.
+	 */
 	public static function ip(&$str='', bool $restricted=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -397,10 +417,10 @@ class sanitize {
 			cast::string($str);
 			mb::strtolower($str);
 
-			//start by getting rid of obviously bad data
+			// Start by getting rid of obviously bad data.
 			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
 
-			//try to compact ipv6
+			// Try to compact IPv6.
 			if (filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 				$str = inet_ntop(inet_pton($str));
 			}
@@ -420,12 +440,13 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// JS Variable
-	//
-	// @param str
-	// @param quote type
-	// @return str
+	/**
+	 * JS Variable
+	 *
+	 * @param string $str String.
+	 * @param string $quote Quote type.
+	 * @return string String.
+	 */
 	public static function js(&$str='', $quote="'") {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -448,11 +469,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Sanitize MIME type
-	//
-	// @param str
-	// @return str
+	/**
+	 * IANA MIME Type
+	 *
+	 * @param string $str MIME.
+	 * @return string MIME.
+	 */
 	public static function mime(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -468,11 +490,16 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Sanitize name (like a person's name)
-	//
-	// @param name
-	// @return name
+	/**
+	 * (Person's) Name
+	 *
+	 * A bit of a fool's goal, but this will attempt to
+	 * strip out obviously bad data and convert to title
+	 * casing.
+	 *
+	 * @param string $str Name.
+	 * @return string Name.
+	 */
 	public static function name(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -491,11 +518,16 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Password
-	//
-	// @param str
-	// @return str
+	/**
+	 * Password
+	 *
+	 * This simply removes excess whitespace and
+	 * non-printable characters, which are likely
+	 * only present because of user error.
+	 *
+	 * @param string $str Password.
+	 * @return string Password.
+	 */
 	public static function password(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -511,11 +543,14 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Printable
-	//
-	// @param str
-	// @return str
+	/**
+	 * Printable
+	 *
+	 * Remove non-printable characters (except spaces).
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function printable(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -530,11 +565,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Canadian Province
-	//
-	// @param str
-	// @return str
+	/**
+	 * Canadian Province
+	 *
+	 * @param string $str Province.
+	 * @return string Province.
+	 */
 	public static function province(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -556,11 +592,15 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------------
-	// Quotes
-	//
-	// @param str
-	// @return str
+	/**
+	 * Quotes
+	 *
+	 * Replace those damn curly quotes with the straight
+	 * ones Athena intended!
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function quotes(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -577,11 +617,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// State
-	//
-	// @param str
-	// @return str
+	/**
+	 * US State/Territory
+	 *
+	 * @param string $str State.
+	 * @return string State.
+	 */
 	public static function state(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -603,13 +644,14 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// SVG
-	//
-	// @param str
-	// @param whitelisted tags
-	// @param whitelisted attributes
-	// @return str
+	/**
+	 * SVG
+	 *
+	 * @param string $str SVG code.
+	 * @param array $tags Additional whitelist tags.
+	 * @param array $attr Additional whitelist attributes.
+	 * @return string SVG code.
+	 */
 	public static function svg(&$str='', $tags=null, $attr=null) {
 		cast::string($str, true);
 		cast::array($tags);
@@ -634,12 +676,12 @@ class sanitize {
 			return false;
 		}
 
-		//remove invalid tags and attributes
+		// Remove invalid tags and attributes.
 		$tmp = $dom->getElementsByTagName('*');
 		for ($x = $tmp->length - 1; $x >= 0; $x--) {
 			$tag = \blobfolio\common\mb::strtolower($tmp->item($x)->tagName);
 			$tag2 = false;
-			//maybe it is namespaced?
+			// Maybe it is namespaced?
 			if (false !== $pos = \blobfolio\common\mb::strpos($tag, ':')) {
 				$tag2 = \blobfolio\common\mb::substr($tag, $pos + 1);
 			}
@@ -651,15 +693,15 @@ class sanitize {
 				continue;
 			}
 
-			//now go through attributes
+			// Now go through attributes.
 			for ($y = $tmp->item($x)->attributes->length - 1; $y >= 0; $y--) {
 				$att = $tmp->item($x)->attributes->item($y);
 				$attName = \blobfolio\common\mb::strtolower($att->name);
 
-				//first check, does it match straight off?
+				// First check, does it match straight off?
 				if (true === ($valid = (preg_match('/^(xmlns\:|data\-)/', $attName) || in_array($attName, $attr, true)))) {
 
-					//strip \0
+					// Strip \0.
 					$attValue = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $att->value);
 					if ($attValue !== $att->value) {
 						$tmp->item($x)->setAttribute($att->name, $attValue);
@@ -667,7 +709,7 @@ class sanitize {
 
 					format::decode_entities($attValue);
 
-					//strip scripts
+					// Strip scripts.
 					if (!strlen($attValue) || preg_match('/(?:\w+script):/xi', $attValue)) {
 						$valid = false;
 					}
@@ -683,11 +725,12 @@ class sanitize {
 		return strlen($str) > 0;
 	}
 
-	//-------------------------------------------------
-	// Timezone
-	//
-	// @param timezone
-	// @return timezone
+	/**
+	 * Timezone
+	 *
+	 * @param string $str Timezone.
+	 * @return string Timezone or UTC on failure.
+	 */
 	public static function timezone(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -721,16 +764,17 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Force a value to fall within a range
-	//
-	// @param value
-	// @param min
-	// @param max
-	// @return value
+	/**
+	 * Confine a Value to a Range
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return mixed Value.
+	 */
 	public static function to_range(&$value, $min=null, $max=null) {
 
-		//max sure min/max are in the right order
+		// Make sure min/max are in the right order.
 		if (
 			!is_null($min) &&
 			!is_null($max) &&
@@ -739,7 +783,7 @@ class sanitize {
 			\blobfolio\common\data::switcheroo($min, $max);
 		}
 
-		//recursive
+		// Recursive.
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::to_range($v, $min, $max);
@@ -763,11 +807,14 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// URL
-	//
-	// @param str
-	// @return str
+	/**
+	 * URL
+	 *
+	 * Validate URLishness and convert // schemas.
+	 *
+	 * @param string $str URL.
+	 * @return string URL.
+	 */
 	public static function url(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -788,11 +835,14 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// UTF-8
-	//
-	// @param str
-	// @return str
+	/**
+	 * UTF-8
+	 *
+	 * Ensure string contains valid UTF-8 encoding.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function utf8(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -813,12 +863,16 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------------
-	// Whitespace
-	//
-	// @param str
-	// @param number consecutive linebreaks allowed
-	// @return str
+	/**
+	 * Whitespace
+	 *
+	 * Trim edges, replace all consecutive horizontal whitespace
+	 * with a single space, and constrict consecutive newlines.
+	 *
+	 * @param string $str String.
+	 * @param int $newlines Consecutive newlines allowed.
+	 * @return string String.
+	 */
 	public static function whitespace(&$str='', int $newlines=0) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -830,16 +884,19 @@ class sanitize {
 			static::to_range($newlines, 0);
 
 			if (!$newlines) {
-				$str = trim(preg_replace('/\s+/u', ' ', $str));
+				$str = preg_replace('/\s+/u', ' ', $str);
+				$str = preg_replace('/^\s+/u', '', $str);
+				$str = preg_replace('/\s+$/u', '', $str);
 				return true;
 			}
 
-			//sanitize newlines
-			$str = trim($str);
+			// Sanitize newlines.
+			$str = preg_replace('/^\s+/u', '', $str);
+			$str = preg_replace('/\s+$/u', '', $str);
 			$str = str_replace("\r\n", "\n", $str);
 			$str = preg_replace('/\v/u', "\n", $str);
 
-			//now go through line by line
+			// Now go through line by line.
 			$str = explode("\n", $str);
 			static::whitespace($str);
 			$str = implode("\n", $str);
@@ -852,12 +909,13 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------------
-	// Whitespace (allow new lines)
-	//
-	// @param str
-	// @param consecutive linebreaks allowed
-	// @return str
+	/**
+	 * Whitespace Multiline
+	 *
+	 * @param string $str String.
+	 * @param int $newlines Consecutive newlines allowed.
+	 * @return string String.
+	 */
 	public static function whitespace_multiline(&$str='', int $newlines=1) {
 		static::to_range($newlines, 1);
 
@@ -873,11 +931,12 @@ class sanitize {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Zip5
-	//
-	// @param str
-	// @return str
+	/**
+	 * US ZIP5
+	 *
+	 * @param string $str ZIP Code.
+	 * @return string ZIP Code.
+	 */
 	public static function zip5(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -904,4 +963,4 @@ class sanitize {
 	}
 }
 
-?>
+

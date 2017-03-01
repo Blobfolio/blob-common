@@ -1,13 +1,23 @@
 <?php
-//---------------------------------------------------------------------
-// cast:: tests
-//---------------------------------------------------------------------
+/**
+ * Cast tests.
+ *
+ * PHPUnit tests for \blobfolio\common\cast.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
+/**
+ * Test Suite
+ */
 class cast_tests extends \PHPUnit\Framework\TestCase {
 
-	//-------------------------------------------------
-	// cast::array()
-
+	/**
+	 * ::array()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_array() {
 		$thing = 'string';
 		$this->assertEquals(array('string'), \blobfolio\common\cast::array($thing));
@@ -21,9 +31,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(array(), \blobfolio\common\cast::array($thing));
 	}
 
-	//-------------------------------------------------
-	// cast::array_type()
-
+	/**
+	 * ::array_type()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_array_type() {
 		$thing = 'string';
 		$this->assertEquals(false, \blobfolio\common\cast::array_type($thing));
@@ -42,9 +54,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('indexed', \blobfolio\common\cast::array_type($thing));
 	}
 
-	//-------------------------------------------------
-	// cast::bool()
-
+	/**
+	 * ::bool()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_bool() {
 		$thing = 'string';
 		$this->assertEquals(true, \blobfolio\common\cast::bool($thing));
@@ -66,9 +80,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, \blobfolio\common\cast::bool($thing, true));
 	}
 
-	//-------------------------------------------------
-	// cast::float()
-
+	/**
+	 * ::float()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_float() {
 		$thing = 'string';
 		$this->assertEquals(0.0, \blobfolio\common\cast::float($thing));
@@ -93,9 +109,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(0, \blobfolio\common\cast::float($thing, true));
 	}
 
-	//-------------------------------------------------
-	// cast::int()
-
+	/**
+	 * ::int()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_int() {
 		$thing = 'string';
 		$this->assertEquals(0, \blobfolio\common\cast::int($thing));
@@ -117,9 +135,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(0, \blobfolio\common\cast::int($thing, true));
 	}
 
-	//-------------------------------------------------
-	// cast::string()
-
+	/**
+	 * ::string()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_string() {
 		$thing = 'string';
 		$this->assertEquals('string', \blobfolio\common\cast::string($thing));
@@ -138,9 +158,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('', \blobfolio\common\cast::string($thing, true));
 	}
 
-	//-------------------------------------------------
-	// cast::to_type()
-
+	/**
+	 * ::to_type()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_to_type() {
 		$thing = array('false', 2.5, true, 1);
 
@@ -164,4 +186,4 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	}
 }
 
-?>
+

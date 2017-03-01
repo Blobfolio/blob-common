@@ -1,13 +1,23 @@
 <?php
-//---------------------------------------------------------------------
-// data:: tests
-//---------------------------------------------------------------------
+/**
+ * Data tests.
+ *
+ * PHPUnit tests for \blobfolio\common\data.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
+/**
+ * Test Suite
+ */
 class data_tests extends \PHPUnit\Framework\TestCase {
 
-	//-------------------------------------------------
-	// data::array_compare()
-
+	/**
+	 * ::array_compare()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_array_compare() {
 		$arr1 = array(1,2,3,4,5);
 		$arr2 = array(1,2,3,4,5);
@@ -27,9 +37,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, \blobfolio\common\data::array_compare($arr1, $arr2));
 	}
 
-	//-------------------------------------------------
-	// data::array_map_recursive()
-
+	/**
+	 * ::array_map_recursive()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_array_map_recursive() {
 		$thing = array(1,2,3,4,5);
 		$this->assertEquals(array('1','2','3','4','5'), \blobfolio\common\data::array_map_recursive('strval', $thing));
@@ -38,9 +50,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(array('1',array('1')), \blobfolio\common\data::array_map_recursive('strval', $thing));
 	}
 
-	//-------------------------------------------------
-	// data::array_pop()
-
+	/**
+	 * ::array_pop()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_array_pop() {
 		$thing = array(1,2,3,4,5);
 		$this->assertEquals(5, \blobfolio\common\data::array_pop($thing));
@@ -49,9 +63,24 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, \blobfolio\common\data::array_pop($thing));
 	}
 
-	//-------------------------------------------------
-	// data::cc_exp_months()
+	/**
+	 * ::array_pop_top()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_array_pop_top() {
+		$thing = array(1,2,3,4,5);
+		$this->assertEquals(1, \blobfolio\common\data::array_pop_top($thing));
 
+		$thing = array();
+		$this->assertEquals(false, \blobfolio\common\data::array_pop_top($thing));
+	}
+
+	/**
+	 * ::cc_exp_months()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_cc_exp_months() {
 		$thing = \blobfolio\common\data::cc_exp_months();
 		$values = array_values($thing);
@@ -64,9 +93,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('January', $thing[1]);
 	}
 
-	//-------------------------------------------------
-	// data::cc_exp_months()
-
+	/**
+	 * ::cc_exp_years()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_cc_exp_years() {
 		$thing = \blobfolio\common\data::cc_exp_years();
 		$year = (int) date('Y');
@@ -78,9 +109,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(3, count($thing));
 	}
 
-	//-------------------------------------------------
-	// data::datediff()
-
+	/**
+	 * ::datediff()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_datediff() {
 		$date1 = '2015-01-15';
 		$date2 = '2015-01-17';
@@ -90,9 +123,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(2, \blobfolio\common\data::datediff(strtotime($date2), $date1));
 	}
 
-	//-------------------------------------------------
-	// data::in_range()
-
+	/**
+	 * ::in_range()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_in_range() {
 		$thing = 1;
 
@@ -105,9 +140,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, \blobfolio\common\data::in_range($thing, '2015-01-15', '2015-01-20'));
 	}
 
-	//-------------------------------------------------
-	// data::is_utf8()
-
+	/**
+	 * ::is_utf8()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_is_utf8() {
 		$thing = 'hello';
 		$this->assertEquals(true, \blobfolio\common\data::is_utf8($thing));
@@ -119,9 +156,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, \blobfolio\common\data::is_utf8($thing));
 	}
 
-	//-------------------------------------------------
-	// data::json_decode_array()
-
+	/**
+	 * ::json_decode_array()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_json_decode_array() {
 		$thing = '';
 		$this->assertEquals(array(), \blobfolio\common\data::json_decode_array($thing));
@@ -138,9 +177,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(array('animal'=>'12', 'fruit'=>'banana'), \blobfolio\common\data::json_decode_array($thing, $default));
 	}
 
-	//-------------------------------------------------
-	// data::length_in_range()
-
+	/**
+	 * ::length_in_range()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_length_in_range() {
 		$thing = 'cat';
 		$this->assertEquals(true, \blobfolio\common\data::length_in_range($thing, 1, 5));
@@ -150,9 +191,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, \blobfolio\common\data::length_in_range($thing, 3, 3));
 	}
 
-	//-------------------------------------------------
-	// data::parse_args()
-
+	/**
+	 * ::parse_args()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_parse_args() {
 		$thing = null;
 		$default = array('fruit'=>'pear', 'animal'=>array('name'=>'Oscar', 'price'=>5.5));
@@ -173,9 +216,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(array('fruit'=>'pear', 'animal'=>array('price'=>1)), \blobfolio\common\data::parse_args($thing, $default, true, false));
 	}
 
-	//-------------------------------------------------
-	// data::random_int()
-
+	/**
+	 * ::random_int()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_random_int() {
 		$thing = array();
 		for ($x = 0; $x < 20; $x++) {
@@ -195,9 +240,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, count($thing) === count($thing2));
 	}
 
-	//-------------------------------------------------
-	// data::random_string()
-
+	/**
+	 * ::random_string()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_random_string() {
 		$thing = array();
 		for ($x = 0; $x < 20; $x++) {
@@ -217,9 +264,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, count($thing) === count($thing2));
 	}
 
-	//-------------------------------------------------
-	// data::switcheroo()
-
+	/**
+	 * ::switcheroo()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_switcheroo() {
 		$var1 = 5;
 		$var2 = 10;
@@ -231,4 +280,4 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	}
 }
 
-?>
+

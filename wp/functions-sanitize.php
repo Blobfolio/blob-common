@@ -1,22 +1,22 @@
 <?php
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // FUNCTIONS: SANITIZE/VALIDATE
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // This file contains functions related to sanitizing, validating,
 // and formatting data
 
-//this must be called through WordPress
+// This must be called through WordPress.
 if (!defined('ABSPATH')) {
 	exit;
 }
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Case Conversion
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Lower Case
 //
 // will return multi-byte lowercase if capabale,
@@ -30,7 +30,7 @@ if (!function_exists('common_strtolower')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Upper Case
 //
 // will return multi-byte uppercase if capabale,
@@ -44,7 +44,7 @@ if (!function_exists('common_strtoupper')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Title Case
 //
 // will return multi-byte title case if capabale,
@@ -58,7 +58,7 @@ if (!function_exists('common_ucwords')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sentence Case
 //
 // will return multi-byte sentence case if capabale,
@@ -72,13 +72,13 @@ if (!function_exists('common_ucfirst')) {
 	}
 }
 
-//--------------------------------------------------------------------- end case
+// --------------------------------------------------------------------- end case
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Misc Formatting
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Format money
 //
 // @param amount
@@ -91,7 +91,7 @@ if (!function_exists('common_format_money')) {
 	add_filter('common_format_money', 'common_format_money', 5, 2);
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Format phone
 //
 // again, this assumes north american formatting
@@ -111,7 +111,7 @@ if (!function_exists('common_format_phone')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Singular/Plural inflection based on number
 //
 // @param number
@@ -124,7 +124,7 @@ if (!function_exists('common_inflect')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Make excerpt (character length)
 //
 // @param string
@@ -147,7 +147,7 @@ if (!function_exists('common_get_excerpt')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Unix slashes
 //
 // fix backward Windows slashes, and also get
@@ -161,7 +161,7 @@ if (!function_exists('common_unixslashit')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Unleading Slash
 //
 // WP doesn't have leading slash functions for
@@ -175,7 +175,7 @@ if (!function_exists('common_unleadingslashit')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Leading Slash
 //
 // WP doesn't have leading slash functions for
@@ -189,7 +189,7 @@ if (!function_exists('common_leadingslashit')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Convert a k=>v associative array to an indexed
 // array
 //
@@ -201,7 +201,7 @@ if (!function_exists('common_array_to_indexed')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // CSV
 //
 // @param data
@@ -215,7 +215,7 @@ if (!function_exists('common_to_csv')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // XLS
 //
 // use Microsoft's XML format
@@ -229,15 +229,15 @@ if (!function_exists('common_to_xls')) {
 	}
 }
 
-//--------------------------------------------------------------------- end formatting
+// --------------------------------------------------------------------- end formatting
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Sanitization
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Force a value to fall within a range
 //
 // @param value
@@ -250,7 +250,7 @@ if (!function_exists('common_to_range')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Check if a value is within range
 //
 // @param value
@@ -263,7 +263,7 @@ if (!function_exists('common_in_range')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Check if a string's length is within range
 //
 // @param str
@@ -276,7 +276,7 @@ if (!function_exists('common_length_in_range')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Convert to UTF-8
 //
 // @param string
@@ -286,13 +286,13 @@ if (!function_exists('common_utf8')) {
 		return \blobfolio\common\sanitize::utf8($str);
 	}
 }
-//alias
+// alias
 if (!function_exists('common_sanitize_utf8')) {
 	function common_sanitize_utf8($str) { return common_utf8($str);
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize name (like a person's name)
 //
 // @param name
@@ -303,7 +303,7 @@ if (!function_exists('common_sanitize_name')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize printable
 //
 // @param str
@@ -314,7 +314,7 @@ if (!function_exists('common_sanitize_printable')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize CSV
 //
 // @param field
@@ -326,7 +326,7 @@ if (!function_exists('common_sanitize_csv')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Consistent new lines (\n)
 //
 // @param str
@@ -337,7 +337,7 @@ if (!function_exists('common_sanitize_newlines')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Single spaces
 //
 // @param str
@@ -349,7 +349,7 @@ if (!function_exists('common_sanitize_spaces')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize all white space
 //
 // @param str
@@ -362,7 +362,7 @@ if (!function_exists('common_sanitize_whitespace')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Make consistent quotes
 //
 // @param str
@@ -373,7 +373,7 @@ if (!function_exists('common_sanitize_quotes')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize JS variable
 //
 // this should be used for var = 'variable';
@@ -386,7 +386,7 @@ if (!function_exists('common_sanitize_js_variable')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Better email sanitizing
 //
 // @param email
@@ -397,7 +397,7 @@ if (!function_exists('common_sanitize_email')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize a US zip5 code
 //
 // @param zip
@@ -408,7 +408,7 @@ if (!function_exists('common_sanitize_zip5')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize IP
 //
 // IPv6 addresses are compacted for consistency
@@ -421,7 +421,7 @@ if (!function_exists('common_sanitize_ip')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Remove non-numeric chars from str
 //
 // @param num
@@ -433,7 +433,7 @@ if (!function_exists('common_sanitize_number')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Bool
 //
 // @param value
@@ -444,14 +444,14 @@ if (!function_exists('common_sanitize_bool')) {
 		return \blobfolio\common\cast::bool($value, $flatten);
 	}
 }
-//alias
+// alias
 if (!function_exists('common_sanitize_boolean')) {
 	function common_sanitize_boolean($value=false, $flatten=false) {
 		return common_sanitize_bool($value, $flatten);
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Float
 //
 // @param value
@@ -462,7 +462,7 @@ if (!function_exists('common_sanitize_float')) {
 		return \blobfolio\common\cast::float($num, $flatten);
 	}
 }
-//alias
+// alias
 if (!function_exists('common_doubleval')) {
 	function common_doubleval($num=0, $flatten=false) {
 		return common_sanitize_float($num, $flatten);
@@ -474,7 +474,7 @@ if (!function_exists('common_floatval')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize by Type
 //
 // @param value
@@ -487,7 +487,7 @@ if (!function_exists('common_sanitize_by_type')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Int
 //
 // @param value
@@ -497,13 +497,13 @@ if (!function_exists('common_sanitize_int')) {
 		return \blobfolio\common\cast::int($num, $flatten);
 	}
 }
-//another wrapper
+// another wrapper
 if (!function_exists('common_intval')) {
 	function common_intval($num=0, $flatten=false) { return common_sanitize_int($num, $flatten);
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // String
 //
 // @param value
@@ -514,14 +514,14 @@ if (!function_exists('common_sanitize_string')) {
 		return \blobfolio\common\cast::string($value, $flatten);
 	}
 }
-//alias
+// alias
 if (!function_exists('common_strval')) {
 	function common_strval($value='', $flatten=false) {
 		return common_sanitize_string($value, $flatten);
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Array
 //
 // @param value
@@ -532,7 +532,7 @@ if (!function_exists('common_sanitize_array')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Datetime
 //
 // @param date
@@ -542,14 +542,14 @@ if (!function_exists('common_sanitize_datetime')) {
 		return \blobfolio\common\sanitize::datetime($date);
 	}
 }
-//wrapper for just the date half
+// wrapper for just the date half
 if (!function_exists('common_sanitize_date')) {
 	function common_sanitize_date($date) {
 		return \blobfolio\common\sanitize::date($date);
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize phone number
 //
 // this function should only be used on north
@@ -562,7 +562,7 @@ if (!function_exists('common_sanitize_phone')) {
 		$value = common_sanitize_string($value);
 		$value = preg_replace('/[^\d]/', '', $value);
 
-		//if this looks like a 10-digit number with the +1 on it, chop it off
+		// if this looks like a 10-digit number with the +1 on it, chop it off
 		if (strlen($value) === 11 && intval(substr($value, 0, 1)) === 1) {
 			$value = substr($value, 1);
 		}
@@ -571,7 +571,7 @@ if (!function_exists('common_sanitize_phone')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize domain name
 //
 // this does not strip invalid characters; it
@@ -586,15 +586,15 @@ if (!function_exists('common_sanitize_domain_name')) {
 	}
 }
 
-//--------------------------------------------------------------------- end sanitize
+// --------------------------------------------------------------------- end sanitize
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Validate
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Check for UTF-8
 //
 // @param string
@@ -605,7 +605,7 @@ if (!function_exists('common_is_utf8')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Validate an email (FQDN)
 //
 // @param email
@@ -616,7 +616,7 @@ if (!function_exists('common_validate_email')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Validate north american phone number
 //
 // the first 10 digits must match standards
@@ -625,14 +625,14 @@ if (!function_exists('common_validate_email')) {
 // @return true/false
 if (!function_exists('common_validate_phone')) {
 	function common_validate_phone($value='') {
-		//match the first 10
+		// match the first 10
 		$value = common_sanitize_string($value);
 		$first10 = common_substr($value, 0, 10);
 		return preg_match('/^[2-9][0-8][0-9][2-9][0-9]{2}[0-9]{4}$/i', $first10);
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Validate credit card
 //
 // @param card
@@ -643,7 +643,7 @@ if (!function_exists('common_validate_cc')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Sanitize a URL
 //
 // @param url
@@ -655,7 +655,7 @@ if (!function_exists('common_sanitize_url')) {
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Validate domain name
 //
 // @param domain
@@ -667,19 +667,19 @@ if (!function_exists('common_validate_domain_name')) {
 			return false;
 		}
 
-		//we only want ASCII domains
+		// we only want ASCII domains
 		if (filter_var($host, FILTER_SANITIZE_URL) !== $host) {
 			return false;
 		}
 
-		//does our host kinda match domain standards?
+		// does our host kinda match domain standards?
 		// @codingStandardsIgnoreStart
 		if (!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host)) {
 			return false;
 		}
 		// @codingStandardsIgnoreEnd
 
-		//does it have an A record?
+		// does it have an A record?
 		if ($live && !filter_var(gethostbyname($host), FILTER_VALIDATE_IP)) {
 			return false;
 		}
@@ -688,5 +688,5 @@ if (!function_exists('common_validate_domain_name')) {
 	}
 }
 
-//--------------------------------------------------------------------- end validate
-?>
+// --------------------------------------------------------------------- end validate
+

@@ -1,17 +1,22 @@
 <?php
-//---------------------------------------------------------------------
-// FUNCTIONS: FORMS
-//---------------------------------------------------------------------
-// This file includes functions related to web forms.
+/**
+ * Form Functions
+ *
+ * This file contains functions to assist developers with
+ * HTML forms.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
-//this must be called through WordPress
+// This must be called through WordPress.
 if (!defined('ABSPATH')) {
 	exit;
 }
 
 
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Generate Form Timestamp
 //
 // this field can be used to prevent overly rapid
@@ -20,25 +25,46 @@ if (!defined('ABSPATH')) {
 // @param n/a
 // @return hash
 if (!function_exists('common_get_form_timestamp')) {
+	/**
+	 * Generate Form Timestamp
+	 *
+	 * Like a nonce, but measuring time-to-submission.
+	 *
+	 * @return string Hash.
+	 */
 	function common_get_form_timestamp() {
 		$time = time();
 		return "$time," . md5($time . NONCE_KEY);
 	}
 }
-//alias
+// Alias.
 if (!function_exists('common_generate_form_timestamp')) {
+	/**
+	 * Generate Form Timestamp
+	 *
+	 * Like a nonce, but measuring time-to-submission.
+	 *
+	 * @return string Hash.
+	 */
 	function common_generate_form_timestamp() {
 		return common_get_form_timestamp();
 	}
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Validate Form Timestamp
 //
 // @param hash
 // @param time elapsed (must be >= this value)
 // @return true/false
 if (!function_exists('common_check_form_timestamp')) {
+	/**
+	 * Validate Form Timestamp
+	 *
+	 * @param string $hash Hash.
+	 * @param int $elapsed Minimum seconds allowed.
+	 * @return bool True/false.
+	 */
 	function common_check_form_timestamp($hash='', $elapsed=5) {
 		if (!preg_match('/^\d+,([\da-f]{32})$/i', $hash)) {
 			return false;
@@ -47,10 +73,17 @@ if (!function_exists('common_check_form_timestamp')) {
 		return (md5($t . NONCE_KEY) === $h && time() - $t >= $elapsed);
 	}
 }
-//alias
+// Alias.
 if (!function_exists('common_check_form_timestamp')) {
+	/**
+	 * Validate Form Timestamp
+	 *
+	 * @param string $hash Hash.
+	 * @param int $elapsed Minimum seconds allowed.
+	 * @return bool True/false.
+	 */
 	function common_verify_form_timestamp($hash='', $elapsed=5) {
 		return common_check_form_timestamp($hash, $elapsed);
 	}
 }
-?>
+

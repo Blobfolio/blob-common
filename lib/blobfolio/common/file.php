@@ -1,20 +1,23 @@
 <?php
-//---------------------------------------------------------------------
-// FILE
-//---------------------------------------------------------------------
-// files and paths
-
-
+/**
+ * Files
+ *
+ * Functions for sanitizing and handling files.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common;
 
 class file {
 
-	//-------------------------------------------------
-	// Data URI
-	//
-	// @param path
-	// @return uri or false
+	/**
+	 * Get Data-URI From File
+	 *
+	 * @param string $path Path.
+	 * @return string|bool Data-URI or false.
+	 */
 	public static function data_uri($path='') {
 		ref\cast::string($path, true);
 		ref\file::path($path, true);
@@ -31,11 +34,12 @@ class file {
 		return false;
 	}
 
-	//-------------------------------------------------
-	// Empty Dir
-	//
-	// @param path
-	// @return true/false
+	/**
+	 * Is Directory Empty?
+	 *
+	 * @param string $path Path.
+	 * @return bool True/false.
+	 */
 	public static function empty_dir($path='') {
 		try {
 			ref\cast::string($path);
@@ -43,52 +47,54 @@ class file {
 				return false;
 			}
 
-			//scan all files in dir
+			// Scan all files in dir.
 			$handle = opendir($path);
 			while (false !== ($entry = readdir($handle))) {
-				//anything but a dot === not empty
+				// Anything but a dot === not empty.
 				if ('.' !== $entry && '..' !== $entry) {
 					return false;
 				}
 			}
-
-			//nothing found
-			return true;
 		} catch (\Throwable $e) {
 			return false;
 		}
+
+		return true;
 	}
 
-	//-------------------------------------------------
-	// Leadingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Add Leading Slash
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	public static function leadingslash($path='') {
 		ref\file::leadingslash($path);
 		return $path;
 	}
 
-	//-------------------------------------------------
-	// Path
-	//
-	// @param path
-	// @param validate
-	// @return path
+	/**
+	 * Fix Path Formatting
+	 *
+	 * @param string $path Path.
+	 * @param bool $validate Require valid file.
+	 * @return string Path.
+	 */
 	public static function path($path='', bool $validate=true) {
 		ref\file::path($path, $validate);
 		return $path;
 	}
 
-	//-------------------------------------------------
-	// Readfile() in chunks
-	//
-	// this greatly reduces the server resource demands
-	// compared with reading a file all in one go
-	//
-	// @param file
-	// @param bytes
-	// @return bytes or false
+	/**
+	 * Read File in Chunks
+	 *
+	 * This greatly reduces overhead if serving
+	 * files through a PHP gateway script.
+	 *
+	 * @param string $file Path.
+	 * @param bool $retbytes Return bytes served like `readfile()`.
+	 * @return mixed Bytes served or status.
+	 */
 	public static function readfile_chunked(string $file, $retbytes=true) {
 		$buffer = '';
 		$cnt = 0;
@@ -110,7 +116,7 @@ class file {
 
 		$status = fclose($handle);
 
-		//return number of bytes delivered like readfile() does
+		// Return number of bytes delivered like readfile() does.
 		if ($retbytes && $status) {
 			return $cnt;
 		}
@@ -118,11 +124,15 @@ class file {
 		return $status;
 	}
 
-	//-------------------------------------------------
-	// Redirect
-	//
-	// @param to
-	// @return n/a
+	/**
+	 * Redirect Wrapper
+	 *
+	 * Will issue redirect headers or print Javascript
+	 * if headers have already been sent.
+	 *
+	 * @param string $to URL.
+	 * @return void Nothing.
+	 */
 	public static function redirect(string $to) {
 		ref\sanitize::url($to);
 
@@ -139,51 +149,55 @@ class file {
 		exit;
 	}
 
-	//-------------------------------------------------
-	// Trailingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Add Trailing Slash
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	public static function trailingslash($path='') {
 		ref\file::trailingslash($path);
 		return $path;
 	}
 
-	//-------------------------------------------------
-	// Fix Slashes
-	//
-	// @param path
-	// @return path
+	/**
+	 * Fix Path Slashes
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	public static function unixslash($path='') {
 		ref\file::unixslash($path);
 		return $path;
 	}
 
-	//-------------------------------------------------
-	// Unleadingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Strip Leading Slash
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	public static function unleadingslash($path='') {
 		ref\file::unleadingslash($path);
 		return $path;
 	}
 
-	//-------------------------------------------------
-	// Reverse parse_url() to get back to a URL
-	//
-	// @param parsed
-	// @return url or false
+	/**
+	 * Reverse `parse_url()`
+	 *
+	 * @param array $parsed Parsed data.
+	 * @return string URL.
+	 */
 	public static function unparse_url(array $parsed=null) {
 		$url = '';
 		$parsed = data::parse_args($parsed, constants::URL_PARTS);
 
-		//to simplify, unset anything without length
+		// To simplify, unset anything without length.
 		$parsed = array_map('trim', $parsed);
 		$parsed = array_filter($parsed, 'strlen');
 
-		//we don't really care about validating url integrity,
-		//but if nothing at all was passed then it is trash
+		// We don't really care about validating url integrity,
+		// but if nothing at all was passed then it is trash.
 		if (!count($parsed)) {
 			return false;
 		}
@@ -195,7 +209,7 @@ class file {
 		if (isset($parsed['host'])) {
 			$url .= '//';
 
-			//is this a user:pass situation?
+			// Is this a user:pass situation?
 			if (isset($parsed['user'])) {
 				$url .= $parsed['user'];
 				if (isset($parsed['pass'])) {
@@ -204,7 +218,7 @@ class file {
 				$url .= '@';
 			}
 
-			//finally the host
+			// Finally the host.
 			$url .= (filter_var($parsed['host'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? "[{$parsed['host']}]" : $parsed['host']);
 
 			if (isset($parsed['port'])) {
@@ -233,11 +247,12 @@ class file {
 		return mb::strlen($url) ? $url : false;
 	}
 
-	//-------------------------------------------------
-	// Untrailingslash
-	//
-	// @param path
-	// @return path
+	/**
+	 * Strip Trailing Slash
+	 *
+	 * @param string $path Path.
+	 * @return string Path.
+	 */
 	public static function untrailingslash($path='') {
 		ref\file::untrailingslash($path);
 		return $path;
@@ -245,4 +260,4 @@ class file {
 
 }
 
-?>
+

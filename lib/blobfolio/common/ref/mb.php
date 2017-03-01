@@ -1,21 +1,26 @@
 <?php
-//---------------------------------------------------------------------
-// MULTIBYTE WRAPPERS
-//---------------------------------------------------------------------
-// prefer multibyte functionality but fallback to dumb functions as
-// needed
-
-
+/**
+ * Multi-Byte - By Reference
+ *
+ * Functions for multi-byte string handling.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common\ref;
 
 class mb {
 
-	//-------------------------------------------------
-	// Lowercase
-	//
-	// @param str
-	// @return str
+	/**
+	 * Wrapper For strtolower()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function strtolower(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -28,7 +33,7 @@ class mb {
 			if (function_exists('mb_strtolower')) {
 				$str = mb_strtolower($str, 'UTF-8');
 
-				//replace some extra characters
+				// Replace some extra characters.
 				$from = array_keys(\blobfolio\common\constants::CASE_CHARS);
 				$to = array_values(\blobfolio\common\constants::CASE_CHARS);
 				$str = str_replace($from, $to, $str);
@@ -41,11 +46,15 @@ class mb {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Uppercase
-	//
-	// @param str
-	// @return str
+	/**
+	 * Wrapper For strtoupper()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function strtoupper(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -58,7 +67,7 @@ class mb {
 			if (function_exists('mb_strtoupper')) {
 				$str = mb_strtoupper($str, 'UTF-8');
 
-				//replace some extra characters
+				// Replace some extra characters.
 				$to = array_keys(\blobfolio\common\constants::CASE_CHARS);
 				$from = array_values(\blobfolio\common\constants::CASE_CHARS);
 				$str = str_replace($from, $to, $str);
@@ -71,11 +80,15 @@ class mb {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Sentence Case
-	//
-	// @param str
-	// @return str
+	/**
+	 * Wrapper For ucfirst()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function ucfirst(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -98,11 +111,15 @@ class mb {
 		return true;
 	}
 
-	//-------------------------------------------------
-	// Title Case
-	//
-	// @param str
-	// @return str
+	/**
+	 * Wrapper For ucwords()
+	 *
+	 * This will catch various case-able Unicode beyond
+	 * the native PHP functions.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
 	public static function ucwords(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
@@ -112,11 +129,11 @@ class mb {
 		else {
 			cast::string($str);
 
-			//don't use the built-in case functions as those
-			//kinda suck. instead let's adjust manually
+			// Don't use the built-in case functions as those
+			// kinda suck. Instead let's adjust manually.
 			$extra = array();
 
-			//the first letter
+			// The first letter.
 			preg_match_all('/^(\p{L})/u', $str, $matches);
 			if (count($matches[0])) {
 				static::strtoupper($matches[1][0]);
@@ -125,7 +142,7 @@ class mb {
 				}
 			}
 
-			//any letter following a dash, space, or forward slash
+			// Any letter following a dash, space, or forward slash.
 			preg_match_all('/(\s|\p{Pd}|\/)(.)/u', $str, $matches);
 			if (count($matches[0])) {
 				foreach ($matches[0] as $k=>$v) {
@@ -137,7 +154,7 @@ class mb {
 				}
 			}
 
-			//make replacement(s)
+			// Make replacement(s).
 			if (count($extra)) {
 				$extra = array_unique($extra);
 				$str = str_replace(array_keys($extra), array_values($extra), $str);
@@ -148,4 +165,4 @@ class mb {
 	}
 }
 
-?>
+

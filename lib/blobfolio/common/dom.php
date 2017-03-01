@@ -1,30 +1,33 @@
 <?php
-//---------------------------------------------------------------------
-// DOM Manipulation
-//---------------------------------------------------------------------
-// helpers for DomDocument and the like
-
-
+/**
+ * DOM Manipulation.
+ *
+ * Functions for manipulating the DOM.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common;
 
 class dom {
 
-	//-------------------------------------------------
-	// Load an SVG
-	//
-	// this creates a DOMDocument object from an SVG
-	// source
-	//
-	// @param svg
-	// @return DOMDocument
+	/**
+	 * Load SVG
+	 *
+	 * This creates a DOMDocument object from an SVG
+	 * source.
+	 *
+	 * @param string $svg SVG code.
+	 * @return DOMDocument DOM object.
+	 */
 	public static function load_svg(string $svg='') {
 		try {
-			//first thing first, lowercase all tags
+			// First thing first, lowercase all tags.
 			$svg = preg_replace('/<svg/ui', '<svg', $svg);
 			$svg = preg_replace('/<\/svg>/ui', '</svg>', $svg);
 
-			//find the start and end tags so we can cut out miscellaneous garbage
+			// Find the start and end tags so we can cut out miscellaneous garbage.
 			if (
 				false === ($start = mb::strpos($svg, '<svg')) ||
 				false === ($end = mb::strrpos($svg, '</svg>'))
@@ -33,7 +36,7 @@ class dom {
 			}
 			$svg = mb::substr($svg, $start, ($end - $start + 6));
 
-			//open it
+			// Open it.
 			libxml_use_internal_errors(true);
 			libxml_disable_entity_loader(true);
 			$dom = new \DOMDocument('1.0', 'UTF-8');
@@ -47,14 +50,15 @@ class dom {
 		}
 	}
 
-	//-------------------------------------------------
-	// Save an SVG
-	//
-	// this creates a DOMDocument object from an SVG
-	// source
-	//
-	// @param dom
-	// @return svg or ''
+	/**
+	 * Save SVG
+	 *
+	 * Convert a DOMDocument object containing an SVG
+	 * back into a string.
+	 *
+	 * @param \DOMDocument $dom DOM object.
+	 * @return string SVG.
+	 */
 	public static function save_svg(\DOMDocument $dom) {
 		try {
 			$svgs = $dom->getElementsByTagName('svg');
@@ -69,17 +73,18 @@ class dom {
 		}
 	}
 
-	//-------------------------------------------------
-	// Get Nodes by Class
-	//
-	// this will return all nodes containing a
-	// particular class. Note: it does not rely on
-	// xpath
-	//
-	// @param DOMDocument or DOMElement
-	// @param class(es) to look for
-	// @param match all? false for any
-	// @return nodes
+	/**
+	 * Get Nodes By Class
+	 *
+	 * This will return an array of DOMNode objects
+	 * containing the specified class(es). This does
+	 * not use DOMXPath.
+	 *
+	 * @param mixed $parent DOMDocument, DOMElement, etc.
+	 * @param string|array $class One or more classes.
+	 * @param bool $all Matches must contain *all* passed classes instead of *any*.
+	 * @return array Nodes.
+	 */
 	public static function get_nodes_by_class($parent, $class=null, bool $all=false) {
 		$nodes = array();
 
@@ -122,15 +127,19 @@ class dom {
 		return $nodes;
 	}
 
-	//-------------------------------------------------
-	// Parse Styles
-	//
-	// @param styles
-	// @return styles
+	/**
+	 * Parse Styles
+	 *
+	 * This will convert CSS text (from e.g. a <style> tag)
+	 * into an array broken down by rules and selectors.
+	 *
+	 * @param string $styles Styles.
+	 * @return array Parsed styles.
+	 */
 	public static function parse_css($styles='') {
 		ref\cast::string($styles, true);
 
-		//remove comments
+		// Remove comments.
 		while (false !== $start = mb::strpos($styles, '/*')) {
 			if (false !== $end = mb::strpos($styles, '*/')) {
 				$styles = str_replace(mb::substr($styles, $start, ($end - $start + 2)), '', $styles);
@@ -140,54 +149,55 @@ class dom {
 			}
 		}
 
-		//a few more types of comment wrappers we might see
+		// A few more types of comment wrappers we might see.
 		$styles = str_replace(
 			array('<!--','//-->','-->','//<![CDATA[','//]]>','<![CDATA[',']]>'),
 			'',
 			$styles
 		);
 
-		//standardize quoting
+		// Standardize quoting.
 		ref\sanitize::quotes($styles);
 		$styles = str_replace("'", '"', $styles);
 
-		//whitespace
+		// Whitespace.
 		ref\sanitize::whitespace($styles);
 
-		//early bail
+		// Early bail.
 		if (!strlen($styles)) {
 			return array();
 		}
 
-		//substitute brackets for unlikely characters to make parsing easier
-		//hopefully nobody's using braille in their stylesheets...
+		// Substitute brackets for unlikely characters to make parsing easier
+		// hopefully nobody's using braille in their stylesheets...
 		$styles = preg_replace('/\{(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', '⠁', $styles);
 		$styles = preg_replace('/\}(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', '⠈', $styles);
 
-		//put spaces behind and after parentheses
+		// Put spaces behind and after parentheses.
 		$styles = preg_replace('/\s*(\()\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ' (', $styles);
 		$styles = preg_replace('/\s*(\))\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ') ', $styles);
 
-		//make sure {} have no whitespace on either end
+		// Make sure {} have no whitespace on either end.
 		$styles = preg_replace('/\s*(⠁|⠈|@)\s*/u', '$1', $styles);
 
-		//push @ rules to their own lines
+		// Push @ rules to their own lines.
 		$styles = str_replace('@', "\n@", $styles);
 		$styles = explode("\n", $styles);
 		$styles = array_map('trim', $styles);
-		//push all rulesets to their own lines (leaving @media-type ones on their own for now)
+
+		// Push all rulesets to their own lines (leaving @media-type ones on their own for now).
 		foreach ($styles as $k=>$v) {
-			//@rule
+			// @rule.
 			if (mb::substr($styles[$k], 0, 1) === '@') {
-				//nested, like @media
+				// Nested, like @media.
 				if (mb::substr_count($styles[$k], '⠈⠈')) {
 					$styles[$k] = preg_replace('/(⠈{2,})/u', "$1\n", $styles[$k]);
 				}
-				//not nested, but has properties, like @font-face
+				// Not nested, but has properties, like @font-face.
 				elseif (false !== mb::strpos($styles[$k], '⠈')) {
 					$styles[$k] = str_replace('⠈', "⠈\n", $styles[$k]);
 				}
-				//just a line, like @import
+				// Just a line, like @import.
 				elseif (preg_match('/;(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/', $styles[$k])) {
 					$styles[$k] = preg_replace('/;(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ";\n", $styles[$k], 1);
 				}
@@ -197,14 +207,14 @@ class dom {
 					$tmp[$x] = str_replace('⠈', "⠈\n", $tmp[$x]);
 				}
 				$styles[$k] = implode("\n", $tmp);
-			}//end @
+			}// end @.
 			else {
 				$styles[$k] = str_replace('⠈', "⠈\n", $styles[$k]);
 			}
 		}
 		$styles = implode("\n", $styles);
 
-		//one more quick formatting thing, we can get rid of spaces between closing ) and punctuation
+		// One more quick formatting thing, we can get rid of spaces between closing ) and punctuation.
 		$styles = preg_replace('/\)\s(,|;)(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ')$1', $styles);
 
 		$styles = explode("\n", $styles);
@@ -212,19 +222,19 @@ class dom {
 
 		$out = array();
 
-		//one more time around!
+		// One more time around!
 		foreach ($styles as $k=>$v) {
 			$styles[$k] = trim($styles[$k]);
 
-			//nested rule
+			// Nested rule.
 			if (mb::substr($styles[$k], 0, 1) === '@' && mb::substr_count($styles[$k], '⠈⠈')) {
 				$tmp = constants::CSS_NESTED;
 
-				//what kind of @ is this?
+				// What kind of @ is this?
 				preg_match_all('/^@([a-z\-]+)/ui', $styles[$k], $matches);
 				$tmp['@'] = mb::strtolower($matches[1][0]);
 
-				//find the outermost bit
+				// Find the outermost bit.
 				if (false === $start = mb::strpos($styles[$k], '⠁')) {
 					continue;
 				}
@@ -234,30 +244,30 @@ class dom {
 				$chunk = str_replace(array('⠁','⠈'), array('{','}'), $chunk);
 				$tmp['nest'] = static::parse_css($chunk);
 
-				//and build the raw
+				// And build the raw.
 				$tmp['raw'] = $tmp['selector'] . '{';
 				foreach ($tmp['nest'] as $n) {
 					$tmp['raw'] .= $n['raw'];
 				}
 				$tmp['raw'] .= '}';
-			}//at rule
+			}// end @.
 			else {
 				$tmp = constants::CSS_FLAT;
 
 				if (mb::substr($styles[$k], 0, 1) === '@') {
-					//what kind of @ is this?
+					// What kind of @ is this?
 					preg_match_all('/^@([a-z\-]+)/ui', $styles[$k], $matches);
 					$tmp['@'] = mb::strtolower($matches[1][0]);
 				}
 
-				//a normal {k:v, k:v}
+				// A normal {k:v, k:v}.
 				preg_match_all('/^([^⠁]+)⠁([^⠈]*)⠈/u', $styles[$k], $matches);
 				if (count($matches[0])) {
-					//sorting out selectors is easy
+					// Sorting out selectors is easy.
 					$tmp['selectors'] = explode(',', $matches[1][0]);
 					$tmp['selectors'] = array_map('trim', $tmp['selectors']);
 
-					//rules a little trickier
+					// Rules a little trickier.
 					$rules = explode(';', $matches[2][0]);
 					$rules = array_map('trim', $rules);
 					$rules = array_filter($rules, 'strlen');
@@ -279,7 +289,7 @@ class dom {
 						}
 					}
 
-					//build the raw
+					// Build the raw.
 					$tmp['raw'] = implode(',', $tmp['selectors']) . '{';
 					foreach ($tmp['rules'] as $k=>$v) {
 						if ('__NONE__' === $k) {
@@ -291,7 +301,7 @@ class dom {
 					}
 					$tmp['raw'] .= '}';
 				}
-				//who knows
+				// Who knows?
 				else {
 					$styles[$k] = str_replace(array('⠁','⠈'), array('{','}'), $styles[$k]);
 					$styles[$k] = trim(rtrim(trim($styles[$k]), ';'));
@@ -309,34 +319,39 @@ class dom {
 		return $out;
 	}
 
-	//-------------------------------------------------
-	// Remove Nodes
-	//
-	// @param DOMNodeList
-	// @return true/false
+	/**
+	 * Remove Nodes
+	 *
+	 * @param \DOMNodeList $nodes Nodes.
+	 * @return bool True/false.
+	 */
 	public static function remove_nodes(\DOMNodeList $nodes) {
 		try {
 			while ($nodes->length) {
 				static::remove_node($nodes->item(0));
 			}
-			return true;
 		} catch (\Throwable $e) {
 			return false;
 		}
+
+		return true;
 	}
 
-	//-------------------------------------------------
-	// Remove Node
-	//
-	// @param DOMElement
-	// @return true/false
+	/**
+	 * Remove Node
+	 *
+	 * @param \DOMElement $node Node.
+	 * @return bool True/false.
+	 */
 	public static function remove_node(\DOMElement $node) {
 		try {
 			$node->parentNode->removeChild($node);
 		} catch (\Throwable $e) {
 			return false;
 		}
+
+		return true;
 	}
 }
 
-?>
+

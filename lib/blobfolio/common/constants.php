@@ -1,20 +1,21 @@
 <?php
-//---------------------------------------------------------------------
-// CONSTANTS
-//---------------------------------------------------------------------
-// this file contains constants that are used elsewhere so as not to
-// clog those files
-
-
+/**
+ * Constants.
+ *
+ * Constants are stored here to reduce clutter elsewhere.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
 namespace blobfolio\common;
 
 class constants {
 
-	//-------------------------------------------------
-	// Character Sets
+	// -------------------------------------------------
+	// Character Sets.
 
-	//accent=>regular
+	// Accented=>Regular.
 	const ACCENT_CHARS = array(
 		'ª'=>'a',	'º'=>'o',	'À'=>'A',	'Á'=>'A',	'Â'=>'A',	'Ã'=>'A',
 		'Ä'=>'A',	'Å'=>'A',	'Æ'=>'AE',	'Ç'=>'C',	'È'=>'E',	'É'=>'E',
@@ -70,89 +71,91 @@ class constants {
 		'ǚ'=>'u',	'Ǜ'=>'U',	'ǜ'=>'u'
 	);
 
-	//uncaught unicode upper=>lower
+	// Uncaught unicode upper=>lower.
+	// @codingStandardsIgnoreStart
 	const CASE_CHARS = array(
-		"\xC7\x85"=>"\xC7\x86",			//453=>454
-		"\xC7\x88"=>"\xC7\x89",			//456=>457
-		"\xC7\x8B"=>"\xC7\x8C",			//459=>460
-		"\xC7\xB2"=>"\xC7\xB3",			//498=>499
-		"\xCF\xB7"=>"\xCF\xB8",			//1015=>1016
-		"\xCF\xB9"=>"\xCF\xB2",			//1017=>1010
-		"\xCF\xBA"=>"\xCF\xBB",			//1018=>1019
-		"\xE1\xBE\x88"=>"\xE1\xBE\x80",	//8072=>8064
-		"\xE1\xBE\x89"=>"\xE1\xBE\x81",	//8073=>8065
-		"\xE1\xBE\x8A"=>"\xE1\xBE\x82",	//8074=>8066
-		"\xE1\xBE\x8B"=>"\xE1\xBE\x83",	//8075=>8067
-		"\xE1\xBE\x8C"=>"\xE1\xBE\x84",	//8076=>8068
-		"\xE1\xBE\x8D"=>"\xE1\xBE\x85",	//8077=>8069
-		"\xE1\xBE\x8E"=>"\xE1\xBE\x86",	//8078=>8070
-		"\xE1\xBE\x8F"=>"\xE1\xBE\x87",	//8079=>8071
-		"\xE1\xBE\x98"=>"\xE1\xBE\x90",	//8088=>8080
-		"\xE1\xBE\x99"=>"\xE1\xBE\x91",	//8089=>8081
-		"\xE1\xBE\x9A"=>"\xE1\xBE\x92",	//8090=>8082
-		"\xE1\xBE\x9B"=>"\xE1\xBE\x93",	//8091=>8083
-		"\xE1\xBE\x9C"=>"\xE1\xBE\x94",	//8092=>8084
-		"\xE1\xBE\x9D"=>"\xE1\xBE\x95",	//8093=>8085
-		"\xE1\xBE\x9E"=>"\xE1\xBE\x96",	//8094=>8086
-		"\xE1\xBE\x9F"=>"\xE1\xBE\x97",	//8095=>8087
-		"\xE1\xBE\xA8"=>"\xE1\xBE\xA0",	//8104=>8096
-		"\xE1\xBE\xA9"=>"\xE1\xBE\xA1",	//8105=>8097
-		"\xE1\xBE\xAA"=>"\xE1\xBE\xA2",	//8106=>8098
-		"\xE1\xBE\xAB"=>"\xE1\xBE\xA3",	//8107=>8099
-		"\xE1\xBE\xAC"=>"\xE1\xBE\xA4",	//8108=>8100
-		"\xE1\xBE\xAD"=>"\xE1\xBE\xA5",	//8109=>8101
-		"\xE1\xBE\xAE"=>"\xE1\xBE\xA6",	//8110=>8102
-		"\xE1\xBE\xAF"=>"\xE1\xBE\xA7",	//8111=>8103
-		"\xE1\xBE\xBC"=>"\xE1\xBE\xB3",	//8124=>8115
-		"\xE1\xBF\x8C"=>"\xE1\xBF\x83",	//8140=>8131
-		"\xE1\xBF\xBC"=>"\xE1\xBF\xB3",	//8188=>8179
-		"\xE2\x85\xA0"=>"\xE2\x85\xB0",	//8544=>8560
-		"\xE2\x85\xA1"=>"\xE2\x85\xB1",	//8545=>8561
-		"\xE2\x85\xA2"=>"\xE2\x85\xB2",	//8546=>8562
-		"\xE2\x85\xA3"=>"\xE2\x85\xB3",	//8547=>8563
-		"\xE2\x85\xA4"=>"\xE2\x85\xB4",	//8548=>8564
-		"\xE2\x85\xA5"=>"\xE2\x85\xB5",	//8549=>8565
-		"\xE2\x85\xA6"=>"\xE2\x85\xB6",	//8550=>8566
-		"\xE2\x85\xA7"=>"\xE2\x85\xB7",	//8551=>8567
-		"\xE2\x85\xA8"=>"\xE2\x85\xB8",	//8552=>8568
-		"\xE2\x85\xA9"=>"\xE2\x85\xB9",	//8553=>8569
-		"\xE2\x85\xAA"=>"\xE2\x85\xBA",	//8554=>8570
-		"\xE2\x85\xAB"=>"\xE2\x85\xBB",	//8555=>8571
-		"\xE2\x85\xAC"=>"\xE2\x85\xBC",	//8556=>8572
-		"\xE2\x85\xAD"=>"\xE2\x85\xBD",	//8557=>8573
-		"\xE2\x85\xAE"=>"\xE2\x85\xBE",	//8558=>8574
-		"\xE2\x85\xAF"=>"\xE2\x85\xBF",	//8559=>8575
-		"\xE2\x92\xB6"=>"\xE2\x93\x90",	//9398=>9424
-		"\xE2\x92\xB7"=>"\xE2\x93\x91",	//9399=>9425
-		"\xE2\x92\xB8"=>"\xE2\x93\x92",	//9400=>9426
-		"\xE2\x92\xB9"=>"\xE2\x93\x93",	//9401=>9427
-		"\xE2\x92\xBA"=>"\xE2\x93\x94",	//9402=>9428
-		"\xE2\x92\xBB"=>"\xE2\x93\x95",	//9403=>9429
-		"\xE2\x92\xBC"=>"\xE2\x93\x96",	//9404=>9430
-		"\xE2\x92\xBD"=>"\xE2\x93\x97",	//9405=>9431
-		"\xE2\x92\xBE"=>"\xE2\x93\x98",	//9406=>9432
-		"\xE2\x92\xBF"=>"\xE2\x93\x99",	//9407=>9433
-		"\xE2\x93\x80"=>"\xE2\x93\x9A",	//9408=>9434
-		"\xE2\x93\x81"=>"\xE2\x93\x9B",	//9409=>9435
-		"\xE2\x93\x82"=>"\xE2\x93\x9C",	//9410=>9436
-		"\xE2\x93\x83"=>"\xE2\x93\x9D",	//9411=>9437
-		"\xE2\x93\x84"=>"\xE2\x93\x9E",	//9412=>9438
-		"\xE2\x93\x85"=>"\xE2\x93\x9F",	//9413=>9439
-		"\xE2\x93\x86"=>"\xE2\x93\xA0",	//9414=>9440
-		"\xE2\x93\x87"=>"\xE2\x93\xA1",	//9415=>9441
-		"\xE2\x93\x88"=>"\xE2\x93\xA2",	//9416=>9442
-		"\xE2\x93\x89"=>"\xE2\x93\xA3",	//9417=>9443
-		"\xE2\x93\x8A"=>"\xE2\x93\xA4",	//9418=>9444
-		"\xE2\x93\x8B"=>"\xE2\x93\xA5",	//9419=>9445
-		"\xE2\x93\x8C"=>"\xE2\x93\xA6",	//9420=>9446
-		"\xE2\x93\x8D"=>"\xE2\x93\xA7",	//9421=>9447
-		"\xE2\x93\x8E"=>"\xE2\x93\xA8",	//9422=>9448
-		"\xE2\x93\x8F"=>"\xE2\x93\xA9",	//9423=>9449
-		"\xF0\x90\xA6"=>"\xF0\x91\x8E",	//66598=>66638
-		"\xF0\x90\xA7"=>"\xF0\x91\x8F"	//66599=>66639
+		"\xC7\x85"=>"\xC7\x86",			// 453=>454
+		"\xC7\x88"=>"\xC7\x89",			// 456=>457
+		"\xC7\x8B"=>"\xC7\x8C",			// 459=>460
+		"\xC7\xB2"=>"\xC7\xB3",			// 498=>499
+		"\xCF\xB7"=>"\xCF\xB8",			// 1015=>1016
+		"\xCF\xB9"=>"\xCF\xB2",			// 1017=>1010
+		"\xCF\xBA"=>"\xCF\xBB",			// 1018=>1019
+		"\xE1\xBE\x88"=>"\xE1\xBE\x80",	// 8072=>8064
+		"\xE1\xBE\x89"=>"\xE1\xBE\x81",	// 8073=>8065
+		"\xE1\xBE\x8A"=>"\xE1\xBE\x82",	// 8074=>8066
+		"\xE1\xBE\x8B"=>"\xE1\xBE\x83",	// 8075=>8067
+		"\xE1\xBE\x8C"=>"\xE1\xBE\x84",	// 8076=>8068
+		"\xE1\xBE\x8D"=>"\xE1\xBE\x85",	// 8077=>8069
+		"\xE1\xBE\x8E"=>"\xE1\xBE\x86",	// 8078=>8070
+		"\xE1\xBE\x8F"=>"\xE1\xBE\x87",	// 8079=>8071
+		"\xE1\xBE\x98"=>"\xE1\xBE\x90",	// 8088=>8080
+		"\xE1\xBE\x99"=>"\xE1\xBE\x91",	// 8089=>8081
+		"\xE1\xBE\x9A"=>"\xE1\xBE\x92",	// 8090=>8082
+		"\xE1\xBE\x9B"=>"\xE1\xBE\x93",	// 8091=>8083
+		"\xE1\xBE\x9C"=>"\xE1\xBE\x94",	// 8092=>8084
+		"\xE1\xBE\x9D"=>"\xE1\xBE\x95",	// 8093=>8085
+		"\xE1\xBE\x9E"=>"\xE1\xBE\x96",	// 8094=>8086
+		"\xE1\xBE\x9F"=>"\xE1\xBE\x97",	// 8095=>8087
+		"\xE1\xBE\xA8"=>"\xE1\xBE\xA0",	// 8104=>8096
+		"\xE1\xBE\xA9"=>"\xE1\xBE\xA1",	// 8105=>8097
+		"\xE1\xBE\xAA"=>"\xE1\xBE\xA2",	// 8106=>8098
+		"\xE1\xBE\xAB"=>"\xE1\xBE\xA3",	// 8107=>8099
+		"\xE1\xBE\xAC"=>"\xE1\xBE\xA4",	// 8108=>8100
+		"\xE1\xBE\xAD"=>"\xE1\xBE\xA5",	// 8109=>8101
+		"\xE1\xBE\xAE"=>"\xE1\xBE\xA6",	// 8110=>8102
+		"\xE1\xBE\xAF"=>"\xE1\xBE\xA7",	// 8111=>8103
+		"\xE1\xBE\xBC"=>"\xE1\xBE\xB3",	// 8124=>8115
+		"\xE1\xBF\x8C"=>"\xE1\xBF\x83",	// 8140=>8131
+		"\xE1\xBF\xBC"=>"\xE1\xBF\xB3",	// 8188=>8179
+		"\xE2\x85\xA0"=>"\xE2\x85\xB0",	// 8544=>8560
+		"\xE2\x85\xA1"=>"\xE2\x85\xB1",	// 8545=>8561
+		"\xE2\x85\xA2"=>"\xE2\x85\xB2",	// 8546=>8562
+		"\xE2\x85\xA3"=>"\xE2\x85\xB3",	// 8547=>8563
+		"\xE2\x85\xA4"=>"\xE2\x85\xB4",	// 8548=>8564
+		"\xE2\x85\xA5"=>"\xE2\x85\xB5",	// 8549=>8565
+		"\xE2\x85\xA6"=>"\xE2\x85\xB6",	// 8550=>8566
+		"\xE2\x85\xA7"=>"\xE2\x85\xB7",	// 8551=>8567
+		"\xE2\x85\xA8"=>"\xE2\x85\xB8",	// 8552=>8568
+		"\xE2\x85\xA9"=>"\xE2\x85\xB9",	// 8553=>8569
+		"\xE2\x85\xAA"=>"\xE2\x85\xBA",	// 8554=>8570
+		"\xE2\x85\xAB"=>"\xE2\x85\xBB",	// 8555=>8571
+		"\xE2\x85\xAC"=>"\xE2\x85\xBC",	// 8556=>8572
+		"\xE2\x85\xAD"=>"\xE2\x85\xBD",	// 8557=>8573
+		"\xE2\x85\xAE"=>"\xE2\x85\xBE",	// 8558=>8574
+		"\xE2\x85\xAF"=>"\xE2\x85\xBF",	// 8559=>8575
+		"\xE2\x92\xB6"=>"\xE2\x93\x90",	// 9398=>9424
+		"\xE2\x92\xB7"=>"\xE2\x93\x91",	// 9399=>9425
+		"\xE2\x92\xB8"=>"\xE2\x93\x92",	// 9400=>9426
+		"\xE2\x92\xB9"=>"\xE2\x93\x93",	// 9401=>9427
+		"\xE2\x92\xBA"=>"\xE2\x93\x94",	// 9402=>9428
+		"\xE2\x92\xBB"=>"\xE2\x93\x95",	// 9403=>9429
+		"\xE2\x92\xBC"=>"\xE2\x93\x96",	// 9404=>9430
+		"\xE2\x92\xBD"=>"\xE2\x93\x97",	// 9405=>9431
+		"\xE2\x92\xBE"=>"\xE2\x93\x98",	// 9406=>9432
+		"\xE2\x92\xBF"=>"\xE2\x93\x99",	// 9407=>9433
+		"\xE2\x93\x80"=>"\xE2\x93\x9A",	// 9408=>9434
+		"\xE2\x93\x81"=>"\xE2\x93\x9B",	// 9409=>9435
+		"\xE2\x93\x82"=>"\xE2\x93\x9C",	// 9410=>9436
+		"\xE2\x93\x83"=>"\xE2\x93\x9D",	// 9411=>9437
+		"\xE2\x93\x84"=>"\xE2\x93\x9E",	// 9412=>9438
+		"\xE2\x93\x85"=>"\xE2\x93\x9F",	// 9413=>9439
+		"\xE2\x93\x86"=>"\xE2\x93\xA0",	// 9414=>9440
+		"\xE2\x93\x87"=>"\xE2\x93\xA1",	// 9415=>9441
+		"\xE2\x93\x88"=>"\xE2\x93\xA2",	// 9416=>9442
+		"\xE2\x93\x89"=>"\xE2\x93\xA3",	// 9417=>9443
+		"\xE2\x93\x8A"=>"\xE2\x93\xA4",	// 9418=>9444
+		"\xE2\x93\x8B"=>"\xE2\x93\xA5",	// 9419=>9445
+		"\xE2\x93\x8C"=>"\xE2\x93\xA6",	// 9420=>9446
+		"\xE2\x93\x8D"=>"\xE2\x93\xA7",	// 9421=>9447
+		"\xE2\x93\x8E"=>"\xE2\x93\xA8",	// 9422=>9448
+		"\xE2\x93\x8F"=>"\xE2\x93\xA9",	// 9423=>9449
+		"\xF0\x90\xA6"=>"\xF0\x91\x8E",	// 66598=>66638
+		"\xF0\x90\xA7"=>"\xF0\x91\x8F"	// 66599=>66639
 	);
+	// @codingStandardsIgnoreEnd
 
-	//weird numbers
+	// Weird numbers.
 	const NUMBER_CHARS = array(
 		"\xef\xbc\x90"=>0,
 		"\xef\xbc\x91"=>1,
@@ -196,35 +199,35 @@ class constants {
 		"\xe1\xa0\x99"=>9,
 	);
 
-	//quote and apostrophe curly=>straight
+	// Quote and apostrophe curly=>straight.
 	const QUOTE_CHARS = array(
-		//Windows codepage 1252
-		"\xC2\x82"=>"'",		// U+0082⇒U+201A single low-9 quotation mark
-		"\xC2\x84"=>'"',		// U+0084⇒U+201E double low-9 quotation mark
-		"\xC2\x8B"=>"'",		// U+008B⇒U+2039 single left-pointing angle quotation mark
-		"\xC2\x91"=>"'",		// U+0091⇒U+2018 left single quotation mark
-		"\xC2\x92"=>"'",		// U+0092⇒U+2019 right single quotation mark
-		"\xC2\x93"=>'"',		// U+0093⇒U+201C left double quotation mark
-		"\xC2\x94"=>'"',		// U+0094⇒U+201D right double quotation mark
-		"\xC2\x9B"=>"'",		// U+009B⇒U+203A single right-pointing angle quotation mark
+		// Windows codepage 1252.
+		"\xC2\x82"=>"'",		// U+0082⇒U+201A single low-9 quotation mark.
+		"\xC2\x84"=>'"',		// U+0084⇒U+201E double low-9 quotation mark.
+		"\xC2\x8B"=>"'",		// U+008B⇒U+2039 single left-pointing angle quotation mark.
+		"\xC2\x91"=>"'",		// U+0091⇒U+2018 left single quotation mark.
+		"\xC2\x92"=>"'",		// U+0092⇒U+2019 right single quotation mark.
+		"\xC2\x93"=>'"',		// U+0093⇒U+201C left double quotation mark.
+		"\xC2\x94"=>'"',		// U+0094⇒U+201D right double quotation mark.
+		"\xC2\x9B"=>"'",		// U+009B⇒U+203A single right-pointing angle quotation mark.
 
-		//Regular Unicode		// U+0022 quotation mark (")
-								// U+0027 apostrophe     (')
-		"\xC2\xAB"=>'"',		// U+00AB left-pointing double angle quotation mark
-		"\xC2\xBB"=>'"',		// U+00BB right-pointing double angle quotation mark
-		"\xE2\x80\x98"=>"'",	// U+2018 left single quotation mark
-		"\xE2\x80\x99"=>"'",	// U+2019 right single quotation mark
-		"\xE2\x80\x9A"=>"'",	// U+201A single low-9 quotation mark
-		"\xE2\x80\x9B"=>"'",	// U+201B single high-reversed-9 quotation mark
-		"\xE2\x80\x9C"=>'"',	// U+201C left double quotation mark
-		"\xE2\x80\x9D"=>'"',	// U+201D right double quotation mark
-		"\xE2\x80\x9E"=>'"',	// U+201E double low-9 quotation mark
-		"\xE2\x80\x9F"=>'"',	// U+201F double high-reversed-9 quotation mark
-		"\xE2\x80\xB9"=>"'",	// U+2039 single left-pointing angle quotation mark
-		"\xE2\x80\xBA"=>"'",	// U+203A single right-pointing angle quotation mark
+		// Regular Unicode.		// U+0022 quotation mark (").
+								// U+0027 apostrophe     (').
+		"\xC2\xAB"=>'"',		// U+00AB left-pointing double angle quotation mark.
+		"\xC2\xBB"=>'"',		// U+00BB right-pointing double angle quotation mark.
+		"\xE2\x80\x98"=>"'",	// U+2018 left single quotation mark.
+		"\xE2\x80\x99"=>"'",	// U+2019 right single quotation mark.
+		"\xE2\x80\x9A"=>"'",	// U+201A single low-9 quotation mark.
+		"\xE2\x80\x9B"=>"'",	// U+201B single high-reversed-9 quotation mark.
+		"\xE2\x80\x9C"=>'"',	// U+201C left double quotation mark.
+		"\xE2\x80\x9D"=>'"',	// U+201D right double quotation mark.
+		"\xE2\x80\x9E"=>'"',	// U+201E double low-9 quotation mark.
+		"\xE2\x80\x9F"=>'"',	// U+201F double high-reversed-9 quotation mark.
+		"\xE2\x80\xB9"=>"'",	// U+2039 single left-pointing angle quotation mark.
+		"\xE2\x80\xBA"=>"'",	// U+203A single right-pointing angle quotation mark.
 	);
 
-	//characters to use in random string
+	// Characters to use in random string.
 	const RANDOM_CHARS = array(
 		'A','B','C','D','E','F','G','H','J','K','L',
 		'M','N','P','Q','R','S','T','U','V','W','X',
@@ -233,15 +236,15 @@ class constants {
 
 
 
-	//-------------------------------------------------
-	// MIME Types
+	// -------------------------------------------------
+	// MIME Types.
 
 	const MIME_DEFAULT = 'application/octet-stream';
 
 
 
-	//-------------------------------------------------
-	// Geography
+	// -------------------------------------------------
+	// Geography.
 
 	const COUNTRIES = array(
 		'US'=>array(
@@ -973,10 +976,10 @@ class constants {
 
 
 
-	//-------------------------------------------------
-	// Miscellaneous
+	// -------------------------------------------------
+	// Miscellaneous.
 
-	//from e.g. parse_url
+	// From e.g. parse_url.
 	const URL_PARTS = array(
 		'scheme'=>'',
 		'host'=>'',
@@ -990,32 +993,32 @@ class constants {
 
 	const SVG_HEADER = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
-	//svg attribute corrections
+	// SVG attribute corrections.
 	const SVG_ATTR_CORRECTIONS = array(
 		'xmlns="&ns_svg;"'=>'xmlns="http://www.w3.org/2000/svg"',
 		'xmlns:xlink="&ns_xlink;"'=>'xmlns:xlink="http://www.w3.org/1999/xlink"',
 		'id="Layer_1"'=>''
 	);
 
-	//clean svg options
+	// Clean svg options.
 	const SVG_CLEAN_OPTIONS = array(
-		'clean_styles'=>false,		//consistent formatting, group like rules
-		'fix_dimensions'=>false,	//supply missing width, height, viewBox
-		'namespace'=>false,			//add an svg: namespace
-		'random_id'=>false,			//randomize IDs
-		'rewrite_styles'=>false,	//redo classes for overlaps
-		'sanitize'=>true,			//remove invalid/dangerous bits
-		'save'=>false,				//overwrite the original file with a cleaned version
-		'strip_data'=>false,		//remove data-X attributes
-		'strip_id'=>false,			//remove all IDs
-		'strip_style'=>false,		//remove all styles
-		'strip_title'=>false,		//remove all titles
-		'whitelist_attr'=>array(),	//additional attributes to allow
-		'whitelist_tags'=>array()	//additional tags to allow
+		'clean_styles'=>false,		// Consistent formatting, group like rules.
+		'fix_dimensions'=>false,	// Supply missing width, height, viewBox.
+		'namespace'=>false,			// Add an svg: namespace.
+		'random_id'=>false,			// Randomize IDs.
+		'rewrite_styles'=>false,	// Redo classes for overlaps.
+		'sanitize'=>true,			// Remove invalid/dangerous bits.
+		'save'=>false,				// Overwrite the original file with a cleaned version.
+		'strip_data'=>false,		// Remove data-X attributes.
+		'strip_id'=>false,			// Remove all IDs.
+		'strip_style'=>false,		// Remove all styles.
+		'strip_title'=>false,		// Remove all titles.
+		'whitelist_attr'=>array(),	// Additional attributes to allow.
+		'whitelist_tags'=>array()	// Additional tags to allow.
 	);
 
-	//svg whitelisted tags
-	//https://developer.mozilla.org/en-US/docs/Web/SVG/Element
+	// SVG whitelisted tags.
+	/* @see {https://developer.mozilla.org/en-US/docs/Web/SVG/Element} */
 	const SVG_WHITELIST_TAGS = array(
 		'a', 'altGlyph', 'altGlyphDef', 'altGlyphItem', 'animate', 'animateColor',
 		'animateMotion', 'animateTransform', 'audio', 'canvas', 'circle', 'clipPath',
@@ -1034,8 +1037,8 @@ class constants {
 		'unknown', 'use', 'video', 'view', 'vkern'
 	);
 
-	//svg whitelisted attributes
-	//https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute
+	// SVG whitelisted attributes
+	/* @see {https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute} */
 	const SVG_WHITELIST_ATTR = array(
 		'accent-height', 'accumulate', 'additive', 'alignment-baseline', 'allowReorder',
 		'alphabetic', 'amplitude', 'arabic-form', 'ascent', 'attributeName',
@@ -1083,22 +1086,22 @@ class constants {
 		'y2', 'yChannelSelector', 'z', 'zoomAndPan'
 	);
 
-	//blank image
+	// Blank image.
 	const BLANK_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABA
 AACAkQBADs=';
 
-	//default binary paths for WebP
+	// Default binary paths for WebP.
 	const CWEBP = '/usr/bin/cwebp';
 	const GIF2WEBP = '/usr/bin/gif2webp';
 
-	//excerpt arguments
+	// Excerpt arguments.
 	const EXCERPT = array(
 		'length'=>200,
 		'suffix'=>'…',
 		'unit'=>'character'
 	);
 
-	//truthy bools
+	// Truthy bools.
 	const TRUE_BOOLS = array(
 		'1',
 		'on',
@@ -1106,7 +1109,7 @@ AACAkQBADs=';
 		'yes'
 	);
 
-	//falsey bools
+	// Falsey bools.
 	const FALSE_BOOLS = array(
 		'0',
 		'off',
@@ -1114,7 +1117,7 @@ AACAkQBADs=';
 		'no'
 	);
 
-	//flat CSS rule
+	// Flat CSS rule.
 	const CSS_FLAT = array(
 		'@'=>false,
 		'nested'=>false,
@@ -1123,7 +1126,7 @@ AACAkQBADs=';
 		'raw'=>''
 	);
 
-	//nested CSS rule
+	// Nested CSS rule.
 	const CSS_NESTED = array(
 		'@'=>false,
 		'nested'=>true,
@@ -1133,4 +1136,4 @@ AACAkQBADs=';
 	);
 }
 
-?>
+

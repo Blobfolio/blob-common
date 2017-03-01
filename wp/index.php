@@ -1,58 +1,48 @@
 <?php
-/*
-Plugin Name: Tutan Common
-Plugin URI: https://github.com/Blobfolio/blob-common
-Description: Functions to assist common theme operations.
-Version: 7.1.3
-Author: Blobfolio, LLC
-Author URI: https://blobfolio.com/
-License: WTFPL
-License URI: http://www.wtfpl.net/
+/**
+ * Functions to assist common theme operations.
+ *
+ * @package blobfolio/common
+ * @version 7.1.3
+ *
+ * @wordpress-plugin
+ * Plugin Name: Tutan Common
+ * Plugin URI: https://github.com/Blobfolio/blob-common
+ * Description: Functions to assist common theme operations.
+ * Author: Blobfolio, LLC
+ * Author URI: https://blobfolio.com/
+ * License: WTFPL
+ * License URI: http://www.wtfpl.net/
+ */
 
-	Copyright © 2017  Blobfolio, LLC  (email: hello@blobfolio.com)
-
-	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-	Version 2, December 2004
-
-	Copyright (C) 2017 Sam Hocevar <sam@hocevar.net>
-
-	Everyone is permitted to copy and distribute verbatim or modified
-	copies of this license document, and changing it is allowed as long
-	as the name is changed.
-
-	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
-	0. You just DO WHAT THE FUCK YOU WANT TO.
-*/
-
-//this must be called through WordPress
+// This must be called through WordPress.
 if (!defined('ABSPATH')) {
 	exit;
 }
 
 
 
-//the root path to the plugin
+// The root path to the plugin.
 define('BLOB_COMMON_ROOT', dirname(__FILE__));
-@require_once(BLOB_COMMON_ROOT . '/lib/vendor/autoload.php');		//autoload
+@require_once(BLOB_COMMON_ROOT . '/lib/vendor/autoload.php');	// Autoload.
 
 
 
 
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // SELF AWARENESS/UPDATES
-//---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // The plugin is not hosted in the WP plugin repository, so we need
 // some helpers to help it help itself. :)
 //
 // To reduce overhead, update checks are throttled to once per hour.
 
-//-------------------------------------------------
-// Get (Installed) Plugin Info
-//
-// @param key (optional)
-// @return info (all) or tidbit
+/**
+ * Get Plugin Info (Local)
+ *
+ * @param string $key Key.
+ * @return mixed Info.
+ */
 function blobcommon_get_info($key = null) {
 	static $info;
 
@@ -61,31 +51,31 @@ function blobcommon_get_info($key = null) {
 		$info = get_plugin_data(__FILE__);
 	}
 
-	//return what corresponds to $key
+	// Return what corresponds to $key.
 	if (!is_null($key)) {
 		return array_key_exists($key, $info) ? $info[$key] : false;
 	}
 
-	//return the whole thing
+	// Return the whole thing.
 	return $info;
 }
 
-//-------------------------------------------------
-// Get Remote Branch
-//
-// current and legacy versions have different
-// operational requirements, so we need to point
-// installs to the correct file
-//
-// @param n/a
-// @return JSON URL
+/**
+ * Get Remote Branch
+ *
+ * Current and legacy versions have different operational
+ * requirements, so we need to point installs to the
+ * correct file.
+ *
+ * @return string Branch URL.
+ */
 function blobcommon_get_release_branch() {
 	$branch = 'current';
 
-	//we won't downgrade if already on the current branch
+	// We won't downgrade if already on the current branch.
 	$current = blobcommon_get_installed_version();
 	if (version_compare($current, '7.0.0') < 0) {
-		//if PHP is old, legacy it is!
+		// If PHP is old, legacy it is!
 		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
 			$branch = 'legacy';
 		}
@@ -99,11 +89,12 @@ function blobcommon_get_release_branch() {
 	}
 }
 
-//-------------------------------------------------
-// Get (Remote) Plugin Info
-//
-// @param key (optional)
-// @return info (all) or tidbit
+/**
+ * Get Plugin Info (Remote)
+ *
+ * @param string $key Key.
+ * @return mixed Info.
+ */
 function blobcommon_get_remote_info($key = null) {
 	static $info;
 	$transient_key = 'blobcommon_remote_info';
@@ -127,20 +118,20 @@ function blobcommon_get_remote_info($key = null) {
 		}
 	}
 
-	//return what corresponds to $key
+	// Return what corresponds to $key.
 	if (!is_null($key)) {
 		return array_key_exists($key, $info) ? $info[$key] : false;
 	}
 
-	//return the whole thing
+	// Return the whole thing.
 	return $info;
 }
 
-//-------------------------------------------------
-// Get Installed Version
-//
-// @param n/a
-// @return version
+/**
+ * Get Installed Version
+ *
+ * @return string Version.
+ */
 function blobcommon_get_installed_version() {
 	static $version;
 
@@ -151,11 +142,11 @@ function blobcommon_get_installed_version() {
 	return $version;
 }
 
-//-------------------------------------------------
-// Get Latest Version
-//
-// @param n/a
-// @return version
+/**
+ * Get Latest Version
+ *
+ * @return string Version.
+ */
 function blobcommon_get_latest_version() {
 	static $version;
 
@@ -166,28 +157,29 @@ function blobcommon_get_latest_version() {
 	return $version;
 }
 
-//-------------------------------------------------
-// Check For Updates
-//
-// @param $options
-// @return $options
+/**
+ * Check for Updates
+ *
+ * @param mixed $option Option.
+ * @return mixed Option.
+ */
 function blobcommon_check_update($option) {
 
-	//make sure arguments make sense
+	// Make sure arguments make sense.
 	if (!is_object($option)) {
 		return $option;
 	}
 
-	//local and remote versions
+	// Local and remote versions.
 	$installed = blobcommon_get_installed_version();
 	$remote = blobcommon_get_latest_version();
 
-	//bad data and/or match, nothing to do!
+	// Bad data and/or match, nothing to do!
 	if (false === $remote || false === $installed || $remote <= $installed) {
 		return $option;
 	}
 
-	//set up the entry
+	// Set up the entry.
 	$path = 'blob-common/index.php';
 	if (!array_key_exists($path, $option->response)) {
 		$option->response[$path] = new stdClass();
@@ -200,12 +192,12 @@ function blobcommon_check_update($option) {
 	$option->response[$path]->new_version = $remote;
 	$option->response[$path]->id = 0;
 
-	//done
+	// Done.
 	return $option;
 }
 add_filter('transient_update_plugins', 'blobcommon_check_update');
 add_filter('site_transient_update_plugins', 'blobcommon_check_update');
 
-//--------------------------------------------------------------------- end updates
+// --------------------------------------------------------------------- end updates
 
-?>
+

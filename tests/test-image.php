@@ -1,15 +1,25 @@
 <?php
-//---------------------------------------------------------------------
-// image:: tests
-//---------------------------------------------------------------------
+/**
+ * Image tests.
+ *
+ * PHPUnit tests for \blobfolio\common\image.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
+/**
+ * Test Suite
+ */
 class image_tests extends \PHPUnit\Framework\TestCase {
 
 	const ASSETS = __DIR__ . '/assets/';
 
-	//-------------------------------------------------
-	// image::clean_svg()
-
+	/**
+	 * ::clean_svg()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_clean_svg() {
 		$svg = \blobfolio\common\image::clean_svg(self::ASSETS . 'enshrined.svg');
 
@@ -17,9 +27,11 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, strpos($svg, '<script'));
 	}
 
-	//-------------------------------------------------
-	// image::has_webp()
-
+	/**
+	 * ::has_webp()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_has_webp() {
 		$cwebp = self::ASSETS . 'webp/bin/cwebp';
 		$gif2webp = self::ASSETS . 'webp/bin/gif2webp';
@@ -27,9 +39,11 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, \blobfolio\common\image::has_webp($cwebp, $gif2webp));
 	}
 
-	//-------------------------------------------------
-	// image::svg_dimensions()
-
+	/**
+	 * ::svg_dimensions()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_svg_dimensions() {
 		$svg = static::ASSETS . 'monogram-inkscape.svg';
 		$dimensions = array('width'=>330.056,'height'=>495.558);
@@ -38,9 +52,11 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($dimensions, \blobfolio\common\image::svg_dimensions(file_get_contents($svg)));
 	}
 
-	//-------------------------------------------------
-	// image::to_webp()
-
+	/**
+	 * ::to_webp()
+	 *
+	 * @return void Nothing.
+	 */
 	function test_to_webp() {
 		$in = static::ASSETS . 'space.jpg';
 
@@ -60,4 +76,4 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	}
 }
 
-?>
+

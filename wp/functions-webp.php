@@ -1,26 +1,31 @@
 <?php
-//---------------------------------------------------------------------
-// FUNCTIONS: WEBP
-//---------------------------------------------------------------------
-// WebP compression is a lot better than anything WordPress comes up
-// with on its own. Unfortunately browser support for this format is
-// incomplete. These functions cause WordPress to generate WebP copies
-// of any requested image. It also provides alternative SRC/SRCSET
-// functions that can return both WebP and original sources (for
-// e.g. <picture> elements) so your theme can serve lighter copies
-// to people who can view them.
-//
-// To enable WebP features, add the following to wp-config:
-// define('WP_WEBP_IMAGES', true);
-//
-// Note: WebP binaries must be installed on the server and accessible
-// to WordPress or else these functions will essentially do nothing.
-//
-// See README for more information, gotchas, etc.
+/**
+ * WebP Functions
+ *
+ * WebP compression is a lot better than anything WordPress
+ * uses on its own. Browser support isn't quite there, but
+ * this plugin provides a number of functions for wrapping
+ * WebP and JPG/GIF/PNG sources in <picture> elements,
+ * which are supported. The browser will then pick the
+ * first source it can handle for display.
+ *
+ * To enable WebP features, add the following to wp-config:
+ * define('WP_WEBP_IMAGES', true);
+ *
+ * Note: WebP binaries must be installed and accessible to
+ * WordPress or else the generation functions will fail
+ * silently.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
 
+// This must be called through WordPress.
+if (!defined('ABSPATH')) {
+	exit;
+}
 
-
-//binary paths
+// Binary paths.
 if (!defined('WP_WEBP_CWEBP')) {
 	define('WP_WEBP_CWEBP', \blobfolio\common\constants::CWEBP);
 }
@@ -28,14 +33,12 @@ if (!defined('WP_WEBP_GIF2WEBP')) {
 	define('WP_WEBP_GIF2WEBP', \blobfolio\common\constants::GIF2WEBP);
 }
 
-
-
-//-------------------------------------------------
-// Can the server do the WebP stuff?
-//
-// @param n/a
-// @return true/false
 if (!function_exists('common_supports_webp')) {
+	/**
+	 * Is WebP Support Probable
+	 *
+	 * @return bool True/False.
+	 */
 	function common_supports_webp() {
 		static $support;
 
@@ -47,15 +50,16 @@ if (!function_exists('common_supports_webp')) {
 	}
 }
 
-//-------------------------------------------------
-// WebP Cleanup
-//
-// when an attachment image is deleted, delete the
-// corresponding webp
-//
-// @param attachment_id
-// @return true
 if (!function_exists('common_webp_cleanup')) {
+	/**
+	 * WebP Cleanup
+	 *
+	 * Delete any WebP thumbnails when the source
+	 * image is removed from the Media Library.
+	 *
+	 * @param int $attachment_id Attachment ID.
+	 * @return bool True/False.
+	 */
 	function common_webp_cleanup($attachment_id) {
 		if (false === $image = get_attached_file($attachment_id)) {
 			return false;
@@ -64,10 +68,10 @@ if (!function_exists('common_webp_cleanup')) {
 		$stub['filename'];
 		$path = $stub['dirname'];
 
-		//find any matching webps
+		// Find any matching WebPs.
 		if (false !== ($dir = opendir($path))) {
 			while (false !== ($thumb = readdir($dir))) {
-				//wrong base
+				// Wrong base.
 				if (common_substr($thumb, 0, common_strlen($stub['filename'])) !== $stub['filename']) {
 					continue;
 				}
@@ -88,12 +92,20 @@ if (!function_exists('common_webp_cleanup')) {
 	}
 }
 
-//-------------------------------------------------
-// WebP src
-//
-// @param args
-// @return picture or false
 if (!function_exists('common_get_webp_src')) {
+	/**
+	 * Generate <picture> Element Using Single
+	 * Source (and WebP Sister)
+	 *
+	 * @param mixed $args Arguments.
+	 *
+	 * @arg int $attachment_id Attachment ID.
+	 * @arg string $size Size.
+	 * @arg string $alt Alternative text.
+	 * @arg array $classes Class(es).
+	 *
+	 * @return string|bool HTML or false.
+	 */
 	function common_get_webp_src($args) {
 
 		$defaults = array(
@@ -104,49 +116,64 @@ if (!function_exists('common_get_webp_src')) {
 		);
 		$data = common_parse_args($args, $defaults, true);
 
-		//sanitize
+		// Sanitize.
 		if ($data['attachment_id'] < 1) {
 			return false;
 		}
 
-		//sanitize classes
+		// Sanitize classes.
 		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
-		//all right, let's get started!
+		// All right, let's get started!
 		$sources = array();
 		if (false === ($image = wp_get_attachment_image_src($data['attachment_id'], $data['size']))) {
 			return false;
 		}
 
-		//add in webp
+		// Add in WebP.
 		if (common_supports_webp() && false !== ($w = common_get_webp_sister($image[0]))) {
 			$sources[] = '<source type="image/webp" srcset="' . esc_attr($w) . '" />';
 		}
 
-		//add in regular image
+		// Add in regular image.
 		$sources[] = '<img src="' . esc_attr($image[0]) . '" alt="' . esc_attr($data['alt']) . '" width="' . $image[1] . '" height="' . $image[2] . '" />';
 
-		//wrap in a picture and we're done
+		// Wrap in a picture and we're done.
 		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
 	}
 
-	//and shortcode
+	/**
+	 * Shortcode for above. Same arguments.
+	 *
+	 * @param mixed $args Arguments.
+	 * @return string|bool HTML or false.
+	 */
 	function common_shortcode_webp_src($args=null) {
 		return common_get_webp_src($args);
 	}
 	add_shortcode('common-webp-src', 'common_shortcode_webp_src');
 }
 
-//-------------------------------------------------
-// WebP srcset
-//
-// @param args
-// @return picture or false
 if (!function_exists('common_get_webp_srcset')) {
+	/**
+	 * Generate <picture> Element Using SRCSET
+	 * Sources (and WebP Sisters)
+	 *
+	 * @param mixed $args Arguments.
+	 *
+	 * @arg int $attachment_id Attachment ID.
+	 * @arg string|array $size Size(s).
+	 * @arg array $sizes Sizes (i.e. HTML sizes attribute).
+	 * @arg string $alt Alternative text.
+	 * @arg array $classes Class(es).
+	 * @arg string $default_size Src to use as fallback.
+	 *
+	 * @return string|bool HTML or false.
+	 */
 	function common_get_webp_srcset($args) {
-		//preparse sizes
+		// Preparse sizes.
 		if (isset($args['sizes']) && is_string($args['sizes'])) {
 			$args['sizes'] = explode(',', $args['sizes']);
 		}
@@ -161,28 +188,28 @@ if (!function_exists('common_get_webp_srcset')) {
 		);
 		$data = common_parse_args($args, $defaults, true);
 
-		//sanitize
+		// Sanitize.
 		if ($data['attachment_id'] < 1) {
 			return false;
 		}
 
-		//sanitize classes
+		// Sanitize classes.
 		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
-		//and sizes
+		// And sizes.
 		\blobfolio\common\ref\sanitize::whitespace($data['sizes']);
 		$data['sizes'] = array_filter($data['sizes'], 'strlen');
 		if (!count($data['sizes'])) {
 			$data['sizes'] = array('100vw');
 		}
 
-		//all right, let's get started!
+		// All right, let's get started!
 		$sources = array();
 		$source = '<source type="%s" srcset="%s" sizes="%s" />';
 
-		//sort out our srcset size(s)
+		// Sort out our srcset size(s).
 		\blobfolio\common\ref\sanitize::whitespace($data['size']);
 		$data['size'] = array_unique($data['size']);
 		$data['size'] = array_filter($data['size'], 'strlen');
@@ -191,18 +218,18 @@ if (!function_exists('common_get_webp_srcset')) {
 			$data['size'][] = 'full';
 		}
 
-		//can't do it
+		// Can't do it.
 		if (false === $srcset = common_get_image_srcset($data['attachment_id'], $data['size'])) {
 			return false;
 		}
 
-		//convert srcset to an array
+		// Convert srcset to an array.
 		$srcset = explode(',', $srcset);
 		\blobfolio\common\ref\sanitize::whitespace($srcset);
 
-		//our default default image
+		// Our default default image.
 		if (false === $image = wp_get_attachment_image_src($data['attachment_id'], $data['size'][0])) {
-			//have to wing it
+			// Have to wing it.
 			$image = explode(' ', $srcset[0]);
 			if (count($image) > 1) {
 				$image[1] = preg_replace('/[^\d]/', '', $image[1]);
@@ -213,19 +240,19 @@ if (!function_exists('common_get_webp_srcset')) {
 			$image[2] = '';
 		}
 
-		//is a specific default image preferred?
+		// Is a specific default image preferred?
 		if (is_null($data['default_size']) || false === ($default_image = wp_get_attachment_image_src($data['attachment_id'], $data['default_size']))) {
 			$default_image = $image;
 		}
 
-		//no srcset for GIFs
+		// No srcset for GIFs.
 		$type = common_get_mime_type($image[0]);
 		if ('image/gif' === $type) {
 			if (common_supports_webp() && false !== ($w = common_get_webp_sister($image[0]))) {
 				$sources[] = sprintf($source, 'image/webp', esc_attr("$w {$image[1]}w"), '');
 			}
 		}
-		//try srcset
+		// Try srcset.
 		else {
 			$source_normal = array();
 			$source_webp = array();
@@ -262,21 +289,26 @@ if (!function_exists('common_get_webp_srcset')) {
 			}
 		}
 
-		//add in regular image
+		// Add in regular image.
 		$sources[] = '<img src="' . esc_attr($default_image[0]) . '" alt="' . esc_attr($data['alt']) . '" width="' . $default_image[1] . '" height="' . $default_image[2] . '" />';
 
-		//wrap in a picture and we're done
+		// Wrap in a picture and we're done.
 		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . implode('', $sources) . '</picture>';
 	}
 
-	//and shortcode
+	/**
+	 * Shortcode for above. Same arguments.
+	 *
+	 * @param mixed $args Arguments.
+	 * @return string|bool HTML or false.
+	 */
 	function common_shortcode_webp_srcset($args=null) {
 		return common_get_webp_srcset($args);
 	}
 	add_shortcode('common-webp-srcset', 'common_shortcode_webp_srcset');
 }
 
-//-------------------------------------------------
+// -------------------------------------------------
 // Generate <picture>
 //
 // this allows for specifying different attachment
@@ -286,6 +318,20 @@ if (!function_exists('common_get_webp_srcset')) {
 // @param args(s)
 // @return picture or false
 if (!function_exists('common_get_webp_picture')) {
+	/**
+	 * Generate <picture> Element Using arbitrary
+	 * Sources (and WebP Sisters)
+	 *
+	 * @param mixed $args Arguments.
+	 *
+	 * @arg int $attachment_id Attachment ID.
+	 * @arg array $sources Sources.
+	 * @arg string $alt Alternative text.
+	 * @arg array $classes Class(es).
+	 * @arg string $default_size Src to use as fallback.
+	 *
+	 * @return string|bool HTML or false.
+	 */
 	function common_get_webp_picture($args) {
 		$defaults = array(
 			'attachment_id'=>0,
@@ -303,12 +349,12 @@ if (!function_exists('common_get_webp_picture')) {
 			'media'=>''
 		);
 
-		//before we get too into it, let's make sure the default exists
+		// Before we get too into it, let's make sure the default exists.
 		if (false === $default_image = wp_get_attachment_image_src($data['attachment_id'], $data['default_size'])) {
 			return false;
 		}
 
-		//sanitize classes
+		// Sanitize classes.
 		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
@@ -316,7 +362,7 @@ if (!function_exists('common_get_webp_picture')) {
 		$sources = array();
 		$source = '<source type="%s" srcset="%s" sizes="%s" media="%s" />';
 
-		//build and sanitize sources
+		// Build and sanitize sources.
 		foreach ($data['sources'] as $k=>$v) {
 			$data['sources'][$k] = common_parse_args($v, $source_defaults, true);
 
@@ -324,14 +370,14 @@ if (!function_exists('common_get_webp_picture')) {
 				$data['sources'][$k]['attachment_id'] = $data['attachment_id'];
 			}
 
-			//sanitize sizes
+			// Sanitize sizes.
 			\blobfolio\common\ref\sanitize::whitespace($data['sources'][$k]['sizes']);
 			$data['sources'][$k]['sizes'] = array_filter($data['sources'][$k]['sizes'], 'strlen');
 			if (!count($data['sources'][$k]['sizes'])) {
 				$data['sources'][$k]['sizes'] = array('100vw');
 			}
 
-			//sort out our srcset size(s)
+			// Sort out our srcset size(s).
 			\blobfolio\common\ref\sanitize::whitespace($data['sources'][$k]['size']);
 			$data['sources'][$k]['size'] = array_unique($data['sources'][$k]['size']);
 			$data['sources'][$k]['size'] = array_filter($data['sources'][$k]['size'], 'strlen');
@@ -340,12 +386,12 @@ if (!function_exists('common_get_webp_picture')) {
 				$data['sources'][$k]['size'][] = 'full';
 			}
 
-			//bad size(s)
+			// Bad size(s).
 			if (false === $srcset = common_get_image_srcset($data['sources'][$k]['attachment_id'], $data['sources'][$k]['size'])) {
 				continue;
 			}
 
-			//multiple sources
+			// Multiple sources.
 			$srcset = explode(',', $srcset);
 			\blobfolio\common\ref\sanitize::whitespace($srcset);
 			usort($srcset, '_common_sort_srcset');
@@ -392,7 +438,7 @@ if (!function_exists('common_get_webp_picture')) {
 			}
 		}
 
-		//add a fallback img to the end
+		// Add a fallback img to the end.
 		$sources[] = '<img src="' . esc_attr($default_image[0]) . '" alt="' . esc_attr($data['alt']) . '" width="' . $default_image[1] . '" height="' . $default_image[2] . '" />';
 
 		$sources = implode('', $sources);
@@ -401,31 +447,38 @@ if (!function_exists('common_get_webp_picture')) {
 		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . $sources . '</picture>';
 	}
 
-	//and shortcode
+	/**
+	 * Shortcode for above. Same arguments.
+	 *
+	 * @param mixed $args Arguments.
+	 * @return string|bool HTML or false.
+	 */
 	function common_shortcode_webp_picture($args=null) {
 		return common_get_webp_picture($args);
 	}
 	add_shortcode('common-webp-picture', 'common_shortcode_webp_picture');
 }
 
-//-------------------------------------------------
-// Webp Generation
-//
-// @param path in
-// @param path out
-// @return true/false
 if (!function_exists('common_generate_webp')) {
+	/**
+	 * Generate WebP From Source
+	 *
+	 * @param string $in Source file.
+	 * @param string $out Output file.
+	 * @return bool True/false.
+	 */
 	function common_generate_webp($in, $out) {
 		return \blobfolio\common\image::to_webp($in, $out, WP_WEBP_CWEBP, WP_WEBP_GIF2WEBP);
 	}
 }
 
-//-------------------------------------------------
-// Webp sister
-//
-// @param path or url
-// @return sister or false
 if (!function_exists('common_get_webp_sister')) {
+	/**
+	 * Does WebP Sister Exist
+	 *
+	 * @param string $path Source path.
+	 * @return bool True/false.
+	 */
 	function common_get_webp_sister($path) {
 		if (!common_supports_webp()) {
 			return false;
@@ -456,4 +509,4 @@ if (!function_exists('common_get_webp_sister')) {
 	}
 }
 
-?>
+
