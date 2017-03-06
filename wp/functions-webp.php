@@ -148,10 +148,21 @@ if (!function_exists('common_get_webp_src')) {
 	 * Shortcode for above. Same arguments.
 	 *
 	 * @param mixed $args Arguments.
-	 * @return string|bool HTML or false.
+	 * @param string $content Content.
+	 * @return string HTML.
 	 */
-	function common_shortcode_webp_src($args=null) {
-		return common_get_webp_src($args);
+	function common_shortcode_webp_src($args=null, $content='') {
+		\blobfolio\common\ref\cast::array($args);
+
+		// Classes is going somewhere else.
+		$classes = '';
+		if (isset($args['classes'])) {
+			$classes = $args['classes'];
+			unset($args['classes']);
+		}
+
+		$shortcode = '[common-webp-caption classes="' . esc_attr($classes) . '" caption="' . esc_attr($content) . '"]' . common_get_webp_src($args) . '[/common-webp-caption]';
+		return do_shortcode($shortcode);
 	}
 	add_shortcode('common-webp-src', 'common_shortcode_webp_src');
 }
@@ -300,23 +311,69 @@ if (!function_exists('common_get_webp_srcset')) {
 	 * Shortcode for above. Same arguments.
 	 *
 	 * @param mixed $args Arguments.
-	 * @return string|bool HTML or false.
+	 * @param string $content Content.
+	 * @return string HTML.
 	 */
-	function common_shortcode_webp_srcset($args=null) {
-		return common_get_webp_srcset($args);
+	function common_shortcode_webp_srcset($args=null, $content='') {
+		// Explode arrayable fields by comma.
+		foreach (array('size','sizes') as $field) {
+			if (isset($args[$field])) {
+				$args[$field] = explode(',', $args[$field]);
+				$args[$field] = array_map('trim', $args[$field]);
+			}
+		}
+
+		// Classes is going somewhere else.
+		$classes = '';
+		if (isset($args['classes'])) {
+			$classes = $args['classes'];
+			unset($args['classes']);
+		}
+
+		$shortcode = '[common-webp-caption classes="' . esc_attr($classes) . '" caption="' . esc_attr($content) . '"]' . common_get_webp_srcset($args) . '[/common-webp-caption]';
+		return do_shortcode($shortcode);
 	}
 	add_shortcode('common-webp-srcset', 'common_shortcode_webp_srcset');
 }
 
-// -------------------------------------------------
-// Generate <picture>
-//
-// this allows for specifying different attachment
-// sources at different breakpoints, versus the
-// more automatic srcset version
-//
-// @param args(s)
-// @return picture or false
+if (!function_exists('common_shortcode_webp_caption')) {
+	/**
+	 * Shortcode for WebP caption. Called automatically
+	 * when the WebP shortcodes contain a caption.
+	 *
+	 * @param mixed $args Arguments.
+	 * @param string $content Content.
+	 *
+	 * @arg string $classes Classes.
+	 * @arg string $caption Caption.
+	 *
+	 * @return string HTML.
+	 */
+	function common_shortcode_webp_caption($args=null, $content='') {
+		$defaults = array(
+			'classes'=>'',
+			'caption'=>''
+		);
+		$data = \blobfolio\common\data::parse_args($args, $defaults);
+		$data['classes'] = explode(',', $data['classes']);
+		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
+		$data['classes'] = array_unique($data['classes']);
+		$data['classes'] = array_filter($data['classes'], 'strlen');
+
+		ob_start();
+		?>
+		<figure class="wp-caption <?=esc_attr(implode(' ', $data['classes']))?>">
+			<?=$content?>
+			<?php if (strlen($data['caption'])) { ?>
+				<figcaption class="wp-caption-text"><?=$data['caption']?></figcaption>
+			<?php } ?>
+		</figure>
+		<?php
+		return ob_get_clean();
+	}
+	add_shortcode('common-webp-caption', 'common_shortcode_webp_caption');
+}
+
 if (!function_exists('common_get_webp_picture')) {
 	/**
 	 * Generate <picture> Element Using arbitrary
@@ -446,17 +503,6 @@ if (!function_exists('common_get_webp_picture')) {
 
 		return '<picture class="' . esc_attr(implode(' ', $data['classes'])) . '">' . $sources . '</picture>';
 	}
-
-	/**
-	 * Shortcode for above. Same arguments.
-	 *
-	 * @param mixed $args Arguments.
-	 * @return string|bool HTML or false.
-	 */
-	function common_shortcode_webp_picture($args=null) {
-		return common_get_webp_picture($args);
-	}
-	add_shortcode('common-webp-picture', 'common_shortcode_webp_picture');
 }
 
 if (!function_exists('common_generate_webp')) {
