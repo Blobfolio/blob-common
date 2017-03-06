@@ -138,7 +138,7 @@ class SpacetimeTests extends WP_UnitTestCase {
 	 */
 	function test_common_theme_path() {
 		$url = trailingslashit(get_stylesheet_directory_uri());
-		if(!filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)){
+		if (!filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
 			$this->markTestSkipped('The site cannot be locally hosted.');
 		}
 		else {
