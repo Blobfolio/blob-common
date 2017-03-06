@@ -306,7 +306,7 @@ $defaults = array(
     'fruit'=>'banana',
     'vegetable'=>'carrot'
 );
-print_r(blobfolio\common\data::parse_args($json, $defaults));
+print_r(blobfolio\common\data::parse_args($args, $defaults));
 /*
 array(
     fruit => apple,
