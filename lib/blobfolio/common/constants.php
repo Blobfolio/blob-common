@@ -1395,6 +1395,7 @@ class constants {
 		'xlink:arcrole',
 		'xlink:href',
 		'xlink:role',
+		'xml:base',
 		'xmlns',
 		'xmlns:xlink',
 	);
