@@ -26,6 +26,16 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::attribute_value()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_attribute_value() {
+		$thing = '&nbsp;Björk"&quot; ';
+		$this->assertEquals('Björk""', \blobfolio\common\sanitize::attribute_value($thing));
+	}
+
+	/**
 	 * ::cc()
 	 *
 	 * @return void Nothing.
@@ -36,6 +46,16 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 
 		$thing = '4242424242424241';
 		$this->assertEquals(false, \blobfolio\common\sanitize::cc($thing));
+	}
+
+	/**
+	 * ::control_characters()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_control_characters() {
+		$thing = '\0Björk';
+		$this->assertEquals('Björk', \blobfolio\common\sanitize::control_characters($thing));
 	}
 
 	/**
@@ -187,6 +207,29 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::iri_value()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_iri_value() {
+		$thing = '#example';
+		$this->assertEquals('#example', \blobfolio\common\sanitize::iri_value($thing));
+
+		$thing = '//w3.org';
+		$this->assertEquals('https://w3.org', \blobfolio\common\sanitize::iri_value($thing));
+
+		$thing = 'ftp://w3.org';
+		$this->assertEquals('', \blobfolio\common\sanitize::iri_value($thing));
+
+		$thing = ' script: alert(hi);';
+		$this->assertEquals('', \blobfolio\common\sanitize::iri_value($thing));
+
+		$thing = \blobfolio\common\constants::BLANK_IMAGE;
+		$this->assertEquals('', \blobfolio\common\sanitize::iri_value($thing));
+		$this->assertEquals($thing, \blobfolio\common\sanitize::iri_value($thing, 'data'));
+	}
+
+	/**
 	 * ::js()
 	 *
 	 * @return void Nothing.
@@ -280,14 +323,25 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$svg = file_get_contents(self::ASSETS . 'enshrined.svg');
 
 		// Before.
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(true, strpos($svg, '<script'));
+		$this->assertEquals( true, strpos( $svg, 'onload' ) );
+		$this->assertEquals( true, strpos( $svg, 'data:' ) );
+		$this->assertEquals( true, strpos( $svg, '<script' ) );
+		$this->assertEquals( true, strpos( $svg, 'http://example.com' ) );
+		$this->assertEquals( true, strpos( $svg, 'XSS' ) );
 
-		$svg = \blobfolio\common\sanitize::svg($svg);
+		$thing = \blobfolio\common\sanitize::svg($svg);
 
 		// After.
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(false, strpos($svg, '<script'));
+		$this->assertEquals(true, false !== strpos($thing, '<svg'));
+		$this->assertEquals( false, strpos( $thing, 'onload' ) );
+		$this->assertEquals( false, strpos( $thing, 'data:' ) );
+		$this->assertEquals( false, strpos( $thing, '<script' ) );
+		$this->assertEquals( false, strpos( $thing, 'http://example.com' ) );
+		$this->assertEquals( false, strpos( $thing, 'XSS' ) );
+
+		// Check whitelisted domains.
+		$thing = \blobfolio\common\sanitize::svg($svg, null, null, null, 'example.com');
+		$this->assertEquals( true, strpos( $thing, 'http://example.com' ) );
 	}
 
 	/**

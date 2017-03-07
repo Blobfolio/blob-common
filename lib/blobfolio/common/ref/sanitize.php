@@ -36,6 +36,38 @@ class sanitize {
 	}
 
 	/**
+	 * Attribute Value
+	 *
+	 * This will decode entities, strip control
+	 * characters, and trim outside whitespace.
+	 *
+	 * Note: this should not be used for safe
+	 * insertion into HTML. For that, use the
+	 * html() function.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function attribute_value(&$str='') {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::attribute_value($str[$k]);
+			}
+		}
+		else {
+			cast::string($str);
+			static::control_characters($str);
+			format::decode_entities($str);
+
+			// And trim the edges while we're here.
+			$str = preg_replace('/^\s+/u', '', $str);
+			$str = preg_replace('/\s+$/u', '', $str);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Credit Card
 	 *
 	 * @param string $ccnum Card number.
@@ -109,6 +141,27 @@ class sanitize {
 		}
 		else {
 			$ccnum = false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Control Characters
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function control_characters(&$str='') {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::control_characters($str[$k]);
+			}
+		}
+		else {
+			cast::string($str);
+			$str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
+			$str = preg_replace('/\\\\+0+/', '', $str);
 		}
 
 		return true;
@@ -325,7 +378,7 @@ class sanitize {
 			mb::strtolower($str);
 			static::whitespace($str);
 			$str = ltrim($str, '*. ');
-			$str = preg_replace( '/\s/u', '', $str );
+			$str = preg_replace('/\s/u', '', $str);
 		}
 
 		return true;
@@ -434,6 +487,74 @@ class sanitize {
 				!filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
 			) {
 				$str = '';
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * IRI Value
+	 *
+	 * @param string $str IRI value.
+	 * @param array $protocols Allowed protocols.
+	 * @param array $domains Allowed domains.
+	 * @return bool True.
+	 */
+	public static function iri_value(&$str='', $protocols=null, $domains=null) {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::iri_value($str[$k]);
+			}
+		}
+		else {
+			cast::string($str);
+			static::attribute_value($str);
+
+			cast::array($protocols);
+			$allowed_protocols = array_merge(\blobfolio\common\constants::SVG_WHITELIST_PROTOCOLS, $protocols);
+			mb::strtolower($allowed_protocols);
+			$allowed_protocols = array_map('trim', $allowed_protocols);
+			$allowed_protocols = array_filter($allowed_protocols, 'strlen');
+			$allowed_protocols = array_unique($allowed_protocols);
+			sort($allowed_protocols);
+
+			cast::array($domains);
+			$allowed_domains = array_merge(\blobfolio\common\constants::SVG_WHITELIST_DOMAINS, $domains);
+			static::domain($allowed_domains);
+			$allowed_domains = array_filter($allowed_domains, 'strlen');
+			$allowed_domains = array_unique($allowed_domains);
+			sort($allowed_domains);
+
+			// Assign a protocol.
+			$str = preg_replace('/^\/\//', 'https://', $str);
+
+			// Remove newlines.
+			$str = preg_replace('/\v/u', '', $str);
+
+			// Check protocols.
+			$test = preg_replace('/\s/', '', $str);
+			mb::strtolower($test);
+			if (false !== \blobfolio\common\mb::strpos($test, ':')) {
+				$test = explode(':', $test);
+				if (!in_array($test[0], $allowed_protocols, true)) {
+					$str = '';
+					return true;
+				}
+			}
+
+			// Is this at least a URLish thing?
+			if (filter_var($str, FILTER_SANITIZE_URL) !== $str) {
+				$str = '';
+				return true;
+			}
+
+			// Check the domain, if applicable.
+			if (preg_match('/^[\w\d]+:\/\//i', $str)) {
+				$domain = \blobfolio\common\sanitize::domain($str);
+				if (strlen($domain) && !in_array($domain, $allowed_domains, true)) {
+					$str = '';
+				}
 			}
 		}
 
@@ -650,79 +771,184 @@ class sanitize {
 	 * @param string $str SVG code.
 	 * @param array $tags Additional whitelist tags.
 	 * @param array $attr Additional whitelist attributes.
+	 * @param array $protocols Additional whitelist protocols.
+	 * @param array $domains Additional whitelist domains.
 	 * @return string SVG code.
 	 */
-	public static function svg(&$str='', $tags=null, $attr=null) {
+	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
+		// First, sanitize and build out function arguments!
 		cast::string($str, true);
 		cast::array($tags);
 		cast::array($attr);
+		cast::array($protocols);
+		cast::array($domains);
 
-		$tags = array_merge(\blobfolio\common\constants::SVG_WHITELIST_TAGS, $tags);
-		mb::strtolower($tags);
-		$tags = array_filter($tags, 'strlen');
-		$tags = array_unique($tags);
-		sort($tags);
+		$allowed_tags = array_merge(\blobfolio\common\constants::SVG_WHITELIST_TAGS, $tags);
+		mb::strtolower($allowed_tags);
+		$allowed_tags = array_map('trim', $allowed_tags);
+		$allowed_tags = array_filter($allowed_tags, 'strlen');
+		$allowed_tags = array_unique($allowed_tags);
+		sort($allowed_tags);
 
-		$attr = array_merge(\blobfolio\common\constants::SVG_WHITELIST_ATTR, $attr);
-		mb::strtolower($attr);
-		$attr = array_filter($attr, 'strlen');
-		$attr = array_unique($attr);
-		sort($attr);
+		$allowed_attributes = array_merge(\blobfolio\common\constants::SVG_WHITELIST_ATTR, $attr);
+		mb::strtolower($allowed_attributes);
+		$allowed_attributes = array_map('trim', $allowed_attributes);
+		$allowed_attributes = array_filter($allowed_attributes, 'strlen');
+		$allowed_attributes = array_unique($allowed_attributes);
+		sort($allowed_attributes);
 
+		$allowed_protocols = array_merge(\blobfolio\common\constants::SVG_WHITELIST_PROTOCOLS, $protocols);
+		mb::strtolower($allowed_protocols);
+		$allowed_protocols = array_map('trim', $allowed_protocols);
+		$allowed_protocols = array_filter($allowed_protocols, 'strlen');
+		$allowed_protocols = array_unique($allowed_protocols);
+		sort($allowed_protocols);
+
+		$allowed_domains = array_merge(\blobfolio\common\constants::SVG_WHITELIST_DOMAINS, $domains);
+		static::domain($allowed_domains);
+		$allowed_domains = array_filter($allowed_domains, 'strlen');
+		$allowed_domains = array_unique($allowed_domains);
+		sort($allowed_domains);
+
+		$iri_attributes = \blobfolio\common\constants::SVG_IRI_ATTRIBUTES;
+
+		// Load the SVG!
 		$dom = \blobfolio\common\dom::load_svg($str);
 		$svg = $dom->getElementsByTagName('svg');
 		if (!$svg->length) {
 			$str = '';
 			return false;
 		}
+		$xpath = new \DOMXPath($dom);
 
-		// Remove invalid tags and attributes.
-		$tmp = $dom->getElementsByTagName('*');
-		for ($x = $tmp->length - 1; $x >= 0; $x--) {
-			$tag = \blobfolio\common\mb::strtolower($tmp->item($x)->tagName);
-			$tag2 = false;
-			// Maybe it is namespaced?
-			if (false !== $pos = \blobfolio\common\mb::strpos($tag, ':')) {
-				$tag2 = \blobfolio\common\mb::substr($tag, $pos + 1);
-			}
+		// Validate tags.
+		$tags = $dom->getElementsByTagName('*');
+		for ($x = $tags->length - 1; $x >= 0; $x--) {
+			$tag = $tags->item($x);
+			$tag_name = \blobfolio\common\mb::strtolower($tag->tagName);
+
+			// The tag might be namespaced (ns:tag). We'll allow it if
+			// the tag is allowed.
 			if (
-				!in_array($tag, $tags, true) &&
-				(false === $tag2 || !in_array($tag2, $tags, true))
+				false !== \blobfolio\common\mb::strpos($tag_name, ':') &&
+				!in_array($tag_name, $allowed_tags, true)
 			) {
-				\blobfolio\common\dom::remove_node($tmp->item($x));
+				$tag_name = explode(':', $tag_name);
+				$tag_name = $tag_name[1];
+			}
+
+			// Bad tag: not whitelisted.
+			if (!in_array($tag_name, $allowed_tags, true)) {
+				\blobfolio\common\dom::remove_node($tag);
 				continue;
 			}
 
-			// Now go through attributes.
-			for ($y = $tmp->item($x)->attributes->length - 1; $y >= 0; $y--) {
-				$att = $tmp->item($x)->attributes->item($y);
-				$attName = \blobfolio\common\mb::strtolower($att->name);
+			// Use XPath for attributes, as $tag->attributes will skip
+			// anything namespaced. Note: We aren't focusing on
+			// actual Namespaces here, that comes later.
+			$attributes = $xpath->query('.//@*', $tag);
+			for ($y = $attributes->length - 1; $y >= 0; $y--) {
+				$attribute = $attributes->item($y);
 
-				// First check, does it match straight off?
-				if (true === ($valid = (preg_match('/^(xmlns\:|data\-)/', $attName) || in_array($attName, $attr, true)))) {
+				$attribute_name = \blobfolio\common\mb::strtolower($attribute->nodeName);
 
-					// Strip \0.
-					$attValue = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $att->value);
-					if ($attValue !== $att->value) {
-						$tmp->item($x)->setAttribute($att->name, $attValue);
-					}
-
-					format::decode_entities($attValue);
-
-					// Strip scripts.
-					if (!strlen($attValue) || preg_match('/(?:\w+script):/xi', $attValue)) {
-						$valid = false;
-					}
+				// Could be namespaced.
+				if (
+					!in_array($attribute_name, $allowed_attributes, true) &&
+					false !== ($start = \blobfolio\common\mb::strpos($attribute_name, ':'))
+				) {
+					$attribute_name = \blobfolio\common\mb::substr($attribute_name, $start + 1);
 				}
 
-				if (!$valid) {
-					$tmp->item($x)->removeAttribute($att->name);
+				// Bad attribute: not whitelisted.
+				// data-* is implicitly whitelisted.
+				if (
+					!preg_match('/^data\-/', $attribute_name) &&
+					!in_array($attribute_name, $allowed_attributes, true)
+				) {
+					$tag->removeAttribute($attribute->nodeName);
+					continue;
+				}
+
+				// Validate values.
+				$attribute_value = \blobfolio\common\sanitize::attribute_value($attribute->value);
+
+				// Validate protocols.
+				// IRI attributes get the full treatment.
+				$iri = false;
+				if (in_array($attribute_name, $iri_attributes, true)) {
+					$iri = true;
+					static::iri_value($attribute_value, $allowed_protocols, $allowed_domains);
+				}
+				// For others, we are specifically interested in removing scripty bits.
+				elseif (preg_match('/(?:\w+script):/xi', $attribute_value)) {
+					$attribute_value = '';
+				}
+
+				// Update it.
+				if ($attribute_value !== $attribute->value) {
+					if ($iri) {
+						$tag->removeAttribute($attribute->nodeName);
+					} else {
+						$tag->setAttribute($attribute->nodeName, $attribute_value);
+					}
+				}
+			}
+		} // Each tag.
+
+		// Once more through the tags to find namespaces.
+		$tags = $dom->getElementsByTagName('*');
+		for ($x = 0; $x < $tags->length; $x++) {
+			$tag = $tags->item($x);
+			$nodes = $xpath->query('namespace::*', $tag);
+			for ($y = 0; $y < $nodes->length; $y++) {
+				$node = $nodes->item($y);
+
+				$node_name = \blobfolio\common\mb::strtolower($node->nodeName);
+
+				// Not xmlns?
+				if (!preg_match('/^xmlns:/', $node_name)) {
+					\blobfolio\common\dom::remove_namespace($dom, $node->localName);
+					continue;
+				}
+
+				// Validate values.
+				$node_value = \blobfolio\common\sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains);
+
+				// Remove invalid.
+				if (!strlen($node_value)) {
+					\blobfolio\common\dom::remove_namespace($dom, $node->localName);
 				}
 			}
 		}
 
-		$str = \blobfolio\common\dom::save_svg($dom);
-		return strlen($str) > 0;
+		// Back to string!
+		$svg = \blobfolio\common\dom::save_svg($dom);
+
+		// One more task, sanitize CSS values (e.g. foo="url(...)").
+		$svg = preg_replace_callback(
+			'/url\s*\((.*)\s*\)/Ui',
+			function($match) use($allowed_protocols, $allowed_domains) {
+				$str = \blobfolio\common\sanitize::attribute_value($match[1]);
+
+				// Strip quotes.
+				$str = ltrim($str, "'\"");
+				$str = rtrim($str, "'\"");
+
+				\blobfolio\common\ref\sanitize::iri_value($str, $allowed_protocols, $allowed_domains);
+
+				if (strlen($str)) {
+					return "url('$str')";
+				}
+
+				return 'none';
+			},
+			$svg
+		);
+
+		$str = $svg;
+
+		return true;
 	}
 
 	/**

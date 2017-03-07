@@ -18,8 +18,26 @@ class sanitize {
 	 * @param string $str String.
 	 * @return string String.
 	 */
-	public static function accents($str) {
+	public static function accents($str='') {
 		ref\sanitize::accents($str);
+		return $str;
+	}
+
+	/**
+	 * Attribute Value
+	 *
+	 * This will decode entities, strip control
+	 * characters, and trim outside whitespace.
+	 *
+	 * Note: this should not be used for safe
+	 * insertion into HTML. For that, use the
+	 * html() function.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function attribute_value($str='') {
+		ref\sanitize::attribute_value($str);
 		return $str;
 	}
 
@@ -32,6 +50,17 @@ class sanitize {
 	public static function cc($ccnum='') {
 		ref\sanitize::cc($ccnum);
 		return $ccnum;
+	}
+
+	/**
+	 * Control Characters
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function control_characters($str='') {
+		ref\sanitize::control_characters($str);
+		return $str;
 	}
 
 	/**
@@ -154,6 +183,19 @@ class sanitize {
 	}
 
 	/**
+	 * IRI Value
+	 *
+	 * @param string $str IRI value.
+	 * @param array $protocols Allowed protocols.
+	 * @param array $domains Allowed domains.
+	 * @return string String.
+	 */
+	public static function iri_value($str='', $protocols=null, $domains=null) {
+		ref\sanitize::iri_value($str, $protocols, $domains);
+		return $str;
+	}
+
+	/**
 	 * JS Variable
 	 *
 	 * @param string $str String.
@@ -261,10 +303,12 @@ class sanitize {
 	 * @param string $str SVG code.
 	 * @param array $tags Additional whitelist tags.
 	 * @param array $attr Additional whitelist attributes.
+	 * @param array $protocols Additional whitelist protocols.
+	 * @param array $domains Additional whitelist domains.
 	 * @return string SVG code.
 	 */
-	public static function svg($str='', $tags=null, $attr=null) {
-		ref\sanitize::svg($str, $tags, $attr);
+	public static function svg($str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
+		ref\sanitize::svg($str, $tags, $attr, $protocols, $domains);
 		return $str;
 	}
 

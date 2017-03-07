@@ -17,6 +17,7 @@ $foo = blobfolio\common\dom::get_nodes_by_class($dom, 'apples');
  * [get_nodes_by_class()](#get_nodes_by_class)
  * [load_svg()](#load_svg)
  * [parse_css()](#parse_css)
+ * [remove_namespace()](#remove_namespace)
  * [remove_node()](#remove_node)
  * [remove_nodes()](#remove_nodes)
  * [save_svg()](#save_svg)
@@ -156,9 +157,30 @@ Array(
 
 
 
+## remove_namespace()
+
+Remove a namespace and any corresponding tags from a DOMDocument object.
+
+#### Arguments
+
+ * (*DOMDocument*) DOMDocument object.
+ * (*string*) Namespace.
+
+#### Returns
+
+Returns `TRUE` or `FALSE`
+
+#### Example
+
+```php
+\blobfolio\common\dom::remove_namespace($dom, 'foobar');
+```
+
+
+
 ## remove_node()
 
-Remove a DOMElement node.
+Remove a DOMElement or DOMNode.
 
 #### Arguments
 

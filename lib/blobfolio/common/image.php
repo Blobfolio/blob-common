@@ -35,6 +35,8 @@ class image {
 	 * @arg bool $strip_title Remove titles.
 	 * @arg array $whitelist_attr Additional attributes to allow.
 	 * @arg array $whitelist_tags Additional tags to allow.
+	 * @arg array $whitelist_protocols Additional protocols to allow.
+	 * @arg array $whitelist_domains Additional domains to allow.
 	 *
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
@@ -46,14 +48,7 @@ class image {
 
 			ref\mb::strtoupper($output);
 
-			$svg = sanitize::whitespace(@file_get_contents($path));
-
-			// Bugs from old versions of Illustrator.
-			$svg = str_replace(
-				array_keys(constants::SVG_ATTR_CORRECTIONS),
-				array_values(constants::SVG_ATTR_CORRECTIONS),
-				$svg
-			);
+			$svg = file_get_contents($path);
 
 			// Options.
 			ref\cast::array($args);
@@ -106,7 +101,6 @@ class image {
 			$tmp = $dom->getElementsByTagName('svg');
 			foreach ($tmp as $t) {
 				$t->setAttribute('version', '1.1');
-				$t->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 			}
 			$svg = dom::save_svg($dom);
 
@@ -136,7 +130,13 @@ class image {
 			}
 
 			if ($options['sanitize']) {
-				ref\sanitize::svg($svg);
+				ref\sanitize::svg(
+					$svg,
+					$options['whitelist_tags'],
+					$options['whitelist_attr'],
+					$options['whitelist_protocols'],
+					$options['whitelist_domains']
+				);
 			}
 
 			// Randomize IDs?

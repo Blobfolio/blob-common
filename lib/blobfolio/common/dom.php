@@ -19,7 +19,7 @@ class dom {
 	 * source.
 	 *
 	 * @param string $svg SVG code.
-	 * @return DOMDocument DOM object.
+	 * @return bool|DOMDocument DOM object or false.
 	 */
 	public static function load_svg(string $svg='') {
 		try {
@@ -36,6 +36,24 @@ class dom {
 			}
 			$svg = mb::substr($svg, $start, ($end - $start + 6));
 
+			// Bugs from old versions of Illustrator.
+			$svg = str_replace(
+				array_keys(constants::SVG_ATTR_CORRECTIONS),
+				array_values(constants::SVG_ATTR_CORRECTIONS),
+				$svg
+			);
+
+			// Remove XML, PHP, ASP, etc.
+			$svg = preg_replace('/<\?(.*)\?>/Us', '', $svg);
+			$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
+
+			// Remove comments.
+			$svg = preg_replace('/<!--(.*)-->/Us', '', $svg);
+			$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
+			if (false !== mb::strpos($svg, '<!--')) {
+				return false;
+			}
+
 			// Open it.
 			libxml_use_internal_errors(true);
 			libxml_disable_entity_loader(true);
@@ -44,9 +62,15 @@ class dom {
 			$dom->preserveWhiteSpace = false;
 			$dom->loadXML(constants::SVG_HEADER . "\n{$svg}");
 
+			// Make sure there are still SVG tags.
+			$svgs = $dom->getElementsByTagName('svg');
+			if (!$svgs->length) {
+				return false;
+			}
+
 			return $dom;
 		} catch (\Throwable $e) {
-			return new \DOMDocument('1.0', 'UTF-8');
+			return false;
 		}
 	}
 
@@ -65,7 +89,14 @@ class dom {
 			if (!$svgs->length) {
 				return '';
 			}
-			$svg = $svgs->item(0)->ownerDocument->saveXML($svgs->item(0), LIBXML_NOBLANKS);
+			$svg = $svgs->item(0)->ownerDocument->saveXML(
+				$svgs->item(0),
+				LIBXML_NOBLANKS
+			);
+
+			// Make sure if xmlns="" exists, it is correct. Can't alter
+			// that with DOMDocument, and there is only one proper value.
+			$svg = preg_replace('/xmlns\s*=\s*"[^"]*"/', 'xmlns="' . constants::SVG_NAMESPACE . '"', $svg);
 
 			return $svg;
 		} catch (\Throwable $e) {
@@ -214,7 +245,7 @@ class dom {
 		}
 		$styles = implode("\n", $styles);
 
-		// One more quick formatting thing, we can get rid of spaces between closing ) and punctuation.
+		// One more quick formatting thing, we can get rid of spaces between closing) and punctuation.
 		$styles = preg_replace('/\)\s(,|;)(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ')$1', $styles);
 
 		$styles = explode("\n", $styles);
@@ -320,6 +351,41 @@ class dom {
 	}
 
 	/**
+	 * Remove namespace (and attached nodes) from a DOMDocument
+	 *
+	 * @param DOMDocument $dom Object.
+	 * @param string $namespace Namespace.
+	 * @return bool True/False.
+	 */
+	public static function remove_namespace($dom, $namespace) {
+		if (
+			!is_a($dom, 'DOMDocument') ||
+			!is_string($namespace) ||
+			!strlen($namespace)
+		) {
+			return false;
+		}
+
+		try {
+			$xpath = new \DOMXPath($dom);
+			$nodes = $xpath->query("//*[namespace::{$namespace} and not(../namespace::{$namespace})]");
+			for ($x = 0; $x < $nodes->length; $x++) {
+				$node = $nodes->item($x);
+				$node->removeAttributeNS(
+					$node->lookupNamespaceURI($namespace),
+					$namespace
+				);
+			}
+
+			return true;
+		} catch (\Throwable $e) {
+			return false;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Remove Nodes
 	 *
 	 * @param \DOMNodeList $nodes Nodes.
@@ -340,10 +406,17 @@ class dom {
 	/**
 	 * Remove Node
 	 *
-	 * @param \DOMElement $node Node.
+	 * @param mixed $node Node.
 	 * @return bool True/false.
 	 */
-	public static function remove_node(\DOMElement $node) {
+	public static function remove_node($node) {
+		if (
+			!is_a($node, 'DOMElement') &&
+			!is_a($node, 'DOMNode')
+		) {
+			return false;
+		}
+
 		try {
 			$node->parentNode->removeChild($node);
 		} catch (\Throwable $e) {

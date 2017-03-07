@@ -22,7 +22,9 @@ blobfolio\common\ref\sanitize::email($foo);
 ##### Table of Contents
 
  * [accents()](#accents)
+ * [attribute_value()](#attribute_value)
  * [cc()](#cc)
+ * [control_characters()](#control_characters)
  * [country()](#country)
  * [csv()](#csv)
  * [date()](#date)
@@ -33,6 +35,7 @@ blobfolio\common\ref\sanitize::email($foo);
  * [html()](#html)
  * [hostname()](#hostname)
  * [ip()](#ip)
+ * [iri_value()](#iri_value)
  * [js()](#js)
  * [mime()](#mime)
  * [name()](#name)
@@ -76,6 +79,32 @@ blobfolio\common\ref\sanitize::accents($foo);
 
 
 
+## attribute_value()
+
+Decode entities, remove control characters, and trim edge whitespace.
+
+Please note: this function is *not* for safely inserting a string value into HTML. For that, use [::html()](#html).
+
+#### Arguments
+
+ * (*mixed*) String. If an array is passed, each value will be recursively sanitized.
+
+#### Returns
+
+Returns the sanitized string if passing by value, otherwise `TRUE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\sanitize::attribute_value('&nbsp;Björk"&quot; '); //Bjork""
+
+//by reference
+blobfolio\common\ref\sanitize::attribute_value($foo);
+```
+
+
+
 ## cc()
 
 Validate a credit card number, short of going so far as to check with the bank.
@@ -94,6 +123,30 @@ By value, returns the card number if valid, otherwise `FALSE`.  By reference ret
 if (false === blobfolio\common\sanitize::cc($ccnum)) {
     throw new Exception('A valid credit card number is required.');
 }
+```
+
+
+
+## control_characters()
+
+Removes control characters from a string, including `"\0"`.
+
+#### Arguments
+
+ * (*mixed*) String. If an array is passed, each value will be recursively sanitized.
+
+#### Returns
+
+Returns the sanitized string if passing by value, otherwise `TRUE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\sanitize::control_characters('\0hi'); //hi
+
+//by reference
+blobfolio\common\ref\sanitize::control_characters($foo);
 ```
 
 
@@ -352,6 +405,32 @@ blobfolio\common\ref\sanitize::ip($foo);
 
 
 
+## iri_value()
+
+Sanitizes an IRI value to ensure it is well-formed and matches the allowed protocols and domains. By default it is designed for SVG values, but the whitelists can be augmented.
+
+#### Arguments
+
+ * (*mixed*) String. If an array is passed, each value will be recursively sanitized.
+ * (*array*) (*optional*) Allowed protocols. Will be combined with the default, `"http"` and `"https"`.
+ * (*array*) (*optional*) Allowed domains. Will be combined with the default, `"creativecommons.org"`, `"inkscape.org"`, `"sodipodi.sourceforge.net"`, and `"w3.org"`.
+
+#### Returns
+
+Returns the sanitized string if passing by value, otherwise `TRUE`. Invalid values will be returned/set as an empty string.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\sanitize::iri_value('javascript: alert(Hi);'); //""
+
+//by reference
+blobfolio\common\ref\sanitize::iri_value($foo);
+```
+
+
+
 ## js()
 
 Escape a variable for insertion into a Javascript string. This removes newlines, straightens quotes, and escapes the enclosing quote.
@@ -531,13 +610,26 @@ blobfolio\common\ref\sanitize::state($foo);
 
 ## svg()
 
-Sanitize a block of SVG code for e.g. insertion into a web page. This removes invalid tags and attributes and many common routes for XSS attacks. This function is called by [image::clean_svg()](https://github.com/Blobfolio/blob-common/blob/master/docs/IMAGE.md#clean_svg) when the `"sanitize"` argument is `TRUE`. If the more advanced handling of `image::clean_svg()` isn't needed, this can be called on its own.
+Sanitize a block of SVG code for e.g. insertion into a web page. This function is called by [image::clean_svg()](https://github.com/Blobfolio/blob-common/blob/master/docs/IMAGE.md#clean_svg) when the `"sanitize"` argument is `TRUE`. If the more advanced handling of `image::clean_svg()` isn't needed, this can be called on its own.
+
+The following sanitizing methods are employed:
+ * Removal of comments (`<!-- -->` and `/* */` varieties);
+ * Removal of XML, PHP, ASP;
+ * Removal of Javascript tags, attributes, and values;
+ * Sanitizing of CSS `url(...)` rules;
+ * Namespace and IRI sanitizing via protocol and host (both extensible);
+ * Extensible tag whitelist;
+ * Extensible attribute whitelist;
+ * Miscellaneous formatting repairs;
+ * Whitespace collapsing;
 
 #### Arguments
 
  * (*string*) SVG code.
  * (*array*) (*optional*) Additional whitelisted tags. Default: `NULL`
  * (*array*) (*optional*) Additional whitelisted attributes. Default: `NULL`
+ * (*array*) (*optional*) Additional whitelisted protocols. Default: `NULL`
+ * (*array*) (*optional*) Additional whitelisted domains. Default: `NULL`
 
 #### Returns
 
