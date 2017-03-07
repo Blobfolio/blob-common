@@ -104,6 +104,10 @@ This function returns a `<picture>` element containing matching sources or false
 
 WebP support is not universal. This function will return a `<picture>` element with both WebP and original sources. An old fashioned `<img>` tag is included as a fallback for browsers that do not support `<picture>`.
 
+There is a corresponding shortcode that can be used inside a blog post: `common-webp-src`. The arguments are the same, except `classes` should be a comma-separated string.
+
+When using the shortcode, the `<picture>` element will be placed inside a `<figure>` element with the default WYSIWYG class `"wp-caption"`. Any specified classes will be bound to the `<figure>`, not the `<picture>`. If a caption is specified, a `<figcaption>` element will be added to the `<figure>` with the WYSIWYG class `"wp-caption-text"`.
+
 #### Arguments
 
  * (*array*) Arguments
@@ -117,6 +121,10 @@ array(
 	'classes'=>array() //classes to add to the <picture>
 )
 ```
+```html
+<!-- example shortcode -->
+[common-webp-src attachment_id="0" size="full" classes="class-1,class-2,class-3"]An optional caption.[/common-webp-src]
+```
 
 #### Return
 
@@ -127,6 +135,10 @@ This function returns a `<picture>` element containing matching sources or false
 ## common_get_webp_srcset()
 
 This works just like `common_get_webp_src()` except it supports `srcset` and `sizes` attributes for responsive image serving. The `srcset` sources are pulled using WP's `wp_get_attachment_image_srcset()` function.
+
+There is a corresponding shortcode that can be used inside a blog post: `common-webp-srcset`. The arguments are the same, except array types should be comma-separated strings.
+
+When using the shortcode, the `<picture>` element will be placed inside a `<figure>` element with the default WYSIWYG class `"wp-caption"`. Any specified classes will be bound to the `<figure>`, not the `<picture>`. If a caption is specified, a `<figcaption>` element will be added to the `<figure>` with the WYSIWYG class `"wp-caption-text"`.
 
 #### Arguments
 
@@ -142,6 +154,10 @@ array(
 	'classes'=>array(), //classes to add to the <picture>
 	'default_size'=>null //the src size to use for the <img> fallback; defaults to the size passed via 'size'
 )
+```
+```html
+<!-- example shortcode -->
+[common-webp-srcset attachment_id="0" size="full" sizes="100vw" classes="class-1,class-2,class-3"]An optional caption.[/common-webp-srcset]
 ```
 
 #### Return

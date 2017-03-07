@@ -88,7 +88,20 @@ $args = array(
     'strip_style'=>false,
 
     //remove all <title> tags
-    'strip_title'=>false
+    'strip_title'=>false,
+
+    //additional whitelist tags, beyond spec.
+    'whitelist_tags'=>array(),
+
+    //additional whitelist attributes, beyond spec.
+    'whitelist_attributes'=>array(),
+
+    //additional whitelist protocols, beyond http, https
+    'whitelist_protocols'=>array(),
+
+    //additional whitelist domains, beyond creativecommons.org,
+    //inkscape.org, sodipodi.sourceforge.net, w3.org
+    'whitelist_domains'=>array()
 )
 ```
 
