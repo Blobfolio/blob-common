@@ -3,7 +3,7 @@
  * Functions to assist common theme operations.
  *
  * @package blobfolio/common
- * @version 7.1.3
+ * @version 7.1.4
  *
  * @wordpress-plugin
  * Plugin Name: Tutan Common

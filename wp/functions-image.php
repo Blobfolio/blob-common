@@ -49,6 +49,8 @@ if (!function_exists('common_get_clean_svg')) {
 	 * @arg bool $strip_title Remove titles.
 	 * @arg array $whitelist_attr Additional attributes to allow.
 	 * @arg array $whitelist_tags Additional tags to allow.
+	 * @arg array $whitelist_protocols Additional protocols to allow.
+	 * @arg array $whitelist_domains Additional domains to allow.
 	 *
 	 * @return string|bool SVG code or false.
 	 */
@@ -63,6 +65,15 @@ if (!function_exists('common_get_clean_svg')) {
 		}
 
 		\blobfolio\common\ref\cast::array($args);
+
+		// Make sure the site URL is whitelisted.
+		if(!isset($args['whitelist_domains'])){
+			$args['whitelist_domains'] = array();
+		}
+		else {
+			\blobfolio\common\ref\cast::array($args['whitelist_domains']);
+		}
+		$args['whitelist_domains'][] = common_get_site_hostname();
 
 		return \blobfolio\common\image::clean_svg($path, $args);
 	}
