@@ -67,7 +67,7 @@ if (!function_exists('common_get_clean_svg')) {
 		\blobfolio\common\ref\cast::array($args);
 
 		// Make sure the site URL is whitelisted.
-		if(!isset($args['whitelist_domains'])){
+		if (!isset($args['whitelist_domains'])) {
 			$args['whitelist_domains'] = array();
 		}
 		else {
@@ -77,6 +77,59 @@ if (!function_exists('common_get_clean_svg')) {
 
 		return \blobfolio\common\image::clean_svg($path, $args);
 	}
+}
+
+if (!function_exists('common_shortcode_clean_svg')) {
+	/**
+	 * Shortcode for clean SVG insertion. It accepts
+	 * all the same arguments, but with the addition
+	 * of classes, which are applied to the figure.
+	 * The SVG is passed as "attachment_id".
+	 *
+	 * @param mixed $args Arguments.
+	 * @param string $content Content.
+	 *
+	 * @return string HTML.
+	 */
+	function common_shortcode_clean_svg($args=null, $content='') {
+		\blobfolio\common\ref\cast::array($args);
+
+		// We need to convert array fields to proper arrays.
+		foreach (array('classes','whitelist_attr','whitelist_tags','whitelist_protocols','whitelist_domains') as $field) {
+			if (isset($args[$field])) {
+				$args[$field] = explode(',', $args[$field]);
+				\blobfolio\common\ref\sanitize::whitespace($args[$field]);
+				$args[$field] = array_unique($args[$field]);
+				$args[$field] = array_filter($args[$field], 'strlen');
+			}
+		}
+
+		// Get the SVG first, in case it fails.
+		if (
+			!isset($args['attachment_id']) ||
+			false === ($svg = get_attached_file($args['attachment_id']))
+		) {
+			return false;
+		}
+		$svg = common_get_clean_svg($svg);
+		if (!is_string($svg) || !strlen($svg)) {
+			return false;
+		}
+
+		$classes = isset($args['classes']) ? $args['classes'] : array();
+
+		ob_start();
+		?>
+		<figure class="wp-caption <?=esc_attr(implode(' ', $classes))?>">
+			<?=$svg?>
+			<?php if (strlen($content)) { ?>
+				<figcaption class="wp-caption-text"><?=$content?></figcaption>
+			<?php } ?>
+		</figure>
+		<?php
+		return ob_get_clean();
+	}
+	add_shortcode('common-clean-svg', 'common_shortcode_clean_svg');
 }
 
 if (!function_exists('common_get_svg_dimensions')) {
