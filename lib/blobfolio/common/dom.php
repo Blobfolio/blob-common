@@ -248,6 +248,9 @@ class dom {
 		// One more quick formatting thing, we can get rid of spaces between closing) and punctuation.
 		$styles = preg_replace('/\)\s(,|;)(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ')$1', $styles);
 
+		// And between RGB/URL stuff.
+		$styles = preg_replace('/(url|rgba?)\s+\(/', '$1(', $styles);
+
 		$styles = explode("\n", $styles);
 		$styles = array_filter($styles, 'strlen');
 
