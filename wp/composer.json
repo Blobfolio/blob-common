@@ -1,7 +1,9 @@
 {
 	"name": "blobfolio\/tutan-common",
 	"require": {
-		"blobfolio/blob-common": "^7.",
+		"blobfolio/blob-common": "dev-master",
+		"blobfolio/blob-phone": "dev-master",
+		"blobfolio/blob-mimes": "dev-master",
 		"neitanod/forceutf8": "dev-master"
 	},
 	"config": {
