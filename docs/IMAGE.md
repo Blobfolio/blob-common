@@ -66,9 +66,9 @@ $args = array(
     'rewrite_styles'=>false,
 
     //remove invalid tags and attributes, strip script-y
-    //things. note: this does not remove CSS properties
-    //like behavior or extension, not does it strip
-    //embedded data:
+    //things, fix formatting, etc. this is the only option
+    //enabled by default, and highly recommended for use
+    //on production environments.
     'sanitize'=>true,
 
     //cleaning SVGs in PHP can be slow. this option will

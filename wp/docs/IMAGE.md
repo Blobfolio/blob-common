@@ -22,6 +22,12 @@ See also: [JIT Thumbnails](https://github.com/Blobfolio/blob-common/blob/master/
 
 This function cleans up SVG code for safer inline insertion into your document. It fixes some common Illustrator bugs (like broken reference links and the generic `id="Layer_1"` definition), strips `DOCTYPE` headers, and reduces whitespace. Many additional options are available (see below).
 
+There is a corresponding shortcode that can be used inside a blog post: `common-clean-svg`. All the rendering options are the same, however any array types should be set as comma-separated strings.
+
+The shortcode has two additional options:
+ * `classes`: a comma-separated string of classes to apply to the `<figure>`.
+ * `attachment_id`: the attachment ID of the SVG.
+
 Note: this requires `DOMDocument` support.
 
 #### Arguments
@@ -62,9 +68,9 @@ $args = array(
     'rewrite_styles'=>false,
 
     //remove invalid tags and attributes, strip script-y
-    //things. note: this does not remove CSS properties
-    //like behavior or extension, not does it strip
-    //embedded data:
+    //things, fix formatting, etc. this is the only option
+    //enabled by default, and highly recommended for use
+    //on production environments.
     'sanitize'=>true,
 
     //cleaning SVGs in PHP can be slow. this option will
@@ -84,7 +90,7 @@ $args = array(
     'strip_style'=>false,
 
     //remove all <title> tags
-        'strip_title'=>false,
+    'strip_title'=>false,
 
     //additional whitelist tags, beyond spec.
     'whitelist_tags'=>array(),
@@ -103,8 +109,11 @@ $args = array(
 ```
 
 ```html
-<!-- my SVG -->
-<?=common_get_clean_svg('/path/to/logo.svg')?>
+<!-- example function use -->
+<?=common_get_clean_svg('/path/to/logo.svg', $args)?>
+
+<!-- example shortcode -->
+[common-clean-svg attachment_id="0" classes="alignleft" strip_id="true"]An optional caption.[/common-clean-svg]
 ```
 
 
