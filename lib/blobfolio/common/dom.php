@@ -47,10 +47,15 @@ class dom {
 			$svg = preg_replace('/<\?(.*)\?>/Us', '', $svg);
 			$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
 
+			if (false !== mb::strpos($svg, '<?') || false !== mb::strpos($svg, '<%')) {
+				return false;
+			}
+
 			// Remove comments.
 			$svg = preg_replace('/<!--(.*)-->/Us', '', $svg);
 			$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
-			if (false !== mb::strpos($svg, '<!--')) {
+
+			if (false !== mb::strpos($svg, '<!--') || false !== mb::strpos($svg, '/*')) {
 				return false;
 			}
 
@@ -97,6 +102,22 @@ class dom {
 			// Make sure if xmlns="" exists, it is correct. Can't alter
 			// that with DOMDocument, and there is only one proper value.
 			$svg = preg_replace('/xmlns\s*=\s*"[^"]*"/', 'xmlns="' . constants::SVG_NAMESPACE . '"', $svg);
+
+			// Remove XML, PHP, ASP, etc.
+			$svg = preg_replace('/<\?(.*)\?>/Us', '', $svg);
+			$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
+
+			if (false !== mb::strpos($svg, '<?') || false !== mb::strpos($svg, '<%')) {
+				return '';
+			}
+
+			// Remove comments.
+			$svg = preg_replace('/<!--(.*)-->/Us', '', $svg);
+			$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
+
+			if (false !== mb::strpos($svg, '<!--') || false !== mb::strpos($svg, '/*')) {
+				return '';
+			}
 
 			return $svg;
 		} catch (\Throwable $e) {

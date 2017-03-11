@@ -843,6 +843,13 @@ class sanitize {
 				continue;
 			}
 
+			// If this is a <style> tag, we need to make sure all
+			// entities are decoded. Thanks a lot, XML!
+			if ('style' === $tag_name) {
+				$style = strip_tags(\blobfolio\common\sanitize::attribute_value($tag->textContent));
+				$tag->textContent = $style;
+			}
+
 			// Use XPath for attributes, as $tag->attributes will skip
 			// anything namespaced. Note: We aren't focusing on
 			// actual Namespaces here, that comes later.

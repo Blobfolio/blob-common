@@ -323,25 +323,39 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$svg = file_get_contents(self::ASSETS . 'enshrined.svg');
 
 		// Before.
-		$this->assertEquals( true, strpos( $svg, 'onload' ) );
-		$this->assertEquals( true, strpos( $svg, 'data:' ) );
-		$this->assertEquals( true, strpos( $svg, '<script' ) );
-		$this->assertEquals( true, strpos( $svg, 'http://example.com' ) );
-		$this->assertEquals( true, strpos( $svg, 'XSS' ) );
+		$this->assertEquals(true, strpos($svg, 'onload'));
+		$this->assertEquals(true, strpos($svg, 'data:'));
+		$this->assertEquals(true, strpos($svg, '<script'));
+		$this->assertEquals(true, strpos($svg, 'http://example.com'));
+		$this->assertEquals(true, strpos($svg, 'XSS'));
 
 		$thing = \blobfolio\common\sanitize::svg($svg);
 
 		// After.
 		$this->assertEquals(true, false !== strpos($thing, '<svg'));
-		$this->assertEquals( false, strpos( $thing, 'onload' ) );
-		$this->assertEquals( false, strpos( $thing, 'data:' ) );
-		$this->assertEquals( false, strpos( $thing, '<script' ) );
-		$this->assertEquals( false, strpos( $thing, 'http://example.com' ) );
-		$this->assertEquals( false, strpos( $thing, 'XSS' ) );
+		$this->assertEquals(false, strpos($thing, 'onload'));
+		$this->assertEquals(false, strpos($thing, 'data:'));
+		$this->assertEquals(false, strpos($thing, '<script'));
+		$this->assertEquals(false, strpos($thing, 'http://example.com'));
+		$this->assertEquals(false, strpos($thing, 'XSS'));
 
 		// Check whitelisted domains.
 		$thing = \blobfolio\common\sanitize::svg($svg, null, null, null, 'example.com');
-		$this->assertEquals( true, strpos( $thing, 'http://example.com' ) );
+		$this->assertEquals(true, strpos($thing, 'http://example.com'));
+
+		// Make sure styles get decoded too.
+		$svg = file_get_contents(self::ASSETS . 'minus.svg');
+
+		// Pre Validate.
+		$this->assertEquals(true, strpos($svg, '&#109;'));
+		$this->assertEquals(true, strpos($svg, '&#123;'));
+
+		$thing = \blobfolio\common\sanitize::svg($svg);
+
+		// Missing bad stuff.
+		$this->assertEquals(true, false !== strpos($thing, '<svg'));
+		$this->assertEquals(false, strpos($thing, '&#109;'));
+		$this->assertEquals(false, strpos($thing, '&#123;'));
 	}
 
 	/**
