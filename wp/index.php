@@ -11,6 +11,7 @@
  * Description: Functions to assist common theme operations.
  * Author: Blobfolio, LLC
  * Author URI: https://blobfolio.com/
+ * Version: 7.1.4
  * License: WTFPL
  * License URI: http://www.wtfpl.net/
  */
@@ -136,7 +137,7 @@ function blobcommon_get_installed_version() {
 	static $version;
 
 	if (is_null($version)) {
-		$version = (string) blobcommon_get_info('Version');
+		$version = (string) trim(blobcommon_get_info('Version'));
 	}
 
 	return $version;
@@ -151,7 +152,7 @@ function blobcommon_get_latest_version() {
 	static $version;
 
 	if (is_null($version)) {
-		$version = (string) blobcommon_get_remote_info('Version');
+		$version = (string) trim(blobcommon_get_remote_info('Version'));
 	}
 
 	return $version;
