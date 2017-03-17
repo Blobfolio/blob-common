@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.1.4",
+  "Version": "7.1.5",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.3",
@@ -15,6 +15,23 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.1.5",
+      "notes": [
+        {
+          "type": "fix",
+          "note": "WordPress admin doesn't always read plugin's installed version."
+        },
+        {
+          "type": "improvement",
+          "note": "More robust handling of <style> tags and CSS rules in SVGs."
+        },
+        {
+          "type": "new",
+          "note": "Shortcode: common-clean-svg."
+        }
+      ]
+    },
     {
       "version": "7.1.4",
       "notes": [
