@@ -73,18 +73,9 @@ class image {
 				$options['clean_styles'] = true;
 			}
 
-			// Do a quick pass through DomDoc to standardize formatting.
-			$dom = dom::load_svg($svg);
-			$svg = dom::save_svg($dom);
-			if (!strlen($svg)) {
-				return false;
-			}
-
 			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
-			$dom = dom::load_svg($svg);
-			$tmp = $dom->getElementsByTagName('svg');
-			if ($tmp->item(0)->hasAttribute('data-cleaned') && $tmp->item(0)->getAttribute('data-cleaned') === $passthrough_key) {
+			if (mb::substr_count($svg, 'data-cleaned="' . $passthrough_key . '"')) {
 				if ('DATA_URI' === $output) {
 					return 'data:image/svg+xml;base64,' . base64_encode($svg);
 				}
@@ -94,6 +85,13 @@ class image {
 				else {
 					return false;
 				}
+			}
+
+			// Do a quick pass through DomDoc to standardize formatting.
+			$dom = dom::load_svg($svg);
+			$svg = dom::save_svg($dom);
+			if (!strlen($svg)) {
+				return false;
 			}
 
 			// Make sure SVGs have the current standard.
