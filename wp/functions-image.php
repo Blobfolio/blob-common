@@ -60,7 +60,10 @@ if (!function_exists('common_get_clean_svg')) {
 		if (is_bool($args)) {
 			$args = array('random_id'=>$args);
 		}
-		elseif (is_null($args) && defined('WP_CLEAN_SVG')) {
+		elseif (
+			(is_null($args) || (is_array($args) && !count($args))) &&
+			defined('WP_CLEAN_SVG')
+		) {
 			$args = WP_CLEAN_SVG;
 		}
 
@@ -111,7 +114,15 @@ if (!function_exists('common_shortcode_clean_svg')) {
 		) {
 			return false;
 		}
-		$svg = common_get_clean_svg($svg);
+
+		// Separate SVG arguments.
+		$svgargs = $args;
+		unset($svgargs['attachment_id']);
+		if (isset($svgargs['classes'])) {
+			unset($svgargs['classes']);
+		}
+
+		$svg = common_get_clean_svg($svg, $svgargs);
 		if (!is_string($svg) || !strlen($svg)) {
 			return false;
 		}
