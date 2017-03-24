@@ -76,6 +76,10 @@ class mb {
 				// Lowercase it.
 				\blobfolio\common\ref\mb::strtolower($parts);
 
+				// Get rid of trailing periods.
+				$parts = ltrim($parts, '.');
+				$parts = rtrim($parts, '.');
+
 				// Standardize IPv6 formatting.
 				if (
 					'[' === static::substr($parts, 0, 1)
@@ -111,6 +115,10 @@ class mb {
 
 					// Lowercase it.
 					\blobfolio\common\ref\mb::strtolower($parts[$k]);
+
+					// Get rid of trailing periods.
+					$parts[$k] = ltrim($parts[$k], '.');
+					$parts[$k] = rtrim($parts[$k], '.');
 
 					// Standardize IPv6 formatting.
 					if ('[' === static::substr($parts[$k], 0, 1)) {
