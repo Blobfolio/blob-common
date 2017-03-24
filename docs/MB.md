@@ -60,6 +60,8 @@ Break a URL down into its constituent parts. Aside from adding Unicode support, 
  * Compact IPv6 hosts;
  * Punycode conversion of Unicode hosts (if `php-intl` is installed);
 
+Note: as with the native `parse_url`, this function does not fully validate URL hosts.
+
 #### Arguments
 
  * (*string*) URL
