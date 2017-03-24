@@ -22,6 +22,7 @@ blobfolio\common\ref\mb::strtolower($foo);
 ##### Table of Contents
 
  * [parse_str()](#parse_str)
+ * [parse_url()](#parse_url)
  * [str_split()](#str_split)
  * [strlen()](#strlen)
  * [str_pad()](#str_pad)
@@ -51,6 +52,40 @@ N/A
 
 
 
+## parse_url()
+
+Break a URL down into its constituent parts. Aside from adding Unicode support, this wrapper will:
+ * Fix scheme-agnostic URLs like `"//domain.com"`;
+ * Treat a schemeless host as a host rather than a path;
+ * Compact IPv6 hosts;
+ * Punycode conversion of Unicode hosts (if `php-intl` is installed);
+
+#### Arguments
+
+ * (*string*) URL
+ * (*int*) (*optional*) Component
+
+#### Returns
+
+Returns an array of the URL parts if `$component` is omitted, otherwise the component or `NULL` is returned.
+
+#### Example
+
+```php
+$foo = blobfolio\common\mb::parse_url('http://☺.com', PHP_URL_HOST); //xn--74h.com
+
+$foo = blobfolio\common\mb::parse_url('http://☺.com/party-time/');
+/*
+array(
+    scheme => http
+    host => xn--74h.com
+    path => /party-time/
+)
+*/
+```
+
+
+
 ## str_split()
 
 Split the characters in a string by the desired length.
@@ -68,7 +103,7 @@ Returns an array of characters.
 
 ```php
 $foo = 'quEen BjöRk Ⅷ loVes aPplEs.';
-print_r(blobfolio\common\str_split($foo, 5));
+print_r(blobfolio\common\mb::str_split($foo, 5));
 /*
 array(
     0 => quEen
@@ -113,9 +148,9 @@ Returns the padded string. If the desired width is less than the string or negat
 
 ```php
 $foo = 'quEen BjöRk Ⅷ loVes aPplEs.';
-echo blobfolio\common\str_pad($foo, 50, '<>', STR_PAD_LEFT));
-echo blobfolio\common\str_pad($foo, 50, '<>', STR_PAD_BOTH));
-echo blobfolio\common\str_pad($foo, 50, '<>', STR_PAD_RIGHT));
+echo blobfolio\common\mb::str_pad($foo, 50, '<>', STR_PAD_LEFT));
+echo blobfolio\common\mb::str_pad($foo, 50, '<>', STR_PAD_BOTH));
+echo blobfolio\common\mb::str_pad($foo, 50, '<>', STR_PAD_RIGHT));
 /*
 ><><><><><><><><><><><>quEen BjöRk Ⅷ loVes aPplEs.
 <><><><><><>quEen BjöRk Ⅷ loVes aPplEs.<><><><><><

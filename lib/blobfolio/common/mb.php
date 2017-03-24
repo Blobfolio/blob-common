@@ -13,6 +13,118 @@ namespace blobfolio\common;
 class mb {
 
 	/**
+	 * Parse URL
+	 *
+	 * @see {http://php.net/manual/en/function.parse-url.php#114817}
+	 * @see {https://github.com/jeremykendall/php-domain-parser/}
+	 *
+	 * @param string $url URL.
+	 * @param int $component Component.
+	 * @return mixed Array, Component, or Null.
+	 */
+	public static function parse_url($url, $component = -1) {
+		ref\cast::string($url, true);
+		$url = preg_replace('/^\s+/u', '', $url);
+		$url = preg_replace('/\s+$/u', '', $url);
+
+		// Before we start, let's fix scheme-agnostic URLs.
+		$url = preg_replace('/^:?\/\//', 'https://', $url);
+
+		// If an IPv6 address is passed on its own, we
+		// need to shove it in brackets.
+		if (filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)){
+			$url = "[$url]";
+		}
+
+		// The trick is to urlencode (most) parts before passing
+		// them to the real parse_url().
+		$encoded = preg_replace_callback(
+			'%([a-zA-Z][a-zA-Z0-9+\-.]*)?(:?//)?([^:/@?&=#\[\]]+)%usD',
+			function ($matches) {
+				$matches[3] = urldecode($matches[3]);
+				return $matches[1] . $matches[2] . $matches[3];
+			},
+			$url
+		);
+
+		// Before getting the real answer, make sure
+		// there is a scheme, otherwise PHP will assume
+		// all there is is a path, which is stupid.
+		if (PHP_URL_SCHEME !== $component) {
+			$test = parse_url($encoded, PHP_URL_SCHEME);
+			if (!$test) {
+				$encoded = "blobfolio://$encoded";
+			}
+		}
+
+		$parts = parse_url($encoded, $component);
+
+		// And now decode what we've been giving. Let's
+		// also take a moment to translate Unicode hosts
+		// to ASCII.
+		if (is_string($parts) && PHP_URL_SCHEME !== $component) {
+			$parts = urldecode($parts);
+
+			if (
+				PHP_URL_HOST === $component &&
+				function_exists('idn_to_ascii')
+			) {
+				$parts = explode('.', $parts);
+				$parts = array_map('idn_to_ascii', $parts);
+				$parts = implode('.', $parts);
+			}
+
+			// Standardize IPv6 formatting.
+			if(
+				PHP_URL_HOST === $component &&
+				'[' === static::substr($parts, 0, 1)
+			) {
+				$parts = str_replace(array('[',']'), '', $parts);
+				ref\sanitize::ip($parts, true);
+				$parts = "[{$parts}]";
+			}
+		}
+		elseif (is_array($parts)) {
+			foreach ($parts as $k=>$v) {
+				if (!is_string($v)) {
+					continue;
+				}
+
+				if ('scheme' !== $k) {
+					$parts[$k] = urldecode($v);
+				}
+				// Remove our pretend scheme.
+				elseif ('blobfolio' === $v) {
+					unset($parts[$k]);
+					continue;
+				}
+
+				if (
+					'host' === $k &&
+					function_exists('idn_to_ascii')
+				) {
+					$parts[$k] = explode('.', $parts[$k]);
+					$parts[$k] = array_map('idn_to_ascii', $parts[$k]);
+					$parts[$k] = implode('.', $parts[$k]);
+				}
+
+				// Standardize IPv6 formatting.
+				if(
+					'host' === $k &&
+					'[' === static::substr($parts[$k], 0, 1)
+				) {
+					$parts[$k] = str_replace(array('[',']'), '', $parts[$k]);
+					ref\sanitize::ip($parts[$k], true);
+					$parts[$k] = "[{$parts[$k]}]";
+				}
+			}
+		}
+
+		return $parts;
+	}
+
+
+	/**
 	 * Wrapper For parse_str()
 	 *
 	 * @param string $str String.

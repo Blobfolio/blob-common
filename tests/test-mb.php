@@ -14,6 +14,48 @@
 class mb_tests extends \PHPUnit\Framework\TestCase {
 
 	/**
+	 * ::parse_url()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_parse_url() {
+		$things = array(
+			'http://☺.com',
+			'//☺.com',
+			'☺.com'
+		);
+
+		foreach($things as $thing){
+			$host = \blobfolio\common\mb::parse_url($thing, PHP_URL_HOST);
+			if(function_exists('idn_to_ascii')){
+				$this->assertEquals('xn--74h.com', $host);
+			}
+			else {
+				$this->assertEquals('☺.com', $host);
+			}
+		}
+
+		$thing = 'https://foo.bar/apples';
+		$result = \blobfolio\common\mb::parse_url($thing);
+		$this->assertEquals(
+			array(
+				'scheme'=>'https',
+				'host'=>'foo.bar',
+				'path'=>'/apples'
+			),
+			$result
+		);
+
+		$thing = '2600:3c00::f03c:91ff:feae:0ff2';
+		$result = \blobfolio\common\mb::parse_url($thing, PHP_URL_HOST);
+		$this->assertEquals('[2600:3c00::f03c:91ff:feae:ff2]', $result);
+
+		$thing = '[2600:3c00::f03c:91ff:feae:0ff2]';
+		$result = \blobfolio\common\mb::parse_url($thing, PHP_URL_HOST);
+		$this->assertEquals('[2600:3c00::f03c:91ff:feae:ff2]', $result);
+	}
+
+	/**
 	 * ::parse_str()
 	 *
 	 * @return void Nothing.
