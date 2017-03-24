@@ -25,9 +25,9 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			'☺.com'
 		);
 
-		foreach($things as $thing){
+		foreach ($things as $thing) {
 			$host = \blobfolio\common\mb::parse_url($thing, PHP_URL_HOST);
-			if(function_exists('idn_to_ascii')){
+			if (function_exists('idn_to_ascii')) {
 				$this->assertEquals('xn--74h.com', $host);
 			}
 			else {
