@@ -32,7 +32,7 @@ class mb {
 
 		// If an IPv6 address is passed on its own, we
 		// need to shove it in brackets.
-		if (filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)){
+		if (filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 			$url = "[$url]";
 		}
 
@@ -65,23 +65,25 @@ class mb {
 		if (is_string($parts) && PHP_URL_SCHEME !== $component) {
 			$parts = urldecode($parts);
 
-			if (
-				PHP_URL_HOST === $component &&
-				function_exists('idn_to_ascii')
-			) {
-				$parts = explode('.', $parts);
-				$parts = array_map('idn_to_ascii', $parts);
-				$parts = implode('.', $parts);
-			}
+			if (PHP_URL_HOST === $component) {
+				// Fix Unicode.
+				if (function_exists('idn_to_ascii')) {
+					$parts = explode('.', $parts);
+					$parts = array_map('idn_to_ascii', $parts);
+					$parts = implode('.', $parts);
+				}
 
-			// Standardize IPv6 formatting.
-			if(
-				PHP_URL_HOST === $component &&
-				'[' === static::substr($parts, 0, 1)
-			) {
-				$parts = str_replace(array('[',']'), '', $parts);
-				ref\sanitize::ip($parts, true);
-				$parts = "[{$parts}]";
+				// Lowercase it.
+				\blobfolio\common\ref\mb::strtolower($parts);
+
+				// Standardize IPv6 formatting.
+				if (
+					'[' === static::substr($parts, 0, 1)
+				) {
+					$parts = str_replace(array('[',']'), '', $parts);
+					ref\sanitize::ip($parts, true);
+					$parts = "[{$parts}]";
+				}
 			}
 		}
 		elseif (is_array($parts)) {
@@ -99,23 +101,23 @@ class mb {
 					continue;
 				}
 
-				if (
-					'host' === $k &&
-					function_exists('idn_to_ascii')
-				) {
-					$parts[$k] = explode('.', $parts[$k]);
-					$parts[$k] = array_map('idn_to_ascii', $parts[$k]);
-					$parts[$k] = implode('.', $parts[$k]);
-				}
+				if ('host' === $k) {
+					// Fix Unicode.
+					if (function_exists('idn_to_ascii')) {
+						$parts[$k] = explode('.', $parts[$k]);
+						$parts[$k] = array_map('idn_to_ascii', $parts[$k]);
+						$parts[$k] = implode('.', $parts[$k]);
+					}
 
-				// Standardize IPv6 formatting.
-				if(
-					'host' === $k &&
-					'[' === static::substr($parts[$k], 0, 1)
-				) {
-					$parts[$k] = str_replace(array('[',']'), '', $parts[$k]);
-					ref\sanitize::ip($parts[$k], true);
-					$parts[$k] = "[{$parts[$k]}]";
+					// Lowercase it.
+					\blobfolio\common\ref\mb::strtolower($parts[$k]);
+
+					// Standardize IPv6 formatting.
+					if ('[' === static::substr($parts[$k], 0, 1)) {
+						$parts[$k] = str_replace(array('[',']'), '', $parts[$k]);
+						ref\sanitize::ip($parts[$k], true);
+						$parts[$k] = "[{$parts[$k]}]";
+					}
 				}
 			}
 		}
