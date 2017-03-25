@@ -131,14 +131,18 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_domain() {
-		$thing = 'https://www.Google.com';
-		$this->assertEquals('google.com', \blobfolio\common\sanitize::domain($thing));
+		$things = array(
+			'https://www.Google.com'=>'google.com',
+			'www.Google.com'=>'google.com',
+			'50.116.18.174'=>'',
+			'//☺.com'=>'xn--74h.com'
+		);
 
-		$thing = 'www.Google.com';
-		$this->assertEquals('google.com', \blobfolio\common\sanitize::domain($thing));
+		foreach ($things as $k=>$v) {
+			$this->assertEquals($v, \blobfolio\common\sanitize::domain($k));
+		}
 
-		$thing = '50.116.18.174';
-		$this->assertEquals('', \blobfolio\common\sanitize::domain($thing));
+		$this->assertEquals('☺.com', \blobfolio\common\sanitize::domain('☺.com', true));
 	}
 
 	/**
@@ -180,17 +184,22 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_hostname() {
-		$thing = 'https://www.Google.com';
-		$this->assertEquals('www.google.com', \blobfolio\common\sanitize::hostname($thing, true));
+		$things = array(
+			'https://www.Google.com'=>'google.com',
+			'www.Google.com'=>'google.com',
+			'50.116.18.174'=>'50.116.18.174',
+			'//☺.com'=>'xn--74h.com',
+			'[2600:3c00::f03c:91ff:feae:0ff2]'=>'2600:3c00::f03c:91ff:feae:ff2',
+			'localhost'=>'localhost'
+		);
 
-		$thing = 'https://www.Google.com';
-		$this->assertEquals('google.com', \blobfolio\common\sanitize::hostname($thing));
+		foreach ($things as $k=>$v) {
+			$this->assertEquals($v, \blobfolio\common\sanitize::hostname($k));
+		}
 
-		$thing = 'www.Google.com';
-		$this->assertEquals('google.com', \blobfolio\common\sanitize::hostname($thing));
+		$this->assertEquals('☺.com', \blobfolio\common\sanitize::hostname('☺.com', false, true));
 
-		$thing = '50.116.18.174';
-		$this->assertEquals($thing, \blobfolio\common\sanitize::hostname($thing));
+		$this->assertEquals('www.google.com', \blobfolio\common\sanitize::hostname('https://www.Google.com', true));
 	}
 
 	/**
