@@ -115,10 +115,11 @@ class sanitize {
 	 * IP addresses.
 	 *
 	 * @param string $str Domain.
+	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain($str='') {
-		ref\sanitize::domain($str);
+	public static function domain($str='', bool $unicode=false) {
+		ref\sanitize::domain($str, $unicode);
 		return $str;
 	}
 
@@ -163,10 +164,11 @@ class sanitize {
 	 *
 	 * @param string $domain Hostname.
 	 * @param bool $www Keep leading www.
+	 * @param bool $unicode Unicode.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname(string $domain, bool $www=false) {
-		ref\sanitize::hostname($domain, $www);
+	public static function hostname(string $domain, bool $www=false, bool $unicode=false) {
+		ref\sanitize::hostname($domain, $www, $unicode);
 		return $domain;
 	}
 
