@@ -260,11 +260,14 @@ blobfolio\common\ref\sanitize::datetime($foo);
 
 ## domain()
 
-Sanitize a domain name. Note: only ASCII characters are supported.
+Sanitize a domain name. This function will tease out the FQDN portion of an arbitrary string, strip leading `www.` subdomains, convert Unicode to ASCII*, and validate the suffix.
+
+Note: with this function, IP addresses and non-FQDN results will be returned as an empty string.
 
 #### Arguments
 
  * (*mixed*) Domain/URL/etc. If an array is passed, each value will be recursively sanitized.
+ * (*bool*) (*optional*) Return Unicode. If `TRUE` and the domain is Unicode, it will be returned thusly rather than being converted to ASCII. Default: `FALSE`
 
 #### Returns
 
@@ -357,12 +360,15 @@ blobfolio\common\ref\sanitize::html($foo);
 
 ## hostname()
 
-Try to tease a hostname from a URL-like string.
+Try to tease a hostname from a URL-like string. This will standardize IPs, validate suffixes, handle Unicode, etc.
+
+Unlike `::domain()`, the result does not need to be a FQDN.
 
 #### Arguments
 
  * (*string*) Domain
- * (*bool*) (*optional*) Strip `"www."`. If `TRUE`, leading `"www."` will be stripped. Default: `FALSE`
+ * (*bool*) (*optional*) Keep `"www."`. If `FALSE`, leading `"www."` will be stripped. Default: `FALSE`
+ * (*bool*) (*optional*) Return Unicode. If `TRUE` and the domain is Unicode, it will be returned thusly rather than being converted to ASCII. Default: `FALSE`
 
 #### Returns
 

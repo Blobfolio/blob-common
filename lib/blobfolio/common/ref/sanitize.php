@@ -293,37 +293,31 @@ class sanitize {
 	 * IP addresses.
 	 *
 	 * @param string $str Domain.
+	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain(&$str='') {
+	public static function domain(&$str='', bool $unicode=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::domain($str[$k]);
 			}
 		}
 		else {
-			cast::string($str);
+			$host = new \blobfolio\domain\domain($str);
+			if ($host->is_fqdn() && !$host->is_ip()) {
+				$str = $host->get_host($unicode);
 
-			if (false === $host = \blobfolio\common\sanitize::hostname($str)) {
-				$str = '';
-				return true;
+				$subdomain = $host->get_subdomain();
+				if (!is_null($subdomain)) {
+					if ('www' === $subdomain || 'www.' === \blobfolio\common\mb::substr($subdomain, 0, 4)) {
+						$str = preg_replace('/^www\./u', '', $str);
+					}
+				}
 			}
-
-			// We only want ASCII domains.
-			if (filter_var($host, FILTER_SANITIZE_URL) !== $host) {
+			else {
 				$str = '';
-				return true;
+				return false;
 			}
-
-			// Does our host kinda match domain standards?
-			// @codingStandardsIgnoreStart
-			if (!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host)) {
-				$str = '';
-				return true;
-			}
-			// @codingStandardsIgnoreEnd
-
-			$str = $host;
 		}
 
 		return true;
@@ -409,46 +403,27 @@ class sanitize {
 	 *
 	 * @param string $domain Hostname.
 	 * @param bool $www Keep leading www.
+	 * @param bool $unicode Unicode.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname(string &$domain, bool $www=false) {
-		cast::string($domain, true);
-		static::whitespace($domain);
-		mb::strtolower($domain);
-
-		if (!\blobfolio\common\mb::strlen($domain)) {
+	public static function hostname(string &$domain, bool $www=false, bool $unicode=false) {
+		$host = new \blobfolio\domain\domain($domain);
+		if (!$host->is_valid()) {
 			$domain = false;
 			return false;
 		}
 
-		// Maybe it is a full URL?
-		$host = parse_url($domain, PHP_URL_HOST);
+		$domain = $host->get_host($unicode);
 
-		// Nope...
-		if (!$host) {
-			$host = $domain;
-			// Maybe there's a path?
-			if (false !== \blobfolio\common\mb::strpos($host, '/')) {
-				$host = explode('/', $host);
-				$host = \blobfolio\common\data::array_pop_top($host);
-			}
-			// And/or a query?
-			if (false !== \blobfolio\common\mb::strpos($host, '?')) {
-				$host = explode('?', $host);
-				$host = \blobfolio\common\data::array_pop_top($host);
+		// Strip leading www., but only if it is a subdomain.
+		if (!$www) {
+			$subdomain = $host->get_subdomain();
+			if (!is_null($subdomain)) {
+				if ('www' === $subdomain || 'www.' === \blobfolio\common\mb::substr($subdomain, 0, 4)) {
+					$domain = preg_replace('/^www\./u', '', $domain);
+				}
 			}
 		}
-
-		// Remove leading www.
-		if (\blobfolio\common\mb::strlen($host) && !$www) {
-			$host = preg_replace('/^www\./', '', $host);
-		}
-
-		if (!$host) {
-			$host = false;
-		}
-
-		$domain = $host;
 
 		return true;
 	}

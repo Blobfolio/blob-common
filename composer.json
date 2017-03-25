@@ -30,6 +30,7 @@
 
     "blobfolio\/blob-mimes": "*",
     "blobfolio\/blob-phone": "*",
+    "blobfolio\/blob-domain": "*",
     "neitanod\/forceutf8": "*"
   },
   "require-dev": {
