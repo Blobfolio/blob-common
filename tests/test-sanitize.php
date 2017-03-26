@@ -389,7 +389,6 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_to_range() {
-
 		$this->assertEquals(3, \blobfolio\common\sanitize::to_range(3, 1, 5));
 		$this->assertEquals(3, \blobfolio\common\sanitize::to_range(3, 1));
 		$this->assertEquals(3, \blobfolio\common\sanitize::to_range(3, null, 5));
@@ -403,9 +402,16 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_url() {
-		$this->assertEquals('', \blobfolio\common\sanitize::url('google.com'));
-		$this->assertEquals('https://google.com', \blobfolio\common\sanitize::url('//google.com'));
-		$this->assertEquals('http://google.com', \blobfolio\common\sanitize::url('http://google.com'));
+		$things = array(
+			'google.com'=>'',
+			'//google.com'=>'https://google.com',
+			'http://google.com'=>'http://google.com',
+			'http://user:pass@domain.com'=>'http://user:pass@domain.com',
+			'//☺.com/hello?awesome'=>'https://xn--74h.com/hello?awesome'
+		);
+		foreach ($things as $k=>$v) {
+			$this->assertEquals($v, \blobfolio\common\sanitize::url($k));
+		}
 	}
 
 	/**

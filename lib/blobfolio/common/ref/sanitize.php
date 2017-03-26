@@ -1014,10 +1014,21 @@ class sanitize {
 		}
 		else {
 			cast::string($str);
-			$str = filter_var($str, FILTER_SANITIZE_URL);
-			if (preg_match('/^\/\//', $str)) {
-				$str = "https:$str";
+
+			// Validate the host, and ASCIIfy international bits
+			// to keep PHP happy.
+			$tmp = \blobfolio\common\mb::parse_url($str);
+			if (!isset($tmp['host'])) {
+				return false;
 			}
+			$tmp['host'] = new \blobfolio\domain\domain($tmp['host']);
+			if (!$tmp['host']->is_valid()) {
+				return false;
+			}
+			$tmp['host'] = (string) $tmp['host'];
+			$str = \blobfolio\common\file::unparse_url($tmp);
+
+			$str = filter_var($str, FILTER_SANITIZE_URL);
 			if (!filter_var($str, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED)) {
 				$str = '';
 			}
