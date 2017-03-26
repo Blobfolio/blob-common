@@ -796,29 +796,17 @@ if (!function_exists('common_validate_domain_name')) {
 	 * @param bool $live Check DNS.
 	 * @return bool True/false.
 	 */
-	function common_validate_domain_name($domain, $live=true) {
-		if (false === $host = common_sanitize_domain_name($domain)) {
+	function common_validate_domain_name($domain, bool $live=true) {
+		$host = new \blobfolio\domain\domain($domain);
+		if(!$host->is_valid() || $host->is_ip()){
 			return false;
 		}
 
-		// We only want ASCII domains.
-		if (filter_var($host, FILTER_SANITIZE_URL) !== $host) {
-			return false;
+		if($live){
+			return $host->has_dns();
 		}
 
-		// Does our host kinda match domain standards?
-		// @codingStandardsIgnoreStart
-		if (!preg_match('/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/', $host)) {
-			return false;
-		}
-		// @codingStandardsIgnoreEnd
-
-		// Does it have an A record?
-		if ($live && !filter_var(gethostbyname($host), FILTER_VALIDATE_IP)) {
-			return false;
-		}
-
-		return true;
+		return $host->is_fqdn();
 	}
 }
 

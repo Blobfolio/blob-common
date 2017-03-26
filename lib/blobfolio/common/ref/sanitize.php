@@ -303,16 +303,9 @@ class sanitize {
 			}
 		}
 		else {
-			$host = new \blobfolio\domain\domain($str);
+			$host = new \blobfolio\domain\domain($str, true);
 			if ($host->is_fqdn() && !$host->is_ip()) {
 				$str = $host->get_host($unicode);
-
-				$subdomain = $host->get_subdomain();
-				if (!is_null($subdomain)) {
-					if ('www' === $subdomain || 'www.' === \blobfolio\common\mb::substr($subdomain, 0, 4)) {
-						$str = preg_replace('/^www\./u', '', $str);
-					}
-				}
 			}
 			else {
 				$str = '';
@@ -407,23 +400,13 @@ class sanitize {
 	 * @return string|bool Hostname or false.
 	 */
 	public static function hostname(string &$domain, bool $www=false, bool $unicode=false) {
-		$host = new \blobfolio\domain\domain($domain);
+		$host = new \blobfolio\domain\domain($domain, !$www);
 		if (!$host->is_valid()) {
 			$domain = false;
 			return false;
 		}
 
 		$domain = $host->get_host($unicode);
-
-		// Strip leading www., but only if it is a subdomain.
-		if (!$www) {
-			$subdomain = $host->get_subdomain();
-			if (!is_null($subdomain)) {
-				if ('www' === $subdomain || 'www.' === \blobfolio\common\mb::substr($subdomain, 0, 4)) {
-					$domain = preg_replace('/^www\./u', '', $domain);
-				}
-			}
-		}
 
 		return true;
 	}
