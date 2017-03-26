@@ -209,6 +209,8 @@ Returns the unslashed path if passed by value, otherwise `TRUE`.
 
 The opposite of `parse_url()`, this will rebuild a URL given an array of parts.
 
+Note: like `parse_url()`, this doesn't imply the result is a valid URL.
+
 #### Arguments
 
  * (*array*) Parts, i.e. the output of `parse_url()`.
