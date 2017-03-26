@@ -284,8 +284,8 @@ if (!function_exists('common_is_current_page')) {
 		}
 
 		// Ready the test URL for comparison.
-		$url = parse_url($url, PHP_URL_PATH);
-		$url2 = parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+		$url = \blobfolio\common\mb::parse_url($url, PHP_URL_PATH);
+		$url2 = \blobfolio\common\mb::parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
 
 		// And check for a match.
 		return $subpages ? substr($url2, 0, common_strlen($url)) === $url : $url === $url2;
