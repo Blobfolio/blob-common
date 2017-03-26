@@ -798,11 +798,11 @@ if (!function_exists('common_validate_domain_name')) {
 	 */
 	function common_validate_domain_name($domain, bool $live=true) {
 		$host = new \blobfolio\domain\domain($domain);
-		if(!$host->is_valid() || $host->is_ip()){
+		if (!$host->is_valid() || $host->is_ip()) {
 			return false;
 		}
 
-		if($live){
+		if ($live) {
 			return $host->has_dns();
 		}
 

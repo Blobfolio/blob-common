@@ -128,7 +128,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			'ftp://user:pass@ftp.com:123'=>'ftp://user:pass@ftp.com:123'
 		);
 
-		foreach($things as $k=>$v){
+		foreach ($things as $k=>$v) {
 			$parsed = \blobfolio\common\mb::parse_url($k);
 			$unparsed = \blobfolio\common\file::unparse_url($parsed);
 			$this->assertEquals($v, $unparsed);

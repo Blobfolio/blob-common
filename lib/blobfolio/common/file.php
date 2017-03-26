@@ -207,7 +207,7 @@ class file {
 		}
 
 		if (isset($parsed['host'])) {
-			if(strlen($url)){
+			if (strlen($url)) {
 				$url .= '//';
 			}
 
