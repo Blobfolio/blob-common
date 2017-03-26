@@ -121,11 +121,18 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_unparse_url() {
+		$things = array(
+			'https://google.com/search?hello#foo'=>'https://google.com/search?hello#foo',
+			'google.com/apples'=>'google.com/apples',
+			'//☺.com'=>'https://xn--74h.com',
+			'ftp://user:pass@ftp.com:123'=>'ftp://user:pass@ftp.com:123'
+		);
 
-		$thing = 'https://google.com/search';
-		$parsed = parse_url($thing);
-		$unparsed = \blobfolio\common\file::unparse_url($parsed);
-		$this->assertEquals($thing, $unparsed);
+		foreach($things as $k=>$v){
+			$parsed = \blobfolio\common\mb::parse_url($k);
+			$unparsed = \blobfolio\common\file::unparse_url($parsed);
+			$this->assertEquals($v, $unparsed);
+		}
 	}
 
 	/**

@@ -207,7 +207,9 @@ class file {
 		}
 
 		if (isset($parsed['host'])) {
-			$url .= '//';
+			if(strlen($url)){
+				$url .= '//';
+			}
 
 			// Is this a user:pass situation?
 			if (isset($parsed['user'])) {
@@ -242,9 +244,7 @@ class file {
 			$url .= "#{$parsed['fragment']}";
 		}
 
-		ref\sanitize::url($url);
-
-		return mb::strlen($url) ? $url : false;
+		return strlen($url) ? $url : false;
 	}
 
 	/**
