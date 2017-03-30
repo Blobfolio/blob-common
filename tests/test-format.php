@@ -97,6 +97,53 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::links()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_links() {
+		$things = array(
+			'blobfolio.com'=>'<a href="http://blobfolio.com">blobfolio.com</a>',
+			'https://blobfolio.com/'=>'<a href="https://blobfolio.com/">https://blobfolio.com/</a>',
+			'Welcome to blobfolio.com!'=>'Welcome to <a href="http://blobfolio.com">blobfolio.com</a>!',
+			'bad.sch.uk'=>'bad.sch.uk',
+			'www.blobfolio.com'=>'<a href="http://www.blobfolio.com">www.blobfolio.com</a>',
+			'me@localhost'=>'me@localhost',
+			'me@bad.sch.uk'=>'me@bad.sch.uk',
+			'"blobfolio.com"'=>'"<a href="http://blobfolio.com">blobfolio.com</a>"',
+			'(blobfolio.com)'=>'(<a href="http://blobfolio.com">blobfolio.com</a>)',
+			'[blobfolio.com]'=>'[<a href="http://blobfolio.com">blobfolio.com</a>]',
+			'{blobfolio.com}'=>'{<a href="http://blobfolio.com">blobfolio.com</a>}',
+			'me@blobfolio.com'=>'<a href="mailto:me@blobfolio.com">me@blobfolio.com</a>',
+			'Email me@blobfolio.com for more.'=>'Email <a href="mailto:me@blobfolio.com">me@blobfolio.com</a> for more.',
+			'blobfolio.com me@blobfolio.com'=>'<a href="http://blobfolio.com">blobfolio.com</a> <a href="mailto:me@blobfolio.com">me@blobfolio.com</a>',
+			'ftp://user:pass@☺.com'=>'<a href="ftp://user:pass@xn--74h.com">ftp://user:pass@☺.com</a>',
+			'smiley@☺.com'=>'<a href="mailto:smiley@xn--74h.com">smiley@☺.com</a>'
+		);
+
+		foreach($things as $k=>$v){
+			$this->assertEquals($v, \blobfolio\common\format::links($k));
+		}
+
+		$args = array(
+			'class'=>array('link', 'nav'),
+			'rel'=>'apples',
+			'target'=>'_blank'
+		);
+		$thing = \blobfolio\common\format::links('blobfolio.com', $args);
+		$this->assertEquals('<a href="http://blobfolio.com" class="link nav" rel="apples" target="_blank">blobfolio.com</a>', $thing);
+
+		$thing = \blobfolio\common\format::links('me@blobfolio.com', $args);
+		$this->assertEquals('<a href="mailto:me@blobfolio.com" class="link nav" rel="apples" target="_blank">me@blobfolio.com</a>', $thing);
+
+		$args = array(
+			'class'=>'link'
+		);
+		$thing = \blobfolio\common\format::links('blobfolio.com', $args);
+		$this->assertEquals('<a href="http://blobfolio.com" class="link">blobfolio.com</a>', $thing);
+	}
+
+	/**
 	 * ::money()
 	 *
 	 * @return void Nothing.

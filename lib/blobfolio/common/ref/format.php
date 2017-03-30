@@ -131,6 +131,161 @@ class format {
 	}
 
 	/**
+	 * Linkify Text
+	 *
+	 * Make link-like text things clickable HTML links.
+	 *
+	 * @param string $str String.
+	 * @param array $args Arguments.
+	 * @param int $pass Pass (1=URL, 2=EMAIL).
+	 *
+	 * @arg array $class Class(es).
+	 * @arg string $rel Rel.
+	 * @arg string $target Target.
+	 *
+	 * @return bool True.
+	 */
+	public static function links(&$str, $args=null, int $pass=1){
+		cast::string($str, true);
+
+		// Build link attributes from our arguments, if any.
+		$defaults = array(
+			'class'=>array(),
+			'rel'=>'',
+			'target'=>''
+		);
+		$data = \blobfolio\common\data::parse_args($args, $defaults);
+		$data['class'] = implode(' ', $data['class']);
+		sanitize::html($data);
+		$data = array_filter($data, 'strlen');
+		$atts = array();
+		foreach($data as $k=>$v){
+			$atts[] = "$k=\"$v\"";
+		}
+		$atts = implode(' ', $atts);
+
+		// Now look at the string.
+		$str = preg_split('/(<.+?>)/is', $str, 0, PREG_SPLIT_DELIM_CAPTURE);
+		$blacklist = implode('|', \blobfolio\common\constants::LINKS_BLACKLIST);
+		$ignoring = false;
+		foreach($str as $k=>$v){
+			// Even keys exist between tags.
+			if ($k % 2 === 0) {
+				// Skip it if we're waiting on a closing tag.
+				if(false !== $ignoring){
+					continue;
+				}
+
+				// URL bits.
+				if(1 === $pass) {
+					// We can afford to be sloppy here, thanks to FDQN validation later
+					$str[$k] = preg_replace_callback(
+						'/((ht|f)tps?:\/\/[^\s\'"\[\]\(\){}]+|[^\s\'"\[\]\(\){}]*xn--[^\s\'"\[\]\(\){}]+|[@]?[\w\.]+\.[\w\.]{2,}[^\s]*)/ui'
+						,
+						function($matches) use($atts){
+							$raw = $matches[1];
+
+							// Don't do email bits.
+							if(0 === \blobfolio\common\mb::strpos($raw, '@')){
+								return $matches[1];
+							}
+
+							// We don't want trailing punctuation added to the link.
+							if(preg_match('/([^\w\/]+)$/ui', $raw, $suffix)){
+								$suffix = $suffix[1];
+								$raw = preg_replace('/([^\w\/]+)$/ui', '', $raw);
+							}
+							else {
+								$suffix = '';
+							}
+
+							$link = \blobfolio\common\mb::parse_url($raw);
+							if(!is_array($link) || !isset($link['host'])){
+								return $matches[1];
+							}
+
+							// Only linkify FQDNs.
+							$domain = new \blobfolio\domain\domain($link['host']);
+							if(!$domain->is_valid() || !$domain->is_fqdn()){
+								return $matches[1];
+							}
+
+							// Supply a scheme, if missing.
+							if(!isset($link['scheme'])){
+								$link['scheme'] = 'http';
+							}
+
+							$link = \blobfolio\common\file::unparse_url($link);
+							if(filter_var($link, FILTER_SANITIZE_URL) !== $link){
+								return $matches[1];
+							}
+
+							// Finally, make a link!
+							sanitize::html($link);
+							return '<a href="' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
+						},
+						$str[$k]
+					);
+				}
+				// Email address bits.
+				elseif(2 === $pass) {
+					// Again, we can be pretty careless here thanks to later checks.
+					$str[$k] = preg_replace_callback(
+						'/([\w\.\!#\$%&\*\+\=\?_~]+@[^\s\'"\[\]\(\){}@]{2,})/ui'
+						,
+						function($matches) use($atts){
+							$raw = $matches[1];
+
+							// We don't want trailing punctuation added to the link.
+							if(preg_match('/([^\w\/]+)$/ui', $raw, $suffix)){
+								$suffix = $suffix[1];
+								$raw = preg_replace('/([^\w\/]+)$/ui', '', $raw);
+							}
+							else {
+								$suffix = '';
+							}
+
+							$link = \blobfolio\common\sanitize::email($raw);
+							if(!$link){
+								return $matches[1];
+							}
+
+							// Finally, make a link!
+							sanitize::html($link);
+
+							return '<a href="mailto:' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
+						},
+						$str[$k]
+					);
+				}
+			}
+			// Odd keys indicate a tag, opening or closing.
+			else {
+				// If we aren't already waiting on a closing tag...
+				if (false === $ignoring) {
+					// Start ignoring if this tag is blacklisted and not self-closing.
+					if (preg_match("/<($blacklist).*(?<!\/)>$/is", $str[$k], $matches)) {
+						$ignoring = preg_quote($matches[1], '/');
+					}
+				}
+				// Otherwise wait until we find a corresponding closing tag.
+				elseif (preg_match("/<\/\s*$ignoring>/i", $str[$k], $matches)) {
+					$ignoring = false;
+				}
+			}
+		}
+		$str = implode($str);
+
+		// Linkification is run in stages to prevent overlap issues.
+		// Pass #1 is for URL-like bits, pass #2 for email addresses.
+		if(1 === $pass){
+			static::links($str, $args, 2);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Money (USD)
 	 *
 	 * @param float $value Value.

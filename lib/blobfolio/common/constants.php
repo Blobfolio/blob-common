@@ -1447,6 +1447,30 @@ class constants {
 		'nest'=>array(),
 		'raw'=>''
 	);
+
+	// Link Blacklist (i.e. tags whose content shouldn't be linkified).
+	const LINKS_BLACKLIST = array(
+		'a',
+		'audio',
+		'button',
+		'code',
+		'embed',
+		'frame',
+		'head',
+		'link',
+		'object',
+		'picture',
+		'pre',
+		'script',
+		'select',
+		'style',
+		'svg',
+		'textarea',
+		'video'
+	);
+
+	const LINKS_URL_REGEXP = '/
+	/';
 }
 
 

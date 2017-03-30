@@ -27,6 +27,7 @@ blobfolio\common\ref\format::money($foo);
  * [excerpt()](#excerpt)
  * [inflect()](#inflect)
  * [ip_to_number()](#ip_to_number)
+ * [links()](#links)
  * [money()](#money)
  * [phone()](#phone)
  * [to_csv()](#to_csv)
@@ -200,6 +201,45 @@ $foo = blobfolio\common\format::ip_to_number('50.116.18.174'); //846467758
 
 //by reference
 blobfolio\common\ref\format::ip_to_number($foo);
+```
+
+
+
+## links()
+
+Convert plain-text URLs, domains, and email addresses into clickable (HTML) links.
+
+Malformed data will be left alone, as will any non-FQDN domain or email address.
+
+Unicode hosts are supported if the PHP extension `INTL` is installed, but the resulting `href` attribute will be converted to Punycode/ASCII.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) Text
+ * (*array*) (*optional*) Attributes: an associative array with any of the following keys: `"class"`, `"rel"`, `"target"`. Class may be an `array` or a `string`; the others should contain `string` values. Any attributes provided will be added to the generated links. Default: `NULL`
+
+#### Returns
+
+If passed by value, returns the text with added links, otherwise `TRUE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\format::links('Welcome to domain.com!'); //Welcome to <a href="http://domain.com">domain.com</a>!
+
+$args = array(
+  'target'=>'_blank'
+);
+$foo = blobfolio\common\format::links('me@domain.com', $args); //<a href="mailto:me@domain.com" target="_blank">me@domain.com</a>
+
+//by reference
+blobfolio\common\ref\format::links($foo);
 ```
 
 

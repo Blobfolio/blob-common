@@ -218,6 +218,26 @@ class format {
 	}
 
 	/**
+	 * Linkify Text
+	 *
+	 * Make link-like text things clickable HTML links.
+	 *
+	 * @param string $str String.
+	 * @param array $args Arguments.
+	 * @param int $pass Pass (1=URL, 2=EMAIL).
+	 *
+	 * @arg array $class Class(es).
+	 * @arg string $rel Rel.
+	 * @arg string $target Target.
+	 *
+	 * @return bool True.
+	 */
+	public static function links($str, $args=null, int $pass=1){
+		ref\format::links($str, $args, $pass);
+		return $str;
+	}
+
+	/**
 	 * Money (USD)
 	 *
 	 * @param float $value Value.
