@@ -287,7 +287,13 @@ blobfolio\common\ref\sanitize::domain($foo);
 
 ## email()
 
-Sanitize an email address. This will remove invalid characters, quotes and apostrophes, conver to lowercase, and ensure that the host is a FQDN.
+Sanitize an email address. This will remove invalid characters, quotes and apostrophes, convert to lowercase, and ensure that the host is a FQDN.
+
+This is a little more restrictive than the pure spec and PHP's native `FILTER_SANITIZE_EMAIL`. Local parts (the user) can contain `A-Z`, `0-9`, and the following special characters: `. ! # $ % & * + - = ? _ ~`. Anything else, including comments like `user(blabla)@foo.com`, will be stripped, but won't otherwise cause a validation failure.
+
+Unicode/IDN hosts are A-OK if the PHP extension `INTL` is installed, but will be converted to Punycode/ASCII format.
+
+IP addresses and hosts with invalid suffix structures will be considered invalid.
 
 #### Arguments
 

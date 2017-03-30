@@ -335,13 +335,40 @@ class sanitize {
 			cast::string($str);
 			static::quotes($str);
 			mb::strtolower($str);
-			$str = str_replace(array('"',"'"), '', filter_var($str, FILTER_SANITIZE_EMAIL));
 
-			if (
-				!filter_var($str, FILTER_VALIDATE_EMAIL) ||
-				!preg_match('/^.+\@.+\..+$/', $str)
-			) {
+			// Strip comments.
+			$str = preg_replace('/\([^)]*\)/u', '', $str);
+
+			// For backward-compatibility, strip quotes now.
+			$str = str_replace(array("'", '"'), '', $str);
+
+			// Sanitize by part.
+			if(\blobfolio\common\mb::substr_count($str, '@') === 1){
+				$parts = explode('@', $str);
+
+				// Sanitize local part.
+				$parts[0] = preg_replace('/[^\.a-z0-9\!#\$%&\*\+\-\=\?_~]/u', '', $parts[0]);
+				$parts[0] = ltrim($parts[0], '.');
+				$parts[0] = rtrim($parts[0], '.');
+
+				if(!strlen($parts[0])){
+					$str = '';
+					return true;
+				}
+
+				// Sanitize host.
+				$domain = new \blobfolio\domain\domain($parts[1]);
+				if(!$domain->is_valid() || !$domain->is_fqdn() || $domain->is_ip()){
+					$str = '';
+					return true;
+				}
+				$parts[1] = (string) $domain;
+
+				$str = implode('@', $parts);
+			}
+			else {
 				$str = '';
+				return true;
 			}
 		}
 
