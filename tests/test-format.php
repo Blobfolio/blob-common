@@ -121,7 +121,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			'smiley@☺.com'=>'<a href="mailto:smiley@xn--74h.com">smiley@☺.com</a>'
 		);
 
-		foreach($things as $k=>$v){
+		foreach ($things as $k=>$v) {
 			$this->assertEquals($v, \blobfolio\common\format::links($k));
 		}
 
@@ -154,6 +154,8 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 
 		$thing = '1';
 		$this->assertEquals('$1.00', \blobfolio\common\format::money($thing));
+
+		$this->assertEquals('$1', \blobfolio\common\format::money($thing, false, ',', true));
 
 		$thing = 2500;
 		$this->assertEquals('$2500.00', \blobfolio\common\format::money($thing));

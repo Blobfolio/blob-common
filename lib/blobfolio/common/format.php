@@ -232,7 +232,7 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links($str, $args=null, int $pass=1){
+	public static function links($str, $args=null, int $pass=1) {
 		ref\format::links($str, $args, $pass);
 		return $str;
 	}
@@ -243,10 +243,11 @@ class format {
 	 * @param float $value Value.
 	 * @param bool $cents Return sub-$1 values with ¢.
 	 * @param string $separator Separator.
+	 * @param bool $no00 Remove trailing cents if none.
 	 * @return string Value.
 	 */
-	public static function money($value=0, bool $cents=false, string $separator='') {
-		ref\format::money($value, $cents, $separator);
+	public static function money($value=0, bool $cents=false, string $separator='', bool $no00=false) {
+		ref\format::money($value, $cents, $separator, $no00);
 		return $value;
 	}
 

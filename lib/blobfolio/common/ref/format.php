@@ -145,7 +145,7 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links(&$str, $args=null, int $pass=1){
+	public static function links(&$str, $args=null, int $pass=1) {
 		cast::string($str, true);
 
 		// Build link attributes from our arguments, if any.
@@ -159,7 +159,7 @@ class format {
 		sanitize::html($data);
 		$data = array_filter($data, 'strlen');
 		$atts = array();
-		foreach($data as $k=>$v){
+		foreach ($data as $k=>$v) {
 			$atts[] = "$k=\"$v\"";
 		}
 		$atts = implode(' ', $atts);
@@ -168,30 +168,29 @@ class format {
 		$str = preg_split('/(<.+?>)/is', $str, 0, PREG_SPLIT_DELIM_CAPTURE);
 		$blacklist = implode('|', \blobfolio\common\constants::LINKS_BLACKLIST);
 		$ignoring = false;
-		foreach($str as $k=>$v){
+		foreach ($str as $k=>$v) {
 			// Even keys exist between tags.
-			if ($k % 2 === 0) {
+			if (0 === $k % 2) {
 				// Skip it if we're waiting on a closing tag.
-				if(false !== $ignoring){
+				if (false !== $ignoring) {
 					continue;
 				}
 
 				// URL bits.
-				if(1 === $pass) {
-					// We can afford to be sloppy here, thanks to FDQN validation later
+				if (1 === $pass) {
+					// We can afford to be sloppy here, thanks to FDQN validation later.
 					$str[$k] = preg_replace_callback(
-						'/((ht|f)tps?:\/\/[^\s\'"\[\]\(\){}]+|[^\s\'"\[\]\(\){}]*xn--[^\s\'"\[\]\(\){}]+|[@]?[\w\.]+\.[\w\.]{2,}[^\s]*)/ui'
-						,
-						function($matches) use($atts){
+						'/((ht|f)tps?:\/\/[^\s\'"\[\]\(\){}]+|[^\s\'"\[\]\(\){}]*xn--[^\s\'"\[\]\(\){}]+|[@]?[\w\.]+\.[\w\.]{2,}[^\s]*)/ui',
+						function($matches) use($atts) {
 							$raw = $matches[1];
 
 							// Don't do email bits.
-							if(0 === \blobfolio\common\mb::strpos($raw, '@')){
+							if (0 === \blobfolio\common\mb::strpos($raw, '@')) {
 								return $matches[1];
 							}
 
 							// We don't want trailing punctuation added to the link.
-							if(preg_match('/([^\w\/]+)$/ui', $raw, $suffix)){
+							if (preg_match('/([^\w\/]+)$/ui', $raw, $suffix)) {
 								$suffix = $suffix[1];
 								$raw = preg_replace('/([^\w\/]+)$/ui', '', $raw);
 							}
@@ -200,23 +199,23 @@ class format {
 							}
 
 							$link = \blobfolio\common\mb::parse_url($raw);
-							if(!is_array($link) || !isset($link['host'])){
+							if (!is_array($link) || !isset($link['host'])) {
 								return $matches[1];
 							}
 
 							// Only linkify FQDNs.
 							$domain = new \blobfolio\domain\domain($link['host']);
-							if(!$domain->is_valid() || !$domain->is_fqdn()){
+							if (!$domain->is_valid() || !$domain->is_fqdn()) {
 								return $matches[1];
 							}
 
 							// Supply a scheme, if missing.
-							if(!isset($link['scheme'])){
+							if (!isset($link['scheme'])) {
 								$link['scheme'] = 'http';
 							}
 
 							$link = \blobfolio\common\file::unparse_url($link);
-							if(filter_var($link, FILTER_SANITIZE_URL) !== $link){
+							if (filter_var($link, FILTER_SANITIZE_URL) !== $link) {
 								return $matches[1];
 							}
 
@@ -228,16 +227,15 @@ class format {
 					);
 				}
 				// Email address bits.
-				elseif(2 === $pass) {
+				elseif (2 === $pass) {
 					// Again, we can be pretty careless here thanks to later checks.
 					$str[$k] = preg_replace_callback(
-						'/([\w\.\!#\$%&\*\+\=\?_~]+@[^\s\'"\[\]\(\){}@]{2,})/ui'
-						,
-						function($matches) use($atts){
+						'/([\w\.\!#\$%&\*\+\=\?_~]+@[^\s\'"\[\]\(\){}@]{2,})/ui',
+						function($matches) use($atts) {
 							$raw = $matches[1];
 
 							// We don't want trailing punctuation added to the link.
-							if(preg_match('/([^\w\/]+)$/ui', $raw, $suffix)){
+							if (preg_match('/([^\w\/]+)$/ui', $raw, $suffix)) {
 								$suffix = $suffix[1];
 								$raw = preg_replace('/([^\w\/]+)$/ui', '', $raw);
 							}
@@ -246,7 +244,7 @@ class format {
 							}
 
 							$link = \blobfolio\common\sanitize::email($raw);
-							if(!$link){
+							if (!$link) {
 								return $matches[1];
 							}
 
@@ -278,7 +276,7 @@ class format {
 
 		// Linkification is run in stages to prevent overlap issues.
 		// Pass #1 is for URL-like bits, pass #2 for email addresses.
-		if(1 === $pass){
+		if (1 === $pass) {
 			static::links($str, $args, 2);
 		}
 
@@ -291,9 +289,10 @@ class format {
 	 * @param float $value Value.
 	 * @param bool $cents Return sub-$1 values with ¢.
 	 * @param string $separator Separator.
+	 * @param bool $no00 Remove trailing cents if none.
 	 * @return bool True.
 	 */
-	public static function money(&$value=0, bool $cents=false, string $separator='') {
+	public static function money(&$value=0, bool $cents=false, string $separator='', bool $no00=false) {
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::money($value[$k], $cents, $separator);
@@ -309,6 +308,9 @@ class format {
 
 			if ($value >= 1 || false === $cents) {
 				$value = ($negative ? '-' : '') . '$' . number_format($value, 2, '.', $separator);
+				if ($no00) {
+					$value = preg_replace('/\.00$/', '', $value);
+				}
 			}
 			else {
 				$value = ($negative ? '-' : '') . (100 * $value) . '¢';

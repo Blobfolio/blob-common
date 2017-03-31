@@ -256,8 +256,9 @@ Format a value as US currency.
 #### Arguments
 
  * (*float*) Amount
- * (*bool*) Cents. Whether sub-dollar values should be printed as `"50¢"` or `"$0.50"`. Default: `FALSE`
- * (*string*) Thousands separator. Default `""`
+ * (*bool*) (*optional*) Cents. Whether sub-dollar values should be printed as `"50¢"` or `"$0.50"`. Default: `FALSE`
+ * (*string*) (*optional*) Thousands separator. Default `""`
+ * (*bool*) (*optional*) Remove trailing `.00`. Default `FALSE`
 
 #### Returns
 
