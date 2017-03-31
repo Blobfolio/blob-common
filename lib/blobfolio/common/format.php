@@ -190,7 +190,7 @@ class format {
 	 */
 	public static function inflect($count, string $single, string $plural) {
 		if (is_array($count)) {
-			$count = count($count);
+			$count = (float) count($count);
 		}
 		else {
 			ref\cast::number($count);
@@ -198,7 +198,7 @@ class format {
 		ref\sanitize::utf8($single);
 		ref\sanitize::utf8($plural);
 
-		if (( (float) 1) === $count) {
+		if (1.0 === $count) {
 			return sprintf($single, $count);
 		}
 		else {
