@@ -343,7 +343,7 @@ class sanitize {
 			$str = str_replace(array("'", '"'), '', $str);
 
 			// Sanitize by part.
-			if(\blobfolio\common\mb::substr_count($str, '@') === 1){
+			if (\blobfolio\common\mb::substr_count($str, '@') === 1) {
 				$parts = explode('@', $str);
 
 				// Sanitize local part.
@@ -351,14 +351,14 @@ class sanitize {
 				$parts[0] = ltrim($parts[0], '.');
 				$parts[0] = rtrim($parts[0], '.');
 
-				if(!strlen($parts[0])){
+				if (!strlen($parts[0])) {
 					$str = '';
 					return true;
 				}
 
 				// Sanitize host.
 				$domain = new \blobfolio\domain\domain($parts[1]);
-				if(!$domain->is_valid() || !$domain->is_fqdn() || $domain->is_ip()){
+				if (!$domain->is_valid() || !$domain->is_fqdn() || $domain->is_ip()) {
 					$str = '';
 					return true;
 				}
