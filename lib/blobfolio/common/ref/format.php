@@ -235,9 +235,9 @@ class format {
 							$raw = $matches[1];
 
 							// We don't want trailing punctuation added to the link.
-							if (preg_match('/([^\w\/]+)$/ui', $raw, $suffix)) {
+							if (preg_match('/([^\w]+)$/ui', $raw, $suffix)) {
 								$suffix = $suffix[1];
-								$raw = preg_replace('/([^\w\/]+)$/ui', '', $raw);
+								$raw = preg_replace('/([^\w]+)$/ui', '', $raw);
 							}
 							else {
 								$suffix = '';
@@ -252,6 +252,35 @@ class format {
 							sanitize::html($link);
 
 							return '<a href="mailto:' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
+						},
+						$str[$k]
+					);
+				}
+				// Phone numbers.
+				elseif (3 === $pass) {
+					// Again, we can be pretty careless here thanks to later checks.
+					$str[$k] = preg_replace_callback(
+						'/(\s)?(\+\d[\d\-\s]{5,}+|\(\d{3}\)\s[\d]{3}[\-\.\s]\d{4}|\d{3}[\-\.\s]\d{3}[\-\.\s]\d{4}|\+\d{7,})/ui',
+						function($matches) use($atts) {
+							$prefix = $matches[1];
+							$raw = $matches[2];
+
+							// We don't want trailing punctuation added to the link.
+							if (preg_match('/([^\d]+)$/ui', $raw, $suffix)) {
+								$suffix = $suffix[1];
+								$raw = preg_replace('/([^\d]+)$/ui', '', $raw);
+							}
+							else {
+								$suffix = '';
+							}
+
+							$link = \blobfolio\common\format::phone($raw);
+							$link = preg_replace('/[^\d]/', '', $link);
+							if (!$link) {
+								return $matches[1] . $matches[2];
+							}
+
+							return $prefix . '<a href="tel:+' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
 						},
 						$str[$k]
 					);
@@ -275,9 +304,13 @@ class format {
 		$str = implode($str);
 
 		// Linkification is run in stages to prevent overlap issues.
-		// Pass #1 is for URL-like bits, pass #2 for email addresses.
+		// Pass #1 is for URL-like bits, pass #2 for email addresses,
+		// pass #3 for phone numbers.
 		if (1 === $pass) {
 			static::links($str, $args, 2);
+		}
+		elseif (2 === $pass) {
+			static::links($str, $args, 3);
 		}
 
 		return true;

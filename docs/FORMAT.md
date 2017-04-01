@@ -207,11 +207,13 @@ blobfolio\common\ref\format::ip_to_number($foo);
 
 ## links()
 
-Convert plain-text URLs, domains, and email addresses into clickable (HTML) links.
+Convert plain-text URLs, domains, email addresses, and telephone numbers into clickable (HTML) links.
 
 Malformed data will be left alone, as will any non-FQDN domain or email address.
 
 Unicode hosts are supported if the PHP extension `INTL` is installed, but the resulting `href` attribute will be converted to Punycode/ASCII.
+
+People are very inconsistent at how they write telephone numbers. This looks specifically for international formatting (`+1 201-555-0123`), or common North American 10-digit representations like `(201) 555-0123`, `201-555-0123`, `201.555.0123`, etc. Other types of numbery bits, or phone-ish strings that don't validate, will be ignored.
 
 #### Versions
 

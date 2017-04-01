@@ -118,7 +118,14 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			'Email me@blobfolio.com for more.'=>'Email <a href="mailto:me@blobfolio.com">me@blobfolio.com</a> for more.',
 			'blobfolio.com me@blobfolio.com'=>'<a href="http://blobfolio.com">blobfolio.com</a> <a href="mailto:me@blobfolio.com">me@blobfolio.com</a>',
 			'ftp://user:pass@☺.com'=>'<a href="ftp://user:pass@xn--74h.com">ftp://user:pass@☺.com</a>',
-			'smiley@☺.com'=>'<a href="mailto:smiley@xn--74h.com">smiley@☺.com</a>'
+			'smiley@☺.com'=>'<a href="mailto:smiley@xn--74h.com">smiley@☺.com</a>',
+			'+12015550123'=>'<a href="tel:+12015550123">+12015550123</a>',
+			'+1 201-555-0123'=>'<a href="tel:+12015550123">+1 201-555-0123</a>',
+			'201-555-0123'=>'<a href="tel:+12015550123">201-555-0123</a>',
+			'(201) 555-0123'=>'<a href="tel:+12015550123">(201) 555-0123</a>',
+			'201.555.0123'=>'<a href="tel:+12015550123">201.555.0123</a>',
+			'I ate 234234234 apples!'=>'I ate 234234234 apples!',
+			'Call me at (201) 555-0123.'=>'Call me at <a href="tel:+12015550123">(201) 555-0123</a>.'
 		);
 
 		foreach ($things as $k=>$v) {
