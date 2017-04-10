@@ -28,7 +28,7 @@ class cast {
 	public static function __callStatic($method, $args) {
 		$class = get_called_class();
 
-		if (isset(constants::CAST_TYPES[$method])) {
+		if (array_key_exists($method, constants::CAST_TYPES)) {
 			if (!is_array($args)) {
 				$args = array();
 			}

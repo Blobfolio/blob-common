@@ -188,7 +188,10 @@ class format {
 	 * @param string $plural Plural.
 	 * @return string Inflected string.
 	 */
-	public static function inflect($count, string $single, string $plural) {
+	public static function inflect($count, $single, $plural) {
+		ref\cast::to_string($single, true);
+		ref\cast::to_string($plural, true);
+
 		if (is_array($count)) {
 			$count = (float) count($count);
 		}

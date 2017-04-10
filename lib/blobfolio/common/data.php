@@ -192,8 +192,9 @@ class data {
 	 * @param string $str String.
 	 * @return bool True/false.
 	 */
-	public static function is_utf8(string $str) {
+	public static function is_utf8($str) {
 		try {
+			$str = (string) $str;
 			return (bool) preg_match('//u', $str);
 		} catch (\Throwable $e) {
 			return false;
@@ -215,7 +216,8 @@ class data {
 	 * @param bool $recursive Recursive templating.
 	 * @return array Data.
 	 */
-	public static function json_decode_array(string $json, $defaults=null, $strict=true, $recursive=true) {
+	public static function json_decode_array($json, $defaults=null, $strict=true, $recursive=true) {
+		ref\cast::to_string($json);
 		if (!mb::strlen($json)) {
 			$json = array();
 		}

@@ -200,8 +200,9 @@ class mb {
 	 * @param int $pad_type Pad type.
 	 * @return string Padded string.
 	 */
-	public static function str_pad($str='', int $pad_length, $pad_string=' ', $pad_type=null) {
+	public static function str_pad($str='', $pad_length, $pad_string=' ', $pad_type=null) {
 		ref\cast::to_string($string, true);
+		ref\cast::to_int($pad_length, true);
 		ref\cast::to_string($pad_string, true);
 
 		$current_length = static::strlen($str);

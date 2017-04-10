@@ -183,7 +183,7 @@ class sanitize {
 			cast::to_string($str);
 			static::whitespace($str);
 			mb::strtoupper($str);
-			if (!isset(\blobfolio\common\constants::COUNTRIES[$str])) {
+			if (!array_key_exists($str, \blobfolio\common\constants::COUNTRIES)) {
 				// Maybe a name?
 				$found = false;
 				foreach (\blobfolio\common\constants::COUNTRIES as $k=>$v) {
@@ -695,7 +695,7 @@ class sanitize {
 			static::whitespace($str);
 			mb::strtoupper($str);
 
-			if (!isset(\blobfolio\common\constants::PROVINCES[$str])) {
+			if (!array_key_exists($str, \blobfolio\common\constants::PROVINCES)) {
 				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::PROVINCES), true)) {
 					$str = '';
 				}
@@ -747,7 +747,7 @@ class sanitize {
 			static::whitespace($str);
 			mb::strtoupper($str);
 
-			if (!isset(\blobfolio\common\constants::STATES[$str])) {
+			if (!array_key_exists($str, \blobfolio\common\constants::STATES)) {
 				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::STATES), true)) {
 					$str = '';
 				}

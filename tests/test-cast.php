@@ -20,15 +20,15 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_array() {
 		$thing = 'string';
-		$this->assertEquals(array('string'), \blobfolio\common\cast::array($thing));
+		$this->assertEquals(array('string'), \blobfolio\common\cast::to_array($thing));
 
-		$this->assertEquals('array', gettype(\blobfolio\common\cast::array($thing)));
+		$this->assertEquals('array', gettype(\blobfolio\common\cast::to_array($thing)));
 
 		$thing = array('string');
-		$this->assertEquals(array('string'), \blobfolio\common\cast::array($thing));
+		$this->assertEquals(array('string'), \blobfolio\common\cast::to_array($thing));
 
 		$thing = null;
-		$this->assertEquals(array(), \blobfolio\common\cast::array($thing));
+		$this->assertEquals(array(), \blobfolio\common\cast::to_array($thing));
 	}
 
 	/**
@@ -61,23 +61,23 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_bool() {
 		$thing = 'string';
-		$this->assertEquals(true, \blobfolio\common\cast::bool($thing));
+		$this->assertEquals(true, \blobfolio\common\cast::to_bool($thing));
 
-		$this->assertEquals('boolean', gettype(\blobfolio\common\cast::bool($thing)));
+		$this->assertEquals('boolean', gettype(\blobfolio\common\cast::to_bool($thing)));
 
 		$thing = 'off';
-		$this->assertEquals(false, \blobfolio\common\cast::bool($thing));
+		$this->assertEquals(false, \blobfolio\common\cast::to_bool($thing));
 
 		$thing = 'FALSE';
-		$this->assertEquals(false, \blobfolio\common\cast::bool($thing));
+		$this->assertEquals(false, \blobfolio\common\cast::to_bool($thing));
 
 		$thing = 1;
-		$this->assertEquals(true, \blobfolio\common\cast::bool($thing));
+		$this->assertEquals(true, \blobfolio\common\cast::to_bool($thing));
 
 		$thing = array(1, 'Off', false);
-		$this->assertEquals(array(true, false, false), \blobfolio\common\cast::bool($thing));
+		$this->assertEquals(array(true, false, false), \blobfolio\common\cast::to_bool($thing));
 
-		$this->assertEquals(true, \blobfolio\common\cast::bool($thing, true));
+		$this->assertEquals(true, \blobfolio\common\cast::to_bool($thing, true));
 	}
 
 	/**
@@ -87,26 +87,26 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_float() {
 		$thing = 'string';
-		$this->assertEquals(0.0, \blobfolio\common\cast::float($thing));
+		$this->assertEquals(0.0, \blobfolio\common\cast::to_float($thing));
 
-		$this->assertEquals('double', gettype(\blobfolio\common\cast::float($thing)));
+		$this->assertEquals('double', gettype(\blobfolio\common\cast::to_float($thing)));
 
 		$thing = '$2.50';
-		$this->assertEquals(2.5, \blobfolio\common\cast::float($thing));
+		$this->assertEquals(2.5, \blobfolio\common\cast::to_float($thing));
 
 		$thing = 1;
-		$this->assertEquals(1.0, \blobfolio\common\cast::float($thing));
+		$this->assertEquals(1.0, \blobfolio\common\cast::to_float($thing));
 
 		$thing = '50%';
-		$this->assertEquals(.5, \blobfolio\common\cast::float($thing));
+		$this->assertEquals(.5, \blobfolio\common\cast::to_float($thing));
 
 		$thing = '67¢';
-		$this->assertEquals(.67, \blobfolio\common\cast::float($thing));
+		$this->assertEquals(.67, \blobfolio\common\cast::to_float($thing));
 
 		$thing = array(1, '2.5', false);
-		$this->assertEquals(array(1.0, 2.5, 0.0), \blobfolio\common\cast::float($thing));
+		$this->assertEquals(array(1.0, 2.5, 0.0), \blobfolio\common\cast::to_float($thing));
 
-		$this->assertEquals(0, \blobfolio\common\cast::float($thing, true));
+		$this->assertEquals(0, \blobfolio\common\cast::to_float($thing, true));
 	}
 
 	/**
@@ -116,23 +116,23 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_int() {
 		$thing = 'string';
-		$this->assertEquals(0, \blobfolio\common\cast::int($thing));
+		$this->assertEquals(0, \blobfolio\common\cast::to_int($thing));
 
-		$this->assertEquals('integer', gettype(\blobfolio\common\cast::int($thing)));
+		$this->assertEquals('integer', gettype(\blobfolio\common\cast::to_int($thing)));
 
 		$thing = 2.5;
-		$this->assertEquals(2, \blobfolio\common\cast::int($thing));
+		$this->assertEquals(2, \blobfolio\common\cast::to_int($thing));
 
 		$thing = '33';
-		$this->assertEquals(33, \blobfolio\common\cast::int($thing));
+		$this->assertEquals(33, \blobfolio\common\cast::to_int($thing));
 
 		$thing = 'on';
-		$this->assertEquals(1, \blobfolio\common\cast::int($thing));
+		$this->assertEquals(1, \blobfolio\common\cast::to_int($thing));
 
 		$thing = array(1, '2.5', false);
-		$this->assertEquals(array(1, 2, 0), \blobfolio\common\cast::int($thing));
+		$this->assertEquals(array(1, 2, 0), \blobfolio\common\cast::to_int($thing));
 
-		$this->assertEquals(0, \blobfolio\common\cast::int($thing, true));
+		$this->assertEquals(0, \blobfolio\common\cast::to_int($thing, true));
 	}
 
 	/**
@@ -142,20 +142,20 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_string() {
 		$thing = 'string';
-		$this->assertEquals('string', \blobfolio\common\cast::string($thing));
+		$this->assertEquals('string', \blobfolio\common\cast::to_string($thing));
 
-		$this->assertEquals('string', gettype(\blobfolio\common\cast::string($thing)));
+		$this->assertEquals('string', gettype(\blobfolio\common\cast::to_string($thing)));
 
 		$thing = 2.5;
-		$this->assertEquals('2.5', \blobfolio\common\cast::string($thing));
+		$this->assertEquals('2.5', \blobfolio\common\cast::to_string($thing));
 
 		$thing = false;
-		$this->assertEquals('', \blobfolio\common\cast::string($thing));
+		$this->assertEquals('', \blobfolio\common\cast::to_string($thing));
 
 		$thing = array(1, '2.5', false);
-		$this->assertEquals(array('1', '2.5', ''), \blobfolio\common\cast::string($thing));
+		$this->assertEquals(array('1', '2.5', ''), \blobfolio\common\cast::to_string($thing));
 
-		$this->assertEquals('', \blobfolio\common\cast::string($thing, true));
+		$this->assertEquals('', \blobfolio\common\cast::to_string($thing, true));
 	}
 
 	/**
