@@ -25,7 +25,7 @@ class format {
 	 * @return bool True.
 	 */
 	public static function array_to_indexed(&$arr) {
-		cast::array($arr);
+		cast::to_array($arr);
 		if (count($arr)) {
 			$out = array();
 			foreach ($arr as $k=>$v) {
@@ -51,7 +51,7 @@ class format {
 	 * @return bool True.
 	 */
 	public static function decode_entities(&$str='') {
-		cast::string($str, true);
+		cast::to_string($str, true);
 
 		$last = '';
 		while ($str !== $last) {
@@ -92,7 +92,7 @@ class format {
 	 * @return bool True.
 	 */
 	public static function ip_to_number(&$ip) {
-		cast::string($ip, true);
+		cast::to_string($ip, true);
 
 		if (!filter_var($ip, FILTER_VALIDATE_IP)) {
 			$ip = false;
@@ -149,8 +149,8 @@ class format {
 	 * @return bool True.
 	 */
 	public static function links(&$str, $args=null, $pass=1) {
-		cast::string($str, true);
-		cast::int($pass, true);
+		cast::to_string($str, true);
+		cast::to_int($pass, true);
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -336,10 +336,10 @@ class format {
 			}
 		}
 		else {
-			cast::float($value);
-			cast::bool($cents, true);
-			cast::string($separator, true);
-			cast::bool($no00, true);
+			cast::to_float($value);
+			cast::to_bool($cents, true);
+			cast::to_string($separator, true);
+			cast::to_bool($no00, true);
 
 			$value = round($value, 2);
 			$negative = $value < 0;
@@ -376,7 +376,7 @@ class format {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			sanitize::whitespace($str);
 
 			if (!\blobfolio\common\mb::strlen($str)) {
@@ -384,8 +384,8 @@ class format {
 				return false;
 			}
 
-			cast::string($country);
-			cast::array($types);
+			cast::to_string($country);
+			cast::to_array($types);
 
 			$str = new \blobfolio\phone\phone($str, $country);
 			if (!$str->is_phone($types)) {
@@ -408,9 +408,9 @@ class format {
 	 * @return bool True.
 	 */
 	public static function to_timezone(&$date, $from='UTC', $to='UTC') {
-		cast::string($date, true);
-		cast::string($from, true);
-		cast::string($to, true);
+		cast::to_string($date, true);
+		cast::to_string($from, true);
+		cast::to_string($to, true);
 
 		sanitize::datetime($date);
 		sanitize::timezone($from);

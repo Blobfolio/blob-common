@@ -28,7 +28,7 @@ class mb {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 
 			if (function_exists('mb_strtolower')) {
 				$str = mb_strtolower($str, 'UTF-8');
@@ -62,7 +62,7 @@ class mb {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 
 			if (function_exists('mb_strtoupper')) {
 				$str = mb_strtoupper($str, 'UTF-8');
@@ -96,7 +96,7 @@ class mb {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 
 			if (function_exists('mb_substr')) {
 				$first = \blobfolio\common\mb::substr($str, 0, 1);
@@ -127,7 +127,7 @@ class mb {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 
 			// Don't use the built-in case functions as those
 			// kinda suck. Instead let's adjust manually.

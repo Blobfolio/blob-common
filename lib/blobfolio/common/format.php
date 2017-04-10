@@ -39,7 +39,7 @@ class format {
 	 * @return array|bool Range or false.
 	 */
 	public static function cidr_to_range($cidr) {
-		ref\cast::string($cidr, true);
+		ref\cast::to_string($cidr, true);
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = explode('/', $cidr);
@@ -145,7 +145,7 @@ class format {
 	 * @return string Excerpt.
 	 */
 	public static function excerpt($str='', $args=null) {
-		ref\cast::string($str, true);
+		ref\cast::to_string($str, true);
 		ref\sanitize::whitespace($str);
 		$str = strip_tags($str);
 
@@ -193,7 +193,7 @@ class format {
 			$count = (float) count($count);
 		}
 		else {
-			ref\cast::number($count);
+			ref\cast::to_number($count);
 		}
 		ref\sanitize::utf8($single);
 		ref\sanitize::utf8($plural);
@@ -274,11 +274,11 @@ class format {
 	 * @return string CSV content.
 	 */
 	public static function to_csv($data=null, $headers=null, $delimiter=',', $eol="\n") {
-		ref\cast::array($data);
+		ref\cast::to_array($data);
 		$data = array_values(array_filter($data, 'is_array'));
-		ref\cast::array($headers);
-		ref\cast::string($delimiter, true);
-		ref\cast::string($eol, true);
+		ref\cast::to_array($headers);
+		ref\cast::to_string($delimiter, true);
+		ref\cast::to_string($eol, true);
 
 		$out = array();
 
@@ -290,7 +290,7 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				ref\cast::string($headers[$k], true);
+				ref\cast::to_string($headers[$k], true);
 			}
 			ref\sanitize::csv($headers);
 			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
@@ -300,7 +300,7 @@ class format {
 		if (count($data)) {
 			foreach ($data as $line) {
 				foreach ($line as $k=>$v) {
-					ref\cast::string($line[$k], true);
+					ref\cast::to_string($line[$k], true);
 				}
 				ref\sanitize::csv($line);
 				$out[] = '"' . implode('"' . $delimiter . '"', $line) . '"';
@@ -333,9 +333,9 @@ class format {
 	 * @return string XLS content.
 	 */
 	public static function to_xls($data=null, $headers=null) {
-		ref\cast::array($data);
+		ref\cast::to_array($data);
 		$data = array_values(array_filter($data, 'is_array'));
-		ref\cast::array($headers);
+		ref\cast::to_array($headers);
 
 		// @codingStandardsIgnoreStart
 		$out = array(
@@ -375,7 +375,7 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				ref\cast::string($headers[$k], true);
+				ref\cast::to_string($headers[$k], true);
 			}
 
 			$out[] = '<Row>';
@@ -401,10 +401,10 @@ class format {
 					}
 					elseif (is_numeric($cell)) {
 						$type = 'Number';
-						ref\cast::number($cell);
+						ref\cast::to_number($cell);
 					}
 					else {
-						ref\cast::string($cell, true);
+						ref\cast::to_string($cell, true);
 						ref\sanitize::whitespace($cell, 2);
 						// Date and time.
 						if (preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {
@@ -431,13 +431,13 @@ class format {
 						elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $cell)) {
 							$type = 'Number';
 							$format = '4';
-							ref\cast::number($cell);
+							ref\cast::to_number($cell);
 						}
 						// Currency.
 						elseif (preg_match('/^\-\$?[\d,]*\.?\d+$/', $cell) || preg_match('/^\-?[\d,]*\.?\d+¢$/', $cell)) {
 							$type = 'Number';
 							$format = '5';
-							ref\cast::number($cell);
+							ref\cast::to_number($cell);
 						}
 						// Everything else.
 						else {

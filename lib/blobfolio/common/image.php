@@ -41,7 +41,7 @@ class image {
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
 	public static function clean_svg($path, $args=null, $output='HTML') {
-		ref\cast::string($path, true);
+		ref\cast::to_string($path, true);
 
 		try {
 			if (!is_file($path)) {
@@ -53,7 +53,7 @@ class image {
 			$svg = file_get_contents($path);
 
 			// Options.
-			ref\cast::array($args);
+			ref\cast::to_array($args);
 
 			// The strip_js option is a deprecated alias of sanitize.
 			if (isset($args['strip_js']) && !isset($args['sanitize'])) {
@@ -203,7 +203,7 @@ class image {
 
 							// Make sure width and height are numbers.
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
-								ref\cast::float($width);
+								ref\cast::to_float($width);
 								if ($width <= 0) {
 									$width = null;
 								}
@@ -213,7 +213,7 @@ class image {
 							}
 
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
-								ref\cast::float($height);
+								ref\cast::to_float($height);
 								if ($height <= 0) {
 									$height = null;
 								}
@@ -476,13 +476,13 @@ class image {
 				$cwebp = constants::CWEBP;
 			}
 			else {
-				ref\cast::string($cwebp, true);
+				ref\cast::to_string($cwebp, true);
 			}
 			if (is_null($gif2webp)) {
 				$gif2webp = constants::GIF2WEBP;
 			}
 			else {
-				ref\cast::string($gif2webp, true);
+				ref\cast::to_string($gif2webp, true);
 			}
 
 			return (
@@ -505,7 +505,7 @@ class image {
 	 * @return array|bool Dimensions or false.
 	 */
 	public static function svg_dimensions($svg) {
-		ref\cast::string($svg, true);
+		ref\cast::to_string($svg, true);
 
 		try {
 			// $svg might be a string.
@@ -530,13 +530,13 @@ class image {
 
 			// Make sure width and height are numbers.
 			if (!is_numeric($width) && !preg_match('/^[\d\.]+%$/', $width)) {
-				ref\cast::float($width);
+				ref\cast::to_float($width);
 				if ($width <= 0) {
 					$width = null;
 				}
 			}
 			if (!is_numeric($height) && !preg_match('/^[\d\.]+%$/', $height)) {
-				ref\cast::float($height);
+				ref\cast::to_float($height);
 				if ($height <= 0) {
 					$height = null;
 				}
@@ -550,8 +550,8 @@ class image {
 				$vb = array_filter($vb, 'strlen');
 				$vb = array_filter($vb, 'is_numeric');
 				if (count($vb) === 4) {
-					$width = cast::float($vb[2]);
-					$height = cast::float($vb[3]);
+					$width = cast::to_float($vb[2]);
+					$height = cast::to_float($vb[3]);
 				}
 			}
 
@@ -582,17 +582,17 @@ class image {
 	 * @return bool True/false.
 	 */
 	public static function to_webp($source, $out=null, $cwebp=null, $gif2webp=null, $refresh=false) {
-		ref\cast::string($source, true);
+		ref\cast::to_string($source, true);
 		if (!is_null($out)) {
-			ref\cast::string($out, true);
+			ref\cast::to_string($out, true);
 		}
 		if (!is_null($cwebp)) {
-			ref\cast::string($cwebp, true);
+			ref\cast::to_string($cwebp, true);
 		}
 		if (!is_null($gif2webp)) {
-			ref\cast::string($gif2webp, true);
+			ref\cast::to_string($gif2webp, true);
 		}
-		ref\cast::bool($refresh, true);
+		ref\cast::to_bool($refresh, true);
 
 		if (false === $source = file::path($source, true)) {
 			return false;

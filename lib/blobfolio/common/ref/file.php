@@ -25,7 +25,7 @@ class file {
 			}
 		}
 		else {
-			cast::string($path);
+			cast::to_string($path);
 			static::unleadingslash($path);
 			$path = "/$path";
 		}
@@ -47,9 +47,9 @@ class file {
 			}
 		}
 		else {
-			cast::string($path);
+			cast::to_string($path);
 			static::unixslash($path);
-			cast::bool($validate, true);
+			cast::to_bool($validate, true);
 
 			$original = $path;
 			try {
@@ -110,7 +110,7 @@ class file {
 			}
 		}
 		else {
-			cast::string($path);
+			cast::to_string($path);
 			static::untrailingslash($path);
 			$path .= '/';
 		}
@@ -131,7 +131,7 @@ class file {
 			}
 		}
 		else {
-			cast::string($path);
+			cast::to_string($path);
 			$path = str_replace('\\', '/', $path);
 			$path = str_replace('/./', '//', $path);
 			$path = preg_replace('/\/{2,}/', '/', $path);
@@ -153,7 +153,7 @@ class file {
 			}
 		}
 		else {
-			cast::string($path);
+			cast::to_string($path);
 			static::unixslash($path);
 			$path = ltrim($path, '/');
 		}
@@ -174,7 +174,7 @@ class file {
 			}
 		}
 		else {
-			cast::string($path);
+			cast::to_string($path);
 			static::unixslash($path);
 			$path = rtrim($path, '/');
 		}

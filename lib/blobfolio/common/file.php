@@ -19,7 +19,7 @@ class file {
 	 * @return string|bool Data-URI or false.
 	 */
 	public static function data_uri($path='') {
-		ref\cast::string($path, true);
+		ref\cast::to_string($path, true);
 		ref\file::path($path, true);
 		try {
 			if (false !== $path && is_file($path)) {
@@ -42,7 +42,7 @@ class file {
 	 */
 	public static function empty_dir($path='') {
 		try {
-			ref\cast::string($path);
+			ref\cast::to_string($path);
 			if (!is_readable($path) || !is_dir($path)) {
 				return false;
 			}
@@ -96,8 +96,8 @@ class file {
 	 * @return mixed Bytes served or status.
 	 */
 	public static function readfile_chunked($file, $retbytes=true) {
-		ref\cast::string($file, true);
-		ref\cast::bool($retbytes, true);
+		ref\cast::to_string($file, true);
+		ref\cast::to_bool($retbytes, true);
 
 		$buffer = '';
 		$cnt = 0;

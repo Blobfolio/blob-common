@@ -1469,8 +1469,18 @@ class constants {
 		'video'
 	);
 
-	const LINKS_URL_REGEXP = '/
-	/';
+	// Map variable types to the appropriate cast function.
+	const CAST_TYPES = array(
+		'array'=>'to_array',
+		'bool'=>'to_bool',
+		'boolean'=>'to_boolean',
+		'double'=>'to_float',
+		'float'=>'to_float',
+		'int'=>'to_int',
+		'integer'=>'to_integer',
+		'number'=>'to_number',
+		'string'=>'to_string'
+	);
 }
 
 

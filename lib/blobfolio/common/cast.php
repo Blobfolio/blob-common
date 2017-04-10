@@ -13,13 +13,40 @@ namespace blobfolio\common;
 class cast {
 
 	/**
+	 * Magic Caller
+	 *
+	 * This library was originally written for PHP7. When
+	 * porting to PHP5, the cast function names were no
+	 * longer valid. This will catch PHP7 calls and map
+	 * accordingly.
+	 *
+	 * @param string $method Method.
+	 * @param array $args Arguments.
+	 * @return mixed Value.
+	 * @throws \Exception Invalid method.
+	 */
+	public static function __callStatic($method, $args) {
+		$class = get_called_class();
+
+		if (isset(constants::CAST_TYPES[$method])) {
+			if (!is_array($args)) {
+				$args = array();
+			}
+
+			return call_user_func_array(array($class, constants::CAST_TYPES[$method]), $args);
+		}
+
+		throw new \Exception(sprintf('The required method "%s" does not exist for %s', $method, $class));
+	}
+
+	/**
 	 * To Array
 	 *
 	 * @param mixed $value Variable.
 	 * @return array Array.
 	 */
-	public static function array($value=null) {
-		ref\cast::array($value);
+	public static function to_array($value=null) {
+		ref\cast::to_array($value);
 		return $value;
 	}
 
@@ -58,8 +85,8 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool Bool.
 	 */
-	public static function bool($value=false, $flatten=false) {
-		ref\cast::bool($value, $flatten);
+	public static function to_bool($value=false, $flatten=false) {
+		ref\cast::to_bool($value, $flatten);
 		return $value;
 	}
 
@@ -70,8 +97,8 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Float.
 	 */
-	public static function float($value=0, $flatten=false) {
-		ref\cast::float($value, $flatten);
+	public static function to_float($value=0, $flatten=false) {
+		ref\cast::to_float($value, $flatten);
 		return $value;
 	}
 
@@ -82,8 +109,8 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return int Int.
 	 */
-	public static function int($value=0, $flatten=false) {
-		ref\cast::int($value, $flatten);
+	public static function to_int($value=0, $flatten=false) {
+		ref\cast::to_int($value, $flatten);
 		return $value;
 	}
 
@@ -94,8 +121,8 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Number.
 	 */
-	public static function number($value=0, $flatten=false) {
-		ref\cast::number($value, $flatten);
+	public static function to_number($value=0, $flatten=false) {
+		ref\cast::to_number($value, $flatten);
 		return $value;
 	}
 
@@ -106,8 +133,8 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return string String.
 	 */
-	public static function string($value='', $flatten=false) {
-		ref\cast::string($value, $flatten);
+	public static function to_string($value='', $flatten=false) {
+		ref\cast::to_string($value, $flatten);
 		return $value;
 	}
 

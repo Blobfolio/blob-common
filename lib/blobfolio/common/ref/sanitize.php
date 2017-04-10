@@ -25,7 +25,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 
 			if (preg_match('/[\x80-\xff]/', $str)) {
 				$str = strtr($str, \blobfolio\common\constants::ACCENT_CHARS);
@@ -55,7 +55,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::control_characters($str);
 			format::decode_entities($str);
 
@@ -75,7 +75,7 @@ class sanitize {
 	 */
 	public static function cc(&$ccnum='') {
 		// Digits only.
-		cast::string($ccnum, true);
+		cast::to_string($ccnum, true);
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
 		$str = $ccnum;
 
@@ -159,7 +159,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			$str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
 			$str = preg_replace('/\\\\+0+/', '', $str);
 		}
@@ -180,7 +180,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::whitespace($str);
 			mb::strtoupper($str);
 			if (!isset(\blobfolio\common\constants::COUNTRIES[$str])) {
@@ -215,7 +215,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::quotes($str);
 			static::whitespace($str);
 
@@ -248,7 +248,7 @@ class sanitize {
 				$str = date('Y-m-d H:i:s', $str);
 			}
 
-			cast::string($str);
+			cast::to_string($str);
 
 			if (
 				!\blobfolio\common\mb::strlen($str) ||
@@ -303,7 +303,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::bool($unicode, true);
+			cast::to_bool($unicode, true);
 
 			$host = new \blobfolio\domain\domain($str, true);
 			if ($host->is_fqdn() && !$host->is_ip()) {
@@ -334,7 +334,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::quotes($str);
 			mb::strtolower($str);
 
@@ -390,7 +390,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			mb::strtolower($str);
 			static::whitespace($str);
 			$str = ltrim($str, '*. ');
@@ -413,7 +413,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			$str = htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		}
 
@@ -429,9 +429,9 @@ class sanitize {
 	 * @return string|bool Hostname or false.
 	 */
 	public static function hostname(&$domain, $www=false, $unicode=false) {
-		cast::string($domain, true);
-		cast::bool($www, true);
-		cast::bool($unicode, true);
+		cast::to_string($domain, true);
+		cast::to_bool($www, true);
+		cast::to_bool($unicode, true);
 
 		$host = new \blobfolio\domain\domain($domain, !$www);
 		if (!$host->is_valid()) {
@@ -458,9 +458,9 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			mb::strtolower($str);
-			cast::bool($restricted, true);
+			cast::to_bool($restricted, true);
 
 			// Start by getting rid of obviously bad data.
 			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
@@ -500,10 +500,10 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::attribute_value($str);
 
-			cast::array($protocols);
+			cast::to_array($protocols);
 			$allowed_protocols = array_merge(\blobfolio\common\constants::SVG_WHITELIST_PROTOCOLS, $protocols);
 			mb::strtolower($allowed_protocols);
 			$allowed_protocols = array_map('trim', $allowed_protocols);
@@ -511,7 +511,7 @@ class sanitize {
 			$allowed_protocols = array_unique($allowed_protocols);
 			sort($allowed_protocols);
 
-			cast::array($domains);
+			cast::to_array($domains);
 			$allowed_domains = array_merge(\blobfolio\common\constants::SVG_WHITELIST_DOMAINS, $domains);
 			static::domain($allowed_domains);
 			$allowed_domains = array_filter($allowed_domains, 'strlen');
@@ -567,7 +567,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			sanitize::quotes($str);
 			sanitize::whitespace($str);
 
@@ -595,7 +595,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			mb::strtolower($str);
 			$str = preg_replace('/[^-+*.a-z0-9\/]/', '', $str);
 		}
@@ -620,7 +620,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::quotes($str);
 			static::whitespace($str);
 			$str = preg_replace('/[^\p{L}\p{Zs}\p{Pd}\d\'\"\,\.]/u', '', $str);
@@ -648,7 +648,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::printable($str);
 			static::whitespace($str);
 		}
@@ -671,7 +671,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			$str = preg_replace('/[^[:print:]]/u', '', $str);
 		}
 
@@ -691,7 +691,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::whitespace($str);
 			mb::strtoupper($str);
 
@@ -721,7 +721,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			$from = array_keys(\blobfolio\common\constants::QUOTE_CHARS);
 			$to = array_values(\blobfolio\common\constants::QUOTE_CHARS);
 			$str = str_replace($from, $to, $str);
@@ -743,7 +743,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 			static::whitespace($str);
 			mb::strtoupper($str);
 
@@ -769,11 +769,11 @@ class sanitize {
 	 */
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
 		// First, sanitize and build out function arguments!
-		cast::string($str, true);
-		cast::array($tags);
-		cast::array($attr);
-		cast::array($protocols);
-		cast::array($domains);
+		cast::to_string($str, true);
+		cast::to_array($tags);
+		cast::to_array($attr);
+		cast::to_array($protocols);
+		cast::to_array($domains);
 
 		$allowed_tags = array_merge(\blobfolio\common\constants::SVG_WHITELIST_TAGS, $tags);
 		mb::strtolower($allowed_tags);
@@ -1051,7 +1051,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
+			cast::to_string($str);
 
 			// Validate the host, and ASCIIfy international bits
 			// to keep PHP happy.
@@ -1122,8 +1122,8 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
-			cast::int($newlines, true);
+			cast::to_string($str);
+			cast::to_int($newlines, true);
 			static::to_range($newlines, 0);
 
 			if (!$newlines) {
@@ -1185,7 +1185,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($zip5);
+			cast::to_string($zip5);
 			$str = preg_replace('/[^\d]/', '', $str);
 
 			if (\blobfolio\common\mb::strlen($str) < 5) {

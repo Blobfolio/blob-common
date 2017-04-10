@@ -105,7 +105,7 @@ class data {
 	 * @return array Months.
 	 */
 	public static function cc_exp_months($format='m - M') {
-		ref\cast::string($format, true);
+		ref\cast::to_string($format, true);
 		$months = array();
 		for ($x = 1; $x <= 12; $x++) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
@@ -120,7 +120,7 @@ class data {
 	 * @return array Years.
 	 */
 	public static function cc_exp_years($length=10) {
-		ref\cast::int($length, true);
+		ref\cast::to_int($length, true);
 		if ($length < 1) {
 			$length = 10;
 		}
@@ -225,7 +225,7 @@ class data {
 				$json = array();
 			}
 			elseif (!is_array($json)) {
-				ref\cast::array($json);
+				ref\cast::to_array($json);
 			}
 		}
 
@@ -248,12 +248,12 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function length_in_range($str, $min=null, $max=null) {
-		ref\cast::string($str, true);
+		ref\cast::to_string($str, true);
 		if (!is_null($min) && !is_int($min)) {
-			ref\cast::int($min, true);
+			ref\cast::to_int($min, true);
 		}
 		if (!is_null($max) && !is_int($max)) {
-			ref\cast::int($max, true);
+			ref\cast::to_int($max, true);
 		}
 
 		$length = mb::strlen($str);
@@ -286,10 +286,10 @@ class data {
 	 * @return array Parsed arguments.
 	 */
 	public static function parse_args($args, $defaults, $strict=true, $recursive=true) {
-		ref\cast::array($args);
-		ref\cast::array($defaults);
-		ref\cast::bool($strict, true);
-		ref\cast::bool($recursive, true);
+		ref\cast::to_array($args);
+		ref\cast::to_array($defaults);
+		ref\cast::to_bool($strict, true);
+		ref\cast::to_bool($recursive, true);
 
 		if (!count($defaults)) {
 			return array();
@@ -329,8 +329,8 @@ class data {
 	 * @return int Random number.
 	 */
 	public static function random_int($min=0, $max=1) {
-		ref\cast::int($min, true);
-		ref\cast::int($max, true);
+		ref\cast::to_int($min, true);
+		ref\cast::to_int($max, true);
 
 		if ($min > $max) {
 			static::switcheroo($min, $max);
@@ -356,7 +356,7 @@ class data {
 	 * @return string Random string.
 	 */
 	public static function random_string($length=10, $soup=null) {
-		ref\cast::int($length, true);
+		ref\cast::to_int($length, true);
 
 		if (is_array($soup) && count($soup)) {
 			$soup = implode('', array_map('\blobfolio\common\cast::string', $soup));
@@ -418,11 +418,11 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function unsetcookie($name, $path='', $domain='', $secure=false, $httponly=false) {
-		ref\cast::string($name, true);
-		ref\cast::string($path, true);
-		ref\cast::string($domain, true);
-		ref\cast::bool($secure, true);
-		ref\cast::bool($httponly, true);
+		ref\cast::to_string($name, true);
+		ref\cast::to_string($path, true);
+		ref\cast::to_string($domain, true);
+		ref\cast::to_bool($secure, true);
+		ref\cast::to_bool($httponly, true);
 
 		try {
 			setcookie($name, false, -1, $path, $domain, $secure, $httponly);

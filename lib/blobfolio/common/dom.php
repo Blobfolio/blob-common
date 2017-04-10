@@ -22,7 +22,7 @@ class dom {
 	 * @return bool|DOMDocument DOM object or false.
 	 */
 	public static function load_svg($svg='') {
-		ref\cast::string($svg, true);
+		ref\cast::to_string($svg, true);
 
 		try {
 			// First thing first, lowercase all tags.
@@ -145,14 +145,14 @@ class dom {
 	 */
 	public static function get_nodes_by_class($parent, $class=null, $all=false) {
 		$nodes = array();
-		ref\cast::bool($all, true);
+		ref\cast::to_bool($all, true);
 
 		try {
 			if (!method_exists($parent, 'getElementsByTagName')) {
 				return $nodes;
 			}
 
-			ref\cast::array($class);
+			ref\cast::to_array($class);
 			$class = array_map('trim', $class);
 			foreach ($class as $k=>$v) {
 				$class[$k] = ltrim($class[$k], '.');
@@ -198,7 +198,7 @@ class dom {
 	 * @return array Parsed styles.
 	 */
 	public static function parse_css($styles='') {
-		ref\cast::string($styles, true);
+		ref\cast::to_string($styles, true);
 
 		// Remove comments.
 		while (false !== $start = mb::strpos($styles, '/*')) {

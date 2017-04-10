@@ -23,7 +23,7 @@ class mb {
 	 * @return mixed Array, Component, or Null.
 	 */
 	public static function parse_url($url, $component = -1) {
-		ref\cast::string($url, true);
+		ref\cast::to_string($url, true);
 		$url = preg_replace('/^\s+/u', '', $url);
 		$url = preg_replace('/\s+$/u', '', $url);
 
@@ -158,8 +158,8 @@ class mb {
 	 * @return array|bool Split string or false.
 	 */
 	public static function str_split($str, $split_length=1) {
-		ref\cast::string($str, true);
-		ref\cast::int($split_length, true);
+		ref\cast::to_string($str, true);
+		ref\cast::to_int($split_length, true);
 		if ($split_length < 1) {
 			return false;
 		}
@@ -181,7 +181,7 @@ class mb {
 	 * @return int String length.
 	 */
 	public static function strlen($str) {
-		ref\cast::string($str, true);
+		ref\cast::to_string($str, true);
 
 		if (function_exists('mb_strlen')) {
 			return (int) mb_strlen($str, 'UTF-8');
@@ -201,8 +201,8 @@ class mb {
 	 * @return string Padded string.
 	 */
 	public static function str_pad($str='', int $pad_length, $pad_string=' ', $pad_type=null) {
-		ref\cast::string($string, true);
-		ref\cast::string($pad_string, true);
+		ref\cast::to_string($string, true);
+		ref\cast::to_string($pad_string, true);
 
 		$current_length = static::strlen($str);
 		$pad_string_length = static::strlen($pad_string);
@@ -263,8 +263,8 @@ class mb {
 	 * @return int|bool First occurrence or false.
 	 */
 	public static function strpos($haystack, $needle, $offset=0) {
-		ref\cast::string($haystack, true);
-		ref\cast::string($needle, true);
+		ref\cast::to_string($haystack, true);
+		ref\cast::to_string($needle, true);
 
 		if (function_exists('mb_strpos')) {
 			return mb_strpos($haystack, $needle, $offset, 'UTF-8');
@@ -283,8 +283,8 @@ class mb {
 	 * @return int|bool Last occurrence or false.
 	 */
 	public static function strrpos($haystack, $needle, $offset=0) {
-		ref\cast::string($haystack, true);
-		ref\cast::string($needle, true);
+		ref\cast::to_string($haystack, true);
+		ref\cast::to_string($needle, true);
 
 		if (function_exists('mb_strrpos')) {
 			return mb_strrpos($haystack, $needle, $offset, 'UTF-8');
@@ -331,7 +331,7 @@ class mb {
 	 * @return string String.
 	 */
 	public static function substr($str, $start=0, $length=null) {
-		ref\cast::string($str, true);
+		ref\cast::to_string($str, true);
 
 		if (function_exists('mb_substr')) {
 			return mb_substr($str, $start, $length, 'UTF-8');
@@ -349,8 +349,8 @@ class mb {
 	 * @return int Count.
 	 */
 	public static function substr_count($haystack, $needle) {
-		ref\cast::string($haystack, true);
-		ref\cast::string($needle, true);
+		ref\cast::to_string($haystack, true);
+		ref\cast::to_string($needle, true);
 
 		if (function_exists('mb_substr_count')) {
 			return mb_substr_count($haystack, $needle, 'UTF-8');
