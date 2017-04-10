@@ -299,7 +299,7 @@ class sanitize {
 	public static function domain(&$str='', bool $unicode=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::domain($str[$k]);
+				static::domain($str[$k], $unicode);
 			}
 		}
 		else {
