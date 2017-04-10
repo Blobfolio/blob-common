@@ -118,7 +118,7 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain($str='', bool $unicode=false) {
+	public static function domain($str='', $unicode=false) {
 		ref\sanitize::domain($str, $unicode);
 		return $str;
 	}
@@ -167,7 +167,7 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname(string $domain, bool $www=false, bool $unicode=false) {
+	public static function hostname($domain, $www=false, $unicode=false) {
 		ref\sanitize::hostname($domain, $www, $unicode);
 		return $domain;
 	}
@@ -179,7 +179,7 @@ class sanitize {
 	 * @param bool $restricted Allow private/restricted values.
 	 * @return string IP.
 	 */
-	public static function ip($str='', bool $restricted=false) {
+	public static function ip($str='', $restricted=false) {
 		ref\sanitize::ip($str, $restricted);
 		return $str;
 	}
@@ -374,7 +374,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace($str='', int $newlines=0) {
+	public static function whitespace($str='', $newlines=0) {
 		ref\sanitize::whitespace($str, $newlines);
 		return $str;
 	}
@@ -386,7 +386,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace_multiline($str='', int $newlines=1) {
+	public static function whitespace_multiline($str='', $newlines=1) {
 		ref\sanitize::whitespace_multiline($str, $newlines);
 		return $str;
 	}

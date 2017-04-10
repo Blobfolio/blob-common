@@ -23,6 +23,8 @@ class cast {
 			$value = (array) $value;
 		} catch (\Throwable $e) {
 			$value = array();
+		} catch (\Exception $e) {
+			$value = array();
 		}
 
 		return true;
@@ -35,7 +37,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function bool(&$value=false, bool $flatten=false) {
+	public static function bool(&$value=false, $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::bool($value[$k]);
@@ -60,6 +62,8 @@ class cast {
 					$value = (bool) $value;
 				} catch (\Throwable $e) {
 					$value = false;
+				} catch (\Exception $e) {
+					$value = false;
 				}
 			}
 		}
@@ -74,7 +78,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function float(&$value=0, bool $flatten=false) {
+	public static function float(&$value=0, $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::float($value[$k]);
@@ -85,6 +89,8 @@ class cast {
 			try {
 				$value = (float) $value;
 			} catch (\Throwable $e) {
+				$value = 0.0;
+			} catch (\Exception $e) {
 				$value = 0.0;
 			}
 		}
@@ -99,7 +105,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function int(&$value=0, bool $flatten=false) {
+	public static function int(&$value=0, $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::int($value[$k]);
@@ -131,7 +137,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function number(&$value=0, bool $flatten=false) {
+	public static function number(&$value=0, $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::number($value[$k]);
@@ -160,6 +166,8 @@ class cast {
 				$value = (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 			} catch (\Throwable $e) {
 				$value = 0.0;
+			} catch (\Exception $e) {
+				$value = 0.0;
 			}
 		}
 
@@ -173,7 +181,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function string(&$value='', bool $flatten=false) {
+	public static function string(&$value='', $flatten=false) {
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::string($value[$k]);
@@ -184,6 +192,8 @@ class cast {
 				$value = (string) $value;
 				sanitize::utf8($value);
 			} catch (\Throwable $e) {
+				$value = '';
+			} catch (\Exception $e) {
 				$value = '';
 			}
 		}
@@ -199,7 +209,8 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function to_type(&$value, string $type=null, bool $flatten=false) {
+	public static function to_type(&$value, $type=null, $flatten=false) {
+		static::string($type, true);
 		if (!\blobfolio\common\mb::strlen($type)) {
 			return true;
 		}

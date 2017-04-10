@@ -232,7 +232,7 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links($str, $args=null, int $pass=1) {
+	public static function links($str, $args=null, $pass=1) {
 		ref\format::links($str, $args, $pass);
 		return $str;
 	}
@@ -246,7 +246,7 @@ class format {
 	 * @param bool $no00 Remove trailing cents if none.
 	 * @return string Value.
 	 */
-	public static function money($value=0, bool $cents=false, string $separator='', bool $no00=false) {
+	public static function money($value=0, $cents=false, $separator='', $no00=false) {
 		ref\format::money($value, $cents, $separator, $no00);
 		return $value;
 	}
@@ -273,10 +273,12 @@ class format {
 	 * @param string $eol Line ending type.
 	 * @return string CSV content.
 	 */
-	public static function to_csv($data=null, $headers=null, string $delimiter=',', string $eol="\n") {
+	public static function to_csv($data=null, $headers=null, $delimiter=',', $eol="\n") {
 		ref\cast::array($data);
 		$data = array_values(array_filter($data, 'is_array'));
 		ref\cast::array($headers);
+		ref\cast::string($delimiter, true);
+		ref\cast::string($eol, true);
 
 		$out = array();
 

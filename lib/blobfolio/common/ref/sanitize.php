@@ -296,13 +296,15 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain(&$str='', bool $unicode=false) {
+	public static function domain(&$str='', $unicode=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::domain($str[$k], $unicode);
 			}
 		}
 		else {
+			cast::bool($unicode, true);
+
 			$host = new \blobfolio\domain\domain($str, true);
 			if ($host->is_fqdn() && !$host->is_ip()) {
 				$str = $host->get_host($unicode);
@@ -426,7 +428,11 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname(string &$domain, bool $www=false, bool $unicode=false) {
+	public static function hostname(&$domain, $www=false, $unicode=false) {
+		cast::string($domain, true);
+		cast::bool($www, true);
+		cast::bool($unicode, true);
+
 		$host = new \blobfolio\domain\domain($domain, !$www);
 		if (!$host->is_valid()) {
 			$domain = false;
@@ -445,7 +451,7 @@ class sanitize {
 	 * @param bool $restricted Allow private/restricted values.
 	 * @return string IP.
 	 */
-	public static function ip(&$str='', bool $restricted=false) {
+	public static function ip(&$str='', $restricted=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ip($str[$k], $restricted);
@@ -454,6 +460,7 @@ class sanitize {
 		else {
 			cast::string($str);
 			mb::strtolower($str);
+			cast::bool($restricted, true);
 
 			// Start by getting rid of obviously bad data.
 			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
@@ -927,7 +934,7 @@ class sanitize {
 				$str = ltrim($str, "'\"");
 				$str = rtrim($str, "'\"");
 
-				\blobfolio\common\ref\sanitize::iri_value($str, $allowed_protocols, $allowed_domains);
+				static::iri_value($str, $allowed_protocols, $allowed_domains);
 
 				if (strlen($str)) {
 					return "url('$str')";
@@ -976,6 +983,8 @@ class sanitize {
 				}
 			} catch (\Throwable $e) {
 				$str = 'UTC';
+			} catch (\Exception $e) {
+				$str = 'UTC';
 			}
 		}
 
@@ -1018,6 +1027,8 @@ class sanitize {
 					$value = $max;
 				}
 			} catch (\Throwable $e) {
+				$value = $original;
+			} catch (\Exception $e) {
 				$value = $original;
 			}
 		}
@@ -1083,6 +1094,8 @@ class sanitize {
 				$str = (string) $str;
 			} catch (\Throwable $e) {
 				$str = '';
+			} catch (\Exception $e) {
+				$str = '';
 			}
 
 			$str = \ForceUTF8\Encoding::toUTF8($str);
@@ -1102,7 +1115,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace(&$str='', int $newlines=0) {
+	public static function whitespace(&$str='', $newlines=0) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::whitespace($str[$k], $newlines);
@@ -1110,6 +1123,7 @@ class sanitize {
 		}
 		else {
 			cast::string($str);
+			cast::int($newlines, true);
 			static::to_range($newlines, 0);
 
 			if (!$newlines) {
@@ -1145,9 +1159,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace_multiline(&$str='', int $newlines=1) {
-		static::to_range($newlines, 1);
-
+	public static function whitespace_multiline(&$str='', $newlines=1) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::whitespace_multiline($str[$k], $newlines);

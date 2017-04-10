@@ -157,8 +157,9 @@ class mb {
 	 * @param int $split_length Split length.
 	 * @return array|bool Split string or false.
 	 */
-	public static function str_split($str, int $split_length=1) {
+	public static function str_split($str, $split_length=1) {
 		ref\cast::string($str, true);
+		ref\cast::int($split_length, true);
 		if ($split_length < 1) {
 			return false;
 		}

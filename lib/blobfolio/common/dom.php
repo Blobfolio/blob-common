@@ -21,7 +21,9 @@ class dom {
 	 * @param string $svg SVG code.
 	 * @return bool|DOMDocument DOM object or false.
 	 */
-	public static function load_svg(string $svg='') {
+	public static function load_svg($svg='') {
+		ref\cast::string($svg, true);
+
 		try {
 			// First thing first, lowercase all tags.
 			$svg = preg_replace('/<svg/ui', '<svg', $svg);
@@ -76,6 +78,8 @@ class dom {
 			return $dom;
 		} catch (\Throwable $e) {
 			return false;
+		} catch (\Exception $e) {
+			return false;
 		}
 	}
 
@@ -122,6 +126,8 @@ class dom {
 			return $svg;
 		} catch (\Throwable $e) {
 			return '';
+		} catch (\Exception $e) {
+			return '';
 		}
 	}
 
@@ -137,8 +143,9 @@ class dom {
 	 * @param bool $all Matches must contain *all* passed classes instead of *any*.
 	 * @return array Nodes.
 	 */
-	public static function get_nodes_by_class($parent, $class=null, bool $all=false) {
+	public static function get_nodes_by_class($parent, $class=null, $all=false) {
 		$nodes = array();
+		ref\cast::bool($all, true);
 
 		try {
 			if (!method_exists($parent, 'getElementsByTagName')) {
@@ -173,6 +180,8 @@ class dom {
 				}
 			}
 		} catch (\Throwable $e) {
+			return $nodes;
+		} catch (\Exception $e) {
 			return $nodes;
 		}
 
@@ -404,6 +413,8 @@ class dom {
 			return true;
 		} catch (\Throwable $e) {
 			return false;
+		} catch (\Exception $e) {
+			return false;
 		}
 
 		return false;
@@ -421,6 +432,8 @@ class dom {
 				static::remove_node($nodes->item(0));
 			}
 		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
 			return false;
 		}
 
@@ -444,6 +457,8 @@ class dom {
 		try {
 			$node->parentNode->removeChild($node);
 		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
 			return false;
 		}
 

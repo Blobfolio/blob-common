@@ -123,6 +123,9 @@ class format {
 			} catch (\Throwable $e) {
 				$ip = false;
 				return false;
+			} catch (\Exception $e) {
+				$ip = false;
+				return false;
 			}
 		}
 
@@ -145,8 +148,9 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links(&$str, $args=null, int $pass=1) {
+	public static function links(&$str, $args=null, $pass=1) {
 		cast::string($str, true);
+		cast::int($pass, true);
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -325,14 +329,18 @@ class format {
 	 * @param bool $no00 Remove trailing cents if none.
 	 * @return bool True.
 	 */
-	public static function money(&$value=0, bool $cents=false, string $separator='', bool $no00=false) {
+	public static function money(&$value=0, $cents=false, $separator='', $no00=false) {
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
-				static::money($value[$k], $cents, $separator);
+				static::money($value[$k], $cents, $separator, $no00);
 			}
 		}
 		else {
 			cast::float($value);
+			cast::bool($cents, true);
+			cast::string($separator, true);
+			cast::bool($no00, true);
+
 			$value = round($value, 2);
 			$negative = $value < 0;
 			if ($negative) {
@@ -418,6 +426,8 @@ class format {
 			$date_new->setTimezone(new \DateTimeZone($to));
 			$date = $date_new->format('Y-m-d H:i:s');
 		} catch (\Throwable $e) {
+			$date = $original;
+		} catch (\Exception $e) {
 			$date = $original;
 		}
 

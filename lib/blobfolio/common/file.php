@@ -80,7 +80,7 @@ class file {
 	 * @param bool $validate Require valid file.
 	 * @return string Path.
 	 */
-	public static function path($path='', bool $validate=true) {
+	public static function path($path='', $validate=true) {
 		ref\file::path($path, $validate);
 		return $path;
 	}
@@ -95,7 +95,10 @@ class file {
 	 * @param bool $retbytes Return bytes served like `readfile()`.
 	 * @return mixed Bytes served or status.
 	 */
-	public static function readfile_chunked(string $file, $retbytes=true) {
+	public static function readfile_chunked($file, $retbytes=true) {
+		ref\cast::string($file, true);
+		ref\cast::bool($retbytes, true);
+
 		$buffer = '';
 		$cnt = 0;
 		$chunk_size = 1024 * 1024;
@@ -188,7 +191,7 @@ class file {
 	 * @param array $parsed Parsed data.
 	 * @return string URL.
 	 */
-	public static function unparse_url(array $parsed=null) {
+	public static function unparse_url($parsed=null) {
 		$url = '';
 		$parsed = data::parse_args($parsed, constants::URL_PARTS);
 

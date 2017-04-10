@@ -104,7 +104,8 @@ class data {
 	 * @param string $format Date format.
 	 * @return array Months.
 	 */
-	public static function cc_exp_months(string $format='m - M') {
+	public static function cc_exp_months($format='m - M') {
+		ref\cast::string($format, true);
 		$months = array();
 		for ($x = 1; $x <= 12; $x++) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
@@ -118,7 +119,8 @@ class data {
 	 * @param int $length Number of years.
 	 * @return array Years.
 	 */
-	public static function cc_exp_years(int $length=10) {
+	public static function cc_exp_years($length=10) {
+		ref\cast::int($length, true);
 		if ($length < 1) {
 			$length = 10;
 		}
@@ -161,8 +163,11 @@ class data {
 			$diff = $date1->diff($date2);
 
 			return abs($diff->days);
-		} // Fallback to counting seconds.
-		catch (Throwable $e) {
+		} catch (\Throwable $e) {
+			$date1 = strtotime($date1);
+			$date2 = strtotime($date2);
+			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
+		} catch (\Exception $e) {
 			$date1 = strtotime($date1);
 			$date2 = strtotime($date2);
 			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
@@ -192,6 +197,8 @@ class data {
 			return (bool) preg_match('//u', $str);
 		} catch (\Throwable $e) {
 			return false;
+		} catch (\Exception $e) {
+			return false;
 		}
 	}
 
@@ -208,7 +215,7 @@ class data {
 	 * @param bool $recursive Recursive templating.
 	 * @return array Data.
 	 */
-	public static function json_decode_array(string $json, $defaults=null, bool $strict=true, bool $recursive=true) {
+	public static function json_decode_array(string $json, $defaults=null, $strict=true, $recursive=true) {
 		if (!mb::strlen($json)) {
 			$json = array();
 		}
@@ -240,7 +247,15 @@ class data {
 	 * @param int $max Max length.
 	 * @return bool True/false.
 	 */
-	public static function length_in_range(string $str, int $min=null, int $max=null) {
+	public static function length_in_range($str, $min=null, $max=null) {
+		ref\cast::string($str, true);
+		if (!is_null($min) && !is_int($min)) {
+			ref\cast::int($min, true);
+		}
+		if (!is_null($max) && !is_int($max)) {
+			ref\cast::int($max, true);
+		}
+
 		$length = mb::strlen($str);
 		if (!is_null($min) && !is_null($max) && $min > $max) {
 			static::switcheroo($min, $max);
@@ -270,9 +285,11 @@ class data {
 	 * @param bool $recursive Recursively apply formatting if inner values are also arrays.
 	 * @return array Parsed arguments.
 	 */
-	public static function parse_args($args, $defaults, bool $strict=true, bool $recursive=true) {
+	public static function parse_args($args, $defaults, $strict=true, $recursive=true) {
 		ref\cast::array($args);
 		ref\cast::array($defaults);
+		ref\cast::bool($strict, true);
+		ref\cast::bool($recursive, true);
 
 		if (!count($defaults)) {
 			return array();
@@ -311,7 +328,10 @@ class data {
 	 * @param int $max Max.
 	 * @return int Random number.
 	 */
-	public static function random_int(int $min=0, int $max=1) {
+	public static function random_int($min=0, $max=1) {
+		ref\cast::int($min, true);
+		ref\cast::int($max, true);
+
 		if ($min > $max) {
 			static::switcheroo($min, $max);
 		}
@@ -335,7 +355,9 @@ class data {
 	 * @param array $soup Alternate alphabet.
 	 * @return string Random string.
 	 */
-	public static function random_string(int $length=10, $soup=null) {
+	public static function random_string($length=10, $soup=null) {
+		ref\cast::int($length, true);
+
 		if (is_array($soup) && count($soup)) {
 			$soup = implode('', array_map('\blobfolio\common\cast::string', $soup));
 			ref\sanitize::printable($soup);				// Strip non-printable.
@@ -395,13 +417,21 @@ class data {
 	 * @param bool $httponly HTTP only.
 	 * @return bool True/false.
 	 */
-	public static function unsetcookie(string $name, string $path='', string $domain='', bool $secure=false, bool $httponly=false) {
+	public static function unsetcookie($name, $path='', $domain='', $secure=false, $httponly=false) {
+		ref\cast::string($name, true);
+		ref\cast::string($path, true);
+		ref\cast::string($domain, true);
+		ref\cast::bool($secure, true);
+		ref\cast::bool($httponly, true);
+
 		try {
 			setcookie($name, false, -1, $path, $domain, $secure, $httponly);
 			if (isset($_COOKIE[$name])) {
 				unset($_COOKIE[$name]);
 			}
 		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
 			return false;
 		}
 

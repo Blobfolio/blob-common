@@ -40,7 +40,9 @@ class image {
 	 *
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
-	public static function clean_svg(string $path, $args=null, string $output='HTML') {
+	public static function clean_svg($path, $args=null, $output='HTML') {
+		ref\cast::string($path, true);
+
 		try {
 			if (!is_file($path)) {
 				return false;
@@ -453,6 +455,8 @@ class image {
 			}
 		} catch (\Throwable $e) {
 			return false;
+		} catch (\Exception $e) {
+			return false;
 		}
 	}
 
@@ -466,13 +470,19 @@ class image {
 	 * @param string $gif2webp Path to gif2webp.
 	 * @return bool True/false.
 	 */
-	public static function has_webp(string $cwebp=null, string $gif2webp=null) {
+	public static function has_webp($cwebp=null, $gif2webp=null) {
 		try {
 			if (is_null($cwebp)) {
 				$cwebp = constants::CWEBP;
 			}
+			else {
+				ref\cast::string($cwebp, true);
+			}
 			if (is_null($gif2webp)) {
 				$gif2webp = constants::GIF2WEBP;
+			}
+			else {
+				ref\cast::string($gif2webp, true);
 			}
 
 			return (
@@ -482,6 +492,8 @@ class image {
 				@is_readable($gif2webp)
 			);
 		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
 			return false;
 		}
 	}
@@ -550,6 +562,8 @@ class image {
 			return false;
 		} catch (\Throwable $e) {
 			return false;
+		} catch (\Exception $e) {
+			return false;
 		}
 	}
 
@@ -567,7 +581,19 @@ class image {
 	 * @param bool $refresh Recreate it.
 	 * @return bool True/false.
 	 */
-	public static function to_webp(string $source, string $out=null, string $cwebp=null, string $gif2webp=null, bool $refresh=false) {
+	public static function to_webp($source, $out=null, $cwebp=null, $gif2webp=null, $refresh=false) {
+		ref\cast::string($source, true);
+		if (!is_null($out)) {
+			ref\cast::string($out, true);
+		}
+		if (!is_null($cwebp)) {
+			ref\cast::string($cwebp, true);
+		}
+		if (!is_null($gif2webp)) {
+			ref\cast::string($gif2webp, true);
+		}
+		ref\cast::bool($refresh, true);
+
 		if (false === $source = file::path($source, true)) {
 			return false;
 		}
@@ -645,6 +671,8 @@ class image {
 				return file_exists($out);
 			}
 		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
 			return false;
 		}
 

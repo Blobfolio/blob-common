@@ -40,7 +40,7 @@ class file {
 	 * @param bool $validate Require valid file.
 	 * @return bool True.
 	 */
-	public static function path(&$path='', bool $validate=true) {
+	public static function path(&$path='', $validate=true) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::path($path[$k], $validate);
@@ -49,11 +49,14 @@ class file {
 		else {
 			cast::string($path);
 			static::unixslash($path);
+			cast::bool($validate, true);
 
 			$original = $path;
 			try {
 				$path = realpath($path);
 			} catch (\Throwable $e) {
+				$path = false;
+			} catch (\Exception $e) {
 				$path = false;
 			}
 
@@ -74,6 +77,8 @@ class file {
 					}
 				} catch (\Throwable $e) {
 					$path = $original;
+				} catch (\Exception $e) {
+					$path = $original;
 				}
 			}
 
@@ -83,6 +88,8 @@ class file {
 					static::trailingslash($path);
 				}
 			} catch (\Throwable $e) {
+				$path = $original;
+			} catch (\Exception $e) {
 				$path = $original;
 			}
 		}
