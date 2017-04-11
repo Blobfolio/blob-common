@@ -1,0 +1,16 @@
+{
+  "name": "blob-common-phar",
+  "require": {
+    "blobfolio\/blob-common": "*",
+    "blobfolio\/blob-mimes": "*",
+    "blobfolio\/blob-phone": "*",
+    "blobfolio\/blob-domain": "*",
+    "neitanod\/forceutf8": "*"
+  },
+  "config": {
+    "vendor-dir": "vendor",
+    "preferred-install": "dist"
+  },
+  "minimum-stability": "dev",
+  "autoload": {}
+}

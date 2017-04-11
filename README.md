@@ -53,6 +53,14 @@ Use Composer:
 composer require "blobfolio/blob-common:dev-master"
 ```
 
+Or grab the compiled Phar and include it in your project:
+
+```php
+require_once('bin/blob-common.phar');
+```
+
+Note: The Phar is gzipped so PHP needs to have gzip capabilities to be able to read it. :)
+
 &nbsp;
 
 ## License
