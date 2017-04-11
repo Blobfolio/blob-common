@@ -1,6 +1,6 @@
 # Tutan Common
 
-A WordPress plugin containing various functions to aid complex theme development. This builds on the [blob-common](https://github.com/Blobfolio/blob-common) PHP library, and includes WordPress-specific extras.
+A WordPress plugin containing various functions to aid complex theme development. This plugin bundles the [blob-common](https://github.com/Blobfolio/blob-common) PHP library, so all of those capabilities can be used as well.
 
 
 
@@ -23,13 +23,9 @@ Tutan Common is a collection of under-the-hood functions and behavioral extensio
 
 Because Tutan Common is a developer resource rather than something end users can directly play with, it is not part of the main WordPress plugin repository. Therefore it must be manually installed.
 
-The current release requires PHP 7+ and several additional modules. Refer to the [requirements](https://github.com/Blobfolio/blob-common#requirements) for `blob-common`. If you meet these standards, download the [current release](https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/blob-common.zip).
-
-Otherwise if you are running PHP 5.4+, you can download the [legacy release](https://github.com/Blobfolio/blob-common/raw/1.5/release/blob-common.zip). Please note this version is unlikely to receive new features, so it is not recommended for new sites.
+The current release requires PHP 5.6+ and several additional modules. Refer to the [requirements](https://github.com/Blobfolio/blob-common#requirements) for `blob-common`. If you meet these standards, download the [current release](https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/blob-common.zip).
 
 Plugin updates will be delivered the usual way through WordPress Admin; no special effort required.
-
-Existing legacy installs will upgrade to the current release if the server is determined to meet the requirements; otherwise it will continue checking for new legacy releases.
 
 
 
@@ -59,9 +55,9 @@ To make digestion easier, the function documentation is broken up into the follo
  * [Images](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/IMAGE.md)
    * [JIT Thumbnails](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/JIT.md)
    * [WebP](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/WEBP.md)
- * [Misc Tools](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/TOOL.md)
- * [Sanitizing/Validation/Formatting](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/SANITIZE.md)
  * [Spacetime](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/SPACETIME.md)
+ * [Misc Tools](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/TOOL.md)
+ * [Misc Wrappers (Deprecated)](https://github.com/Blobfolio/blob-common/blob/master/wp/docs/DEPRECATED.md)
 
 
 

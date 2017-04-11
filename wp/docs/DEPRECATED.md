@@ -1,11 +1,41 @@
-# Reference: Sanitization, Formatting, and Validation Functions
+# Reference: Misc Wrappers (DEPRECATED)
 
-This guide documents functions for sanitizing, formatting, and validating data. The code can be located in `functions-sanitize.php`.
+For historical reasons, Tutan Common contains various functions for data handling that now just point to `blob-common` functions. These functions will remain in the plugin base for the foreseeable future so as not to break sites that use them, however new projects should just call `blob-common` functions directly.
 
 
 
 ##### Table of Contents
 
+ * Geography
+   * [common_get_ca_provinces()](#common_get_ca_provinces)
+   * [common_get_countries()](#common_get_countries)
+   * [common_get_us_states()](#common_get_us_states)
+ * File Handling
+   * [common_get_data_uri()](#common_get_data_uri)
+   * [common_get_mime_type()](#common_get_mime_type)
+   * [common_readfile_chunked()](#common_readfile_chunked)
+ * IPs
+   * [common_cidr_to_range()](#common_cidr_to_range)
+   * [common_ip_to_number()](#common_ip_to_number)
+ * Paths and URLs
+   * [common_is_empty_dir()](#common_is_empty_dir)
+ * Misc Data
+   * [common_array_compare()](#common_array_compare)
+   * [common_array_map_recursive()](#common_array_map_recursive)
+   * [common_array_pop()](#common_array_pop)
+   * [common_array_pop_top()](#common_array_pop_top)
+   * [common_array_type()](#common_array_type)
+   * [common_generate_random_string()](#common_generate_random_string)
+   * [common_get_cc_exp_months()](#common_get_cc_exp_months)
+   * [common_get_cc_exp_years()](#common_get_cc_exp_years)
+   * [common_parse_args()](#common_parse_args)
+   * [common_parse_json_args()](#common_parse_json_args)
+   * [common_random_int()](#common_random_int)
+   * [common_strlen()](#common_strlen)
+   * [common_strpos()](#common_strpos)
+   * [common_substr()](#common_substr)
+   * [common_substr_count()](#common_substr_count)
+   * [common_switcheroo()](#common_switcheroo)
  * (re)Formatting
    * [common_array_to_indexed()](#common_array_to_indexed)
    * [common_format_money()](#common_format_money)
@@ -121,6 +151,20 @@ Returns a phone number formatted as follows: (123) 456-7890 x123456.
 
 
 
+## common_get_ca_provinces()
+
+Return an array of Canadian provinces for e.g. a checkout form. This function originally returned all values in uppercase, but that can now be disabled by passing `FALSE`.
+
+#### Arguments
+
+ * (*bool*) (*optional*) Uppercase. Default `TRUE`
+
+#### Return
+
+Returns a key=>value array. The keys are the two-digit postal abbreviations, values are the full names.
+
+
+
 ## common_get_excerpt()
 
 Generate an excerpt from a string based on letter or word length.
@@ -135,6 +179,122 @@ Generate an excerpt from a string based on letter or word length.
 #### Return
 
 Returns the original string or a shortened version if it was too long. Note: this function strips tags and reduces whitespace to try and prevent waste or broken output. It is still recommended you encode entities before printing.
+
+
+
+## common_get_countries()
+
+Return an array of (most) official countries. Note: Unlike the state/province functions, names are returned in title case by default, but passing `TRUE` will return them in uppercase.
+
+#### Arguments
+
+ * (*bool*) (*optional*) Uppercase. Default `FALSE`
+
+#### Return
+
+Returns a key=>value array. The keys are the two-digit ISO codes, values are the full names.
+
+
+
+## common_get_us_states()
+
+Returns an array of US states and optionally not-quite-states that the post office delivers to anyway. This function originally returned all values in uppercase, but that can now be disabled by passing `FALSE`.
+
+#### Arguments
+
+ * (*bool*) (*optional*) Include US territories, military addresses, etc. Default `TRUE`
+ * (*bool*) (*optional*) Uppercase. Default `FALSE`
+
+#### Return
+
+Returns a key=>value array. The keys are the two-digit postal abbreviations, values are the full names.
+
+
+
+## common_get_data_uri()
+
+Convert a file to a base64-encoded data-uri string.
+
+#### Arguments
+
+ * (*string*) Path
+
+#### Return
+
+Returns a data-uri string or `FALSE` if the file doesn't exist or can't be read.
+
+
+
+## common_readfile_chunked()
+
+If you are buffering files through PHP, doing it in chunks can greatly reduce the overhead. This will read and output a file in 1MB chunks. Note: you will still need to send the appropriate headers ahead of calling this function.
+
+#### Arguments
+
+ * (*string*) Path
+ * (*bool*) (*optional*) Return Bytes (like `readfile()` does). Default `TRUE`
+
+#### Return
+
+Echoes the (binary-safe) file contents. Returns `TRUE` or `FALSE`.
+
+
+
+## common_get_mime_type()
+
+PHP's `fileinfo` extension is not reliably present and sucks anyway. WP's `wp_check_filetype()` is only really meant for uploaded files and so is missing a ton of data.
+
+TL;DR if you need more complete and reliable extension-to-MIME conversion, use this function instead.
+
+#### Arguments
+
+ * (*string*) Path
+
+#### Return
+
+Returns the file's MIME type or `"application/octet-stream"` if it can't figure it out.
+
+
+
+## common_cidr_to_range()
+
+Obtain the Min and Max IP from a Netblock.
+
+#### Arguments
+
+ * (*string*) CIDR
+
+#### Return
+
+Returns an array containing the min and max IP (keyed thusly), or `FALSE` if invalid.
+
+
+
+## common_ip_to_number()
+
+Convert an IPv4 or IPv6 address to its numerical equivalent. You will need a 64-bit operating system to handle the massive IPv6 numbers, most likely.
+
+#### Arguments
+
+ * (*string*) IP
+
+#### Return
+
+Returns the numerical equivalent or `FALSE` if invalid.
+
+
+
+## common_is_empty_dir()
+
+Checks whether a directory is empty or not.
+
+#### Arguments
+
+ * (*string*) Dir
+
+#### Return
+
+Returns `TRUE` if `$dir` is a directory and empty, otherwise `FALSE`.
 
 
 
@@ -850,3 +1010,246 @@ Checks whether a phone number matches generic North American formatting rules. F
 #### Return
 
 Returns `TRUE` or `FALSE`.
+
+
+
+## common_array_compare()
+
+This function attempts to check whether two arrays are equal. It does this by comparing each key one at a time, recursively. Note: certain types of non-iterable objects might prevent this from working.
+
+#### Arguments
+
+ * (*array*) (*reference) Array One
+ * (*array*) (*reference) Array Two
+
+#### Return
+
+Returns `TRUE` or `FALSE`.
+
+
+
+## common_array_map_recursive()
+
+Recursively apply a callback function (without breaking array keys). Non-iterable objects are returned as-is. Other handling is up to the callback function.
+
+#### Arguments
+
+ * (*callable*) Function (by value)
+ * (*mixed*) Variable
+
+#### Return
+
+Returns the filtered variable.
+
+
+
+## common_array_pop()
+
+Return the last value of an array like `array_pop()`, but without altering the original variable.
+
+#### Arguments
+
+ * (*array*) (*reference*) Array
+
+#### Return
+
+Returns the last value of the array or `FALSE` if not possible.
+
+
+
+## common_array_pop_top()
+
+Return the first value of an array without altering the original variable.
+
+#### Arguments
+
+ * (*array*) (*reference*) Array
+
+#### Return
+
+Returns the first value of the array or `FALSE` if not possible.
+
+
+
+## common_array_type()
+
+Return the "type" of indexing used by an array.
+
+#### Arguments
+
+ * (*array*) (*reference*) Array
+
+#### Return
+
+ * `"sequential"`: the indexes are squential, e.g. `0`, `1`, `2`, ...
+ * `"indexed"`: the indexes are numeric, e.g. `0`, `5`, `6`, ...
+ * `"associative"`: one or more indexes are strings
+ * `FALSE`: the variable is not an array or has no length
+
+
+
+## common_generate_random_string()
+
+Generate a random string.
+
+#### Arguments
+
+ * (*int*) (*optional*) Length. Default `10`
+ * (*array*) (*optional*) Characters to use. Defaults to unambiguous uppercase letters and numbers
+
+#### Return
+
+Returns a random string of characters from the "soup" of the chosen length.
+
+
+
+## common_get_cc_exp_months()
+
+Return months of the year for e.g. a credit card expiration field.
+
+#### Arguments
+
+ * (*string*) (*optional*) Value format (using `date()` syntax). Default `"m - M"`
+
+#### Return
+
+Returns a key=>value array of months. The key is the month as an integer (e.g. `1`), the value is the corresponding date string.
+
+
+
+## common_get_cc_exp_years()
+
+Returns years for e.g. a credit card expiration field.
+
+#### Arguments
+
+ * (*int*) (*optional*) Number of years to return, beginning with the current. Default `10`
+
+#### Return
+
+Returns a key=>value array of years. The keys and values are both integer values of the 4-digit year, e.g. `2000`.
+
+
+
+## common_parse_args()
+
+A `wp_parse_args()` wrapper on steroids. The primary difference is it returns an array containing all (and only) keys from the default. It can also optionally typecast values or parse args recursively.
+
+#### Arguments
+
+ * (*array*) User Args
+ * (*array*) Defaults
+ * (*bool*) (*optional*) Typecast user args to match tye default's type. Be careful with numbers. If the default has a value of `NULL`, no typecasting is performed. Default `FALSE`
+ * (*bool*) (*optional*) Recursive. If `TRUE` and the default's value at a given index is a populated array, it will run the corresponding user args back through the function. Default `FALSE`
+
+#### Return
+
+Returns the default array with overrides provided by the user args.
+
+
+
+## common_parse_args_json()
+
+The same as `common_parse_args()` except the user args can be passed as a JSON string.
+
+#### Arguments
+
+ * (*JSON|array*) User Args
+ * (*array*) Defaults
+ * (*bool*) (*optional*) Typecast user args to match tye default's type. Be careful with numbers. If the default has a value of `NULL`, no typecasting is performed. Default `FALSE`
+ * (*bool*) (*optional*) Recursive. If `TRUE` and the default's value at a given index is a populated array, it will run the corresponding user args back through the function. Default `FALSE`
+
+#### Return
+
+Returns the default array with overrides provided by the user args.
+
+
+
+## common_random_int()
+
+Generate a random number. The function prefers the modern `random_int()` function but will fall back to `mt_rand()` if necessary.
+
+#### Arguments
+
+ * (*int*) Min
+ * (*int*) Max
+
+#### Return
+
+Returns a random integer between Min and Max.
+
+
+
+## common_strlen()
+
+Returns the (multi-byte safe) length of a string if PHP supports `mbstring`, otherwise it will fall back to `strlen()`.
+
+#### Arguments
+
+ * (*string*) String
+
+#### Return
+
+Return the number of characters if `mbstring` is supported, otherwise the number of bytes (which often amounts to the same thing).
+
+
+
+## common_strpos()
+
+Returns the (multi-byte safe) substring position if PHP supports `mbstring`, otherwise it will fall back to `strpos()`.
+
+#### Arguments
+
+ * (*string*) Haystack
+ * (*string*) Needle
+ * (*int*) (*optional*) Offset
+
+#### Return
+
+Return the substring position using `mb_strpos()` if supported, otherwise `strpos()`. `FALSE` is returned on failure.
+
+
+
+## common_substr()
+
+Returns the (multi-byte safe) substring if PHP supports `mbstring`, otherwise it will fall back to `substr()`.
+
+#### Arguments
+
+ * (*string*) String
+ * (*int*) Start
+ * (*int*) (*optional*) Length
+
+#### Return
+
+Return the substring using `mb_substr()` if supported, otherwise `substr()`.
+
+
+
+## common_substr_count()
+
+Returns the (multi-byte safe) substring count if PHP supports `mbstring`, otherwise it will fall back to `substr_count()`.
+
+#### Arguments
+
+ * (*string*) Haystack
+ * (*string*) Needle
+
+#### Return
+
+Return the substring count using `mb_substr_count()` if supported, otherwise `substr_count()`.
+
+
+
+## common_switcheroo()
+
+Swap two variables.
+
+#### Arguments
+
+ * (*mixed*) (*reference*) Var One
+ * (*mixed*) (*reference*) Var Two
+
+#### Return
+
+The variables are passed by reference. This function always returns `TRUE`.

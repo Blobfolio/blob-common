@@ -6,23 +6,11 @@ This guide documents functions having to do (broadly) with space and time. The c
 
 ##### Table of Contents
 
- * Geography
-   * [common_get_ca_provinces()](#common_get_ca_provinces)
-   * [common_get_countries()](#common_get_countries)
-   * [common_get_us_states()](#common_get_us_states)
- * File Handling
-   * [common_get_data_uri()](#common_get_data_uri)
-   * [common_get_mime_type()](#common_get_mime_type)
-   * [common_readfile_chunked()](#common_readfile_chunked)
- * IPs
-   * [common_cidr_to_range()](#common_cidr_to_range)
-   * [common_ip_to_number()](#common_ip_to_number)
  * Paths and URLs
    * [common_get_path_by_url()](#common_get_path_by_url)
    * [common_get_site_hostname()](#common_get_site_hostname)
    * [common_get_url_by_path()](#common_get_url_by_path)
    * [common_is_current_page()](#common_is_current_page)
-   * [common_is_empty_dir()](#common_is_empty_dir)
    * [common_is_site_url()](#common_is_site_url)
    * [common_redirect()](#common_redirect)
    * [common_theme_path()](#common_theme_path)
@@ -32,122 +20,6 @@ This guide documents functions having to do (broadly) with space and time. The c
    * [common_get_blog_timezone()](#common_get_blog_timezone)
    * [common_from_blogtime()](#common_from_blogtime)
    * [common_to_blogtime()](#common_to_blogtime)
-
-
-
-## common_get_ca_provinces()
-
-Return an array of Canadian provinces for e.g. a checkout form. This function originally returned all values in uppercase, but that can now be disabled by passing `FALSE`.
-
-#### Arguments
-
- * (*bool*) (*optional*) Uppercase. Default `TRUE`
-
-#### Return
-
-Returns a key=>value array. The keys are the two-digit postal abbreviations, values are the full names.
-
-
-
-## common_get_countries()
-
-Return an array of (most) official countries. Note: Unlike the state/province functions, names are returned in title case by default, but passing `TRUE` will return them in uppercase.
-
-#### Arguments
-
- * (*bool*) (*optional*) Uppercase. Default `FALSE`
-
-#### Return
-
-Returns a key=>value array. The keys are the two-digit ISO codes, values are the full names.
-
-
-
-## common_get_us_states()
-
-Returns an array of US states and optionally not-quite-states that the post office delivers to anyway. This function originally returned all values in uppercase, but that can now be disabled by passing `FALSE`.
-
-#### Arguments
-
- * (*bool*) (*optional*) Include US territories, military addresses, etc. Default `TRUE`
- * (*bool*) (*optional*) Uppercase. Default `FALSE`
-
-#### Return
-
-Returns a key=>value array. The keys are the two-digit postal abbreviations, values are the full names.
-
-
-
-## common_get_data_uri()
-
-Convert a file to a base64-encoded data-uri string.
-
-#### Arguments
-
- * (*string*) Path
-
-#### Return
-
-Returns a data-uri string or `FALSE` if the file doesn't exist or can't be read.
-
-
-
-## common_get_mime_type()
-
-PHP's `fileinfo` extension is not reliably present and sucks anyway. WP's `wp_check_filetype()` is only really meant for uploaded files and so is missing a ton of data.
-
-TL;DR if you need more complete and reliable extension-to-MIME conversion, use this function instead.
-
-#### Arguments
-
- * (*string*) Path
-
-#### Return
-
-Returns the file's MIME type or `"application/octet-stream"` if it can't figure it out.
-
-
-
-## common_readfile_chunked()
-
-If you are buffering files through PHP, doing it in chunks can greatly reduce the overhead. This will read and output a file in 1MB chunks. Note: you will still need to send the appropriate headers ahead of calling this function.
-
-#### Arguments
-
- * (*string*) Path
- * (*bool*) (*optional*) Return Bytes (like `readfile()` does). Default `TRUE`
-
-#### Return
-
-Echoes the (binary-safe) file contents. Returns `TRUE` or `FALSE`.
-
-
-
-## common_cidr_to_range()
-
-Obtain the Min and Max IP from a Netblock.
-
-#### Arguments
-
- * (*string*) CIDR
-
-#### Return
-
-Returns an array containing the min and max IP (keyed thusly), or `FALSE` if invalid.
-
-
-
-## common_ip_to_number()
-
-Convert an IPv4 or IPv6 address to its numerical equivalent. You will need a 64-bit operating system to handle the massive IPv6 numbers, most likely.
-
-#### Arguments
-
- * (*string*) IP
-
-#### Return
-
-Returns the numerical equivalent or `FALSE` if invalid.
 
 
 
@@ -207,20 +79,6 @@ Checks whether the page being viewed matches the URL you are passing.
 #### Return
 
 Returns `TRUE` or `FALSE`.
-
-
-
-## common_is_empty_dir()
-
-Checks whether a directory is empty or not.
-
-#### Arguments
-
- * (*string*) Dir
-
-#### Return
-
-Returns `TRUE` if `$dir` is a directory and empty, otherwise `FALSE`.
 
 
 
