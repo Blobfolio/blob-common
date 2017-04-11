@@ -25,6 +25,7 @@ if (!defined('ABSPATH')) {
 
 // The root path to the plugin.
 define('BLOB_COMMON_ROOT', dirname(__FILE__));
+@require_once(BLOB_COMMON_ROOT . '/lib/vendor/autoload.php');	// Autoload.
 @require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');
 @require_once(BLOB_COMMON_ROOT . '/functions-debug.php');
 @require_once(BLOB_COMMON_ROOT . '/functions-email.php');
@@ -33,7 +34,6 @@ define('BLOB_COMMON_ROOT', dirname(__FILE__));
 @require_once(BLOB_COMMON_ROOT . '/functions-spacetime.php');
 @require_once(BLOB_COMMON_ROOT . '/functions-sanitize.php');
 @require_once(BLOB_COMMON_ROOT . '/functions-tool.php');
-@require_once(BLOB_COMMON_ROOT . '/lib/vendor/autoload.php');	// Autoload.
 
 
 
