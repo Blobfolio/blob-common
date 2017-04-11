@@ -3,7 +3,7 @@
  * Functions to assist common theme operations.
  *
  * @package blobfolio/common
- * @version 7.1.6
+ * @version 7.1.7
  *
  * @wordpress-plugin
  * Plugin Name: Tutan Common
@@ -11,7 +11,7 @@
  * Description: Functions to assist common theme operations.
  * Author: Blobfolio, LLC
  * Author URI: https://blobfolio.com/
- * Version: 7.1.6
+ * Version: 7.1.7
  * License: WTFPL
  * License URI: http://www.wtfpl.net/
  */
@@ -47,6 +47,37 @@ define('BLOB_COMMON_ROOT', dirname(__FILE__));
 // To reduce overhead, update checks are throttled to once per hour.
 
 /**
+ * Activation Checks
+ *
+ * @return bool True/false.
+ * @throws Exception Missing requirements.
+ */
+function blobcommon_activation_requirements() {
+	if (version_compare(PHP_VERSION, '5.6.0') < 0) {
+		throw new Exception('PHP 5.6.0 or newer is required.');
+	}
+
+	if (function_exists('is_multisite') && is_multisite()) {
+		throw new Exception('This plugin cannot be used on Multi-Site.');
+	}
+
+	try {
+		include_once(BLOB_COMMON_ROOT . '/lib/test.phar');
+	} catch(Throwable $e){
+		throw new Exception('PHAR/Gzip support is required.');
+	} catch(Exception $e) {
+		throw new Exception('PHAR/Gzip support is required.');
+	}
+
+	if(!function_exists('blobfolio_phar_test')){
+		throw new Exception('PHAR/Gzip support is required.');
+	}
+
+	return true;
+}
+register_activation_hook(__FILE__, 'blobcommon_activation_requirements');
+
+/**
  * Get Plugin Info (Local)
  *
  * @param string $key Key.
@@ -72,30 +103,20 @@ function blobcommon_get_info($key = null) {
 /**
  * Get Remote Branch
  *
- * Current and legacy versions have different operational
- * requirements, so we need to point installs to the
- * correct file.
+ * Updates are no longer provided for old versions.
  *
  * @return string Branch URL.
  */
 function blobcommon_get_release_branch() {
-	$branch = 'current';
-
-	// We won't downgrade if already on the current branch.
-	$current = blobcommon_get_installed_version();
-	if (version_compare($current, '7.0.0') < 0) {
-		// If PHP is old, legacy it is!
-		if (version_compare(PHP_VERSION, '5.6.0') < 0) {
-			$branch = 'legacy';
-		}
+	try {
+		blobcommon_activation_requirements();
+	} catch(Throwable $e) {
+		return false;
+	} catch(Exception $e) {
+		return false;
 	}
 
-	if ('current' === $branch) {
-		return 'https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/current.json';
-	}
-	else {
-		return 'https://raw.githubusercontent.com/Blobfolio/blob-common/1.5/release/plugin.json';
-	}
+	return 'https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/wp.json';
 }
 
 /**
@@ -110,19 +131,24 @@ function blobcommon_get_remote_info($key = null) {
 
 	if (is_null($info) && false === $info = get_transient($transient_key)) {
 		$info = array();
-		$data = wp_remote_get(blobcommon_get_release_branch());
-		if (is_array($data) && array_key_exists('body', $data)) {
-			try {
-				$response = json_decode($data['body'], true);
-				if (is_array($response)) {
-					foreach ($response as $k=>$v) {
-						$info[$k] = $v;
-					}
+		if(false === ($branch = blobcommon_get_release_branch())){
+			$info = array();
+		}
+		else {
+			$data = wp_remote_get($branch);
+			if (is_array($data) && array_key_exists('body', $data)) {
+				try {
+					$response = json_decode($data['body'], true);
+					if (is_array($response)) {
+						foreach ($response as $k=>$v) {
+							$info[$k] = $v;
+						}
 
-					set_transient($transient_key, $info, 3600);
+						set_transient($transient_key, $info, 3600);
+					}
+				} catch (Exception $e) {
+					$info = array();
 				}
-			} catch (Exception $e) {
-				$info = array();
 			}
 		}
 	}
