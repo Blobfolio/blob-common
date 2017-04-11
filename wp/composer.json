@@ -7,17 +7,5 @@
     "vendor-dir": "lib\/vendor",
     "preferred-install": "dist"
   },
-  "minimum-stability": "dev",
-  "autoload": {
-    "files": [
-      "functions-behavior.php",
-      "functions-debug.php",
-      "functions-email.php",
-      "functions-form.php",
-      "functions-image.php",
-      "functions-spacetime.php",
-      "functions-sanitize.php",
-      "functions-tool.php"
-    ]
-  }
+  "minimum-stability": "dev"
 }
