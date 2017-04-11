@@ -1473,11 +1473,11 @@ class constants {
 	const CAST_TYPES = array(
 		'array'=>'to_array',
 		'bool'=>'to_bool',
-		'boolean'=>'to_boolean',
+		'boolean'=>'to_bool',
 		'double'=>'to_float',
 		'float'=>'to_float',
 		'int'=>'to_int',
-		'integer'=>'to_integer',
+		'integer'=>'to_int',
 		'number'=>'to_number',
 		'string'=>'to_string'
 	);
