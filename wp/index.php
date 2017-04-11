@@ -3,7 +3,7 @@
  * Functions to assist common theme operations.
  *
  * @package blobfolio/common
- * @version 7.1.7
+ * @version 7.1.8
  *
  * @wordpress-plugin
  * Plugin Name: Tutan Common
@@ -11,7 +11,7 @@
  * Description: Functions to assist common theme operations.
  * Author: Blobfolio, LLC
  * Author URI: https://blobfolio.com/
- * Version: 7.1.7
+ * Version: 7.1.8
  * License: WTFPL
  * License URI: http://www.wtfpl.net/
  */
@@ -25,7 +25,11 @@ if (!defined('ABSPATH')) {
 
 // The root path to the plugin.
 define('BLOB_COMMON_ROOT', dirname(__FILE__));
-@require_once(BLOB_COMMON_ROOT . '/lib/vendor/autoload.php');	// Autoload.
+
+// The blob-common library.
+@require_once(BLOB_COMMON_ROOT . '/lib/blob-common.phar');
+
+// And everything else.
 @require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');
 @require_once(BLOB_COMMON_ROOT . '/functions-debug.php');
 @require_once(BLOB_COMMON_ROOT . '/functions-email.php');
@@ -63,13 +67,13 @@ function blobcommon_activation_requirements() {
 
 	try {
 		include_once(BLOB_COMMON_ROOT . '/lib/test.phar');
-	} catch(Throwable $e){
+	} catch (Throwable $e) {
 		throw new Exception('PHAR/Gzip support is required.');
-	} catch(Exception $e) {
+	} catch (Exception $e) {
 		throw new Exception('PHAR/Gzip support is required.');
 	}
 
-	if(!function_exists('blobfolio_phar_test')){
+	if (!function_exists('blobfolio_phar_test')) {
 		throw new Exception('PHAR/Gzip support is required.');
 	}
 
@@ -110,9 +114,9 @@ function blobcommon_get_info($key = null) {
 function blobcommon_get_release_branch() {
 	try {
 		blobcommon_activation_requirements();
-	} catch(Throwable $e) {
+	} catch (Throwable $e) {
 		return false;
-	} catch(Exception $e) {
+	} catch (Exception $e) {
 		return false;
 	}
 
@@ -131,14 +135,11 @@ function blobcommon_get_remote_info($key = null) {
 
 	if (is_null($info) && false === $info = get_transient($transient_key)) {
 		$info = array();
-		if(false === ($branch = blobcommon_get_release_branch())){
-			$info = array();
-		}
-		else {
+		if (false !== ($branch = blobcommon_get_release_branch())) {
 			$data = wp_remote_get($branch);
-			if (is_array($data) && array_key_exists('body', $data)) {
+			if (200 === wp_remote_retrieve_response_code($data)) {
 				try {
-					$response = json_decode($data['body'], true);
+					$response = json_decode(wp_remote_retrieve_body($data), true);
 					if (is_array($response)) {
 						foreach ($response as $k=>$v) {
 							$info[$k] = $v;
@@ -146,6 +147,8 @@ function blobcommon_get_remote_info($key = null) {
 
 						set_transient($transient_key, $info, 3600);
 					}
+				} catch (Throwable $e) {
+					$info = array();
 				} catch (Exception $e) {
 					$info = array();
 				}
@@ -232,6 +235,72 @@ function blobcommon_check_update($option) {
 }
 add_filter('transient_update_plugins', 'blobcommon_check_update');
 add_filter('site_transient_update_plugins', 'blobcommon_check_update');
+
+/**
+ * Check for Library Updates
+ *
+ * The blob-common library is now bundled as a Phar
+ * and can update independently of the plugin.
+ *
+ * @return bool True/false.
+ */
+function blobcommon_check_library_update() {
+
+	$current = get_option('blobcommon_library', '');
+	$remote = wp_remote_get('https://raw.githubusercontent.com/Blobfolio/blob-common/master/bin/version.json');
+	if (200 === wp_remote_retrieve_response_code($remote)) {
+		try {
+			$remote = json_decode(wp_remote_retrieve_body($remote), true);
+			if (!is_array($remote) || !isset($remote['date'])) {
+				return false;
+			}
+
+			$date = \blobfolio\common\sanitize::datetime($remote['date']);
+		} catch (Throwable $e) {
+			return false;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+
+	// No update needed.
+	if ($current >= $date) {
+		return true;
+	}
+
+	// Update if we can.
+	$remote = wp_remote_get('https://raw.githubusercontent.com/Blobfolio/blob-common/master/bin/blob-common.phar');
+	if (200 === wp_remote_retrieve_response_code($remote)) {
+		try {
+			$data = wp_remote_retrieve_body($remote);
+			if (strlen($data)) {
+				try {
+					if (false !== file_put_contents(BLOB_COMMON_ROOT . '/lib/blob-common.phar', $data)) {
+						update_option('blobcommon_library', $date);
+						return true;
+					}
+				} catch (Throwable $e) {
+					return false;
+				} catch (Exception $e) {
+					return false;
+				}
+			}
+		} catch (Throwable $e) {
+			return false;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	return false;
+}
+add_action('blobcommon_cron_check_library_update', 'blobcommon_check_library_update');
+if (!wp_next_scheduled('blobcommon_cron_check_library_update')) {
+	wp_schedule_event(time(), 'daily', 'blobcommon_cron_check_library_update');
+}
 
 // --------------------------------------------------------------------- end updates
 
