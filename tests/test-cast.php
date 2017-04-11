@@ -159,6 +159,64 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Aliases
+	 *
+	 * Make sure our various alias cast functions work.
+	 *
+	 * @return void Nothing.
+	 */
+	function test_aliases() {
+		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
+		}
+
+		$thing = 'string';
+		$this->assertEquals(array('string'), \blobfolio\common\cast::array($thing));
+		\blobfolio\common\ref\cast::array($thing);
+		$this->assertEquals(array('string'), $thing);
+
+		$thing = 'true';
+		$this->assertEquals(true, \blobfolio\common\cast::bool($thing));
+		\blobfolio\common\ref\cast::bool($thing);
+		$this->assertEquals(true, $thing);
+
+		$thing = 'true';
+		$this->assertEquals(true, \blobfolio\common\cast::boolean($thing));
+		\blobfolio\common\ref\cast::boolean($thing);
+		$this->assertEquals(true, $thing);
+
+		$thing = '1';
+		$this->assertEquals(1.0, \blobfolio\common\cast::double($thing));
+		\blobfolio\common\ref\cast::double($thing);
+		$this->assertEquals(1.0, $thing);
+
+		$thing = '1';
+		$this->assertEquals(1.0, \blobfolio\common\cast::float($thing));
+		\blobfolio\common\ref\cast::float($thing);
+		$this->assertEquals(1.0, $thing);
+
+		$thing = '1';
+		$this->assertEquals(1, \blobfolio\common\cast::int($thing));
+		\blobfolio\common\ref\cast::int($thing);
+		$this->assertEquals(1, $thing);
+
+		$thing = '1';
+		$this->assertEquals(1, \blobfolio\common\cast::integer($thing));
+		\blobfolio\common\ref\cast::integer($thing);
+		$this->assertEquals(1, $thing);
+
+		$thing = '1';
+		$this->assertEquals(1.0, \blobfolio\common\cast::number($thing));
+		\blobfolio\common\ref\cast::number($thing);
+		$this->assertEquals(1.0, $thing);
+
+		$thing = 2.5;
+		$this->assertEquals('2.5', \blobfolio\common\cast::string($thing));
+		\blobfolio\common\ref\cast::string($thing);
+		$this->assertEquals('2.5', $thing);
+	}
+
+	/**
 	 * ::to_type()
 	 *
 	 * @return void Nothing.
