@@ -11,54 +11,24 @@ Many of these are available in both by-value and by-reference versions. The func
 **Use:**
 ```php
 //by value
-$foo = blobfolio\common\cast::int($foo);
+$foo = blobfolio\common\cast::to_int($foo);
 
 //by reference
-blobfolio\common\ref\cast::int($foo);
+blobfolio\common\ref\cast::to_int($foo);
 ```
 
 
 
 ##### Table of Contents
 
- * [array()](#array)
  * [array_type()](#array_type)
- * [bool()](#bool)
- * [float()](#float)
- * [int()](#int)
- * [number()](#number)
+ * [to_array()](#to_array)
+ * [to_bool()](#to_bool)
+ * [to_float()](#to_float)
+ * [to_int()](#to_int)
+ * [to_number()](#to_number)
+ * [to_string()](#to_string)
  * [to_type()](#to_type)
-
-
-
-## array()
-
-Typecast to array. This is like `(array)` hinting, but will set non-arrayable objects as empty arrays.
-
-#### Versions
-
- * By Value
- * By Reference
-
-#### Arguments
-
- * (*mixed*) Array
-
-#### Returns
-
-Returns an array if passed by value, otherwise `TRUE` if by reference.
-
-#### Example
-
-```php
-//by value
-$foo = blobfolio\common\cast::array('apples'); //array(0 => 'apples')
-$foo = blobfolio\common\cast::array(null); //array()
-$foo = blobfolio\common\cast::array(array('apples')); //array(0 => 'apples')
-
-//by reference
-blobfolio\common\ref\cast::array($foo);
-```
 
 
 
@@ -91,7 +61,44 @@ echo blobfolio\common\cast::array_type($arr1); //sequential
 
 
 
-## bool()
+## to_array()
+
+Typecast to array. This is like `(array)` hinting, but will set non-arrayable objects as empty arrays.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Aliases
+
+The following are available under PHP7+:
+
+ * ::array()
+
+#### Arguments
+
+ * (*mixed*) Array
+
+#### Returns
+
+Returns an array if passed by value, otherwise `TRUE` if by reference.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\cast::to_array('apples'); //array(0 => 'apples')
+$foo = blobfolio\common\cast::to_array(null); //array()
+$foo = blobfolio\common\cast::to_array(array('apples')); //array(0 => 'apples')
+
+//by reference
+blobfolio\common\ref\cast::to_array($foo);
+```
+
+
+
+## to_bool()
 
 Typecast to boolean. This is like `(bool)` hinting, but will also properly interpret things like `"true"`, `"on"`, etc.
 
@@ -99,6 +106,13 @@ Typecast to boolean. This is like `(bool)` hinting, but will also properly inter
 
  * By Value
  * By Reference
+
+#### Aliases
+
+The following are available under PHP7+:
+
+ * ::bool()
+ * ::boolean()
 
 #### Arguments 
 
@@ -113,17 +127,17 @@ Returns `TRUE` or `FALSE`.
 
 ```php
 //by value
-$foo = blobfolio\common\cast::bool(true); //TRUE
-$foo = blobfolio\common\cast::bool(1); //TRUE
-$foo = blobfolio\common\cast::bool("true"); //TRUE
+$foo = blobfolio\common\cast::to_bool(true); //TRUE
+$foo = blobfolio\common\cast::to_bool(1); //TRUE
+$foo = blobfolio\common\cast::to_bool("true"); //TRUE
 
 //by reference
-blobfolio\common\ref\cast::bool($foo);
+blobfolio\common\ref\cast::to_bool($foo);
 ```
 
 
 
-## float()
+## to_float()
 
 Typecast to float.  This is like `(float)` hinting, but will strip out non-numeric data and attempt to convert values like percents and US cents.
 
@@ -131,6 +145,13 @@ Typecast to float.  This is like `(float)` hinting, but will strip out non-numer
 
  * By Value
  * By Reference
+
+#### Aliases
+
+The following are available under PHP7+:
+
+ * ::double()
+ * ::float()
 
 #### Arguments
 
@@ -145,17 +166,17 @@ Returns a float if passed by value, otherwise `TRUE`.
 
 ```php
 //by value
-$foo = blobfolio\common\cast::float('$1.00'); //1
-$foo = blobfolio\common\cast::float('10%'); //.1
-$foo = blobfolio\common\cast::float(5.5); //5.5
+$foo = blobfolio\common\cast::to_float('$1.00'); //1
+$foo = blobfolio\common\cast::to_float('10%'); //.1
+$foo = blobfolio\common\cast::to_float(5.5); //5.5
 
 //by reference
-blobfolio\common\ref\cast::float($foo);
+blobfolio\common\ref\cast::to_float($foo);
 ```
 
 
 
-## int()
+## to_int()
 
 Typecast to integer.  This is like `(int)` hinting, but again, will strip out non-numeric data and attempt to convert values like percents, etc. This function will also properly interpret things like `"true"`, `"on"`, etc.
 
@@ -163,6 +184,13 @@ Typecast to integer.  This is like `(int)` hinting, but again, will strip out no
 
  * By Value
  * By Reference
+
+#### Aliases
+
+The following are available under PHP7+:
+
+ * ::int()
+ * ::integer()
 
 #### Arguments
 
@@ -177,17 +205,17 @@ Returns an integer if passed by value, otherwise `TRUE`.
 
 ```php
 //by value
-$foo = blobfolio\common\cast::int(5.5); //5
-$foo = blobfolio\common\cast::int('3'); //3
-$foo = blobfolio\common\cast::int(8); //8
+$foo = blobfolio\common\cast::to_int(5.5); //5
+$foo = blobfolio\common\cast::to_int('3'); //3
+$foo = blobfolio\common\cast::to_int(8); //8
 
 //by reference
-blobfolio\common\ref\cast::int($foo);
+blobfolio\common\ref\cast::to_int($foo);
 ```
 
 
 
-## number()
+## to_number()
 
 This strips out non-numerical data and returns a float.
 
@@ -195,6 +223,12 @@ This strips out non-numerical data and returns a float.
 
  * By Value
  * By Reference
+
+#### Aliases
+
+The following are available under PHP7+:
+
+ * ::number()
 
 #### Arguments
 
@@ -209,12 +243,48 @@ Returns a float if passed by value, otherwise `TRUE`.
 
 ```php
 //by value
-$foo = blobfolio\common\cast::number('5.5'); //5.5
-$foo = blobfolio\common\cast::number(3); //3
-$foo = blobfolio\common\cast::number('8%'); //0.08
+$foo = blobfolio\common\cast::to_number('5.5'); //5.5
+$foo = blobfolio\common\cast::to_number(3); //3
+$foo = blobfolio\common\cast::to_number('8%'); //0.08
 
 //by reference
-blobfolio\common\ref\cast::number($foo);
+blobfolio\common\ref\cast::to_number($foo);
+```
+
+
+
+## to_string()
+
+This casts to a UTF-8 string.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Aliases
+
+The following are available under PHP7+:
+
+ * ::string()
+
+#### Arguments
+
+ * (*mixed*) String. If an array is passed, each value will be recursively cast.
+ * (*bool*) (*optional*) Flatten. `TRUE` overrides the auto-recursive behavior, making sure that only a single value is returned. Default: `FALSE`
+
+#### Returns
+
+Returns a string if passed by value, otherwise `TRUE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\cast::to_string('1'); //1
+
+//by reference
+blobfolio\common\ref\cast::to_string($foo);
 ```
 
 
