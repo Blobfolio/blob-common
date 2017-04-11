@@ -67,14 +67,14 @@ if (!function_exists('common_get_clean_svg')) {
 			$args = WP_CLEAN_SVG;
 		}
 
-		\blobfolio\common\ref\cast::array($args);
+		\blobfolio\common\ref\cast::to_array($args);
 
 		// Make sure the site URL is whitelisted.
 		if (!isset($args['whitelist_domains'])) {
 			$args['whitelist_domains'] = array();
 		}
 		else {
-			\blobfolio\common\ref\cast::array($args['whitelist_domains']);
+			\blobfolio\common\ref\cast::to_array($args['whitelist_domains']);
 		}
 		$args['whitelist_domains'][] = common_get_site_hostname();
 
@@ -95,7 +95,7 @@ if (!function_exists('common_shortcode_clean_svg')) {
 	 * @return string HTML.
 	 */
 	function common_shortcode_clean_svg($args=null, $content='') {
-		\blobfolio\common\ref\cast::array($args);
+		\blobfolio\common\ref\cast::to_array($args);
 
 		// We need to convert array fields to proper arrays.
 		foreach (array('classes','whitelist_attr','whitelist_tags','whitelist_protocols','whitelist_domains') as $field) {
@@ -245,12 +245,14 @@ if (!function_exists('common_get_image_srcset')) {
 	 * @param array|string $size Size(s).
 	 * @return string|bool SRCSET string or false.
 	 */
-	function common_get_image_srcset(int $attachment_id=0, $size) {
+	function common_get_image_srcset($attachment_id=0, $size) {
+		\blobfolio\common\ref\cast::int($attachment_id, true);
+
 		if ($attachment_id < 1) {
 			return false;
 		}
 
-		\blobfolio\common\ref\cast::array($size);
+		\blobfolio\common\ref\cast::to_array($size);
 		\blobfolio\common\ref\sanitize::whitespace($size);
 		$size = array_unique($size);
 		$size = array_filter($size, 'strlen');

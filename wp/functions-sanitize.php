@@ -498,7 +498,7 @@ if (!function_exists('common_sanitize_number')) {
 	 * @return float Number.
 	 */
 	function common_sanitize_number($value, $flatten=false) {
-		return \blobfolio\common\cast::number($value, $flatten);
+		return \blobfolio\common\cast::to_number($value, $flatten);
 	}
 }
 
@@ -511,7 +511,7 @@ if (!function_exists('common_sanitize_bool')) {
 	 * @return bool Bool.
 	 */
 	function common_sanitize_bool($value=false, $flatten=false) {
-		return \blobfolio\common\cast::bool($value, $flatten);
+		return \blobfolio\common\cast::to_bool($value, $flatten);
 	}
 }
 
@@ -538,7 +538,7 @@ if (!function_exists('common_sanitize_float')) {
 	 * @return float Float.
 	 */
 	function common_sanitize_float($value=0, $flatten=false) {
-		return \blobfolio\common\cast::float($value, $flatten);
+		return \blobfolio\common\cast::to_float($value, $flatten);
 	}
 }
 
@@ -593,7 +593,7 @@ if (!function_exists('common_sanitize_int')) {
 	 * @return int Int.
 	 */
 	function common_sanitize_int($value=0, $flatten=false) {
-		return \blobfolio\common\cast::int($value, $flatten);
+		return \blobfolio\common\cast::to_int($value, $flatten);
 	}
 }
 // Alias.
@@ -619,7 +619,7 @@ if (!function_exists('common_sanitize_string')) {
 	 * @return string String.
 	 */
 	function common_sanitize_string($value='', $flatten=false) {
-		return \blobfolio\common\cast::string($value, $flatten);
+		return \blobfolio\common\cast::to_string($value, $flatten);
 	}
 }
 // Alias.
@@ -644,7 +644,7 @@ if (!function_exists('common_sanitize_array')) {
 	 * @return array Array.
 	 */
 	function common_sanitize_array($value=null) {
-		return \blobfolio\common\cast::array($value);
+		return \blobfolio\common\cast::to_array($value);
 	}
 }
 
@@ -796,7 +796,9 @@ if (!function_exists('common_validate_domain_name')) {
 	 * @param bool $live Check DNS.
 	 * @return bool True/false.
 	 */
-	function common_validate_domain_name($domain, bool $live=true) {
+	function common_validate_domain_name($domain, $live=true) {
+		\blobfolio\common\ref\cast::bool($live, true);
+
 		$host = new \blobfolio\domain\domain($domain);
 		if (!$host->is_valid() || $host->is_ip()) {
 			return false;

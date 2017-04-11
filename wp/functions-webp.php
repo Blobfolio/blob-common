@@ -152,7 +152,7 @@ if (!function_exists('common_get_webp_src')) {
 	 * @return string HTML.
 	 */
 	function common_shortcode_webp_src($args=null, $content='') {
-		\blobfolio\common\ref\cast::array($args);
+		\blobfolio\common\ref\cast::to_array($args);
 
 		// Classes is going somewhere else.
 		$classes = '';
