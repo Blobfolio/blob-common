@@ -170,9 +170,14 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
 
+		// Stupid PHP 5.6 will blow up even though this code isn't
+		// something we want to execute for them. Gotta hide it in
+		// variables.
 		$thing = 'string';
-		$this->assertEquals(array('string'), \blobfolio\common\cast::array($thing));
-		\blobfolio\common\ref\cast::array($thing);
+		$class = '\blobfolio\common\cast::array';
+		$this->assertEquals(array('string'), $class($thing));
+		$class = '\blobfolio\common\ref\cast::array';
+		$class($thing);
 		$this->assertEquals(array('string'), $thing);
 
 		$thing = 'true';
