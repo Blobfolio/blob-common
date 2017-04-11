@@ -77,7 +77,7 @@ function blobcommon_get_release_branch() {
 	$current = blobcommon_get_installed_version();
 	if (version_compare($current, '7.0.0') < 0) {
 		// If PHP is old, legacy it is!
-		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+		if (version_compare(PHP_VERSION, '5.6.0') < 0) {
 			$branch = 'legacy';
 		}
 	}
