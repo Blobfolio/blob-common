@@ -155,11 +155,11 @@ abstract class cast_base {
 
 				// Convert from cents.
 				if (preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
-					$value = preg_replace('/[^\-\d\.]/', '', $value) / 100;
+					$value = \blobfolio\common\cast::to_number(preg_replace('/[^\-\d\.]/', '', $value)) / 100;
 				}
 				// Convert from percent.
 				elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $value)) {
-					$value = preg_replace('/[^\-\d\.]/', '', $value) / 100;
+					$value = \blobfolio\common\cast::to_number(preg_replace('/[^\-\d\.]/', '', $value)) / 100;
 				}
 			}
 
