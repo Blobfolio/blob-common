@@ -24,6 +24,7 @@ echo $first; //apples
  * [cc_exp_years()](#cc_exp_years)
  * [datediff()](#datediff)
  * [in_range()](#in_range)
+ * [is_json()](#is_json)
  * [is_utf8()](#is_utf8)
  * [json_decode_array()](#json_decode_array)
  * [length_in_range()](#length_in_range)
@@ -207,6 +208,21 @@ Returns `TRUE` or `FALSE`. Only passed boundaries are tested.
 ```php
 var_dump(blobfolio\common\data::in_range(3, 0, 300)); //TRUE
 ```
+
+
+
+## is_json()
+
+Determine whether a string represents JSON data.
+
+#### Arguments
+
+ * (*string*) String
+ * (*bool*) (*optional*) Consider empty strings valid JSON. Default: `FALSE`
+
+#### Returns
+
+Returns `TRUE` or `FALSE`.
 
 
 

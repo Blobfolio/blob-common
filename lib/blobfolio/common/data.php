@@ -187,6 +187,32 @@ class data {
 	}
 
 	/**
+	 * Is JSON?
+	 *
+	 * @param string $str String.
+	 * @param bool $empty Allow empty.
+	 * @return bool True/false.
+	 */
+	public static function is_json($str, $empty=false) {
+		if (!is_string($str) || (!$empty && !strlen($str))) {
+			return false;
+		}
+
+		if ($empty && !strlen($str)) {
+			return true;
+		}
+
+		try {
+			$json = json_decode($str);
+			return !is_null($json);
+		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	/**
 	 * Is Value Valid UTF-8?
 	 *
 	 * @param string $str String.

@@ -141,6 +141,23 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::is_json()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_is_json() {
+		$this->assertEquals(false, \blobfolio\common\data::is_json(1));
+		$this->assertEquals(false, \blobfolio\common\data::is_json('yes'));
+		$this->assertEquals(false, \blobfolio\common\data::is_json(''));
+		$this->assertEquals(true, \blobfolio\common\data::is_json('{"happy":"days"}'));
+		$this->assertEquals(true, \blobfolio\common\data::is_json('[]'));
+		$this->assertEquals(true, \blobfolio\common\data::is_json('[1,2]'));
+		$this->assertEquals(false, \blobfolio\common\data::is_json('{"happy":"'));
+
+		$this->assertEquals(true, \blobfolio\common\data::is_json('', true));
+	}
+
+	/**
 	 * ::is_utf8()
 	 *
 	 * @return void Nothing.
