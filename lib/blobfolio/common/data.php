@@ -67,6 +67,56 @@ class data {
 	}
 
 	/**
+	 * Otherize Values
+	 *
+	 * Convert an indefinitely large array of totals to
+	 * a fixed length with the chopped bits grouped under
+	 * "other".
+	 *
+	 * @param array $arr Array.
+	 * @param int $length Length.
+	 * @param string $other Label for others.
+	 * @return array|bool Array or false.
+	 */
+	public static function array_otherize($arr=null, $length=5, $other='Other') {
+		if ('associative' !== cast::array_type($arr)) {
+			return false;
+		}
+
+		// Make sure everything is numeric.
+		foreach ($arr as $k=>$v) {
+			if (!is_numeric($arr[$k])) {
+				ref\cast::to_float($arr[$k], true);
+			}
+		}
+
+		arsort($arr);
+
+		ref\cast::to_int($length, true);
+		ref\sanitize::to_range($length, 1);
+
+		// Nothing to do.
+		if (count($arr) <= $length) {
+			return $arr;
+		}
+
+		ref\cast::string($other, true);
+		if (!$other) {
+			$other = 'Other';
+		}
+
+		// Just sum it.
+		if (1 === $length) {
+			return array($other=>array_sum($arr));
+		}
+
+		$out = array_slice($arr, 0, $length - 1);
+		$out[$other] = array_sum(array_slice($arr, $length - 1));
+
+		return $out;
+	}
+
+	/**
 	 * Return the last value of an array.
 	 *
 	 * This is like array_pop() but non-destructive.

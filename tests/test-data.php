@@ -51,6 +51,36 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::array_otherize()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_array_otherize() {
+		$thing = array(
+			'US'=>100,
+			'CA'=>200,
+			'CN'=>5,
+			'GB'=>10,
+			'MX'=>30
+		);
+		$this->assertEquals(array('CA'=>200, 'US'=>100, 'ZZ'=>45), \blobfolio\common\data::array_otherize($thing, 3, 'ZZ'));
+		$this->assertEquals(array('CA'=>200, 'US'=>100, 'Other'=>45), \blobfolio\common\data::array_otherize($thing, 3));
+		$this->assertEquals(array('Other'=>345), \blobfolio\common\data::array_otherize($thing, 1));
+
+		$thing = array(0,1,2);
+		$this->assertEquals(false, \blobfolio\common\data::array_otherize($thing));
+
+		$thing = array('US'=>'5%');
+		$this->assertEquals(array('US'=>0.05), \blobfolio\common\data::array_otherize($thing));
+
+		$thing = array('US'=>'5¢');
+		$this->assertEquals(array('US'=>0.05), \blobfolio\common\data::array_otherize($thing));
+
+		$thing = array('US'=>'$5.00');
+		$this->assertEquals(array('US'=>5.0), \blobfolio\common\data::array_otherize($thing));
+	}
+
+	/**
 	 * ::array_pop()
 	 *
 	 * @return void Nothing.

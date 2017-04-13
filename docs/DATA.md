@@ -18,6 +18,7 @@ echo $first; //apples
 
  * [array_compare()](#array_compare)
  * [array_map_recursive()](#array_map_recursive)
+ * [array_otherize()](#array_otherize)
  * [array_pop()](#array_pop)
  * [array_pop_top()](#array_pop_top)
  * [cc_exp_months()](#cc_exp_months)
@@ -71,6 +72,44 @@ Recursively apply a callback function to the contents of an array.
 #### Returns
 
 Returns the filtered array.
+
+
+
+## array_otherize()
+
+Convert an indefinitely long associative array of numeric values to one of a fixed length, with any extra summed under "other". This is useful for, e.g., pie chart stats, where spatial limitations make it impractical to list zillions of entries individually.
+
+Note: US dollars, cents, and percentages are fine, but will be converted to floats, losing their string labels.
+
+#### Arguments
+
+ * (*array*) Array
+ * (*int*) (*optional*) Length. The array returned will be less than or equal to this value. Default: `5`
+ * (*string*) (*optional*) Group label. This is the key given to grouped values. Default: `"Other"`
+
+#### Returns
+
+Returns an array of the defined length, greatest to least, with overages grouped under the other label at the end of the array.
+
+#### Example
+
+```php
+$stats = array(
+    'US'=>100,
+    'CA'=>200,
+    'CN'=>5,
+    'GB'=>10,
+    'MX'=>30
+);
+$foo = blobfolio\common\data::array_otherize($stats, 3, 'ZZ');
+/*
+array(
+    CA => 200
+    US => 100
+    ZZ => 45
+)
+*/
+```
 
 
 
