@@ -4,39 +4,21 @@
 
 BUILD_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BIN_DIR="$( dirname "${BUILD_DIR}" )/bin"
+SKEL_DIR="${BUILD_DIR}/skel"
+SRC_DIR="${BUILD_DIR}/src"
+OUT_DIR="${BUILD_DIR}/out"
 
 
 
-# Set up PharBuilder
-echo -e ""
-echo -e "-------------------"
-echo -e "Cloning PharBuilder"
-echo -e "-------------------"
-if [ -e "${BUILD_DIR}/PharBuilder" ]; then
-	rm -rf "${BUILD_DIR}/PharBuilder"
+# Some early clean up.
+if [ -e "${SRC_DIR}" ]; then
+	rm -rf "${SRC_DIR}"
 fi
-git clone -q https://github.com/MacFJA/PharBuilder.git "${BUILD_DIR}/PharBuilder"
-PHARBUILDER="${BUILD_DIR}/PharBuilder/bin/phar-builder"
-
-if [ ! -e "$PHARBUILDER" ]; then
-	echo -e "  + ERROR: Could not locate binary."
-	exit 1
-else
-	echo -e "  + Clone succesful!"
+mkdir "${SRC_DIR}"
+if [ -e "${OUT_DIR}" ]; then
+	rm -rf "${OUT_DIR}"
 fi
-
-# Clean up
-echo -e "  + Setting up application."
-if [ -e "${BUILD_DIR}/PharBuilder/composer.lock" ]; then
-	rm "${BUILD_DIR}/PharBuilder/composer.lock"
-fi
-$( cd "${BUILD_DIR}/PharBuilder" && composer install --no-dev --quiet -a )
-if [ $? -ne 0 ]; then
-	echo -e "  + ERROR: Composer failed."
-	exit 1
-else
-	echo -e "  + Done!"
-fi
+mkdir -p "${OUT_DIR}/lib"
 
 
 
@@ -45,46 +27,27 @@ echo -e ""
 echo -e "----------------------"
 echo -e "Installing Blob-Common"
 echo -e "----------------------"
-if [ -e "${BUILD_DIR}/src" ]; then
-	rm -rf "${BUILD_DIR}/src"
-fi
-mkdir "${BUILD_DIR}/src"
-cp -a "${BUILD_DIR}/composer.json" "${BUILD_DIR}/src"
-$( cd "${BUILD_DIR}/src" && composer install --no-dev --quiet -a )
+echo -e "  + Compiling"
+cp -a "${SKEL_DIR}/composer.json" "${SRC_DIR}"
+$( cd "${SRC_DIR}" && composer install --no-dev --quiet -a )
 
 if [ $? -ne 0 ]; then
 	echo -e "  + ERROR: Composer failed."
 	exit 1
-else
-	echo -e "  + Done!"
 fi
 
 # Clean up
-find "${BUILD_DIR}/src/vendor" -name "composer.json" -delete
-find "${BUILD_DIR}/src/vendor" -name "README.md" -delete
-find "${BUILD_DIR}/src/vendor" -name "LICENSE" -delete
-find "${BUILD_DIR}/src/vendor" -name ".gitattributes" -delete
-find "${BUILD_DIR}/src/vendor" -name "docs" -type d -exec rm -rf {} +
+echo -e "  + Cleaning Up"
+find "${SRC_DIR}/vendor" -name "composer.json" -delete
+find "${SRC_DIR}/vendor" -name "README.md" -delete
+find "${SRC_DIR}/vendor" -name "LICENSE" -delete
+find "${SRC_DIR}/vendor" -name ".gitattributes" -delete
+find "${SRC_DIR}/vendor" -name "docs" -type d -exec rm -rf {} +
+find "${SRC_DIR}/vendor" -name "test" -type d -exec rm -rf {} +
 
-echo -e "<?php require_once(dirname(__FILE__) . '/vendor/autoload.php'); ?>" > "${BUILD_DIR}/src/index.php"
-
-echo -e ""
-echo -e "-------------"
-echo -e "Building Phar"
-echo -e "-------------"
-
-if [ -e "${BIN_DIR}/blob-common.phar" ]; then
-	rm "${BIN_DIR}/blob-common.phar"
-fi
-if [ -e "${BIN_DIR}/version.json" ]; then
-	rm "${BIN_DIR}/version.json"
-fi
-
-OUTPUT=$( cd "${BUILD_DIR}/src" && php -d phar.readonly=0 "${PHARBUILDER}" package -z --output-dir="${BIN_DIR}" --name="blob-common.phar" -s "yes" --entry-point="${BUILD_DIR}/src/index.php" "${BUILD_DIR}/src/composer.json" )
-if [ $? -ne 0 ]; then
-	echo -e "  + ERROR: Phar creation failed."
-	exit 1
-fi
+# Build
+echo -e "  + Packaging"
+RESULT="$( php -d phar.readonly=0 "${SKEL_DIR}/build.php" )"
 if [ ! -e "${BIN_DIR}/blob-common.phar" ]; then
 	echo -e "  + ERROR: Phar creation failed."
 else
@@ -99,7 +62,7 @@ echo -e ""
 echo -e "-------------------"
 echo -e "Cleaning Up Sources"
 echo -e "-------------------"
-rm -rf "${BUILD_DIR}/src" "${BUILD_DIR}/PharBuilder"
+rm -rf "${SRC_DIR}" "${OUT_DIR}"
 
 
 
