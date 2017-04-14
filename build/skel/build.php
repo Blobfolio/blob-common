@@ -41,7 +41,7 @@ foreach ($classMap as $k=>$v) {
 	}
 
 	$classMap[$k] = '/lib/' . ltrim($v, '/');
-	$out[] = "'" . addslashes($k) . "'=>'" . addslashes(ltrim($classMap[$k], '/')) . "'";
+	$out[] = "'" . addslashes($k) . "'=>'phar://blob-common.phar/" . addslashes(ltrim($classMap[$k], '/')) . "'";
 }
 
 // Generate the index.
@@ -59,15 +59,15 @@ $phar = new Phar(
 	"blob-common.phar"
 );
 $phar->startBuffering();
-$phar->setStub='<?php
+$stub = '<?php
 if (!defined("BLOBCOMMON_AUTOLOADER")) {
 	define("BLOBCOMMON_AUTOLOADER", true);
-	Phar::interceptFileFuncs();
-	set_include_path("phar://this" . PATH_SEPARATOR . get_include_path());
-	require "index.php";
+	Phar::mapPhar("blob-common.phar");
+	require "phar://blob-common.phar/index.php";
 }
 __HALT_COMPILER();
 ';
+$phar->setStub($stub);
 $phar->buildFromDirectory(OUT_DIR);
 $phar->compressFiles(Phar::GZ);
 $phar->stopBuffering();
