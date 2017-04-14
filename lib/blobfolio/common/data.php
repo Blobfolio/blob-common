@@ -100,7 +100,7 @@ class data {
 			return $arr;
 		}
 
-		ref\cast::string($other, true);
+		ref\cast::to_string($other, true);
 		if (!$other) {
 			$other = 'Other';
 		}
@@ -437,7 +437,7 @@ class data {
 		ref\cast::to_int($length, true);
 
 		if (is_array($soup) && count($soup)) {
-			$soup = implode('', array_map('\blobfolio\common\cast::string', $soup));
+			$soup = implode('', array_map('\blobfolio\common\cast::to_string', $soup));
 			ref\sanitize::printable($soup);				// Strip non-printable.
 			$soup = preg_replace('/\s/u', '', $soup);	// Strip whitespace.
 			$soup = array_unique(mb::str_split($soup));
