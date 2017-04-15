@@ -41,7 +41,7 @@ foreach ($classMap as $k=>$v) {
 	}
 
 	$classMap[$k] = '/lib/' . ltrim($v, '/');
-	$out[] = "'" . addslashes($k) . "'=>'phar://blob-common.phar/" . addslashes(ltrim($classMap[$k], '/')) . "'";
+	$out[] = "'" . addslashes($k) . "'=>'" . addslashes(ltrim($classMap[$k], '/')) . "'";
 }
 
 // Generate the index.
@@ -55,15 +55,13 @@ if (file_exists(BIN_DIR . 'blob-common.phar')) {
 }
 $phar = new Phar(
 	BIN_DIR . 'blob-common.phar',
-	FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_FILENAME | FilesystemIterator::SKIP_DOTS,
-	"blob-common.phar"
+	FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_FILENAME | FilesystemIterator::SKIP_DOTS
 );
 $phar->startBuffering();
 $stub = '<?php
 if (!defined("BLOBCOMMON_AUTOLOADER")) {
 	define("BLOBCOMMON_AUTOLOADER", true);
-	Phar::mapPhar("blob-common.phar");
-	require "phar://blob-common.phar/index.php";
+	require "phar://" . __FILE__ . "/index.php";
 }
 __HALT_COMPILER();
 ';
