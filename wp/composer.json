@@ -1,0 +1,11 @@
+{
+  "name": "blobfolio\/tutan-common",
+  "require": {
+    "blobfolio\/blob-common": "*"
+  },
+  "config": {
+    "vendor-dir": "lib\/vendor",
+    "preferred-install": "dist"
+  },
+  "minimum-stability": "dev"
+}
