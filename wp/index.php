@@ -3,7 +3,7 @@
  * Functions to assist common theme operations.
  *
  * @package blobfolio/common
- * @version 7.1.9
+ * @version 7.2.0-0
  *
  * @wordpress-plugin
  * Plugin Name: Tutan Common
@@ -11,7 +11,7 @@
  * Description: Functions to assist common theme operations.
  * Author: Blobfolio, LLC
  * Author URI: https://blobfolio.com/
- * Version: 7.1.9
+ * Version: 7.2.0-0
  * License: WTFPL
  * License URI: http://www.wtfpl.net/
  */
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
 define('BLOB_COMMON_ROOT', dirname(__FILE__));
 
 // The blob-common library.
-@require_once(BLOB_COMMON_ROOT . '/lib/vendor/autoload.php');	// Autoload.
+@require_once(BLOB_COMMON_ROOT . '/lib/blob-common.phar');	// Autoload.
 
 // And everything else.
 @require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');
@@ -297,10 +297,10 @@ function blobcommon_check_library_update() {
 
 	return false;
 }
-/*add_action('blobcommon_cron_check_library_update', 'blobcommon_check_library_update');
+add_action('blobcommon_cron_check_library_update', 'blobcommon_check_library_update');
 if (!wp_next_scheduled('blobcommon_cron_check_library_update')) {
 	wp_schedule_event(time(), 'daily', 'blobcommon_cron_check_library_update');
-}*/
+}
 
 // --------------------------------------------------------------------- end updates
 
