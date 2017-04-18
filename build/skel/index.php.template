@@ -30,4 +30,4 @@ spl_autoload_register(
 	true
 );
 
-__halt_compiler();
+__HALT_COMPILER();

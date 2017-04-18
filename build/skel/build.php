@@ -45,7 +45,7 @@ foreach ($classMap as $k=>$v) {
 }
 
 // Generate the index.
-$index = file_get_contents(__DIR__ . '/index.php');
+$index = file_get_contents(__DIR__ . '/index.php.template');
 $index = str_replace('CLASSMAP', "\n\t\t\t" . implode(",\n\t\t\t", $out) . "\n\t\t", $index);
 
 // Build the phar!
