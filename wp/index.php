@@ -256,6 +256,7 @@ function blobcommon_check_library_update() {
 			}
 
 			$date = \blobfolio\common\sanitize::datetime($remote['date']);
+			$checksum = \blobfolio\common\sanitize::datetime($remote['checksum']);
 		} catch (Throwable $e) {
 			return false;
 		} catch (Exception $e) {
@@ -278,9 +279,14 @@ function blobcommon_check_library_update() {
 			$data = wp_remote_retrieve_body($remote);
 			if (strlen($data)) {
 				try {
-					if (false !== file_put_contents(BLOB_COMMON_ROOT . '/lib/blob-common.phar', $data)) {
-						update_option('blobcommon_library', $date);
-						return true;
+					if (false !== file_put_contents(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new', $data)) {
+						if (
+							(md5_file(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new') === $checksum) &&
+							(false !== rename(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new', BLOB_COMMON_ROOT . '/lib/blob-common.phar'))
+						) {
+							update_option('blobcommon_library', $date);
+							return true;
+						}
 					}
 				} catch (Throwable $e) {
 					return false;
@@ -301,6 +307,19 @@ add_action('blobcommon_cron_check_library_update', 'blobcommon_check_library_upd
 if (!wp_next_scheduled('blobcommon_cron_check_library_update')) {
 	wp_schedule_event(time(), 'daily', 'blobcommon_cron_check_library_update');
 }
+
+/**
+ * Deactivation
+ *
+ * Clear any system changes when the plugin is deactivated.
+ *
+ * @return void Nothing.
+ */
+function blobcommon_deactivate() {
+	$timestamp = wp_next_scheduled('blobcommon_cron_check_library_update');
+	wp_unschedule_event($timestamp, 'blobcommon_cron_check_library_update');
+}
+register_deactivation_hook(__FILE__, 'blobcommon_deactivate');
 
 // --------------------------------------------------------------------- end updates
 
