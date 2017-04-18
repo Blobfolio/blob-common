@@ -287,6 +287,9 @@ function blobcommon_check_library_update() {
 							update_option('blobcommon_library', $date);
 							return true;
 						}
+						elseif (file_exists(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new')) {
+							@unlink(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new');
+						}
 					}
 				} catch (Throwable $e) {
 					return false;
