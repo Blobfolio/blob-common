@@ -41,6 +41,71 @@ class format {
 	}
 
 	/**
+	 * Decode JS Entities
+	 *
+	 * Decode escape and unicode chars.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function decode_js_entities(&$str='') {
+		cast::to_string($str, true);
+
+		static::decode_unicode_entities($str);
+		static::decode_escape_entities($str);
+
+		return true;
+	}
+
+	/**
+	 * Decode Escape Entities
+	 *
+	 * Decode \b, \f, \n, \r, \t.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function decode_escape_entities(&$str='') {
+		cast::to_string($str, true);
+
+		$replacements = array(
+			'\b'=>chr(0x08),
+			'\f'=>chr(0x0C),
+			'\n'=>chr(0x0A),
+			'\r'=>chr(0x0D),
+			'\t'=>chr(0x09)
+		);
+		$str = str_replace(
+			array_keys($replacements),
+			array_values($replacements),
+			$str
+		);
+
+		return true;
+	}
+
+	/**
+	 * Decode Unicode Entities
+	 *
+	 * Decode \u1234 into chars.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function decode_unicode_entities(&$str='') {
+		cast::to_string($str, true);
+
+		$str = preg_replace_callback(
+			'/\\\u([0-9A-Fa-f]+)/u',
+			array(get_called_class(), 'decode_entities_hex'),
+			$str
+		);
+
+		cast::to_string($str, true);
+		return true;
+	}
+
+	/**
 	 * Decode HTML Entities
 	 *
 	 * Decode all HTML entities back into their char
@@ -130,6 +195,250 @@ class format {
 		}
 
 		$ip = false;
+		return true;
+	}
+
+	/**
+	 * JSON
+	 *
+	 * Fix JSON formatting.
+	 *
+	 * @param string $str String.
+	 * @param bool $pretty Pretty.
+	 * @return bool True.
+	 */
+	public static function json(&$str='', $pretty=true) {
+		if (!is_string($str)) {
+			sanitize::utf8($str);
+			$str = json_encode($str);
+		}
+
+		if (false === ($decode = \blobfolio\common\format::json_decode($str))) {
+			$str = null;
+			return false;
+		}
+
+		if ($pretty) {
+			$str = json_encode($decode, JSON_PRETTY_PRINT);
+		}
+		else {
+			$str = json_encode($decode);
+		}
+		return true;
+	}
+
+	/**
+	 * JSON Decode
+	 *
+	 * A more robust version of JSON decode that can
+	 * somewhat handle general Javascript objects.
+	 * This always returns objecty things as associative
+	 * arrays.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function json_decode(&$str='') {
+		cast::to_string($str, true);
+		cast::to_bool($assoc, true);
+
+		// Remove comments.
+		$str = preg_replace(
+			array(
+				// Single line //.
+				'#^\s*//(.+)$#m',
+				// Multi-line /* */.
+				'#^\s*/\*(.+)\*/#Us',
+				'#/\*(.+)\*/\s*$#Us'
+			),
+			'',
+			$str
+		);
+
+		// Trim it.
+		mb::trim($str);
+
+		// Empty?
+		if (!strlen($str) || "''" === $str || '""' === $str) {
+			$str = '';
+			return true;
+		}
+
+		// Maybe it just works?
+		$tmp = json_decode($str, true);
+		if (!is_null($tmp)) {
+			$str = $tmp;
+			return true;
+		}
+
+		$lower = \blobfolio\common\mb::strtolower($str);
+		// Bool.
+		if ('true' === $lower || 'false' === $lower) {
+			cast::to_bool($str);
+			return true;
+		}
+		// Null.
+		elseif ('null' === $lower) {
+			$str = null;
+			return true;
+		}
+		// Number.
+		elseif (is_numeric($lower)) {
+			if (false !== strpos($lower, '.')) {
+				$str = (float) $lower;
+			}
+			else {
+				$str = (int) $lower;
+			}
+			return true;
+		}
+		// String.
+		elseif (preg_match('/^("|\')(.+)(\1)$/s', $str, $match) && $match[1] === $match[3]) {
+			$str = $match[2];
+			static::decode_js_entities($str);
+			return true;
+		}
+		// Bail if we don't have an object at this point.
+		elseif (!preg_match('/^\[.*\]$/s', $str) && !preg_match('/^\{.*\}$/s', $str)) {
+			$str = null;
+			return false;
+		}
+
+		// Start building an array.
+		$slices = array(
+			array(
+				'type'=>'slice',
+				'from'=>0,
+				'delimiter'=>false
+			)
+		);
+		$out = array();
+		if (0 === \blobfolio\common\mb::strpos($str, '[')) {
+			$type = 'array';
+		}
+		else {
+			$type = 'object';
+		}
+		$chunk = \blobfolio\common\mb::substr($str, 1, -1);
+		$length = \blobfolio\common\mb::strlen($chunk);
+		for ($x = 0; $x <= $length; $x++) {
+			$last = end($slices);
+			$subchunk = \blobfolio\common\mb::substr($chunk, $x, 2);
+
+			// A comma or the end.
+			if (
+				($x === $length) ||
+				((',' === $chunk{$x}) && 'slice' === $last['type'])
+			) {
+				$slice = \blobfolio\common\mb::substr($chunk, $last['from'], ($x - $last['from']));
+				$slices[] = array(
+					'type'=>'slice',
+					'from'=>$x + 1,
+					'delimiter'=>false
+				);
+
+				// Arrays are straightforward, just pop it in.
+				if ('array' === $type) {
+					$out[] = \blobfolio\common\format::json_decode($slice);
+				}
+				// Objects need key/value separation.
+				else {
+					// Key is quoted.
+					if (preg_match('/^\s*(["\'].*[^\\\]["\'])\s*:\s*(\S.*),?$/Uis', $slice, $parts)) {
+						$key = \blobfolio\common\format::json_decode($parts[1]);
+						$val = \blobfolio\common\format::json_decode($parts[2]);
+						$out[$key] = $val;
+					}
+					// Key is unquoted.
+					elseif (preg_match('/^\s*(\w+)\s*:\s*(\S.*),?$/Uis', $slice, $parts)) {
+						$key = $parts[1];
+						static::decode_js_entities($key);
+						$val = \blobfolio\common\format::json_decode($parts[2]);
+						$out[$key] = $val;
+					}
+				}
+			}
+			// A new quote.
+			elseif (
+				(('"' === $chunk{$x}) || ("'" === $chunk{$x})) &&
+				('string' !== $last['type'])
+			) {
+				$slices[] = array(
+					'type'=>'string',
+					'from'=>$x,
+					'delimiter'=>$chunk{$x}
+				);
+			}
+			// An end quote.
+			elseif (
+				($chunk{$x} === $last['delimiter']) &&
+				('string' === $last['type']) &&
+				('\\' !== $chunk{$x - 1} || (('\\' === $chrs{$c - 1}) && '\\' === $chunk{$x - 2}))
+			) {
+				array_pop($slices);
+			}
+			// Opening bracket (and we're in a slice/objectish thing.
+			elseif (
+				('[' === $chunk{$x}) &&
+				in_array($last['type'], array('slice', 'array', 'object'), true)
+			) {
+				$slices[] = array(
+					'type'=>'array',
+					'from'=>$x,
+					'delimiter'=>false
+				);
+			}
+			// Closing bracket.
+			elseif (
+				(']' === $chunk{$x}) &&
+				('array' === $last['type'])
+			) {
+				array_pop($slices);
+			}
+			// Opening brace (and we're in a slice/objectish thing.
+			elseif (
+				('{' === $chunk{$x}) &&
+				in_array($last['type'], array('slice', 'array', 'object'), true)
+			) {
+				$slices[] = array(
+					'type'=>'object',
+					'from'=>$x,
+					'delimiter'=>false
+				);
+			}
+			// Closing brace.
+			elseif (
+				('}' === $chunk{$x}) &&
+				('object' === $last['type'])
+			) {
+				array_pop($slices);
+			}
+			// Opening comment.
+			elseif (
+				('/*' === $subchunk) &&
+				in_array($last['type'], array('slice', 'array', 'object'), true)
+			) {
+				$slices[] = array(
+					'type'=>'comment',
+					'from'=>$x,
+					'delimiter'=>false
+				);
+				$x++;
+			}
+			// Closing comment.
+			elseif (
+				('/*' === $subchunk) &&
+				('comment' === $last['type'])
+			) {
+				array_pop($slices);
+				$x++;
+				for ($y = $last['from']; $y <= $x; $y++) {
+					$chunk{$y} = ' ';
+				}
+			}
+		}// End each char.
+
+		$str = $out;
 		return true;
 	}
 
@@ -433,7 +742,6 @@ class format {
 
 		return true;
 	}
-
 }
 
 

@@ -81,6 +81,30 @@ class mb {
 	}
 
 	/**
+	 * Trim
+	 *
+	 * Trim all whitespacey bits from both ends.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function trim(&$str='') {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::trim($str[$k]);
+			}
+		}
+		else {
+			cast::to_string($str);
+
+			$str = preg_replace('/^\s+/u', '', $str);
+			$str = preg_replace('/\s+$/u', '', $str);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Wrapper For ucfirst()
 	 *
 	 * This will catch various case-able Unicode beyond

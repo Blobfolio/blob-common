@@ -174,6 +174,31 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::trim()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_trim() {
+		$things = array(
+			array(
+				'key'=>' 	test ',
+				'value'=>'test'
+			),
+			array(
+				'key'=>"\ntest",
+				'value'=>'test'
+			),
+			array(
+				'key'=>chr(0xA0) . ' test' . chr(0xA0),
+				'value'=>'test'
+			)
+		);
+		foreach ($things as $thing) {
+			$this->assertEquals($thing['value'], \blobfolio\common\mb::trim($thing['key']));
+		}
+	}
+
+	/**
 	 * ::ucfirst()
 	 *
 	 * @return void Nothing.

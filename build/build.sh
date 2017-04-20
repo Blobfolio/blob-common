@@ -52,7 +52,9 @@ if [ ! -e "${BIN_DIR}/blob-common.phar" ]; then
 	echo -e "  + ERROR: Phar creation failed."
 else
 	DATE="$(date --iso-8601=seconds)"
-	echo "{\"date\":\"$DATE\"}" > "${BIN_DIR}/version.json"
+	CHECKSUM="$(md5sum "${BIN_DIR}/blob-common.phar")"
+	CHECKSUM="${CHECKSUM:0:32}"
+	echo "{\"date\":\"$DATE\",\"checksum\":\"$CHECKSUM\"}" > "${BIN_DIR}/version.json"
 	echo -e "  + Done!"
 fi
 

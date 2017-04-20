@@ -118,6 +118,45 @@ class format {
 	}
 
 	/**
+	 * Decode JS Entities
+	 *
+	 * Decode escape and unicode chars.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function decode_js_entities($str='') {
+		ref\format::decode_js_entities($str);
+		return $str;
+	}
+
+	/**
+	 * Decode Escape Entities
+	 *
+	 * Decode \b, \f, \n, \r, \t.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function decode_escape_entities($str='') {
+		ref\format::decode_escape_entities($str);
+		return $str;
+	}
+
+	/**
+	 * Decode Unicode Entities
+	 *
+	 * Decode \u1234 into chars.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function decode_unicode_entities($str='') {
+		ref\format::decode_unicode_entities($str);
+		return $str;
+	}
+
+	/**
 	 * Decode HTML Entities
 	 *
 	 * Decode all HTML entities back into their char
@@ -218,6 +257,36 @@ class format {
 	public static function ip_to_number($ip) {
 		ref\format::ip_to_number($ip);
 		return $ip;
+	}
+
+	/**
+	 * JSON
+	 *
+	 * Fix JSON formatting.
+	 *
+	 * @param string $str String.
+	 * @param bool $pretty Pretty.
+	 * @return string|null JSON or null.
+	 */
+	public static function json($str='', $pretty=true) {
+		ref\format::json($str, $pretty);
+		return $str;
+	}
+
+	/**
+	 * JSON Decode
+	 *
+	 * A more robust version of JSON decode that can
+	 * somewhat handle general Javascript objects.
+	 * This always returns objecty things as associative
+	 * arrays.
+	 *
+	 * @param string $str String.
+	 * @return mixed Value.
+	 */
+	public static function json_decode($str='') {
+		ref\format::json_decode($str);
+		return $str;
 	}
 
 	/**

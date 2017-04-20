@@ -8,15 +8,17 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+if (defined('BLOBCOMMON_AUTOLOADER')) {
+	return;
+}
 
-/**
- * Autoloader
- *
- * @param string $class Class name.
- * @return void Nothing.
- */
+define('BLOBCOMMON_AUTOLOADER', true);
+
+$blobcommon_phar = md5(__FILE__ . '/blob-common.phar') . '.phar';
+phar::mapPhar($blobcommon_phar);
+
 spl_autoload_register(
-	function($class) {
+	function($class) use($blobcommon_phar) {
 		$map = array(CLASSMAP);
 		if ($class && isset($map[$class])) {
 			require($map[$class]);
@@ -28,3 +30,4 @@ spl_autoload_register(
 	true
 );
 
+__HALT_COMPILER();

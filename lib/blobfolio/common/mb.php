@@ -24,8 +24,7 @@ class mb {
 	 */
 	public static function parse_url($url, $component = -1) {
 		ref\cast::to_string($url, true);
-		$url = preg_replace('/^\s+/u', '', $url);
-		$url = preg_replace('/\s+$/u', '', $url);
+		ref\mb::trim($str);
 
 		// Before we start, let's fix scheme-agnostic URLs.
 		$url = preg_replace('/^:?\/\//', 'https://', $url);
@@ -359,6 +358,19 @@ class mb {
 		else {
 			return substr_count($haystack, $needle);
 		}
+	}
+
+	/**
+	 * Trim
+	 *
+	 * Trim all whitespacey bits from both ends.
+	 *
+	 * @param string $str String.
+	 * @return bool True.
+	 */
+	public static function trim($str='') {
+		ref\mb::trim($str);
+		return $str;
 	}
 
 	/**

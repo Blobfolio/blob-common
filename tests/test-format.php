@@ -52,6 +52,17 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::decode_js_entities()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_decode_js_entities() {
+		$thing = '\nhello\u00c1';
+		$expected = "\nhelloÁ";
+		$this->assertEquals($expected, \blobfolio\common\format::decode_js_entities($thing));
+	}
+
+	/**
 	 * ::excerpt()
 	 *
 	 * @return void Nothing.
@@ -94,6 +105,58 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 
 		$thing = '2600:3c00::f03c:91ff:feae:0ff2';
 		$this->assertEquals(50511880784403022287880976722111107058, \blobfolio\common\format::ip_to_number($thing));
+	}
+
+	/**
+	 * ::json()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_json() {
+		$things = array(
+			array(
+				'key'=>"{'hello':'there' } ",
+				'value'=>'{"hello":"there"}'
+			),
+			array(
+				'key'=>"{hello:'there' } ",
+				'value'=>'{"hello":"there"}'
+			),
+			array(
+				'key'=>"['hello','there' ] ",
+				'value'=>'["hello","there"]'
+			),
+			array(
+				'key'=>'["hello","\"there" ] ',
+				'value'=>'["hello","\"there"]'
+			),
+			array(
+				'key'=>"['\"there']",
+				'value'=>'["\"there"]'
+			),
+			array(
+				'key'=>23,
+				'value'=>'23'
+			),
+			array(
+				'key'=>array('there'),
+				'value'=>'["there"]'
+			),
+			array(
+				'key'=>array('hello'=>array('there')),
+				'value'=>'{"hello":["there"]}'
+			),
+		);
+
+		foreach ($things as $thing) {
+			$this->assertEquals($thing['value'], \blobfolio\common\format::json($thing['key'], false));
+		}
+
+		$expected = '[
+    "hello",
+    "there"
+]';
+		$this->assertEquals($expected, \blobfolio\common\format::json("['hello','there' ] ", true));
 	}
 
 	/**

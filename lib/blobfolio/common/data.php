@@ -293,18 +293,13 @@ class data {
 	 * @return array Data.
 	 */
 	public static function json_decode_array($json, $defaults=null, $strict=true, $recursive=true) {
-		ref\cast::to_string($json);
-		if (!mb::strlen($json)) {
+		ref\format::json_decode($json);
+
+		if (is_null($json) || (is_string($json) && !$json)) {
 			$json = array();
 		}
 		else {
-			$json = json_decode($json, true);
-			if (is_null($json)) {
-				$json = array();
-			}
-			elseif (!is_array($json)) {
-				ref\cast::to_array($json);
-			}
+			ref\cast::to_array($json);
 		}
 
 		if (is_array($defaults)) {
