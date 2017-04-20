@@ -27,7 +27,8 @@ if (!defined('ABSPATH')) {
 define('BLOB_COMMON_ROOT', dirname(__FILE__));
 
 // The blob-common library.
-@require_once(BLOB_COMMON_ROOT . '/lib/blob-common.phar');	// Autoload.
+@require_once(BLOB_COMMON_ROOT . '/lib/blobcommon.php');
+\blobfolio\wp\common\blobcommon::init();
 
 // And everything else.
 @require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');
@@ -235,94 +236,6 @@ function blobcommon_check_update($option) {
 }
 add_filter('transient_update_plugins', 'blobcommon_check_update');
 add_filter('site_transient_update_plugins', 'blobcommon_check_update');
-
-/**
- * Check for Library Updates
- *
- * The blob-common library is now bundled as a Phar
- * and can update independently of the plugin.
- *
- * @return bool True/false.
- */
-function blobcommon_check_library_update() {
-
-	$current = get_option('blobcommon_library', '');
-	$remote = wp_remote_get('https://raw.githubusercontent.com/Blobfolio/blob-common/master/bin/version.json');
-	if (200 === wp_remote_retrieve_response_code($remote)) {
-		try {
-			$remote = json_decode(wp_remote_retrieve_body($remote), true);
-			if (!is_array($remote) || !isset($remote['date'])) {
-				return false;
-			}
-
-			$date = \blobfolio\common\sanitize::datetime($remote['date']);
-			$checksum = \blobfolio\common\sanitize::datetime($remote['checksum']);
-		} catch (Throwable $e) {
-			return false;
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-	else {
-		return false;
-	}
-
-	// No update needed.
-	if ($current >= $date) {
-		return true;
-	}
-
-	// Update if we can.
-	$remote = wp_remote_get('https://raw.githubusercontent.com/Blobfolio/blob-common/master/bin/blob-common.phar');
-	if (200 === wp_remote_retrieve_response_code($remote)) {
-		try {
-			$data = wp_remote_retrieve_body($remote);
-			if (strlen($data)) {
-				try {
-					if (false !== file_put_contents(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new', $data)) {
-						if (
-							(md5_file(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new') === $checksum) &&
-							(false !== rename(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new', BLOB_COMMON_ROOT . '/lib/blob-common.phar'))
-						) {
-							update_option('blobcommon_library', $date);
-							return true;
-						}
-						elseif (file_exists(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new')) {
-							@unlink(BLOB_COMMON_ROOT . '/lib/blob-common.phar.new');
-						}
-					}
-				} catch (Throwable $e) {
-					return false;
-				} catch (Exception $e) {
-					return false;
-				}
-			}
-		} catch (Throwable $e) {
-			return false;
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	return false;
-}
-add_action('blobcommon_cron_check_library_update', 'blobcommon_check_library_update');
-if (!wp_next_scheduled('blobcommon_cron_check_library_update')) {
-	wp_schedule_event(time(), 'daily', 'blobcommon_cron_check_library_update');
-}
-
-/**
- * Deactivation
- *
- * Clear any system changes when the plugin is deactivated.
- *
- * @return void Nothing.
- */
-function blobcommon_deactivate() {
-	$timestamp = wp_next_scheduled('blobcommon_cron_check_library_update');
-	wp_unschedule_event($timestamp, 'blobcommon_cron_check_library_update');
-}
-register_deactivation_hook(__FILE__, 'blobcommon_deactivate');
 
 // --------------------------------------------------------------------- end updates
 
