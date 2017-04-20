@@ -60,8 +60,7 @@ class sanitize {
 			format::decode_entities($str);
 
 			// And trim the edges while we're here.
-			$str = preg_replace('/^\s+/u', '', $str);
-			$str = preg_replace('/\s+$/u', '', $str);
+			mb::trim($str);
 		}
 
 		return true;
@@ -1128,14 +1127,12 @@ class sanitize {
 
 			if (!$newlines) {
 				$str = preg_replace('/\s+/u', ' ', $str);
-				$str = preg_replace('/^\s+/u', '', $str);
-				$str = preg_replace('/\s+$/u', '', $str);
+				mb::trim($str);
 				return true;
 			}
 
 			// Sanitize newlines.
-			$str = preg_replace('/^\s+/u', '', $str);
-			$str = preg_replace('/\s+$/u', '', $str);
+			mb::trim($str);
 			$str = str_replace("\r\n", "\n", $str);
 			$str = preg_replace('/\v/u', "\n", $str);
 
