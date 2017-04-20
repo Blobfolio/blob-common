@@ -28,7 +28,9 @@ if (false === ($end = strpos($raw, ');', $start))) {
 
 $map = substr($raw, $start, ($end - $start + 2));
 $map = str_replace("__DIR__ . '/..' . ", '', $map);
+// @codingStandardsIgnoreStart
 eval($map);
+// @codingStandardsIgnoreEnd
 
 // Move files to our output directory and generate
 // code version of $classMap.
