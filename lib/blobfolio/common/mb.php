@@ -24,7 +24,7 @@ class mb {
 	 */
 	public static function parse_url($url, $component = -1) {
 		ref\cast::to_string($url, true);
-		ref\mb::trim($str);
+		ref\mb::trim($url);
 
 		// Before we start, let's fix scheme-agnostic URLs.
 		$url = preg_replace('/^:?\/\//', 'https://', $url);
