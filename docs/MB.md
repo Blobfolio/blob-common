@@ -32,6 +32,7 @@ blobfolio\common\ref\mb::strtolower($foo);
  * [strtoupper()](#strtoupper)
  * [substr()](#substr)
  * [substr_count()](#substr_count)
+ * [trim()](#trim)
  * [ucfirst()](#ucfirst)
  * [ucwords()](#ucwords)
 
@@ -273,7 +274,26 @@ Count the number of occurrences of the needle in the haystack.
 
 #### Returns
 
-Returns the number of matches. 
+Returns the number of matches.
+
+
+
+## trim()
+
+Actually trim all leading and trailing whitespace from a string.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*mixed*) String. If an array is passed, each value will be recursively trimmed.
+
+#### Returns
+
+Returns the trimmed string if by value, `TRUE` otherwise.
 
 
 

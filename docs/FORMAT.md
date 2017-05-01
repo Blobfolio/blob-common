@@ -24,9 +24,14 @@ blobfolio\common\ref\format::money($foo);
  * [array_to_indexed()](#array_to_indexed)
  * [cidr_to_range()](#cidr_to_range)
  * [decode_entities()](#decode_entities)
+ * [decode_escape_entities()](#decode_escape_entities)
+ * [decode_js_entities()](#decode_js_entities)
+ * [decode_unicode_entities()](#decode_unicode_entities)
  * [excerpt()](#excerpt)
  * [inflect()](#inflect)
  * [ip_to_number()](#ip_to_number)
+ * [json()](#json)
+ * [json_decode()](#json_decode)
  * [links()](#links)
  * [money()](#money)
  * [phone()](#phone)
@@ -128,6 +133,63 @@ If passing by value a decoded string is returned, otherwise `TRUE`.
 
 
 
+## decode_escape_entities()
+
+Converts the following back to actual characters: `\b`, `\f`, `\n`, `\r`, `\t`.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) String
+
+#### Returns
+
+If passing by value a decoded string is returned, otherwise `TRUE`.
+
+
+
+## decode_js_entities()
+
+Shorthand for running both `::decode_unicode_entities()` and `decode_escape_entities()`.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) String
+
+#### Returns
+
+If passing by value a decoded string is returned, otherwise `TRUE`.
+
+
+
+## decode_unicode_entities()
+
+Converts Unicode like `\u0000` to an actual character.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) String
+
+#### Returns
+
+If passing by value a decoded string is returned, otherwise `TRUE`.
+
+
+
 ## excerpt()
 
 Shorten text to a set number of letters or words. This function is multi-byte safe provided `mbstring` is present.
@@ -202,6 +264,47 @@ $foo = blobfolio\common\format::ip_to_number('50.116.18.174'); //846467758
 //by reference
 blobfolio\common\ref\format::ip_to_number($foo);
 ```
+
+
+
+## json()
+
+Convert a JSON or JSON-like string into proper JSON. This will fix key/value quoting, remove comments, remove trailing commas, correct UTF-8 issues, etc. In other words, most of the types of things that are A-OK for a Javascript Object but not A-OK for JSON.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*mixed*) JSON or miscellaneous variable. If a JSON(ish) string is passed, it will be sanitized/corrected; if something else is passed it will be turned into JSON.
+ * (*bool*) (*optional*) Pretty. If `TRUE`, output will be pretty-printed. Default: `TRUE`
+
+#### Returns
+
+If passed by value, returns JSON or `NULL`, otherwise `TRUE`/`FALSE`.
+
+
+
+## json_decode()
+
+A `json_decode()` wrapper that applies the same formatting forgiveness as the above `::json()` function, giving the data a fighting chance of coming through.
+
+Note: This always returns objecty data as an associative array.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) JSON
+
+#### Returns
+
+If passed by value, returns the decoded data, otherwise `TRUE`/`FALSE`.
 
 
 
