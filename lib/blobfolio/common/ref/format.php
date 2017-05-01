@@ -240,7 +240,6 @@ class format {
 	 */
 	public static function json_decode(&$str='') {
 		cast::to_string($str, true);
-		cast::to_bool($assoc, true);
 
 		// Remove comments.
 		$str = preg_replace(
