@@ -2,11 +2,13 @@
 /**
  * MIME tests.
  *
- * PHPUnit tests for \blobfolio\common\mime.
+ * PHPUnit tests for mime.
  *
  * @package blobfolio/common
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
+
+use \blobfolio\common\mime;
 
 /**
  * Test Suite
@@ -21,7 +23,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_get_mime() {
-		$thing = \blobfolio\common\mime::get_mime('audio/mp3');
+		$thing = mime::get_mime('audio/mp3');
 		$this->assertEquals(true, is_array($thing));
 		$this->assertEquals('audio/mp3', $thing['mime']);
 		$this->assertEquals(true, in_array('mp3', $thing['ext'], true));
@@ -33,7 +35,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_get_extension() {
-		$thing = \blobfolio\common\mime::get_extension('xls');
+		$thing = mime::get_extension('xls');
 		$this->assertEquals(true, is_array($thing));
 		$this->assertEquals('xls', $thing['ext']);
 		$this->assertEquals(true, in_array('application/vnd.ms-excel', $thing['mime'], true));
@@ -45,7 +47,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_finfo_correct() {
-		$thing = \blobfolio\common\mime::finfo(self::ASSETS . 'space.jpg');
+		$thing = mime::finfo(self::ASSETS . 'space.jpg');
 
 		$this->assertEquals(true, is_array($thing));
 		$this->assertEquals('space.jpg', $thing['basename']);
@@ -61,7 +63,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_finfo_incorrect() {
-		$thing = \blobfolio\common\mime::finfo(self::ASSETS . 'space.png');
+		$thing = mime::finfo(self::ASSETS . 'space.png');
 
 		$this->assertEquals(true, is_array($thing));
 		$this->assertEquals('space.png', $thing['basename']);
@@ -77,7 +79,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_finfo_just_filename() {
-		$thing = \blobfolio\common\mime::finfo('pkcs12-test-keystore.tar.gz');
+		$thing = mime::finfo('pkcs12-test-keystore.tar.gz');
 
 		$this->assertEquals(true, is_array($thing));
 		$this->assertEquals('pkcs12-test-keystore.tar.gz', $thing['basename']);
@@ -92,7 +94,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_finfo_remote() {
-		$thing = \blobfolio\common\mime::finfo('https://upload.wikimedia.org/wikipedia/commons/7/76/Mozilla_Firefox_logo_2013.svg');
+		$thing = mime::finfo('https://upload.wikimedia.org/wikipedia/commons/7/76/Mozilla_Firefox_logo_2013.svg');
 
 		$this->assertEquals(true, is_array($thing));
 		$this->assertEquals('Mozilla_Firefox_logo_2013.svg', $thing['basename']);

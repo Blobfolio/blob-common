@@ -10,6 +10,9 @@
 
 namespace blobfolio\common\ref;
 
+use \blobfolio\common\constants;
+use \blobfolio\common\mb as v_mb;
+
 class mb {
 
 	/**
@@ -34,8 +37,8 @@ class mb {
 				$str = mb_strtolower($str, 'UTF-8');
 
 				// Replace some extra characters.
-				$from = array_keys(\blobfolio\common\constants::CASE_CHARS);
-				$to = array_values(\blobfolio\common\constants::CASE_CHARS);
+				$from = array_keys(constants::CASE_CHARS);
+				$to = array_values(constants::CASE_CHARS);
 				$str = str_replace($from, $to, $str);
 			}
 			else {
@@ -68,8 +71,8 @@ class mb {
 				$str = mb_strtoupper($str, 'UTF-8');
 
 				// Replace some extra characters.
-				$to = array_keys(\blobfolio\common\constants::CASE_CHARS);
-				$from = array_values(\blobfolio\common\constants::CASE_CHARS);
+				$to = array_keys(constants::CASE_CHARS);
+				$from = array_values(constants::CASE_CHARS);
 				$str = str_replace($from, $to, $str);
 			}
 			else {
@@ -123,9 +126,9 @@ class mb {
 			cast::to_string($str);
 
 			if (function_exists('mb_substr')) {
-				$first = \blobfolio\common\mb::substr($str, 0, 1);
+				$first = v_mb::substr($str, 0, 1);
 				static::strtoupper($first);
-				$str = $first . \blobfolio\common\mb::substr($str, 1, null);
+				$str = $first . v_mb::substr($str, 1, null);
 			}
 			else {
 				$str = ucfirst($str);

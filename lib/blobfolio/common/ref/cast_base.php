@@ -11,6 +11,10 @@
 
 namespace blobfolio\common\ref;
 
+use \blobfolio\common\cast as v_cast;
+use \blobfolio\common\constants;
+use \blobfolio\common\mb as v_mb;
+
 abstract class cast_base {
 
 	/**
@@ -48,10 +52,10 @@ abstract class cast_base {
 			// Evaluate special cases.
 			if (is_string($value)) {
 				mb::strtolower($value);
-				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS, true)) {
+				if (in_array($value, constants::TRUE_BOOLS, true)) {
 					$value = true;
 				}
-				elseif (in_array($value, \blobfolio\common\constants::FALSE_BOOLS, true)) {
+				elseif (in_array($value, constants::FALSE_BOOLS, true)) {
 					$value = false;
 				}
 				else {
@@ -116,10 +120,10 @@ abstract class cast_base {
 			// Evaluate special cases.
 			if (is_string($value)) {
 				mb::strtolower($value);
-				if (in_array($value, \blobfolio\common\constants::TRUE_BOOLS, true)) {
+				if (in_array($value, constants::TRUE_BOOLS, true)) {
 					$value = 1;
 				}
-				elseif (in_array($value, \blobfolio\common\constants::FALSE_BOOLS, true)) {
+				elseif (in_array($value, constants::FALSE_BOOLS, true)) {
 					$value = 0;
 				}
 			}
@@ -149,17 +153,17 @@ abstract class cast_base {
 				static::to_string($value);
 
 				// Replace number chars.
-				$from = array_keys(\blobfolio\common\constants::NUMBER_CHARS);
-				$to = array_values(\blobfolio\common\constants::NUMBER_CHARS);
+				$from = array_keys(constants::NUMBER_CHARS);
+				$to = array_values(constants::NUMBER_CHARS);
 				$value = str_replace($from, $to, $value);
 
 				// Convert from cents.
 				if (preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
-					$value = \blobfolio\common\cast::to_number(preg_replace('/[^\-\d\.]/', '', $value)) / 100;
+					$value = v_cast::to_number(preg_replace('/[^\-\d\.]/', '', $value)) / 100;
 				}
 				// Convert from percent.
 				elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $value)) {
-					$value = \blobfolio\common\cast::to_number(preg_replace('/[^\-\d\.]/', '', $value)) / 100;
+					$value = v_cast::to_number(preg_replace('/[^\-\d\.]/', '', $value)) / 100;
 				}
 			}
 
@@ -212,7 +216,7 @@ abstract class cast_base {
 	 */
 	public static function to_type(&$value, $type=null, $flatten=false) {
 		static::to_string($type, true);
-		if (!\blobfolio\common\mb::strlen($type)) {
+		if (!v_mb::strlen($type)) {
 			return true;
 		}
 

@@ -10,6 +10,15 @@
 
 namespace blobfolio\common\ref;
 
+use \blobfolio\common\constants;
+use \blobfolio\common\data;
+use \blobfolio\common\dom;
+use \blobfolio\common\file as v_file;
+use \blobfolio\common\mb as v_mb;
+use \blobfolio\common\sanitize as v_sanitize;
+use \blobfolio\domain\domain;
+use \ForceUTF8\Encoding;
+
 class sanitize {
 
 	/**
@@ -28,7 +37,7 @@ class sanitize {
 			cast::to_string($str);
 
 			if (preg_match('/[\x80-\xff]/', $str)) {
-				$str = strtr($str, \blobfolio\common\constants::ACCENT_CHARS);
+				$str = strtr($str, constants::ACCENT_CHARS);
 			}
 		}
 
@@ -79,31 +88,31 @@ class sanitize {
 		$str = $ccnum;
 
 		// Different cards have different length requirements.
-		switch (\blobfolio\common\mb::substr($ccnum, 0, 1)) {
+		switch (v_mb::substr($ccnum, 0, 1)) {
 			// Amex.
 			case 3:
-				if (\blobfolio\common\mb::strlen($ccnum) !== 15 || !preg_match('/3[47]/', $ccnum)) {
+				if (v_mb::strlen($ccnum) !== 15 || !preg_match('/3[47]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Visa.
 			case 4:
-				if (!in_array(\blobfolio\common\mb::strlen($ccnum), array(13,16), true)) {
+				if (!in_array(v_mb::strlen($ccnum), array(13,16), true)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// MC.
 			case 5:
-				if (\blobfolio\common\mb::strlen($ccnum) !== 16 || !preg_match('/5[1-5]/', $ccnum)) {
+				if (v_mb::strlen($ccnum) !== 16 || !preg_match('/5[1-5]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Disc.
 			case 6:
-				if (\blobfolio\common\mb::strlen($ccnum) !== 16 || intval(\blobfolio\common\mb::substr($ccnum, 0, 4)) !== 6011) {
+				if (v_mb::strlen($ccnum) !== 16 || intval(v_mb::substr($ccnum, 0, 4)) !== 6011) {
 					$ccnum = false;
 					return false;
 				}
@@ -115,7 +124,7 @@ class sanitize {
 		}
 
 		// MOD10 checks.
-		$dig = \blobfolio\common\mb::str_split($ccnum);
+		$dig = v_mb::str_split($ccnum);
 		$numdig = count($dig);
 		$j = 0;
 		for ($i = ($numdig - 2); $i >= 0; $i -= 2) {
@@ -125,7 +134,7 @@ class sanitize {
 		$dblsz = count($dbl);
 		$validate = 0;
 		for ($i = 0; $i < $dblsz; $i++) {
-			$add = \blobfolio\common\mb::str_split($dbl[$i]);
+			$add = v_mb::str_split($dbl[$i]);
 			for ($j = 0; $j < count($add); $j++) {
 				$validate += $add[$j];
 			}
@@ -135,7 +144,7 @@ class sanitize {
 			$validate += $dig[$i];
 		}
 
-		if (intval(\blobfolio\common\mb::substr($validate, -1, 1)) === 0) {
+		if (intval(v_mb::substr($validate, -1, 1)) === 0) {
 			$ccnum = $str;
 		}
 		else {
@@ -182,11 +191,11 @@ class sanitize {
 			cast::to_string($str);
 			static::whitespace($str);
 			mb::strtoupper($str);
-			if (!array_key_exists($str, \blobfolio\common\constants::COUNTRIES)) {
+			if (!array_key_exists($str, constants::COUNTRIES)) {
 				// Maybe a name?
 				$found = false;
-				foreach (\blobfolio\common\constants::COUNTRIES as $k=>$v) {
-					if (\blobfolio\common\mb::strtoupper($v['name']) === $str) {
+				foreach (constants::COUNTRIES as $k=>$v) {
+					if (v_mb::strtoupper($v['name']) === $str) {
 						$str = $k;
 						$found = true;
 						break;
@@ -219,7 +228,7 @@ class sanitize {
 			static::whitespace($str);
 
 			// Strip existing double quotes.
-			while (false !== \blobfolio\common\mb::strpos($str, '""')) {
+			while (false !== v_mb::strpos($str, '""')) {
 				$str = str_replace('""', '"', $str);
 			}
 
@@ -250,8 +259,8 @@ class sanitize {
 			cast::to_string($str);
 
 			if (
-				!\blobfolio\common\mb::strlen($str) ||
-				\blobfolio\common\mb::substr($str, 0, 10) === '0000-00-00' ||
+				!v_mb::strlen($str) ||
+				v_mb::substr($str, 0, 10) === '0000-00-00' ||
 				false === $str = strtotime($str)
 			) {
 				$str = '0000-00-00 00:00:00';
@@ -278,7 +287,7 @@ class sanitize {
 		}
 		else {
 			static::datetime($str);
-			$str = \blobfolio\common\mb::substr($str, 0, 10);
+			$str = v_mb::substr($str, 0, 10);
 		}
 
 		return true;
@@ -304,7 +313,7 @@ class sanitize {
 		else {
 			cast::to_bool($unicode, true);
 
-			$host = new \blobfolio\domain\domain($str, true);
+			$host = new domain($str, true);
 			if ($host->is_fqdn() && !$host->is_ip()) {
 				$str = $host->get_host($unicode);
 			}
@@ -344,7 +353,7 @@ class sanitize {
 			$str = str_replace(array("'", '"'), '', $str);
 
 			// Sanitize by part.
-			if (\blobfolio\common\mb::substr_count($str, '@') === 1) {
+			if (v_mb::substr_count($str, '@') === 1) {
 				$parts = explode('@', $str);
 
 				// Sanitize local part.
@@ -358,7 +367,7 @@ class sanitize {
 				}
 
 				// Sanitize host.
-				$domain = new \blobfolio\domain\domain($parts[1]);
+				$domain = new domain($parts[1]);
 				if (!$domain->is_valid() || !$domain->is_fqdn() || $domain->is_ip()) {
 					$str = '';
 					return true;
@@ -432,7 +441,7 @@ class sanitize {
 		cast::to_bool($www, true);
 		cast::to_bool($unicode, true);
 
-		$host = new \blobfolio\domain\domain($domain, !$www);
+		$host = new domain($domain, !$www);
 		if (!$host->is_valid()) {
 			$domain = false;
 			return false;
@@ -474,7 +483,7 @@ class sanitize {
 
 			if (
 				!$restricted &&
-				\blobfolio\common\mb::strlen($str) &&
+				v_mb::strlen($str) &&
 				!filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
 			) {
 				$str = '';
@@ -503,7 +512,7 @@ class sanitize {
 			static::attribute_value($str);
 
 			cast::to_array($protocols);
-			$allowed_protocols = array_merge(\blobfolio\common\constants::SVG_WHITELIST_PROTOCOLS, $protocols);
+			$allowed_protocols = array_merge(constants::SVG_WHITELIST_PROTOCOLS, $protocols);
 			mb::strtolower($allowed_protocols);
 			$allowed_protocols = array_map('trim', $allowed_protocols);
 			$allowed_protocols = array_filter($allowed_protocols, 'strlen');
@@ -511,7 +520,7 @@ class sanitize {
 			sort($allowed_protocols);
 
 			cast::to_array($domains);
-			$allowed_domains = array_merge(\blobfolio\common\constants::SVG_WHITELIST_DOMAINS, $domains);
+			$allowed_domains = array_merge(constants::SVG_WHITELIST_DOMAINS, $domains);
 			static::domain($allowed_domains);
 			$allowed_domains = array_filter($allowed_domains, 'strlen');
 			$allowed_domains = array_unique($allowed_domains);
@@ -526,7 +535,7 @@ class sanitize {
 			// Check protocols.
 			$test = preg_replace('/\s/', '', $str);
 			mb::strtolower($test);
-			if (false !== \blobfolio\common\mb::strpos($test, ':')) {
+			if (false !== v_mb::strpos($test, ':')) {
 				$test = explode(':', $test);
 				if (!in_array($test[0], $allowed_protocols, true)) {
 					$str = '';
@@ -542,7 +551,7 @@ class sanitize {
 
 			// Check the domain, if applicable.
 			if (preg_match('/^[\w\d]+:\/\//i', $str)) {
-				$domain = \blobfolio\common\sanitize::domain($str);
+				$domain = v_sanitize::domain($str);
 				if (strlen($domain) && !in_array($domain, $allowed_domains, true)) {
 					$str = '';
 				}
@@ -694,8 +703,10 @@ class sanitize {
 			static::whitespace($str);
 			mb::strtoupper($str);
 
-			if (!array_key_exists($str, \blobfolio\common\constants::PROVINCES)) {
-				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::PROVINCES), true)) {
+			if (!array_key_exists($str, constants::PROVINCES)) {
+				$haystack = constants::PROVINCES;
+				mb::strtoupper($haystack);
+				if (false === $str = array_search($str, $haystack, true)) {
 					$str = '';
 				}
 			}
@@ -721,8 +732,8 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
-			$from = array_keys(\blobfolio\common\constants::QUOTE_CHARS);
-			$to = array_values(\blobfolio\common\constants::QUOTE_CHARS);
+			$from = array_keys(constants::QUOTE_CHARS);
+			$to = array_values(constants::QUOTE_CHARS);
 			$str = str_replace($from, $to, $str);
 		}
 
@@ -746,8 +757,10 @@ class sanitize {
 			static::whitespace($str);
 			mb::strtoupper($str);
 
-			if (!array_key_exists($str, \blobfolio\common\constants::STATES)) {
-				if (false === $str = array_search($str, array_map('\blobfolio\common\mb::strtoupper', \blobfolio\common\constants::STATES), true)) {
+			if (!array_key_exists($str, constants::STATES)) {
+				$haystack = constants::STATES;
+				mb::strtoupper($haystack);
+				if (false === $str = array_search($str, $haystack, true)) {
 					$str = '';
 				}
 			}
@@ -774,37 +787,37 @@ class sanitize {
 		cast::to_array($protocols);
 		cast::to_array($domains);
 
-		$allowed_tags = array_merge(\blobfolio\common\constants::SVG_WHITELIST_TAGS, $tags);
+		$allowed_tags = array_merge(constants::SVG_WHITELIST_TAGS, $tags);
 		mb::strtolower($allowed_tags);
 		$allowed_tags = array_map('trim', $allowed_tags);
 		$allowed_tags = array_filter($allowed_tags, 'strlen');
 		$allowed_tags = array_unique($allowed_tags);
 		sort($allowed_tags);
 
-		$allowed_attributes = array_merge(\blobfolio\common\constants::SVG_WHITELIST_ATTR, $attr);
+		$allowed_attributes = array_merge(constants::SVG_WHITELIST_ATTR, $attr);
 		mb::strtolower($allowed_attributes);
 		$allowed_attributes = array_map('trim', $allowed_attributes);
 		$allowed_attributes = array_filter($allowed_attributes, 'strlen');
 		$allowed_attributes = array_unique($allowed_attributes);
 		sort($allowed_attributes);
 
-		$allowed_protocols = array_merge(\blobfolio\common\constants::SVG_WHITELIST_PROTOCOLS, $protocols);
+		$allowed_protocols = array_merge(constants::SVG_WHITELIST_PROTOCOLS, $protocols);
 		mb::strtolower($allowed_protocols);
 		$allowed_protocols = array_map('trim', $allowed_protocols);
 		$allowed_protocols = array_filter($allowed_protocols, 'strlen');
 		$allowed_protocols = array_unique($allowed_protocols);
 		sort($allowed_protocols);
 
-		$allowed_domains = array_merge(\blobfolio\common\constants::SVG_WHITELIST_DOMAINS, $domains);
+		$allowed_domains = array_merge(constants::SVG_WHITELIST_DOMAINS, $domains);
 		static::domain($allowed_domains);
 		$allowed_domains = array_filter($allowed_domains, 'strlen');
 		$allowed_domains = array_unique($allowed_domains);
 		sort($allowed_domains);
 
-		$iri_attributes = \blobfolio\common\constants::SVG_IRI_ATTRIBUTES;
+		$iri_attributes = constants::SVG_IRI_ATTRIBUTES;
 
 		// Load the SVG!
-		$dom = \blobfolio\common\dom::load_svg($str);
+		$dom = dom::load_svg($str);
 		$svg = $dom->getElementsByTagName('svg');
 		if (!$svg->length) {
 			$str = '';
@@ -816,12 +829,12 @@ class sanitize {
 		$tags = $dom->getElementsByTagName('*');
 		for ($x = $tags->length - 1; $x >= 0; $x--) {
 			$tag = $tags->item($x);
-			$tag_name = \blobfolio\common\mb::strtolower($tag->tagName);
+			$tag_name = v_mb::strtolower($tag->tagName);
 
 			// The tag might be namespaced (ns:tag). We'll allow it if
 			// the tag is allowed.
 			if (
-				false !== \blobfolio\common\mb::strpos($tag_name, ':') &&
+				false !== v_mb::strpos($tag_name, ':') &&
 				!in_array($tag_name, $allowed_tags, true)
 			) {
 				$tag_name = explode(':', $tag_name);
@@ -830,14 +843,14 @@ class sanitize {
 
 			// Bad tag: not whitelisted.
 			if (!in_array($tag_name, $allowed_tags, true)) {
-				\blobfolio\common\dom::remove_node($tag);
+				dom::remove_node($tag);
 				continue;
 			}
 
 			// If this is a <style> tag, we need to make sure all
 			// entities are decoded. Thanks a lot, XML!
 			if ('style' === $tag_name) {
-				$style = strip_tags(\blobfolio\common\sanitize::attribute_value($tag->textContent));
+				$style = strip_tags(v_sanitize::attribute_value($tag->textContent));
 				$tag->textContent = $style;
 			}
 
@@ -848,14 +861,14 @@ class sanitize {
 			for ($y = $attributes->length - 1; $y >= 0; $y--) {
 				$attribute = $attributes->item($y);
 
-				$attribute_name = \blobfolio\common\mb::strtolower($attribute->nodeName);
+				$attribute_name = v_mb::strtolower($attribute->nodeName);
 
 				// Could be namespaced.
 				if (
 					!in_array($attribute_name, $allowed_attributes, true) &&
-					false !== ($start = \blobfolio\common\mb::strpos($attribute_name, ':'))
+					false !== ($start = v_mb::strpos($attribute_name, ':'))
 				) {
-					$attribute_name = \blobfolio\common\mb::substr($attribute_name, $start + 1);
+					$attribute_name = v_mb::substr($attribute_name, $start + 1);
 				}
 
 				// Bad attribute: not whitelisted.
@@ -869,7 +882,7 @@ class sanitize {
 				}
 
 				// Validate values.
-				$attribute_value = \blobfolio\common\sanitize::attribute_value($attribute->value);
+				$attribute_value = v_sanitize::attribute_value($attribute->value);
 
 				// Validate protocols.
 				// IRI attributes get the full treatment.
@@ -902,32 +915,32 @@ class sanitize {
 			for ($y = 0; $y < $nodes->length; $y++) {
 				$node = $nodes->item($y);
 
-				$node_name = \blobfolio\common\mb::strtolower($node->nodeName);
+				$node_name = v_mb::strtolower($node->nodeName);
 
 				// Not xmlns?
 				if (!preg_match('/^xmlns:/', $node_name)) {
-					\blobfolio\common\dom::remove_namespace($dom, $node->localName);
+					dom::remove_namespace($dom, $node->localName);
 					continue;
 				}
 
 				// Validate values.
-				$node_value = \blobfolio\common\sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains);
+				$node_value = v_sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains);
 
 				// Remove invalid.
 				if (!strlen($node_value)) {
-					\blobfolio\common\dom::remove_namespace($dom, $node->localName);
+					dom::remove_namespace($dom, $node->localName);
 				}
 			}
 		}
 
 		// Back to string!
-		$svg = \blobfolio\common\dom::save_svg($dom);
+		$svg = dom::save_svg($dom);
 
 		// One more task, sanitize CSS values (e.g. foo="url(...)").
 		$svg = preg_replace_callback(
 			'/url\s*\((.*)\s*\)/Ui',
 			function($match) use($allowed_protocols, $allowed_domains) {
-				$str = \blobfolio\common\sanitize::attribute_value($match[1]);
+				$str = v_sanitize::attribute_value($match[1]);
 
 				// Strip quotes.
 				$str = ltrim($str, "'\"");
@@ -970,7 +983,7 @@ class sanitize {
 
 				$found = false;
 				foreach ($timezones as $timezone) {
-					if (\blobfolio\common\mb::strtoupper($timezone) === $str) {
+					if (v_mb::strtoupper($timezone) === $str) {
 						$str = $timezone;
 						$found = true;
 						break;
@@ -1006,7 +1019,7 @@ class sanitize {
 			!is_null($max) &&
 			$min > $max
 		) {
-			\blobfolio\common\data::switcheroo($min, $max);
+			data::switcheroo($min, $max);
 		}
 
 		// Recursive.
@@ -1054,16 +1067,16 @@ class sanitize {
 
 			// Validate the host, and ASCIIfy international bits
 			// to keep PHP happy.
-			$tmp = \blobfolio\common\mb::parse_url($str);
+			$tmp = v_mb::parse_url($str);
 			if (!isset($tmp['host'])) {
 				return false;
 			}
-			$tmp['host'] = new \blobfolio\domain\domain($tmp['host']);
+			$tmp['host'] = new domain($tmp['host']);
 			if (!$tmp['host']->is_valid()) {
 				return false;
 			}
 			$tmp['host'] = (string) $tmp['host'];
-			$str = \blobfolio\common\file::unparse_url($tmp);
+			$str = v_file::unparse_url($tmp);
 
 			$str = filter_var($str, FILTER_SANITIZE_URL);
 			if (!filter_var($str, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED)) {
@@ -1097,7 +1110,7 @@ class sanitize {
 				$str = '';
 			}
 
-			$str = \ForceUTF8\Encoding::toUTF8($str);
+			$str = Encoding::toUTF8($str);
 			$str = (1 === @preg_match('/^./us', $str)) ? $str : '';
 		}
 
@@ -1185,11 +1198,11 @@ class sanitize {
 			cast::to_string($zip5);
 			$str = preg_replace('/[^\d]/', '', $str);
 
-			if (\blobfolio\common\mb::strlen($str) < 5) {
+			if (v_mb::strlen($str) < 5) {
 				$str = sprintf('%05d', $str);
 			}
-			elseif (\blobfolio\common\mb::strlen($str) > 5) {
-				$str = \blobfolio\common\mb::substr($str, 0, 5);
+			elseif (v_mb::strlen($str) > 5) {
+				$str = v_mb::substr($str, 0, 5);
 			}
 
 			if ('00000' === $str) {

@@ -2,11 +2,14 @@
 /**
  * File tests.
  *
- * PHPUnit tests for \blobfolio\common\file.
+ * PHPUnit tests for file.
  *
  * @package blobfolio/common
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
+
+use \blobfolio\common\file;
+use \blobfolio\common\mb;
 
 /**
  * Test Suite
@@ -23,11 +26,11 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	function test_data_uri() {
 		$svg = self::ASSETS . 'pi.svg';
 
-		$data = \blobfolio\common\file::data_uri($svg);
+		$data = file::data_uri($svg);
 
 		$this->assertEquals(true, false !== strpos($data, 'image/svg+xml'));
 
-		$this->assertEquals(false, \blobfolio\common\file::data_uri('does_not_exist.txt'));
+		$this->assertEquals(false, file::data_uri('does_not_exist.txt'));
 	}
 
 	/**
@@ -36,11 +39,11 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_empty_dir() {
-		$this->assertEquals(false, \blobfolio\common\file::empty_dir(self::ASSETS));
+		$this->assertEquals(false, file::empty_dir(self::ASSETS));
 
 		$new = self::ASSETS . 'empty';
 		mkdir($new);
-		$this->assertEquals(true, \blobfolio\common\file::empty_dir($new));
+		$this->assertEquals(true, file::empty_dir($new));
 		rmdir($new);
 	}
 
@@ -52,10 +55,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	function test_leadingslash() {
 
 		$thing = '/hello/there';
-		$this->assertEquals($thing, \blobfolio\common\file::leadingslash($thing));
+		$this->assertEquals($thing, file::leadingslash($thing));
 
 		$thing = 'hello/there';
-		$this->assertEquals('/hello/there', \blobfolio\common\file::leadingslash($thing));
+		$this->assertEquals('/hello/there', file::leadingslash($thing));
 	}
 
 	/**
@@ -66,11 +69,11 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	function test_path() {
 
 		$thing = '/hello/there';
-		$this->assertEquals($thing, \blobfolio\common\file::path($thing, false));
-		$this->assertEquals(false, \blobfolio\common\file::path($thing, true));
+		$this->assertEquals($thing, file::path($thing, false));
+		$this->assertEquals(false, file::path($thing, true));
 
 		$thing = rtrim(self::ASSETS, '/');
-		$this->assertEquals(self::ASSETS, \blobfolio\common\file::path($thing));
+		$this->assertEquals(self::ASSETS, file::path($thing));
 	}
 
 	/**
@@ -81,10 +84,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	function test_trailingslash() {
 
 		$thing = '/hello/there';
-		$this->assertEquals($thing . '/', \blobfolio\common\file::trailingslash($thing));
+		$this->assertEquals($thing . '/', file::trailingslash($thing));
 
 		$thing = 'hello/there/';
-		$this->assertEquals($thing, \blobfolio\common\file::trailingslash($thing));
+		$this->assertEquals($thing, file::trailingslash($thing));
 	}
 
 	/**
@@ -95,10 +98,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	function test_unixslash() {
 
 		$thing = 'C:\Windows\Fonts';
-		$this->assertEquals('C:/Windows/Fonts', \blobfolio\common\file::unixslash($thing));
+		$this->assertEquals('C:/Windows/Fonts', file::unixslash($thing));
 
 		$thing = '/path/./to/foobar';
-		$this->assertEquals('/path/to/foobar', \blobfolio\common\file::unixslash($thing));
+		$this->assertEquals('/path/to/foobar', file::unixslash($thing));
 	}
 
 	/**
@@ -109,10 +112,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	function test_unleadingslash() {
 
 		$thing = '/hello/there';
-		$this->assertEquals('hello/there', \blobfolio\common\file::unleadingslash($thing));
+		$this->assertEquals('hello/there', file::unleadingslash($thing));
 
 		$thing = 'hello/there';
-		$this->assertEquals($thing, \blobfolio\common\file::unleadingslash($thing));
+		$this->assertEquals($thing, file::unleadingslash($thing));
 	}
 
 	/**
@@ -129,8 +132,8 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 		);
 
 		foreach ($things as $k=>$v) {
-			$parsed = \blobfolio\common\mb::parse_url($k);
-			$unparsed = \blobfolio\common\file::unparse_url($parsed);
+			$parsed = mb::parse_url($k);
+			$unparsed = file::unparse_url($parsed);
 			$this->assertEquals($v, $unparsed);
 		}
 	}
@@ -143,10 +146,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	function test_untrailingslash() {
 
 		$thing = '/hello/there';
-		$this->assertEquals($thing, \blobfolio\common\file::untrailingslash($thing));
+		$this->assertEquals($thing, file::untrailingslash($thing));
 
 		$thing = 'hello/there/';
-		$this->assertEquals('hello/there', \blobfolio\common\file::untrailingslash($thing));
+		$this->assertEquals('hello/there', file::untrailingslash($thing));
 	}
 }
 

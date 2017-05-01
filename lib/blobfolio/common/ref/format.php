@@ -10,6 +10,15 @@
 
 namespace blobfolio\common\ref;
 
+use \blobfolio\common\constants;
+use \blobfolio\common\data;
+use \blobfolio\common\file as v_file;
+use \blobfolio\common\format as v_format;
+use \blobfolio\common\mb as v_mb;
+use \blobfolio\common\sanitize as v_sanitize;
+use \blobfolio\domain\domain;
+use \blobfolio\phone\phone;
+
 class format {
 
 	/**
@@ -213,7 +222,7 @@ class format {
 			$str = json_encode($str);
 		}
 
-		if (false === ($decode = \blobfolio\common\format::json_decode($str))) {
+		if (false === ($decode = v_format::json_decode($str))) {
 			$str = null;
 			return false;
 		}
@@ -257,7 +266,7 @@ class format {
 		// Trim it.
 		mb::trim($str);
 
-		// Empty?
+		// Is it empty?
 		if (!strlen($str) || "''" === $str || '""' === $str) {
 			$str = '';
 			return true;
@@ -270,7 +279,7 @@ class format {
 			return true;
 		}
 
-		$lower = \blobfolio\common\mb::strtolower($str);
+		$lower = v_mb::strtolower($str);
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
 			cast::to_bool($str);
@@ -312,24 +321,24 @@ class format {
 			)
 		);
 		$out = array();
-		if (0 === \blobfolio\common\mb::strpos($str, '[')) {
+		if (0 === v_mb::strpos($str, '[')) {
 			$type = 'array';
 		}
 		else {
 			$type = 'object';
 		}
-		$chunk = \blobfolio\common\mb::substr($str, 1, -1);
-		$length = \blobfolio\common\mb::strlen($chunk);
+		$chunk = v_mb::substr($str, 1, -1);
+		$length = v_mb::strlen($chunk);
 		for ($x = 0; $x <= $length; $x++) {
 			$last = end($slices);
-			$subchunk = \blobfolio\common\mb::substr($chunk, $x, 2);
+			$subchunk = v_mb::substr($chunk, $x, 2);
 
 			// A comma or the end.
 			if (
 				($x === $length) ||
 				((',' === $chunk{$x}) && 'slice' === $last['type'])
 			) {
-				$slice = \blobfolio\common\mb::substr($chunk, $last['from'], ($x - $last['from']));
+				$slice = v_mb::substr($chunk, $last['from'], ($x - $last['from']));
 				$slices[] = array(
 					'type'=>'slice',
 					'from'=>$x + 1,
@@ -338,21 +347,21 @@ class format {
 
 				// Arrays are straightforward, just pop it in.
 				if ('array' === $type) {
-					$out[] = \blobfolio\common\format::json_decode($slice);
+					$out[] = v_format::json_decode($slice);
 				}
 				// Objects need key/value separation.
 				else {
 					// Key is quoted.
 					if (preg_match('/^\s*(["\'].*[^\\\]["\'])\s*:\s*(\S.*),?$/Uis', $slice, $parts)) {
-						$key = \blobfolio\common\format::json_decode($parts[1]);
-						$val = \blobfolio\common\format::json_decode($parts[2]);
+						$key = v_format::json_decode($parts[1]);
+						$val = v_format::json_decode($parts[2]);
 						$out[$key] = $val;
 					}
 					// Key is unquoted.
 					elseif (preg_match('/^\s*(\w+)\s*:\s*(\S.*),?$/Uis', $slice, $parts)) {
 						$key = $parts[1];
 						static::decode_js_entities($key);
-						$val = \blobfolio\common\format::json_decode($parts[2]);
+						$val = v_format::json_decode($parts[2]);
 						$out[$key] = $val;
 					}
 				}
@@ -466,7 +475,7 @@ class format {
 			'rel'=>'',
 			'target'=>''
 		);
-		$data = \blobfolio\common\data::parse_args($args, $defaults);
+		$data = data::parse_args($args, $defaults);
 		$data['class'] = implode(' ', $data['class']);
 		sanitize::html($data);
 		$data = array_filter($data, 'strlen');
@@ -478,7 +487,7 @@ class format {
 
 		// Now look at the string.
 		$str = preg_split('/(<.+?>)/is', $str, 0, PREG_SPLIT_DELIM_CAPTURE);
-		$blacklist = implode('|', \blobfolio\common\constants::LINKS_BLACKLIST);
+		$blacklist = implode('|', constants::LINKS_BLACKLIST);
 		$ignoring = false;
 		foreach ($str as $k=>$v) {
 			// Even keys exist between tags.
@@ -497,7 +506,7 @@ class format {
 							$raw = $matches[1];
 
 							// Don't do email bits.
-							if (0 === \blobfolio\common\mb::strpos($raw, '@')) {
+							if (0 === v_mb::strpos($raw, '@')) {
 								return $matches[1];
 							}
 
@@ -510,13 +519,13 @@ class format {
 								$suffix = '';
 							}
 
-							$link = \blobfolio\common\mb::parse_url($raw);
+							$link = v_mb::parse_url($raw);
 							if (!is_array($link) || !isset($link['host'])) {
 								return $matches[1];
 							}
 
 							// Only linkify FQDNs.
-							$domain = new \blobfolio\domain\domain($link['host']);
+							$domain = new domain($link['host']);
 							if (!$domain->is_valid() || !$domain->is_fqdn()) {
 								return $matches[1];
 							}
@@ -526,7 +535,7 @@ class format {
 								$link['scheme'] = 'http';
 							}
 
-							$link = \blobfolio\common\file::unparse_url($link);
+							$link = v_file::unparse_url($link);
 							if (filter_var($link, FILTER_SANITIZE_URL) !== $link) {
 								return $matches[1];
 							}
@@ -555,7 +564,7 @@ class format {
 								$suffix = '';
 							}
 
-							$link = \blobfolio\common\sanitize::email($raw);
+							$link = v_sanitize::email($raw);
 							if (!$link) {
 								return $matches[1];
 							}
@@ -586,7 +595,7 @@ class format {
 								$suffix = '';
 							}
 
-							$link = \blobfolio\common\format::phone($raw);
+							$link = v_format::phone($raw);
 							$link = preg_replace('/[^\d]/', '', $link);
 							if (!$link) {
 								return $matches[1] . $matches[2];
@@ -687,7 +696,7 @@ class format {
 			cast::to_string($str);
 			sanitize::whitespace($str);
 
-			if (!\blobfolio\common\mb::strlen($str)) {
+			if (!v_mb::strlen($str)) {
 				$str = '';
 				return false;
 			}
@@ -695,7 +704,7 @@ class format {
 			cast::to_string($country);
 			cast::to_array($types);
 
-			$str = new \blobfolio\phone\phone($str, $country);
+			$str = new phone($str, $country);
 			if (!$str->is_phone($types)) {
 				$str = '';
 				return false;

@@ -2,11 +2,13 @@
 /**
  * DOM tests.
  *
- * PHPUnit tests for \blobfolio\common\dom.
+ * PHPUnit tests for dom.
  *
  * @package blobfolio/common
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
+
+use \blobfolio\common\dom;
 
 /**
  * Test Suite
@@ -23,7 +25,7 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	function test_load_svg() {
 		$svg = file_get_contents(self::ASSETS . 'pi.svg');
 
-		$dom = \blobfolio\common\dom::load_svg($svg);
+		$dom = dom::load_svg($svg);
 
 		$this->assertEquals(true, is_a($dom, 'DOMDocument'));
 	}
@@ -35,8 +37,8 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_save_svg() {
 		$svg = file_get_contents(self::ASSETS . 'pi.svg');
-		$dom = \blobfolio\common\dom::load_svg($svg);
-		$svg = \blobfolio\common\dom::save_svg($dom);
+		$dom = dom::load_svg($svg);
+		$svg = dom::save_svg($dom);
 
 		$this->assertEquals(true, false !== strpos($svg, '<svg'));
 	}
@@ -48,10 +50,10 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_get_nodes_by_class() {
 		$svg = file_get_contents(self::ASSETS . 'pi.svg');
-		$dom = \blobfolio\common\dom::load_svg($svg);
+		$dom = dom::load_svg($svg);
 		$class = 'k3xzp';
 
-		$nodes = \blobfolio\common\dom::get_nodes_by_class($dom, $class);
+		$nodes = dom::get_nodes_by_class($dom, $class);
 
 		$this->assertEquals(1, count($nodes));
 	}
@@ -63,11 +65,11 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_parse_css() {
 		$svg = file_get_contents(self::ASSETS . 'pi.svg');
-		$dom = \blobfolio\common\dom::load_svg($svg);
+		$dom = dom::load_svg($svg);
 		$style = $dom->getElementsByTagName('style');
 		$style = $style->item(0);
 
-		$parsed = \blobfolio\common\dom::parse_css($style->nodeValue);
+		$parsed = dom::parse_css($style->nodeValue);
 
 		$this->assertEquals(true, is_array($parsed));
 		$this->assertEquals(1, count($parsed));
@@ -81,14 +83,14 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_remove_nodes() {
 		$svg = file_get_contents(self::ASSETS . 'pi.svg');
-		$dom = \blobfolio\common\dom::load_svg($svg);
+		$dom = dom::load_svg($svg);
 
 		// Before.
 		$paths = $dom->getElementsByTagName('path');
 		$this->assertEquals(1, $paths->length);
 
 		// After.
-		\blobfolio\common\dom::remove_nodes($paths);
+		dom::remove_nodes($paths);
 		$this->assertEquals(0, $paths->length);
 	}
 }

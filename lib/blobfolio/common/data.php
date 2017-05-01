@@ -432,7 +432,8 @@ class data {
 		ref\cast::to_int($length, true);
 
 		if (is_array($soup) && count($soup)) {
-			$soup = implode('', array_map('\blobfolio\common\cast::to_string', $soup));
+			ref\cast::to_string($soup);
+			$soup = implode('', $soup);
 			ref\sanitize::printable($soup);				// Strip non-printable.
 			$soup = preg_replace('/\s/u', '', $soup);	// Strip whitespace.
 			$soup = array_unique(mb::str_split($soup));

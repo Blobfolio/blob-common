@@ -2,11 +2,13 @@
 /**
  * Image tests.
  *
- * PHPUnit tests for \blobfolio\common\image.
+ * PHPUnit tests for image.
  *
  * @package blobfolio/common
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
+
+use \blobfolio\common\image;
 
 /**
  * Test Suite
@@ -21,7 +23,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_clean_svg() {
-		$svg = \blobfolio\common\image::clean_svg(self::ASSETS . 'enshrined.svg');
+		$svg = image::clean_svg(self::ASSETS . 'enshrined.svg');
 
 		$this->assertEquals(true, false !== strpos($svg, '<svg'));
 		$this->assertEquals(false, strpos($svg, '<script'));
@@ -36,7 +38,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$cwebp = self::ASSETS . 'webp/bin/cwebp';
 		$gif2webp = self::ASSETS . 'webp/bin/gif2webp';
 
-		$this->assertEquals(true, \blobfolio\common\image::has_webp($cwebp, $gif2webp));
+		$this->assertEquals(true, image::has_webp($cwebp, $gif2webp));
 	}
 
 	/**
@@ -48,8 +50,8 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$svg = static::ASSETS . 'monogram-inkscape.svg';
 		$dimensions = array('width'=>330.056,'height'=>495.558);
 
-		$this->assertEquals($dimensions, \blobfolio\common\image::svg_dimensions($svg));
-		$this->assertEquals($dimensions, \blobfolio\common\image::svg_dimensions(file_get_contents($svg)));
+		$this->assertEquals($dimensions, image::svg_dimensions($svg));
+		$this->assertEquals($dimensions, image::svg_dimensions(file_get_contents($svg)));
 	}
 
 	/**
@@ -60,16 +62,16 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	function test_to_webp() {
 		$in = static::ASSETS . 'space.jpg';
 
-		if (!\blobfolio\common\image::has_webp()) {
+		if (!image::has_webp()) {
 			$this->markTestSkipped('Native WebP binaries not detected.');
 		}
 		else {
-			\blobfolio\common\image::to_webp($in, null);
+			image::to_webp($in, null);
 			$this->assertEquals(true, file_exists(self::ASSETS . 'space.webp'));
 			@unlink(self::ASSETS . 'space.webp');
 
 			$out = static::ASSETS . 'space2.webp';
-			\blobfolio\common\image::to_webp($in, $out);
+			image::to_webp($in, $out);
 			$this->assertEquals(true, file_exists($out));
 			@unlink($out);
 		}

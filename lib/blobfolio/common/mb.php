@@ -73,7 +73,7 @@ class mb {
 				}
 
 				// Lowercase it.
-				\blobfolio\common\ref\mb::strtolower($parts);
+				ref\mb::strtolower($parts);
 
 				// Get rid of trailing periods.
 				$parts = ltrim($parts, '.');
@@ -113,7 +113,7 @@ class mb {
 					}
 
 					// Lowercase it.
-					\blobfolio\common\ref\mb::strtolower($parts[$k]);
+					ref\mb::strtolower($parts[$k]);
 
 					// Get rid of trailing periods.
 					$parts[$k] = ltrim($parts[$k], '.');

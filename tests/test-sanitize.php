@@ -2,11 +2,14 @@
 /**
  * Sanitize tests.
  *
- * PHPUnit tests for \blobfolio\common\sanitize.
+ * PHPUnit tests for sanitize.
  *
  * @package blobfolio/common
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
+
+use \blobfolio\common\sanitize;
+use \blobfolio\common\constants;
 
 /**
  * Test Suite
@@ -22,7 +25,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_accents() {
 		$thing = 'Björk';
-		$this->assertEquals('Bjork', \blobfolio\common\sanitize::accents($thing));
+		$this->assertEquals('Bjork', sanitize::accents($thing));
 	}
 
 	/**
@@ -32,7 +35,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_attribute_value() {
 		$thing = '&nbsp;Björk"&quot; ';
-		$this->assertEquals('Björk""', \blobfolio\common\sanitize::attribute_value($thing));
+		$this->assertEquals('Björk""', sanitize::attribute_value($thing));
 	}
 
 	/**
@@ -42,10 +45,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_cc() {
 		$thing = '4242424242424242';
-		$this->assertEquals($thing, \blobfolio\common\sanitize::cc($thing));
+		$this->assertEquals($thing, sanitize::cc($thing));
 
 		$thing = '4242424242424241';
-		$this->assertEquals(false, \blobfolio\common\sanitize::cc($thing));
+		$this->assertEquals(false, sanitize::cc($thing));
 	}
 
 	/**
@@ -55,7 +58,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_control_characters() {
 		$thing = '\0Björk';
-		$this->assertEquals('Björk', \blobfolio\common\sanitize::control_characters($thing));
+		$this->assertEquals('Björk', sanitize::control_characters($thing));
 	}
 
 	/**
@@ -65,13 +68,13 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_country() {
 		$thing = 'USA';
-		$this->assertEquals('US', \blobfolio\common\sanitize::country($thing));
+		$this->assertEquals('US', sanitize::country($thing));
 
 		$thing = 'US';
-		$this->assertEquals('US', \blobfolio\common\sanitize::country($thing));
+		$this->assertEquals('US', sanitize::country($thing));
 
 		$thing = 'Nobody';
-		$this->assertEquals('', \blobfolio\common\sanitize::country($thing));
+		$this->assertEquals('', sanitize::country($thing));
 	}
 
 	/**
@@ -81,10 +84,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_csv() {
 		$thing = 'Hello"';
-		$this->assertEquals('Hello""', \blobfolio\common\sanitize::csv($thing));
+		$this->assertEquals('Hello""', sanitize::csv($thing));
 
 		$thing = "New\nLine";
-		$this->assertEquals('New Line', \blobfolio\common\sanitize::csv($thing));
+		$this->assertEquals('New Line', sanitize::csv($thing));
 	}
 
 	/**
@@ -94,16 +97,16 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_datetime() {
 		$thing = '2015-01-02';
-		$this->assertEquals('2015-01-02 00:00:00', \blobfolio\common\sanitize::datetime($thing));
+		$this->assertEquals('2015-01-02 00:00:00', sanitize::datetime($thing));
 
 		$thing = '2015-01-02 13:23:11';
-		$this->assertEquals('2015-01-02 13:23:11', \blobfolio\common\sanitize::datetime($thing));
+		$this->assertEquals('2015-01-02 13:23:11', sanitize::datetime($thing));
 
 		$thing = strtotime($thing);
-		$this->assertEquals('2015-01-02 13:23:11', \blobfolio\common\sanitize::datetime($thing));
+		$this->assertEquals('2015-01-02 13:23:11', sanitize::datetime($thing));
 
 		$thing = 'Not Time';
-		$this->assertEquals('0000-00-00 00:00:00', \blobfolio\common\sanitize::datetime($thing));
+		$this->assertEquals('0000-00-00 00:00:00', sanitize::datetime($thing));
 	}
 
 	/**
@@ -113,16 +116,16 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_date() {
 		$thing = '2015-01-02';
-		$this->assertEquals('2015-01-02', \blobfolio\common\sanitize::date($thing));
+		$this->assertEquals('2015-01-02', sanitize::date($thing));
 
 		$thing = '2015-01-02 13:23:11';
-		$this->assertEquals('2015-01-02', \blobfolio\common\sanitize::date($thing));
+		$this->assertEquals('2015-01-02', sanitize::date($thing));
 
 		$thing = strtotime($thing);
-		$this->assertEquals('2015-01-02', \blobfolio\common\sanitize::date($thing));
+		$this->assertEquals('2015-01-02', sanitize::date($thing));
 
 		$thing = 'Not Time';
-		$this->assertEquals('0000-00-00', \blobfolio\common\sanitize::date($thing));
+		$this->assertEquals('0000-00-00', sanitize::date($thing));
 	}
 
 	/**
@@ -139,10 +142,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		);
 
 		foreach ($things as $k=>$v) {
-			$this->assertEquals($v, \blobfolio\common\sanitize::domain($k));
+			$this->assertEquals($v, sanitize::domain($k));
 		}
 
-		$this->assertEquals('☺.com', \blobfolio\common\sanitize::domain('☺.com', true));
+		$this->assertEquals('☺.com', sanitize::domain('☺.com', true));
 	}
 
 	/**
@@ -152,10 +155,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_email() {
 		$thing = 'Hello@Blo"bfolio.Com';
-		$this->assertEquals('hello@blobfolio.com', \blobfolio\common\sanitize::email($thing));
+		$this->assertEquals('hello@blobfolio.com', sanitize::email($thing));
 
 		$thing = 'Hello@Blobfolio';
-		$this->assertEquals(false, \blobfolio\common\sanitize::email($thing));
+		$this->assertEquals(false, sanitize::email($thing));
 	}
 
 	/**
@@ -165,7 +168,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_file_extension() {
 		$thing = 'JPEG';
-		$this->assertEquals('jpeg', \blobfolio\common\sanitize::file_extension($thing));
+		$this->assertEquals('jpeg', sanitize::file_extension($thing));
 	}
 
 	/**
@@ -175,7 +178,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_html() {
 		$thing = '<b>"';
-		$this->assertEquals('&lt;b&gt;&quot;', \blobfolio\common\sanitize::html($thing));
+		$this->assertEquals('&lt;b&gt;&quot;', sanitize::html($thing));
 	}
 
 	/**
@@ -194,12 +197,12 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		);
 
 		foreach ($things as $k=>$v) {
-			$this->assertEquals($v, \blobfolio\common\sanitize::hostname($k));
+			$this->assertEquals($v, sanitize::hostname($k));
 		}
 
-		$this->assertEquals('☺.com', \blobfolio\common\sanitize::hostname('☺.com', false, true));
+		$this->assertEquals('☺.com', sanitize::hostname('☺.com', false, true));
 
-		$this->assertEquals('www.google.com', \blobfolio\common\sanitize::hostname('https://www.Google.com', true));
+		$this->assertEquals('www.google.com', sanitize::hostname('https://www.Google.com', true));
 	}
 
 	/**
@@ -209,10 +212,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_ip() {
 		$thing = '2600:3c00::f03c:91ff:feae:0ff2';
-		$this->assertEquals('2600:3c00::f03c:91ff:feae:ff2', \blobfolio\common\sanitize::ip($thing));
+		$this->assertEquals('2600:3c00::f03c:91ff:feae:ff2', sanitize::ip($thing));
 
 		$thing = '127.00.0.1';
-		$this->assertEquals('', \blobfolio\common\sanitize::ip($thing));
+		$this->assertEquals('', sanitize::ip($thing));
 	}
 
 	/**
@@ -222,20 +225,20 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_iri_value() {
 		$thing = '#example';
-		$this->assertEquals('#example', \blobfolio\common\sanitize::iri_value($thing));
+		$this->assertEquals('#example', sanitize::iri_value($thing));
 
 		$thing = '//w3.org';
-		$this->assertEquals('https://w3.org', \blobfolio\common\sanitize::iri_value($thing));
+		$this->assertEquals('https://w3.org', sanitize::iri_value($thing));
 
 		$thing = 'ftp://w3.org';
-		$this->assertEquals('', \blobfolio\common\sanitize::iri_value($thing));
+		$this->assertEquals('', sanitize::iri_value($thing));
 
 		$thing = ' script: alert(hi);';
-		$this->assertEquals('', \blobfolio\common\sanitize::iri_value($thing));
+		$this->assertEquals('', sanitize::iri_value($thing));
 
-		$thing = \blobfolio\common\constants::BLANK_IMAGE;
-		$this->assertEquals('', \blobfolio\common\sanitize::iri_value($thing));
-		$this->assertEquals($thing, \blobfolio\common\sanitize::iri_value($thing, 'data'));
+		$thing = constants::BLANK_IMAGE;
+		$this->assertEquals('', sanitize::iri_value($thing));
+		$this->assertEquals($thing, sanitize::iri_value($thing, 'data'));
 	}
 
 	/**
@@ -245,10 +248,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_js() {
 		$thing = "What's up?";
-		$this->assertEquals("What\'s up?", \blobfolio\common\sanitize::js($thing));
+		$this->assertEquals("What\'s up?", sanitize::js($thing));
 
 		$thing = "What's up?";
-		$this->assertEquals("What's up?", \blobfolio\common\sanitize::js($thing, '"'));
+		$this->assertEquals("What's up?", sanitize::js($thing, '"'));
 	}
 
 	/**
@@ -258,7 +261,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_name() {
 		$thing = "åsa-britt\nkjellén";
-		$this->assertEquals('Åsa-Britt Kjellén', \blobfolio\common\sanitize::name($thing));
+		$this->assertEquals('Åsa-Britt Kjellén', sanitize::name($thing));
 	}
 
 	/**
@@ -268,7 +271,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_password() {
 		$thing = " test\t ing";
-		$this->assertEquals('test ing', \blobfolio\common\sanitize::password($thing));
+		$this->assertEquals('test ing', sanitize::password($thing));
 	}
 
 	/**
@@ -278,7 +281,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_printable() {
 		$thing = " test\t ing";
-		$this->assertEquals(' test ing', \blobfolio\common\sanitize::printable($thing));
+		$this->assertEquals(' test ing', sanitize::printable($thing));
 	}
 
 	/**
@@ -288,13 +291,13 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_province() {
 		$thing = 'Nowhere';
-		$this->assertEquals('', \blobfolio\common\sanitize::province($thing));
+		$this->assertEquals('', sanitize::province($thing));
 
 		$thing = 'ontario';
-		$this->assertEquals('ON', \blobfolio\common\sanitize::province($thing));
+		$this->assertEquals('ON', sanitize::province($thing));
 
 		$thing = 'ab';
-		$this->assertEquals('AB', \blobfolio\common\sanitize::province($thing));
+		$this->assertEquals('AB', sanitize::province($thing));
 	}
 
 	/**
@@ -304,7 +307,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_quotes() {
 		$thing = '“T’was the night before Christmas...”';
-		$this->assertEquals('"T\'was the night before Christmas..."', \blobfolio\common\sanitize::quotes($thing));
+		$this->assertEquals('"T\'was the night before Christmas..."', sanitize::quotes($thing));
 	}
 
 	/**
@@ -314,13 +317,13 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_state() {
 		$thing = 'puerto rico';
-		$this->assertEquals('PR', \blobfolio\common\sanitize::state($thing));
+		$this->assertEquals('PR', sanitize::state($thing));
 
 		$thing = 'tx';
-		$this->assertEquals('TX', \blobfolio\common\sanitize::state($thing));
+		$this->assertEquals('TX', sanitize::state($thing));
 
 		$thing = 'Nowhere';
-		$this->assertEquals('', \blobfolio\common\sanitize::state($thing));
+		$this->assertEquals('', sanitize::state($thing));
 	}
 
 	/**
@@ -338,7 +341,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, strpos($svg, 'http://example.com'));
 		$this->assertEquals(true, strpos($svg, 'XSS'));
 
-		$thing = \blobfolio\common\sanitize::svg($svg);
+		$thing = sanitize::svg($svg);
 
 		// After.
 		$this->assertEquals(true, false !== strpos($thing, '<svg'));
@@ -349,7 +352,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, strpos($thing, 'XSS'));
 
 		// Check whitelisted domains.
-		$thing = \blobfolio\common\sanitize::svg($svg, null, null, null, 'example.com');
+		$thing = sanitize::svg($svg, null, null, null, 'example.com');
 		$this->assertEquals(true, strpos($thing, 'http://example.com'));
 
 		// Make sure styles get decoded too.
@@ -359,7 +362,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, strpos($svg, '&#109;'));
 		$this->assertEquals(true, strpos($svg, '&#123;'));
 
-		$thing = \blobfolio\common\sanitize::svg($svg);
+		$thing = sanitize::svg($svg);
 
 		// Missing bad stuff.
 		$this->assertEquals(true, false !== strpos($thing, '<svg'));
@@ -374,13 +377,13 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_timezone() {
 		$thing = 'Notime';
-		$this->assertEquals('UTC', \blobfolio\common\sanitize::timezone($thing));
+		$this->assertEquals('UTC', sanitize::timezone($thing));
 
 		$thing = 'america/los_angeles';
-		$this->assertEquals('America/Los_Angeles', \blobfolio\common\sanitize::timezone($thing));
+		$this->assertEquals('America/Los_Angeles', sanitize::timezone($thing));
 
 		$thing = 'GMT';
-		$this->assertEquals('UTC', \blobfolio\common\sanitize::timezone($thing));
+		$this->assertEquals('UTC', sanitize::timezone($thing));
 	}
 
 	/**
@@ -389,11 +392,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_to_range() {
-		$this->assertEquals(3, \blobfolio\common\sanitize::to_range(3, 1, 5));
-		$this->assertEquals(3, \blobfolio\common\sanitize::to_range(3, 1));
-		$this->assertEquals(3, \blobfolio\common\sanitize::to_range(3, null, 5));
+		$this->assertEquals(3, sanitize::to_range(3, 1, 5));
+		$this->assertEquals(3, sanitize::to_range(3, 1));
+		$this->assertEquals(3, sanitize::to_range(3, null, 5));
 
-		$this->assertEquals('2015-01-15', \blobfolio\common\sanitize::to_range('2015-01-01', '2015-01-15', '2015-02-01'));
+		$this->assertEquals('2015-01-15', sanitize::to_range('2015-01-01', '2015-01-15', '2015-02-01'));
 	}
 
 	/**
@@ -410,7 +413,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			'//☺.com/hello?awesome'=>'https://xn--74h.com/hello?awesome'
 		);
 		foreach ($things as $k=>$v) {
-			$this->assertEquals($v, \blobfolio\common\sanitize::url($k));
+			$this->assertEquals($v, sanitize::url($k));
 		}
 	}
 
@@ -422,7 +425,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	function test_utf8() {
 		$thing = 'Björk Guðmundsdóttir';
 
-		$thing = \blobfolio\common\sanitize::utf8($thing);
+		$thing = sanitize::utf8($thing);
 		$this->assertEquals('UTF-8', mb_detect_encoding($thing));
 	}
 
@@ -434,11 +437,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	function test_whitespace() {
 		$thing = "Björk  Guðmundsdóttir\n";
 
-		$this->assertEquals('Björk Guðmundsdóttir', \blobfolio\common\sanitize::whitespace($thing));
-		$this->assertEquals('Björk Guðmundsdóttir', \blobfolio\common\sanitize::whitespace($thing, 1));
+		$this->assertEquals('Björk Guðmundsdóttir', sanitize::whitespace($thing));
+		$this->assertEquals('Björk Guðmundsdóttir', sanitize::whitespace($thing, 1));
 
 		$thing = "New\n\n\nLine!";
-		$this->assertEquals("New\n\nLine!", \blobfolio\common\sanitize::whitespace($thing, 2));
+		$this->assertEquals("New\n\nLine!", sanitize::whitespace($thing, 2));
 	}
 
 	/**
@@ -448,7 +451,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_whitespace_multiline() {
 		$thing = "New\n\n\nLine!";
-		$this->assertEquals("New\n\nLine!", \blobfolio\common\sanitize::whitespace_multiline($thing, 2));
+		$this->assertEquals("New\n\nLine!", sanitize::whitespace_multiline($thing, 2));
 	}
 
 	/**
@@ -457,10 +460,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_zip5() {
-		$this->assertEquals('00123', \blobfolio\common\sanitize::zip5(123));
-		$this->assertEquals('12345', \blobfolio\common\sanitize::zip5(12345));
-		$this->assertEquals('', \blobfolio\common\sanitize::zip5('no'));
-		$this->assertEquals('', \blobfolio\common\sanitize::zip5(0));
+		$this->assertEquals('00123', sanitize::zip5(123));
+		$this->assertEquals('12345', sanitize::zip5(12345));
+		$this->assertEquals('', sanitize::zip5('no'));
+		$this->assertEquals('', sanitize::zip5(0));
 	}
 }
 
