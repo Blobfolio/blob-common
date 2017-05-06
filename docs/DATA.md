@@ -17,6 +17,8 @@ echo $first; //apples
 ##### Table of Contents
 
  * [array_compare()](#array_compare)
+ * [array_ikey_exists()](#array_ikey_exists)
+ * [array_isearch()](#array_isearch)
  * [array_map_recursive()](#array_map_recursive)
  * [array_otherize()](#array_otherize)
  * [array_pop()](#array_pop)
@@ -24,6 +26,7 @@ echo $first; //apples
  * [cc_exp_months()](#cc_exp_months)
  * [cc_exp_years()](#cc_exp_years)
  * [datediff()](#datediff)
+ * [iin_array()](#iin_array)
  * [in_range()](#in_range)
  * [is_json()](#is_json)
  * [is_utf8()](#is_utf8)
@@ -57,6 +60,37 @@ $arr1 = array('apples','bananas','carrots');
 $arr2 = array('bananas','carrots','apples');
 var_dump(blobfolio\common\data::array_compare($arr1, $arr2)); //TRUE
 ```
+
+
+
+## array_ikey_exists()
+
+Works exactly like `array_key_exists()` but is case-insensitive.
+
+#### Arguments
+
+ * (*string*) Needle
+ * (*array*) Haystack
+
+#### Returns
+
+Returns `TRUE` or `FALSE`.
+
+
+
+## array_isearch()
+
+Works exactly like `array_search()` but is case-insensitive.
+
+#### Arguments
+
+ * (*string*) Needle
+ * (*array*) Haystack
+ * (*bool*) (*optional*) Strict. Default: `FALSE`
+
+#### Returns
+
+Returns the matching array key or `FALSE` if not found.
 
 
 
@@ -225,6 +259,22 @@ Returns the number of days between the two values. If the dates are equal or eit
 ```php
 echo blobfolio\common\data::datediff('2015-01-01', '2015-01-02'); //1
 ```
+
+
+
+## iin_array()
+
+Works exactly like `in_array()` but is case-insensitive.
+
+#### Arguments
+
+ * (*string*) Needle
+ * (*array*) Haystack
+ * (*bool*) (*optional*) Strict. Default: `FALSE`
+
+#### Returns
+
+Returns `TRUE` or `FALSE`.
 
 
 

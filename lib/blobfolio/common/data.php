@@ -149,6 +149,52 @@ class data {
 	}
 
 	/**
+	 * Case-insensitive array_key_exists()
+	 *
+	 * @param string $needle Needle.
+	 * @param array $haystack Haystack.
+	 * @return bool True/false.
+	 */
+	public static function array_ikey_exists($needle, $haystack) {
+		if (!is_array($haystack) || !count($haystack)) {
+			return false;
+		}
+		$haystack = array_keys($haystack);
+
+		return (false !== static::array_isearch($needle, $haystack));
+	}
+
+	/**
+	 * Case-insensitive array_search()
+	 *
+	 * @param string $needle Needle.
+	 * @param array $haystack Haystack.
+	 * @param bool $strict Strict.
+	 * @return mixed Key or false.
+	 */
+	public static function array_isearch($needle, $haystack, $strict=false) {
+		if (!is_array($haystack) || !count($haystack)) {
+			return false;
+		}
+
+		// Lowercase for comparison.
+		if (is_string($needle)) {
+			ref\mb::strtolower($needle);
+		}
+
+		// Lowercase any strings in haystack too.
+		foreach ($haystack as $k=>$v) {
+			if (is_string($v)) {
+				ref\mb::strtolower($haystack[$k]);
+			}
+		}
+
+		ref\cast::to_bool($strict);
+
+		return array_search($needle, $haystack, $strict);
+	}
+
+	/**
 	 * Generate Credit Card Expiration Months
 	 *
 	 * @param string $format Date format.
@@ -222,6 +268,18 @@ class data {
 			$date2 = strtotime($date2);
 			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
 		}
+	}
+
+	/**
+	 * Case-insensitive in_array()
+	 *
+	 * @param string $needle Needle.
+	 * @param array $haystack Haystack.
+	 * @param bool $strict Strict.
+	 * @return bool True/false.
+	 */
+	public static function iin_array($needle, $haystack, $strict=false) {
+		return (false !== static::array_isearch($needle, $haystack, $strict));
 	}
 
 	/**
