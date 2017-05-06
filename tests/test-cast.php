@@ -16,159 +16,32 @@ use \blobfolio\common\ref\cast as r_cast;
  */
 class cast_tests extends \PHPUnit\Framework\TestCase {
 
+	// --------------------------------------------------------------------
+	// Tests
+	// --------------------------------------------------------------------
+
 	/**
 	 * ::array()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array
+	 *
+	 * @param mixed $value Value.
+	 * @param array $expected Expected.
 	 */
-	function test_array() {
-		$thing = 'string';
-		$this->assertEquals(array('string'), v_cast::to_array($thing));
-
-		$this->assertEquals('array', gettype(v_cast::to_array($thing)));
-
-		$thing = array('string');
-		$this->assertEquals(array('string'), v_cast::to_array($thing));
-
-		$thing = null;
-		$this->assertEquals(array(), v_cast::to_array($thing));
+	function test_array($value, $expected) {
+		$this->assertEquals($expected, v_cast::to_array($value));
+		$this->assertEquals('array', gettype(v_cast::to_array($value)));
 	}
 
 	/**
-	 * ::array_type()
+	 * ::array() alias
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array
+	 *
+	 * @param mixed $value Value.
+	 * @param array $expected Expected.
 	 */
-	function test_array_type() {
-		$thing = 'string';
-		$this->assertEquals(false, v_cast::array_type($thing));
-
-		$thing = array();
-		$this->assertEquals(false, v_cast::array_type($thing));
-
-		$thing = array('string','thing');
-		$this->assertEquals('sequential', v_cast::array_type($thing));
-
-		$thing = array('foo'=>'bar');
-		$this->assertEquals('associative', v_cast::array_type($thing));
-
-		$thing = array('apples','bananas','pears');
-		unset($thing[1]);
-		$this->assertEquals('indexed', v_cast::array_type($thing));
-	}
-
-	/**
-	 * ::bool()
-	 *
-	 * @return void Nothing.
-	 */
-	function test_bool() {
-		$thing = 'string';
-		$this->assertEquals(true, v_cast::to_bool($thing));
-
-		$this->assertEquals('boolean', gettype(v_cast::to_bool($thing)));
-
-		$thing = 'off';
-		$this->assertEquals(false, v_cast::to_bool($thing));
-
-		$thing = 'FALSE';
-		$this->assertEquals(false, v_cast::to_bool($thing));
-
-		$thing = 1;
-		$this->assertEquals(true, v_cast::to_bool($thing));
-
-		$thing = array(1, 'Off', false);
-		$this->assertEquals(array(true, false, false), v_cast::to_bool($thing));
-
-		$this->assertEquals(true, v_cast::to_bool($thing, true));
-	}
-
-	/**
-	 * ::float()
-	 *
-	 * @return void Nothing.
-	 */
-	function test_float() {
-		$thing = 'string';
-		$this->assertEquals(0.0, v_cast::to_float($thing));
-
-		$this->assertEquals('double', gettype(v_cast::to_float($thing)));
-
-		$thing = '$2.50';
-		$this->assertEquals(2.5, v_cast::to_float($thing));
-
-		$thing = 1;
-		$this->assertEquals(1.0, v_cast::to_float($thing));
-
-		$thing = '50%';
-		$this->assertEquals(.5, v_cast::to_float($thing));
-
-		$thing = '67¢';
-		$this->assertEquals(.67, v_cast::to_float($thing));
-
-		$thing = array(1, '2.5', false);
-		$this->assertEquals(array(1.0, 2.5, 0.0), v_cast::to_float($thing));
-
-		$this->assertEquals(0, v_cast::to_float($thing, true));
-	}
-
-	/**
-	 * ::int()
-	 *
-	 * @return void Nothing.
-	 */
-	function test_int() {
-		$thing = 'string';
-		$this->assertEquals(0, v_cast::to_int($thing));
-
-		$this->assertEquals('integer', gettype(v_cast::to_int($thing)));
-
-		$thing = 2.5;
-		$this->assertEquals(2, v_cast::to_int($thing));
-
-		$thing = '33';
-		$this->assertEquals(33, v_cast::to_int($thing));
-
-		$thing = 'on';
-		$this->assertEquals(1, v_cast::to_int($thing));
-
-		$thing = array(1, '2.5', false);
-		$this->assertEquals(array(1, 2, 0), v_cast::to_int($thing));
-
-		$this->assertEquals(0, v_cast::to_int($thing, true));
-	}
-
-	/**
-	 * ::string()
-	 *
-	 * @return void Nothing.
-	 */
-	function test_string() {
-		$thing = 'string';
-		$this->assertEquals('string', v_cast::to_string($thing));
-
-		$this->assertEquals('string', gettype(v_cast::to_string($thing)));
-
-		$thing = 2.5;
-		$this->assertEquals('2.5', v_cast::to_string($thing));
-
-		$thing = false;
-		$this->assertEquals('', v_cast::to_string($thing));
-
-		$thing = array(1, '2.5', false);
-		$this->assertEquals(array('1', '2.5', ''), v_cast::to_string($thing));
-
-		$this->assertEquals('', v_cast::to_string($thing, true));
-	}
-
-	/**
-	 * Aliases
-	 *
-	 * Make sure our various alias cast functions work.
-	 *
-	 * @return void Nothing.
-	 */
-	function test_aliases() {
+	function test_array_alias($value, $expected) {
 		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
@@ -176,80 +49,500 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		// Stupid PHP 5.6 will blow up even though this code isn't
 		// something we want to execute for them. Gotta hide it in
 		// variables.
-		$thing = 'string';
-		$class = '\blobfolio\common\cast::array';
-		$this->assertEquals(array('string'), $class($thing));
-		$class = '\blobfolio\common\ref\cast::array';
-		$class($thing);
-		$this->assertEquals(array('string'), $thing);
+		$class = '\\blobfolio\\common\\cast::array';
+		$this->assertEquals($expected, $class($value));
 
-		$thing = 'true';
-		$this->assertEquals(true, v_cast::bool($thing));
-		r_cast::bool($thing);
-		$this->assertEquals(true, $thing);
-
-		$thing = 'true';
-		$this->assertEquals(true, v_cast::boolean($thing));
-		r_cast::boolean($thing);
-		$this->assertEquals(true, $thing);
-
-		$thing = '1';
-		$this->assertEquals(1.0, v_cast::double($thing));
-		r_cast::double($thing);
-		$this->assertEquals(1.0, $thing);
-
-		$thing = '1';
-		$this->assertEquals(1.0, v_cast::float($thing));
-		r_cast::float($thing);
-		$this->assertEquals(1.0, $thing);
-
-		$thing = '1';
-		$this->assertEquals(1, v_cast::int($thing));
-		r_cast::int($thing);
-		$this->assertEquals(1, $thing);
-
-		$thing = '1';
-		$this->assertEquals(1, v_cast::integer($thing));
-		r_cast::integer($thing);
-		$this->assertEquals(1, $thing);
-
-		$thing = '1';
-		$this->assertEquals(1.0, v_cast::number($thing));
-		r_cast::number($thing);
-		$this->assertEquals(1.0, $thing);
-
-		$thing = 2.5;
-		$this->assertEquals('2.5', v_cast::string($thing));
-		r_cast::string($thing);
-		$this->assertEquals('2.5', $thing);
+		$class = '\\blobfolio\\common\\ref\\cast::array';
+		$class($value);
+		$this->assertEquals($expected, $value);
 	}
+
+	/**
+	 * ::array_type()
+	 *
+	 * @dataProvider data_array_type
+	 *
+	 * @param mixed $value Value.
+	 * @param string $expected Expected.
+	 */
+	function test_array_type($value, $expected) {
+		$this->assertEquals($expected, v_cast::array_type($value));
+	}
+
+	/**
+	 * ::bool()
+	 *
+	 * @dataProvider data_bool
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_bool($value, $flatten, $expected) {
+		$this->assertSame($expected, v_cast::to_bool($value, $flatten));
+	}
+
+	/**
+	 * ::bool() alias
+	 *
+	 * @dataProvider data_bool
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_bool_alias($value, $flatten, $expected) {
+		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
+		}
+
+		$this->assertSame($expected, v_cast::bool($value, $flatten));
+		$this->assertSame($expected, v_cast::boolean($value, $flatten));
+
+		$value2 = $value;
+		r_cast::bool($value2, $flatten);
+		$this->assertSame($expected, $value2);
+
+		$value2 = $value;
+		r_cast::boolean($value2, $flatten);
+		$this->assertSame($expected, $value2);
+	}
+
+	/**
+	 * ::float()
+	 *
+	 * @dataProvider data_float
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_float($value, $flatten, $expected) {
+		$this->assertSame($expected, v_cast::to_float($value, $flatten));
+	}
+
+	/**
+	 * ::float() alias
+	 *
+	 * @dataProvider data_float
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_float_alias($value, $flatten, $expected) {
+		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
+		}
+
+		$this->assertSame($expected, v_cast::float($value, $flatten));
+		$this->assertSame($expected, v_cast::double($value, $flatten));
+
+		$value2 = $value;
+		r_cast::float($value2, $flatten);
+		$this->assertSame($expected, $value2);
+
+		$value2 = $value;
+		r_cast::double($value2, $flatten);
+		$this->assertSame($expected, $value2);
+	}
+
+	/**
+	 * ::int()
+	 *
+	 * @dataProvider data_int
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_int($value, $flatten, $expected) {
+		$this->assertSame($expected, v_cast::to_int($value, $flatten));
+	}
+
+	/**
+	 * ::int() alias
+	 *
+	 * @dataProvider data_int
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_int_alias($value, $flatten, $expected) {
+		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
+		}
+
+		$this->assertSame($expected, v_cast::int($value, $flatten));
+		$this->assertSame($expected, v_cast::integer($value, $flatten));
+
+		$value2 = $value;
+		r_cast::int($value2, $flatten);
+		$this->assertSame($expected, $value2);
+
+		$value2 = $value;
+		r_cast::integer($value2, $flatten);
+		$this->assertSame($expected, $value2);
+	}
+
+	/**
+	 * ::string()
+	 *
+	 * @dataProvider data_string
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_string($value, $flatten, $expected) {
+		$this->assertSame($expected, v_cast::to_string($value, $flatten));
+	}
+
+	/**
+	 * ::string() alias
+	 *
+	 * @dataProvider data_string
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
+	 */
+	function test_string_alias($value, $flatten, $expected) {
+		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
+		}
+
+		$this->assertSame($expected, v_cast::string($value, $flatten));
+
+		r_cast::string($value, $flatten);
+		$this->assertSame($expected, $value);
+	}
+
 
 	/**
 	 * ::to_type()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_to_type
+	 *
+	 * @param mixed $value Value.
+	 * @param string $type Type.
+	 * @param bool $flatten Flatten.
+	 * @param string $expected Expected.
 	 */
-	function test_to_type() {
-		$thing = array('false', 2.5, true, 1);
-
-		$this->assertEquals(array('false', 2.5, true, 1), v_cast::to_type($thing, 'array'));
-
-		$this->assertEquals(array(false, true, true, true), v_cast::to_type($thing, 'bool'));
-		$this->assertEquals(array(false, true, true, true), v_cast::to_type($thing, 'boolean'));
-
-		$this->assertEquals(array(0, 2.5, 1.0, 1.0), v_cast::to_type($thing, 'float'));
-		$this->assertEquals(array(0, 2.5, 1.0, 1.0), v_cast::to_type($thing, 'double'));
-
-		$this->assertEquals(array(0, 2, 1, 1), v_cast::to_type($thing, 'integer'));
-		$this->assertEquals(array(0, 2, 1, 1), v_cast::to_type($thing, 'int'));
-
-		$this->assertEquals(array('false', '2.5', '1', '1'), v_cast::to_type($thing, 'string'));
-
-		$this->assertEquals(true, v_cast::to_type($thing, 'bool', true));
-		$this->assertEquals(0.0, v_cast::to_type($thing, 'float', true));
-		$this->assertEquals(0, v_cast::to_type($thing, 'integer', true));
-		$this->assertEquals('', v_cast::to_type($thing, 'string', true));
+	function test_to_type($value, $type, $flatten, $expected) {
+		$this->assertSame($expected, v_cast::to_type($value, $type, $flatten));
 	}
+
+	// -------------------------------------------------------------------- end tests
+
+
+
+	// --------------------------------------------------------------------
+	// Data
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data for ::array()
+	 *
+	 * @return array Data.
+	 */
+	function data_array() {
+		return array(
+			array(
+				'string',
+				array('string')
+			),
+			array(
+				5,
+				array(5)
+			),
+			array(
+				null,
+				array()
+			),
+			array(
+				array('string'),
+				array('string')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_type()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_type() {
+		return array(
+			array(
+				'string',
+				false
+			),
+			array(
+				array(),
+				false
+			),
+			array(
+				array(1,2,3),
+				'sequential'
+			),
+			array(
+				array(
+					0=>1,
+					1=>2,
+					2=>3
+				),
+				'sequential'
+			),
+			array(
+				array(
+					2=>3,
+					0=>1
+				),
+				'indexed'
+			),
+			array(
+				array(
+					0=>1,
+					'bat'=>2,
+				),
+				'associative'
+			),
+			array(
+				array(
+					'foo'=>'bar'
+				),
+				'associative'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::bool()
+	 *
+	 * @return array Data.
+	 */
+	function data_bool() {
+		return array(
+			array(
+				'string',
+				true,
+				true
+			),
+			array(
+				'string',
+				false,
+				true
+			),
+			array(
+				'off',
+				false,
+				false
+			),
+			array(
+				'FALSE',
+				false,
+				false
+			),
+			array(
+				1,
+				false,
+				true
+			),
+			array(
+				array(1, 'Off', false),
+				false,
+				array(true, false, false)
+			),
+			array(
+				array(1, 'Off', false),
+				true,
+				true
+			),
+		);
+	}
+
+	/**
+	 * Data for ::float()
+	 *
+	 * @return array Data.
+	 */
+	function data_float() {
+		return array(
+			array(
+				'string',
+				true,
+				0.0
+			),
+			array(
+				'$2.50',
+				false,
+				2.5
+			),
+			array(
+				1,
+				false,
+				1.0
+			),
+			array(
+				'50%',
+				false,
+				.5
+			),
+			array(
+				'67¢',
+				false,
+				.67
+			),
+			array(
+				array(1, '2.5', false),
+				false,
+				array(1.0, 2.5, 0.0)
+			),
+			array(
+				array(1, '2.5', false),
+				true,
+				0.0
+			),
+		);
+	}
+
+	/**
+	 * Data for ::int()
+	 *
+	 * @return array Data.
+	 */
+	function data_int() {
+		return array(
+			array(
+				'string',
+				true,
+				0
+			),
+			array(
+				'$2.50',
+				false,
+				2
+			),
+			array(
+				'on',
+				false,
+				1
+			),
+			array(
+				'50%',
+				false,
+				0
+			),
+			array(
+				array(1, '2.5', false),
+				false,
+				array(1, 2, 0)
+			),
+			array(
+				array(1, '2.5', false),
+				true,
+				0
+			),
+		);
+	}
+
+	/**
+	 * Data for ::string()
+	 *
+	 * @return array Data.
+	 */
+	function data_string() {
+		return array(
+			array(
+				"Hello\nWorld",
+				true,
+				"Hello\nWorld"
+			),
+			array(
+				2,
+				false,
+				'2'
+			),
+			array(
+				null,
+				false,
+				''
+			),
+			array(
+				array(1, '2.5', false),
+				false,
+				array('1', '2.5', '')
+			),
+			array(
+				array(1, '2.5', false),
+				true,
+				''
+			),
+		);
+	}
+
+	/**
+	 * Data for ::to_type()
+	 *
+	 * @return array Data.
+	 */
+	function data_to_type() {
+		return array(
+			array(
+				null,
+				'array',
+				false,
+				array()
+			),
+			array(
+				array('off'),
+				'bool',
+				false,
+				array(false)
+			),
+			array(
+				'off',
+				'boolean',
+				false,
+				false
+			),
+			array(
+				2,
+				'double',
+				false,
+				2.0
+			),
+			array(
+				array(2),
+				'float',
+				false,
+				array(2.0)
+			),
+			array(
+				'500',
+				'int',
+				false,
+				500
+			),
+			array(
+				array('2',3),
+				'integer',
+				false,
+				array(2,3)
+			),
+			array(
+				2.3,
+				'string',
+				false,
+				'2.3'
+			),
+		);
+	}
+
+	// -------------------------------------------------------------------- end data
+
 }
 
 
