@@ -48,7 +48,7 @@ abstract class cast_full extends cast_base {
 	 * @return float Value.
 	 */
 	public static function double(&$value=null, $flatten=false) {
-		return static::to_bool($value, $flatten);
+		return static::to_float($value, $flatten);
 	}
 	/**
 	 * To Float
@@ -78,7 +78,7 @@ abstract class cast_full extends cast_base {
 	 * @return int Value.
 	 */
 	public static function integer(&$value=null, $flatten=false) {
-		return static::to_bool($value, $flatten);
+		return static::to_int($value, $flatten);
 	}
 	/**
 	 * To Number
