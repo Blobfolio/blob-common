@@ -27,6 +27,7 @@ blobfolio\common\ref\mb::strtolower($foo);
  * [strlen()](#strlen)
  * [str_pad()](#str_pad)
  * [strpos()](#strpos)
+ * [strrev()](#strrev)
  * [strrpos()](#strrpos)
  * [strtolower()](#strtolower)
  * [strtoupper()](#strtoupper)
@@ -93,6 +94,11 @@ array(
 
 Split the characters in a string by the desired length.
 
+#### Versions
+
+ * By Value
+ * By Reference
+
 #### Arguments
 
  * (*string*) String
@@ -100,7 +106,7 @@ Split the characters in a string by the desired length.
 
 #### Returns
 
-Returns an array of characters.
+Returns an array of characters by value, `TRUE`/`FALSE` by reference.
 
 #### Example
 
@@ -136,6 +142,11 @@ Returns the size of the string.
 
 Pad a string so it meets a required length.
 
+#### Versions
+
+ * By Value
+ * By Reference
+
 #### Arguments
 
  * (*string*) String
@@ -145,7 +156,7 @@ Pad a string so it meets a required length.
 
 #### Returns
 
-Returns the padded string. If the desired width is less than the string or negative, the string will be returned as-was. If the pad string doesn't divide evenly into the pad width, it may be truncated.
+Returns the padded string by value or `TRUE`/`FALSE` by reference. If the desired width is less than the string or negative, the string will be returned as-was. If the pad string doesn't divide evenly into the pad width, it may be truncated.
 
 #### Example
 
@@ -176,6 +187,25 @@ Find the first occurrence of the needle in the haystack.
 #### Returns
 
 Returns the starting position of the needle of `FALSE` if not found.
+
+
+
+## strrev()
+
+Reverse a string, e.g. `"abc"` to `"cba"`.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) String
+
+#### Returns
+
+Returns the reversed string by value, otherwise `TRUE`/`FALSE`.
 
 
 

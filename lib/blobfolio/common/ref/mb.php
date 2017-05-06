@@ -16,6 +16,115 @@ use \blobfolio\common\mb as v_mb;
 class mb {
 
 	/**
+	 * Wrapper For str_pad()
+	 *
+	 * @param string $str String.
+	 * @param int $pad_length Pad length.
+	 * @param string $pad_string Pad string.
+	 * @param int $pad_type Pad type.
+	 * @return bool True/false.
+	 */
+	public static function str_pad(&$str='', $pad_length, $pad_string=' ', $pad_type=null) {
+		cast::to_string($string, true);
+		cast::to_int($pad_length, true);
+		cast::to_string($pad_string, true);
+
+		$current_length = v_mb::strlen($str);
+		$pad_string_length = v_mb::strlen($pad_string);
+
+		if ($pad_length <= $current_length || !$pad_string_length) {
+			return true;
+		}
+
+		// Pad left.
+		if (STR_PAD_LEFT === $pad_type) {
+			$str = str_repeat($pad_string, ceil(($pad_length - $current_length) / $pad_string_length)) . $str;
+			$new_length = v_mb::strlen($str);
+			if ($new_length > $pad_length) {
+				$str = v_mb::substr($str, $new_length - $pad_length);
+			}
+		}
+		// Pad both.
+		elseif (STR_PAD_BOTH === $pad_type) {
+			$leftright = 'right';
+			while (v_mb::strlen($str) < $pad_length) {
+				$leftright = 'left' === $leftright ? 'right' : 'left';
+				if ('left' === $leftright) {
+					$str = "{$pad_string}{$str}";
+				}
+				else {
+					$str .= $pad_string;
+				}
+			}
+
+			$new_length = v_mb::strlen($str);
+			if ($new_length > $pad_length) {
+				if ('left' === $leftright) {
+					$str = v_mb::substr($str, $new_length - $pad_length);
+				}
+				else {
+					$str = v_mb::substr($str, 0, $pad_length);
+				}
+			}
+		}
+		// Pad right.
+		else {
+			$str .= str_repeat($pad_string, ceil(($pad_length - $current_length) / $pad_string_length));
+			$new_length = v_mb::strlen($str);
+			if ($new_length > $pad_length) {
+				$str = v_mb::substr($str, 0, $pad_length);
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Wrapper For str_split()
+	 *
+	 * @param string $str String.
+	 * @param int $split_length Split length.
+	 * @return bool True/false.
+	 */
+	public static function str_split(&$str, $split_length=1) {
+		cast::to_int($split_length, true);
+		if ($split_length < 1) {
+			$str = false;
+			return false;
+		}
+
+		cast::to_string($str, true);
+		$str_length = v_mb::strlen($str);
+		$out = array();
+
+		for ($i = 0; $i < $str_length; $i += $split_length) {
+			$out[] = v_mb::substr($str, $i, $split_length);
+		}
+
+		$str = $out;
+		return true;
+	}
+
+	/**
+	 * Wrapper For strrev()
+	 *
+	 * @param string $str String.
+	 * @return bool True/false.
+	 */
+	public static function strrev(&$str) {
+		cast::to_string($str, true);
+
+		if (!$str) {
+			return false;
+		}
+
+		preg_match_all('/./us', $str, $arr);
+		$str = implode('', array_reverse($arr[0]));
+
+		return true;
+	}
+
+	/**
 	 * Wrapper For strtolower()
 	 *
 	 * This will catch various case-able Unicode beyond

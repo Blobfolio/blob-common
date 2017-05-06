@@ -150,6 +150,20 @@ class mb {
 	}
 
 	/**
+	 * Wrapper For str_pad()
+	 *
+	 * @param string $str String.
+	 * @param int $pad_length Pad length.
+	 * @param string $pad_string Pad string.
+	 * @param int $pad_type Pad type.
+	 * @return string Padded string.
+	 */
+	public static function str_pad($str='', $pad_length, $pad_string=' ', $pad_type=null) {
+		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
+		return $str;
+	}
+
+	/**
 	 * Wrapper For str_split()
 	 *
 	 * @param string $str String.
@@ -157,20 +171,8 @@ class mb {
 	 * @return array|bool Split string or false.
 	 */
 	public static function str_split($str, $split_length=1) {
-		ref\cast::to_string($str, true);
-		ref\cast::to_int($split_length, true);
-		if ($split_length < 1) {
-			return false;
-		}
-
-		$str_length = static::strlen($str);
-		$out = array();
-
-		for ($i = 0; $i < $str_length; $i += $split_length) {
-			$out[] = static::substr($str, $i, $split_length);
-		}
-
-		return $out;
+		ref\mb::str_split($str, $split_length);
+		return $str;
 	}
 
 	/**
@@ -191,70 +193,6 @@ class mb {
 	}
 
 	/**
-	 * Wrapper For str_pad()
-	 *
-	 * @param string $str String.
-	 * @param int $pad_length Pad length.
-	 * @param string $pad_string Pad string.
-	 * @param int $pad_type Pad type.
-	 * @return string Padded string.
-	 */
-	public static function str_pad($str='', $pad_length, $pad_string=' ', $pad_type=null) {
-		ref\cast::to_string($string, true);
-		ref\cast::to_int($pad_length, true);
-		ref\cast::to_string($pad_string, true);
-
-		$current_length = static::strlen($str);
-		$pad_string_length = static::strlen($pad_string);
-
-		if ($pad_length <= $current_length || !$pad_string_length) {
-			return $str;
-		}
-
-		// Pad left.
-		if (STR_PAD_LEFT === $pad_type) {
-			$str = str_repeat($pad_string, ceil(($pad_length - $current_length) / $pad_string_length)) . $str;
-			$new_length = static::strlen($str);
-			if ($new_length > $pad_length) {
-				$str = static::substr($str, $new_length - $pad_length);
-			}
-		}
-		// Pad both.
-		elseif (STR_PAD_BOTH === $pad_type) {
-			$leftright = 'right';
-			while (static::strlen($str) < $pad_length) {
-				$leftright = 'left' === $leftright ? 'right' : 'left';
-				if ('left' === $leftright) {
-					$str = "{$pad_string}{$str}";
-				}
-				else {
-					$str .= $pad_string;
-				}
-			}
-
-			$new_length = static::strlen($str);
-			if ($new_length > $pad_length) {
-				if ('left' === $leftright) {
-					$str = static::substr($str, $new_length - $pad_length);
-				}
-				else {
-					$str = static::substr($str, 0, $pad_length);
-				}
-			}
-		}
-		// Pad right.
-		else {
-			$str .= str_repeat($pad_string, ceil(($pad_length - $current_length) / $pad_string_length));
-			$new_length = static::strlen($str);
-			if ($new_length > $pad_length) {
-				$str = static::substr($str, 0, $pad_length);
-			}
-		}
-
-		return $str;
-	}
-
-	/**
 	 * Wrapper For strpos()
 	 *
 	 * @param string $haystack Haystack.
@@ -272,6 +210,17 @@ class mb {
 		else {
 			return strpos($haystack, $needle, $offset);
 		}
+	}
+
+	/**
+	 * Wrapper For strrev()
+	 *
+	 * @param string $str String.
+	 * @return string Reversed string.
+	 */
+	public static function strrev($str) {
+		ref\mb::strrev($str);
+		return $str;
 	}
 
 	/**
