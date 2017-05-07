@@ -24,10 +24,9 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_load_svg() {
 		$svg = file_get_contents(self::ASSETS . 'pi.svg');
-
 		$dom = dom::load_svg($svg);
 
-		$this->assertEquals(true, is_a($dom, 'DOMDocument'));
+		$this->assertSame(true, is_a($dom, 'DOMDocument'));
 	}
 
 	/**
@@ -40,7 +39,7 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 		$dom = dom::load_svg($svg);
 		$svg = dom::save_svg($dom);
 
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
+		$this->assertSame(true, false !== strpos($svg, '<svg'));
 	}
 
 	/**
@@ -71,7 +70,7 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 
 		$parsed = dom::parse_css($style->nodeValue);
 
-		$this->assertEquals(true, is_array($parsed));
+		$this->assertSame(true, is_array($parsed));
 		$this->assertEquals(1, count($parsed));
 		$this->assertEquals('.k3xzp{fill:currentColor;}', $parsed[0]['raw']);
 	}

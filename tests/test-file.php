@@ -18,6 +18,12 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 
 	const ASSETS = __DIR__ . '/assets/';
 
+
+
+	// --------------------------------------------------------------------
+	// Tests
+	// --------------------------------------------------------------------
+
 	/**
 	 * ::data_uri()
 	 *
@@ -25,11 +31,9 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_data_uri() {
 		$svg = self::ASSETS . 'pi.svg';
-
 		$data = file::data_uri($svg);
 
 		$this->assertEquals(true, false !== strpos($data, 'image/svg+xml'));
-
 		$this->assertEquals(false, file::data_uri('does_not_exist.txt'));
 	}
 
@@ -50,107 +54,250 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	/**
 	 * ::leadingslash()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_leadingslash
+	 *
+	 * @param string $path Path.
+	 * @param string $expected Expected.
 	 */
-	function test_leadingslash() {
-
-		$thing = '/hello/there';
-		$this->assertEquals($thing, file::leadingslash($thing));
-
-		$thing = 'hello/there';
-		$this->assertEquals('/hello/there', file::leadingslash($thing));
+	function test_leadingslash($path, $expected) {
+		$this->assertEquals($expected, file::leadingslash($path));
 	}
 
 	/**
 	 * ::path()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_path
+	 *
+	 * @param string $path Path.
+	 * @param bool $validate Validate.
+	 * @param string $expected Expected.
 	 */
-	function test_path() {
-
-		$thing = '/hello/there';
-		$this->assertEquals($thing, file::path($thing, false));
-		$this->assertEquals(false, file::path($thing, true));
-
-		$thing = rtrim(self::ASSETS, '/');
-		$this->assertEquals(self::ASSETS, file::path($thing));
+	function test_path($path, $validate, $expected) {
+		$this->assertEquals($expected, file::path($path, $validate));
 	}
 
 	/**
 	 * ::trailingslash()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_trailingslash
+	 *
+	 * @param string $path Path.
+	 * @param string $expected Expected.
 	 */
-	function test_trailingslash() {
-
-		$thing = '/hello/there';
-		$this->assertEquals($thing . '/', file::trailingslash($thing));
-
-		$thing = 'hello/there/';
-		$this->assertEquals($thing, file::trailingslash($thing));
+	function test_trailingslash($path, $expected) {
+		$this->assertEquals($expected, file::trailingslash($path));
 	}
 
 	/**
 	 * ::unixslash()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_unixslash
+	 *
+	 * @param string $path Path.
+	 * @param string $expected Expected.
 	 */
-	function test_unixslash() {
-
-		$thing = 'C:\Windows\Fonts';
-		$this->assertEquals('C:/Windows/Fonts', file::unixslash($thing));
-
-		$thing = '/path/./to/foobar';
-		$this->assertEquals('/path/to/foobar', file::unixslash($thing));
+	function test_unixslash($path, $expected) {
+		$this->assertEquals($expected, file::unixslash($path));
 	}
 
 	/**
 	 * ::unleadingslash()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_unleadingslash
+	 *
+	 * @param string $path Path.
+	 * @param string $expected Expected.
 	 */
-	function test_unleadingslash() {
-
-		$thing = '/hello/there';
-		$this->assertEquals('hello/there', file::unleadingslash($thing));
-
-		$thing = 'hello/there';
-		$this->assertEquals($thing, file::unleadingslash($thing));
+	function test_unleadingslash($path, $expected) {
+		$this->assertEquals($expected, file::unleadingslash($path));
 	}
 
 	/**
 	 * ::unparse_url()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_unparse_url
+	 *
+	 * @param string $url URL.
 	 */
-	function test_unparse_url() {
-		$things = array(
-			'https://google.com/search?hello#foo'=>'https://google.com/search?hello#foo',
-			'google.com/apples'=>'google.com/apples',
-			'//☺.com'=>'https://xn--74h.com',
-			'ftp://user:pass@ftp.com:123'=>'ftp://user:pass@ftp.com:123'
-		);
-
-		foreach ($things as $k=>$v) {
-			$parsed = mb::parse_url($k);
-			$unparsed = file::unparse_url($parsed);
-			$this->assertEquals($v, $unparsed);
-		}
+	function test_unparse_url($url) {
+		$parsed = mb::parse_url($url);
+		$unparsed = file::unparse_url($parsed);
+		$this->assertEquals($url, $unparsed);
 	}
 
 	/**
 	 * ::untrailingslash()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_untrailingslash
+	 *
+	 * @param string $path Path.
+	 * @param string $expected Expected.
 	 */
-	function test_untrailingslash() {
-
-		$thing = '/hello/there';
-		$this->assertEquals($thing, file::untrailingslash($thing));
-
-		$thing = 'hello/there/';
-		$this->assertEquals('hello/there', file::untrailingslash($thing));
+	function test_untrailingslash($path, $expected) {
+		$this->assertEquals($expected, file::untrailingslash($path));
 	}
+
+	// -------------------------------------------------------------------- end tests
+
+
+
+	// --------------------------------------------------------------------
+	// Data
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data for ::leadingslash()
+	 *
+	 * @return array Data.
+	 */
+	function data_leadingslash() {
+		return array(
+			array(
+				'/file/here',
+				'/file/here',
+			),
+			array(
+				'file/here',
+				'/file/here',
+			),
+		);
+	}
+
+	/**
+	 * Data for ::path()
+	 *
+	 * @return array Data.
+	 */
+	function data_path() {
+		return array(
+			array(
+				'/file/here',
+				false,
+				'/file/here'
+			),
+			array(
+				'/file/here',
+				true,
+				false
+			),
+			array(
+				'\\file\\here',
+				false,
+				'/file/here'
+			),
+			array(
+				static::ASSETS,
+				true,
+				static::ASSETS
+			),
+			array(
+				rtrim(static::ASSETS, '/'),
+				true,
+				static::ASSETS
+			),
+			array(
+				static::ASSETS . '/pi.svg',
+				true,
+				static::ASSETS . 'pi.svg'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::trailingslash()
+	 *
+	 * @return array Data.
+	 */
+	function data_trailingslash() {
+		return array(
+			array(
+				'/file/here/',
+				'/file/here/',
+			),
+			array(
+				'file/here',
+				'file/here/',
+			),
+		);
+	}
+
+	/**
+	 * Data for ::unixslash()
+	 *
+	 * @return array Data.
+	 */
+	function data_unixslash() {
+		return array(
+			array(
+				'/file/here',
+				'/file/here',
+			),
+			array(
+				'C:\Windows\Fonts',
+				'C:/Windows/Fonts',
+			),
+			array(
+				'/path/./to/foobar',
+				'/path/to/foobar',
+			),
+			array(
+				'/path//to/foobar',
+				'/path/to/foobar',
+			),
+		);
+	}
+
+	/**
+	 * Data for ::unleadingslash()
+	 *
+	 * @return array Data.
+	 */
+	function data_unleadingslash() {
+		return array(
+			array(
+				'/file/here',
+				'file/here',
+			),
+			array(
+				'file/here',
+				'file/here',
+			),
+		);
+	}
+
+	/**
+	 * Data for ::unparse_url()
+	 *
+	 * @return array Data.
+	 */
+	function data_unparse_url() {
+		return array(
+			array('https://google.com/search?hello#foo'=>'https://google.com/search?hello#foo'),
+			array('google.com/apples'=>'google.com/apples'),
+			array('//☺.com'=>'https://xn--74h.com'),
+			array('ftp://user:pass@ftp.com:123'=>'ftp://user:pass@ftp.com:123'),
+		);
+	}
+
+	/**
+	 * Data for ::untrailingslash()
+	 *
+	 * @return array Data.
+	 */
+	function data_untrailingslash() {
+		return array(
+			array(
+				'/file/here/',
+				'/file/here',
+			),
+			array(
+				'file/here',
+				'file/here',
+			),
+		);
+	}
+
+	// -------------------------------------------------------------------- end data
 }
 
 

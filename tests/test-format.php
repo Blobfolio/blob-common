@@ -15,53 +15,56 @@ use \blobfolio\common\format;
  */
 class format_tests extends \PHPUnit\Framework\TestCase {
 
+	// --------------------------------------------------------------------
+	// Tests
+	// --------------------------------------------------------------------
+
 	/**
 	 * ::array_to_indexed()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array_to_indexed
+	 *
+	 * @param array $value Value.
+	 * @param array $expected Expected.
 	 */
-	function test_array_to_indexed() {
-		$thing = array(1);
-		$this->assertEquals(array(array('key'=>0, 'value'=>1)), format::array_to_indexed($thing));
+	function test_array_to_indexed($value, $expected) {
+		$this->assertEquals($expected, format::array_to_indexed($value));
 	}
 
 	/**
 	 * ::cidr_to_range()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_cidr_to_range
+	 *
+	 * @param string $cidr CIDR.
+	 * @param array $expected Expected.
 	 */
-	function test_cidr_to_range() {
-		$thing = '50.116.18.174/24';
-		$match = array('min'=>'50.116.18.0', 'max'=>'50.116.19.173');
-		$this->assertEquals($match, format::cidr_to_range($thing));
-
-		$thing = '2600:3c00::f03c:91ff:feae:0ff2/64';
-		$match = array('min'=>'2600:3c00::f03c:91ff:feae:ff2', 'max'=>'2600:3c00::ffff:ffff:ffff:ffff');
-		$this->assertEquals($match, format::cidr_to_range($thing));
+	function test_cidr_to_range($cidr, $expected) {
+		$this->assertEquals($expected, format::cidr_to_range($cidr));
 	}
 
 	/**
 	 * ::decode_entities()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_decode_entities
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_decode_entities() {
-		$thing = 'Happy & Healthy';
-		for ($x = 0; $x < 3; $x++) {
-			$thing = htmlentities($thing);
-		}
-		$this->assertEquals('Happy & Healthy', format::decode_entities($thing));
+	function test_decode_entities($value, $expected) {
+		$this->assertEquals($expected, format::decode_entities($value));
 	}
 
 	/**
 	 * ::decode_js_entities()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_decode_js_entities
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_decode_js_entities() {
-		$thing = '\nhello\u00c1';
-		$expected = "\nhelloÁ";
-		$this->assertEquals($expected, format::decode_js_entities($thing));
+	function test_decode_js_entities($value, $expected) {
+		$this->assertEquals($expected, format::decode_js_entities($value));
 	}
 
 	/**
@@ -298,6 +301,120 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$csv = format::to_xls($data, $headers);
 		$this->assertEquals(true, false !== strpos($csv, 'FIRST NAME'));
 	}
+
+	// -------------------------------------------------------------------- end tests
+
+
+
+	// --------------------------------------------------------------------
+	// Data
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data for ::array_to_indexed()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_to_indexed() {
+		return array(
+			array(
+				array(1),
+				array(
+					array(
+						'key'=>0,
+						'value'=>1
+					)
+				)
+			),
+			array(
+				array(),
+				array()
+			),
+			array(
+				array('Foo'=>'Bar'),
+				array(
+					array(
+						'key'=>'Foo',
+						'value'=>'Bar'
+					)
+				)
+			),
+		);
+	}
+
+	/**
+	 * Data for ::cidr_to_range()
+	 *
+	 * @return array Data.
+	 */
+	function data_cidr_to_range() {
+		return array(
+			array(
+				'50.116.18.174/24',
+				array(
+					'min'=>'50.116.18.0',
+					'max'=>'50.116.19.173'
+				)
+			),
+			array(
+				'2600:3c00::f03c:91ff:feae:0ff2/64',
+				array(
+					'min'=>'2600:3c00::f03c:91ff:feae:ff2',
+					'max'=>'2600:3c00::ffff:ffff:ffff:ffff'
+				)
+			),
+			array(
+				'26G0:3c00::f03c:91ff:feae:0ff2/64',
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::decode_entities()
+	 *
+	 * @return array Data.
+	 */
+	function data_decode_entities() {
+		return array(
+			array(
+				'Happy & Healthy',
+				'Happy & Healthy'
+			),
+			array(
+				'5&#48;&cent;',
+				'50¢'
+			),
+			array(
+				'50&amp;cent;',
+				'50¢'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::decode_js_entities()
+	 *
+	 * @return array Data.
+	 */
+	function data_decode_js_entities() {
+		return array(
+			array(
+				'\\nhello\\u00c1',
+				"\nhelloÁ"
+			),
+			array(
+				'\\u75',
+				'u'
+			),
+			array(
+				'\\\\u75\\u30\\u30\\u63\\u31',
+				'Á'
+			),
+		);
+	}
+
+	// -------------------------------------------------------------------- end data
 }
 
 

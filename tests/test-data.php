@@ -15,254 +15,233 @@ use \blobfolio\common\data;
  */
 class data_tests extends \PHPUnit\Framework\TestCase {
 
+	// --------------------------------------------------------------------
+	// Tests
+	// --------------------------------------------------------------------
+
 	/**
 	 * ::array_compare()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array_compare
+	 *
+	 * @param array $arr1 Array 1.
+	 * @param array $arr2 Array 2.
+	 * @param array $expected Expected.
 	 */
-	function test_array_compare() {
-		$arr1 = array(1,2,3,4,5);
-		$arr2 = array(1,2,3,4,5);
-		$this->assertEquals(true, data::array_compare($arr1, $arr2));
+	function test_array_compare($arr1, $arr2, $expected) {
+		$this->assertSame($expected, data::array_compare($arr1, $arr2));
+	}
 
-		$arr2 = array(1,2,4,5,6);
-		$this->assertEquals(false, data::array_compare($arr1, $arr2));
+	/**
+	 * ::array_ikey_exists()
+	 *
+	 * @dataProvider data_array_ikey_exists
+	 *
+	 * @param mixed $key Key.
+	 * @param array $arr Array.
+	 * @param bool $expected Expected.
+	 */
+	function test_array_ikey_exists($key, $arr, $expected) {
+		$this->assertSame($expected, data::array_ikey_exists($key, $arr));
+	}
 
-		$arr1 = array('animal'=>'dog', 'peach'=>array(1,2,3));
-		$arr2 = array('animal'=>'dog', 'peach'=>array(1,2,3));
-		$this->assertEquals(true, data::array_compare($arr1, $arr2));
-
-		$arr2 = array('animal'=>'cat', 'peach'=>array(1,2,3));
-		$this->assertEquals(false, data::array_compare($arr1, $arr2));
-
-		$arr2 = array('animal'=>'dog', 'peach'=>array(1,2));
-		$this->assertEquals(false, data::array_compare($arr1, $arr2));
+	/**
+	 * ::array_isearch()
+	 *
+	 * @dataProvider data_array_isearch
+	 *
+	 * @param mixed $needle Needle.
+	 * @param array $haystack Haystack.
+	 * @param bool $strict Strict.
+	 * @param bool $expected Expected.
+	 */
+	function test_array_isearch($needle, $haystack, $strict, $expected) {
+		$this->assertSame($expected, data::array_isearch($needle, $haystack, $strict));
 	}
 
 	/**
 	 * ::array_map_recursive()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array_map_recurisve
+	 *
+	 * @param string $callback Callback.
+	 * @param mixed $value Value.
+	 * @param array $expected Expected.
 	 */
-	function test_array_map_recursive() {
-		$thing = array(1,2,3,4,5);
-		$this->assertEquals(array('1','2','3','4','5'), data::array_map_recursive('strval', $thing));
-
-		$thing = array(1, array(1));
-		$this->assertEquals(array('1',array('1')), data::array_map_recursive('strval', $thing));
+	function test_array_map_recursive($callback, $value, $expected) {
+		$this->assertEquals($expected, data::array_map_recursive($callback, $value));
 	}
 
 	/**
 	 * ::array_otherize()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array_otherize
+	 *
+	 * @param array $arr Array.
+	 * @param int $length Length.
+	 * @param string $label Label.
+	 * @param array $expected Expected.
 	 */
-	function test_array_otherize() {
-		$thing = array(
-			'US'=>100,
-			'CA'=>200,
-			'CN'=>5,
-			'GB'=>10,
-			'MX'=>30
-		);
-		$this->assertEquals(array('CA'=>200, 'US'=>100, 'ZZ'=>45), data::array_otherize($thing, 3, 'ZZ'));
-		$this->assertEquals(array('CA'=>200, 'US'=>100, 'Other'=>45), data::array_otherize($thing, 3));
-		$this->assertEquals(array('Other'=>345), data::array_otherize($thing, 1));
-
-		$thing = array(0,1,2);
-		$this->assertEquals(false, data::array_otherize($thing));
-
-		$thing = array('US'=>'5%');
-		$this->assertEquals(array('US'=>0.05), data::array_otherize($thing));
-
-		$thing = array('US'=>'5¢');
-		$this->assertEquals(array('US'=>0.05), data::array_otherize($thing));
-
-		$thing = array('US'=>'$5.00');
-		$this->assertEquals(array('US'=>5.0), data::array_otherize($thing));
+	function test_array_otherize($arr, $length, $label, $expected) {
+		$this->assertEquals($expected, data::array_otherize($arr, $length, $label));
 	}
 
 	/**
 	 * ::array_pop()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array_pop
+	 *
+	 * @param array $arr Array.
+	 * @param array $expected Expected.
 	 */
-	function test_array_pop() {
-		$thing = array(1,2,3,4,5);
-		$this->assertEquals(5, data::array_pop($thing));
-
-		$thing = array();
-		$this->assertEquals(false, data::array_pop($thing));
+	function test_array_pop($arr, $expected) {
+		$this->assertEquals($expected, data::array_pop($arr));
 	}
 
 	/**
 	 * ::array_pop_top()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_array_pop_top
+	 *
+	 * @param array $arr Array.
+	 * @param array $expected Expected.
 	 */
-	function test_array_pop_top() {
-		$thing = array(1,2,3,4,5);
-		$this->assertEquals(1, data::array_pop_top($thing));
-
-		$thing = array();
-		$this->assertEquals(false, data::array_pop_top($thing));
+	function test_array_pop_top($arr, $expected) {
+		$this->assertEquals($expected, data::array_pop_top($arr));
 	}
 
 	/**
 	 * ::cc_exp_months()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_cc_exp_months
+	 *
+	 * @param string $format Format.
+	 * @param array $expected Expected.
 	 */
-	function test_cc_exp_months() {
-		$thing = data::cc_exp_months();
-		$values = array_values($thing);
-		$keys = array_keys($thing);
-
-		$this->assertEquals('01 - Jan', $values[0]);
-		$this->assertEquals(1, $keys[0]);
-
-		$thing = data::cc_exp_months('F');
-		$this->assertEquals('January', $thing[1]);
+	function test_cc_exp_months($format, $expected) {
+		$this->assertEquals($expected, data::cc_exp_months($format));
 	}
 
 	/**
 	 * ::cc_exp_years()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_cc_exp_years
+	 *
+	 * @param int $length Length.
+	 * @param array $expected Expected.
 	 */
-	function test_cc_exp_years() {
-		$thing = data::cc_exp_years();
-		$year = (int) date('Y');
-
-		$this->assertEquals(10, count($thing));
-		$this->assertEquals(true, in_array($year, $thing, true));
-
-		$thing = data::cc_exp_years(3);
-		$this->assertEquals(3, count($thing));
+	function test_cc_exp_years($length, $expected) {
+		$this->assertEquals($expected, data::cc_exp_years($length));
 	}
 
 	/**
 	 * ::datediff()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_datediff
+	 *
+	 * @param mixed $date1 Date 1.
+	 * @param mixed $date2 Date 2.
+	 * @param array $expected Expected.
 	 */
-	function test_datediff() {
-		$date1 = '2015-01-15';
-		$date2 = '2015-01-17';
+	function test_datediff($date1, $date2, $expected) {
+		$this->assertSame($expected, data::datediff($date1, $date2));
+	}
 
-		$this->assertEquals(2, data::datediff($date1, $date2));
-		$this->assertEquals(2, data::datediff($date2, $date1));
-		$this->assertEquals(2, data::datediff(strtotime($date2), $date1));
+	/**
+	 * ::iin_array()
+	 *
+	 * @dataProvider data_iin_array
+	 *
+	 * @param mixed $needle Needle.
+	 * @param array $haystack Haystack.
+	 * @param bool $strict Strict.
+	 * @param bool $expected Expected.
+	 */
+	function test_iin_array($needle, $haystack, $strict, $expected) {
+		$this->assertSame($expected, data::iin_array($needle, $haystack, $strict));
 	}
 
 	/**
 	 * ::in_range()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_in_range
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @param array $expected Expected.
 	 */
-	function test_in_range() {
-		$thing = 1;
-
-		$this->assertEquals(true, data::in_range($thing, -1, 5));
-		$this->assertEquals(false, data::in_range($thing, 2, 5));
-		$this->assertEquals(false, data::in_range($thing, -2, 0));
-
-		$thing = '2015-01-02';
-		$this->assertEquals(true, data::in_range($thing, '2015-01-01', '2015-01-15'));
-		$this->assertEquals(false, data::in_range($thing, '2015-01-15', '2015-01-20'));
+	function test_in_range($value, $min, $max, $expected) {
+		$this->assertSame($expected, data::in_range($value, $min, $max));
 	}
 
 	/**
 	 * ::is_json()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_is_json
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $empty Allow empty.
+	 * @param array $expected Expected.
 	 */
-	function test_is_json() {
-		$this->assertEquals(false, data::is_json(1));
-		$this->assertEquals(false, data::is_json('yes'));
-		$this->assertEquals(false, data::is_json(''));
-		$this->assertEquals(true, data::is_json('{"happy":"days"}'));
-		$this->assertEquals(true, data::is_json('[]'));
-		$this->assertEquals(true, data::is_json('[1,2]'));
-		$this->assertEquals(false, data::is_json('{"happy":"'));
-
-		$this->assertEquals(true, data::is_json('', true));
+	function test_is_json($value, $empty, $expected) {
+		$this->assertSame($expected, data::is_json($value, $empty));
 	}
 
 	/**
 	 * ::is_utf8()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_is_utf8
+	 *
+	 * @param mixed $value Value.
+	 * @param array $expected Expected.
 	 */
-	function test_is_utf8() {
-		$thing = 'hello';
-		$this->assertEquals(true, data::is_utf8($thing));
-
-		$thing = 50;
-		$this->assertEquals(true, data::is_utf8($thing));
-
-		$thing = "\xc3\x28";
-		$this->assertEquals(false, data::is_utf8($thing));
+	function test_is_utf8($value, $expected) {
+		$this->assertEquals($expected, data::is_utf8($value));
 	}
 
 	/**
 	 * ::json_decode_array()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_json_decode_array
+	 *
+	 * @param mixed $json JSON.
+	 * @param array $default Template.
+	 * @param bool $strict Strict.
+	 * @param bool $recursive Recursive.
+	 * @param array $expected Expected.
 	 */
-	function test_json_decode_array() {
-		$thing = '';
-		$this->assertEquals(array(), data::json_decode_array($thing));
-
-		$thing = '{"animal":"dog"}';
-		$this->assertEquals(array('animal'=>'dog'), data::json_decode_array($thing));
-
-		$default = array('animal'=>'dog', 'fruit'=>'banana');
-		$this->assertEquals($default, data::json_decode_array($thing, $default));
-
-		$thing = '{"animal":12}';
-		$this->assertEquals(array('animal'=>12, 'fruit'=>'banana'), data::json_decode_array($thing, $default, false));
-
-		$this->assertEquals(array('animal'=>'12', 'fruit'=>'banana'), data::json_decode_array($thing, $default));
+	function test_json_decode_array($json, $default, $strict, $recursive, $expected) {
+		$this->assertEquals($expected, data::json_decode_array($json, $default, $strict, $recursive));
 	}
 
 	/**
 	 * ::length_in_range()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_length_in_range
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @param array $expected Expected.
 	 */
-	function test_length_in_range() {
-		$thing = 'cat';
-		$this->assertEquals(true, data::length_in_range($thing, 1, 5));
-		$this->assertEquals(true, data::length_in_range($thing, 3, 3));
-
-		$thing = 'Ḉẩt';
-		$this->assertEquals(true, data::length_in_range($thing, 3, 3));
+	function test_length_in_range($value, $min, $max, $expected) {
+		$this->assertSame($expected, data::length_in_range($value, $min, $max));
 	}
 
 	/**
 	 * ::parse_args()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_parse_args
+	 *
+	 * @param mixed $args Args.
+	 * @param array $default Template.
+	 * @param bool $strict Strict.
+	 * @param bool $recursive Recursive.
+	 * @param array $expected Expected.
 	 */
-	function test_parse_args() {
-		$thing = null;
-		$default = array('fruit'=>'pear', 'animal'=>array('name'=>'Oscar', 'price'=>5.5));
-
-		$this->assertEquals($default, data::parse_args($thing, $default));
-
-		$thing = array('weapon'=>'spear');
-		$this->assertEquals($default, data::parse_args($thing, $default));
-
-		$thing = array('fruit'=>12);
-		$this->assertEquals(array('fruit'=>'12', 'animal'=>array('name'=>'Oscar', 'price'=>5.5)), data::parse_args($thing, $default));
-
-		$this->assertEquals(array('fruit'=>12, 'animal'=>array('name'=>'Oscar', 'price'=>5.5)), data::parse_args($thing, $default, false));
-
-		$thing = array('animal'=>array('price'=>'1'));
-		$this->assertEquals(array('fruit'=>'pear', 'animal'=>array('name'=>'Oscar', 'price'=>'1')), data::parse_args($thing, $default, false));
-
-		$this->assertEquals(array('fruit'=>'pear', 'animal'=>array('price'=>1)), data::parse_args($thing, $default, true, false));
+	function test_parse_args($args, $default, $strict, $recursive, $expected) {
+		$this->assertEquals($expected, data::parse_args($args, $default, $strict, $recursive));
 	}
 
 	/**
@@ -276,8 +255,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			$thing[] = data::random_int(0, 10);
 		}
 
-		$this->assertEquals(true, count($thing) === 20);
-		$this->assertEquals(true, count(array_unique($thing)) > 1);
+		$this->assertSame(true, count($thing) === 20);
+		$this->assertSame(true, count(array_unique($thing)) > 1);
 
 		$thing2 = array();
 		foreach ($thing as $t) {
@@ -286,7 +265,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			}
 		}
 
-		$this->assertEquals(true, count($thing) === count($thing2));
+		$this->assertSame(true, count($thing) === count($thing2));
 	}
 
 	/**
@@ -300,8 +279,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			$thing[] = data::random_string(10);
 		}
 
-		$this->assertEquals(true, count($thing) === 20);
-		$this->assertEquals(true, count(array_unique($thing)) > 1);
+		$this->assertSame(true, count($thing) === 20);
+		$this->assertSame(true, count(array_unique($thing)) > 1);
 
 		$thing2 = array();
 		foreach ($thing as $t) {
@@ -310,13 +289,13 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			}
 		}
 
-		$this->assertEquals(true, count($thing) === count($thing2));
+		$this->assertSame(true, count($thing) === count($thing2));
 
 		// Test a custom soup.
 		$thing = array('a','b','c','d','e');
 		for ($x = 0; $x < 20; $x++) {
 			$result = data::random_string(10, $thing);
-			$this->assertEquals(true, !!preg_match('/^[a-e]{10}$/', $result));
+			$this->assertSame(true, !!preg_match('/^[a-e]{10}$/', $result));
 		}
 	}
 
@@ -334,6 +313,688 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(5, $var2);
 		$this->assertEquals(10, $var1);
 	}
+
+	// -------------------------------------------------------------------- end tests
+
+
+
+	// --------------------------------------------------------------------
+	// Data
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data for ::array_compare()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_compare() {
+		$arr1 = array(1,2,3);
+		$arr2 = array(2,3,1);
+		$arr3 = array(
+			'Foo'=>'Bar',
+			'Bar'=>array(1,2,3)
+		);
+		$arr4 = array();
+
+		return array(
+			array($arr1, $arr1, true),
+			array($arr1, $arr2, true),
+			array($arr1, $arr3, false),
+			array($arr3, $arr3, true),
+			array($arr4, $arr4, true),
+		);
+	}
+
+	/**
+	 * Data for ::array_ikey_exists()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_ikey_exists() {
+		return array(
+			array(
+				'foo',
+				array('Foo'=>'Bar'),
+				true
+			),
+			array(
+				'food',
+				array('Foo'=>'Bar'),
+				false
+			),
+			array(
+				1,
+				array(2,3,4),
+				true
+			),
+			array(
+				18,
+				array(2,3,4),
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_isearch()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_isearch() {
+		return array(
+			array(
+				'foo',
+				array('Foo'=>'Bar'),
+				true,
+				false
+			),
+			array(
+				'BAR',
+				array('Foo'=>'Bar'),
+				true,
+				'Foo'
+			),
+			array(
+				2,
+				array(2,3,4),
+				true,
+				0
+			),
+			array(
+				'2',
+				array(2,3,4),
+				false,
+				0
+			),
+			array(
+				'2',
+				array(2,3,4),
+				true,
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_map_recursive()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_map_recurisve() {
+		return array(
+			array(
+				'strval',
+				array(1,2,3),
+				array('1','2','3')
+			),
+			array(
+				'strval',
+				array(
+					'foo'=>array(1,2,3),
+					'bar'=>1
+				),
+				array(
+					'foo'=>array('1','2','3'),
+					'bar'=>'1'
+				),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_otherize()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_otherize() {
+		$arr = array(
+			'US'=>100,
+			'CA'=>200,
+			'CN'=>5,
+			'GB'=>10,
+			'MX'=>30
+		);
+
+		return array(
+			array(
+				$arr,
+				3,
+				'Other',
+				array(
+					'CA'=>200,
+					'US'=>100,
+					'Other'=>45
+				)
+			),
+			array(
+				$arr,
+				6,
+				'Other',
+				array(
+					'CA'=>200,
+					'US'=>100,
+					'MX'=>30,
+					'GB'=>10,
+					'CN'=>5
+				)
+			),
+			array(
+				$arr,
+				1,
+				'Other',
+				array(
+					'Other'=>345
+				)
+			),
+			array(
+				array(
+					'US'=>'5%',
+					'CA'=>'10¢',
+					'MX'=>'$1.32',
+					'TX'=>'hotdogs'
+				),
+				4,
+				'Other',
+				array(
+					'MX'=>1.32,
+					'CA'=>.1,
+					'US'=>.05,
+					'TX'=>0.0
+				)
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_pop()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_pop() {
+		return array(
+			array(
+				array(1,2,3),
+				3
+			),
+			array(
+				array(
+					'Foo'=>'Bar',
+					'Bar'=>'Foo'
+				),
+				'Foo'
+			),
+			array(
+				array(),
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_pop_top()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_pop_top() {
+		return array(
+			array(
+				array(1,2,3),
+				1
+			),
+			array(
+				array(
+					'Foo'=>'Bar',
+					'Bar'=>'Foo'
+				),
+				'Bar'
+			),
+			array(
+				array(),
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::cc_exp_months()
+	 *
+	 * @return array Data.
+	 */
+	function data_cc_exp_months() {
+		return array(
+			array(
+				'F',
+				array(
+					1=>'January',
+					2=>'February',
+					3=>'March',
+					4=>'April',
+					5=>'May',
+					6=>'June',
+					7=>'July',
+					8=>'August',
+					9=>'September',
+					10=>'October',
+					11=>'November',
+					12=>'December'
+				)
+			)
+		);
+	}
+
+	/**
+	 * Data for ::cc_exp_years()
+	 *
+	 * @return array Data.
+	 */
+	function data_cc_exp_years() {
+		$year = (int) date('Y');
+
+		$arr1 = array();
+		for ($x = 0; $x < 5; $x++) {
+			$key = $year + $x;
+			$arr1[$key] = $key;
+		}
+
+		$arr2 = array();
+		for ($x = 0; $x < 10; $x++) {
+			$key = $year + $x;
+			$arr2[$key] = $key;
+		}
+
+		return array(
+			array(
+				5,
+				$arr1
+			),
+			array(
+				10,
+				$arr2
+			)
+		);
+	}
+
+	/**
+	 * Data for ::datediff()
+	 *
+	 * @return array Data.
+	 */
+	function data_datediff() {
+		return array(
+			array(
+				'2015-01-01',
+				'2015-01-01',
+				0
+			),
+			array(
+				'2015-01-03',
+				'2015-01-01',
+				2
+			),
+			array(
+				'2015-01-01',
+				'2015-01-03',
+				2
+			),
+			array(
+				strtotime('2015-01-03'),
+				'2015-01-01',
+				2
+			),
+		);
+	}
+
+	/**
+	 * Data for ::iin_array()
+	 *
+	 * @return array Data.
+	 */
+	function data_iin_array() {
+		return array(
+			array(
+				'foo',
+				array('Foo'=>'Bar'),
+				true,
+				false
+			),
+			array(
+				'BAR',
+				array('Foo'=>'Bar'),
+				true,
+				true
+			),
+			array(
+				2,
+				array(2,3,4),
+				true,
+				true
+			),
+			array(
+				'2',
+				array(2,3,4),
+				false,
+				true
+			),
+			array(
+				'2',
+				array(2,3,4),
+				true,
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::in_range()
+	 *
+	 * @return array Data.
+	 */
+	function data_in_range() {
+		return array(
+			array(
+				'2015-01-15',
+				'2015-01-01',
+				'2015-01-20',
+				true
+			),
+			array(
+				'2015-01-15',
+				'2015-01-01',
+				'2015-01-05',
+				false
+			),
+			array(
+				5,
+				2,
+				null,
+				true
+			),
+			array(
+				'F',
+				null,
+				'F',
+				true
+			),
+			array(
+				'F',
+				null,
+				'E',
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::is_json()
+	 *
+	 * @return array Data.
+	 */
+	function data_is_json() {
+		return array(
+			array(
+				1,
+				false,
+				false
+			),
+			array(
+				'yes',
+				false,
+				false
+			),
+			array(
+				'',
+				false,
+				false
+			),
+			array(
+				'{"happy":"days"}',
+				false,
+				true
+			),
+			array(
+				'[]',
+				false,
+				true
+			),
+			array(
+				'[1,2,3]',
+				false,
+				true
+			),
+			array(
+				'{"happy":"',
+				false,
+				false
+			),
+			array(
+				'',
+				true,
+				true
+			),
+		);
+	}
+
+	/**
+	 * Data for ::is_utf8()
+	 *
+	 * @return array Data.
+	 */
+	function data_is_utf8() {
+		return array(
+			array(
+				1,
+				true
+			),
+			array(
+				'Hello World',
+				true
+			),
+			array(
+				"\xc3\x28",
+				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::json_decode_array()
+	 *
+	 * @return array Data.
+	 */
+	function data_json_decode_array() {
+		return array(
+			array(
+				'',
+				null,
+				null,
+				null,
+				array()
+			),
+			array(
+				'{"animal":"dog"}',
+				null,
+				null,
+				null,
+				array('animal'=>'dog')
+			),
+			array(
+				'{animal:"dog"}',
+				array(
+					'animal'=>'bear',
+					'fruit'=>'banana'
+				),
+				null,
+				null,
+				array(
+					'animal'=>'dog',
+					'fruit'=>'banana'
+				),
+			),
+			array(
+				'{animal:{"dog":"wolf"}}',
+				array(
+					'animal'=>'bear',
+					'fruit'=>'banana'
+				),
+				false,
+				null,
+				array(
+					'animal'=>array('dog'=>'wolf'),
+					'fruit'=>'banana'
+				),
+			),
+			array(
+				'{animal:"dog"}',
+				array(
+					'animal'=>array('bear'),
+					'fruit'=>'banana'
+				),
+				true,
+				null,
+				array(
+					'animal'=>array('dog'),
+					'fruit'=>'banana'
+				),
+			),
+			array(
+				'{price:{animal:2}}',
+				array(
+					'price'=>array(
+						'animal'=>12.0,
+						'fruit'=>15.0
+					)
+				),
+				true,
+				true,
+				array(
+					'price'=>array(
+						'animal'=>2.0,
+						'fruit'=>15.0
+					)
+				),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::length_in_range()
+	 *
+	 * @return array Data.
+	 */
+	function data_length_in_range() {
+		return array(
+			array(
+				'Ḉẩt',
+				1,
+				3,
+				true
+			),
+			array(
+				'Ḉẩt',
+				4,
+				null,
+				false
+			),
+			array(
+				'Cat',
+				1,
+				3,
+				true
+			),
+			array(
+				'Cat',
+				null,
+				4,
+				true
+			),
+		);
+	}
+
+	/**
+	 * Data for ::parse_args()
+	 *
+	 * @return array Data.
+	 */
+	function data_parse_args() {
+		return array(
+			array(
+				'',
+				array(''),
+				null,
+				null,
+				array('')
+			),
+			array(
+				null,
+				array('dog'=>'wolf'),
+				null,
+				null,
+				array('dog'=>'wolf')
+			),
+			array(
+				array('animal'=>'dog'),
+				array(
+					'animal'=>'bear',
+					'fruit'=>'banana'
+				),
+				null,
+				null,
+				array(
+					'animal'=>'dog',
+					'fruit'=>'banana'
+				),
+			),
+			array(
+				array(
+					'animal'=>array('dog'=>'wolf')
+				),
+				array(
+					'animal'=>'bear',
+					'fruit'=>'banana'
+				),
+				false,
+				null,
+				array(
+					'animal'=>array('dog'=>'wolf'),
+					'fruit'=>'banana'
+				),
+			),
+			array(
+				array('animal'=>'dog'),
+				array(
+					'animal'=>array('bear'),
+					'fruit'=>'banana'
+				),
+				true,
+				null,
+				array(
+					'animal'=>array('dog'),
+					'fruit'=>'banana'
+				),
+			),
+			array(
+				array(
+					'price'=>array('animal'=>'67¢')
+				),
+				array(
+					'price'=>array(
+						'animal'=>12.0,
+						'fruit'=>15.0
+					)
+				),
+				true,
+				true,
+				array(
+					'price'=>array(
+						'animal'=>.67,
+						'fruit'=>15.0
+					)
+				),
+			),
+		);
+	}
+
+	// -------------------------------------------------------------------- end data
 }
 
 
