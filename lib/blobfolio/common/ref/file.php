@@ -48,6 +48,19 @@ class file {
 		}
 		else {
 			cast::to_string($path);
+
+			// This might be a URL rather than something local.
+			// Only focus on the main ones.
+			if (preg_match('/^(https?|ftps?|sftp)/iu', $path)) {
+				sanitize::url($path);
+				return true;
+			}
+
+			// Strip leading file:// scheme.
+			if ('file://' === substr($path, 0, '7')) {
+				$path = substr($path, 7);
+			}
+
 			static::unixslash($path);
 			cast::to_bool($validate, true);
 
