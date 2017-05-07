@@ -17,91 +17,179 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 
 	const ASSETS = __DIR__ . '/assets/';
 
+	// --------------------------------------------------------------------
+	// Tests
+	// --------------------------------------------------------------------
+
 	/**
 	 * ::get_mime()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_get_mime
+	 *
+	 * @param string $mime MIME.
+	 * @param string $expected_mime Expected MIME.
+	 * @param string $expected_ext Expected extension.
 	 */
-	function test_get_mime() {
-		$thing = mime::get_mime('audio/mp3');
-		$this->assertEquals(true, is_array($thing));
-		$this->assertEquals('audio/mp3', $thing['mime']);
-		$this->assertEquals(true, in_array('mp3', $thing['ext'], true));
+	function test_get_mime($mime, $expected_mime, $expected_ext) {
+		$result = mime::get_mime($mime);
+
+		$this->assertSame(true, is_array($result));
+		$this->assertEquals($expected_mime, $result['mime']);
+		$this->assertSame(true, in_array($expected_ext, $result['ext'], true));
 	}
 
 	/**
 	 * ::get_extension()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_get_extension
+	 *
+	 * @param string $ext Extension.
+	 * @param string $expected_ext Expected extension.
+	 * @param string $expected_mime Expected MIME.
 	 */
-	function test_get_extension() {
-		$thing = mime::get_extension('xls');
-		$this->assertEquals(true, is_array($thing));
-		$this->assertEquals('xls', $thing['ext']);
-		$this->assertEquals(true, in_array('application/vnd.ms-excel', $thing['mime'], true));
+	function test_get_extension($ext, $expected_ext, $expected_mime) {
+		$result = mime::get_extension($ext);
+
+		$this->assertSame(true, is_array($result));
+		$this->assertEquals($expected_ext, $result['ext']);
+		$this->assertSame(true, in_array($expected_mime, $result['mime'], true));
 	}
 
 	/**
 	 * ::finfo()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_finfo
+	 *
+	 * @param string $file File.
+	 * @param mixed $expected Expected.
+	 * @param mixed $suggestion Suggestion.
 	 */
-	function test_finfo_correct() {
-		$thing = mime::finfo(self::ASSETS . 'space.jpg');
+	function test_finfo($file, $expected, $suggestion) {
+		$result = mime::finfo($file);
+		$suggested = $result['suggested_filename'];
+		unset($result['suggested_filename']);
 
-		$this->assertEquals(true, is_array($thing));
-		$this->assertEquals('space.jpg', $thing['basename']);
-		$this->assertEquals('jpg', $thing['extension']);
-		$this->assertEquals('space', $thing['filename']);
-		$this->assertEquals('image/jpeg', $thing['mime']);
-		$this->assertEquals(0, count($thing['suggested_filename']));
+		$this->assertEquals($expected, $result);
+		if ($suggestion) {
+			$this->assertSame(true, in_array($suggestion, $suggested, true));
+		}
+	}
+
+	// -------------------------------------------------------------------- end tests
+
+
+
+	// --------------------------------------------------------------------
+	// Data
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data for ::get_mime()
+	 *
+	 * @return array Data.
+	 */
+	function data_get_mime() {
+		return array(
+			array(
+				'audio/Mp3',
+				'audio/mp3',
+				'mp3'
+			),
+			array(
+				'image/jpeg',
+				'image/jpeg',
+				'jpeg'
+			),
+		);
 	}
 
 	/**
-	 * ::finfo() Invalid Name
+	 * Data for ::get_extension()
 	 *
-	 * @return void Nothing.
+	 * @return array Data.
 	 */
-	function test_finfo_incorrect() {
-		$thing = mime::finfo(self::ASSETS . 'space.png');
-
-		$this->assertEquals(true, is_array($thing));
-		$this->assertEquals('space.png', $thing['basename']);
-		$this->assertEquals('jpeg', $thing['extension']);
-		$this->assertEquals('space', $thing['filename']);
-		$this->assertEquals('image/jpeg', $thing['mime']);
-		$this->assertEquals(true, in_array('space.jpg', $thing['suggested_filename'], true));
+	function data_get_extension() {
+		return array(
+			array(
+				'mp3',
+				'mp3',
+				'audio/mp3'
+			),
+			array(
+				'Xls',
+				'xls',
+				'application/vnd.ms-office'
+			),
+			array(
+				'.XLS',
+				'xls',
+				'application/vnd.ms-excel'
+			),
+		);
 	}
 
 	/**
-	 * ::finfo() Just Name
+	 * Data for ::finfo()
 	 *
-	 * @return void Nothing.
+	 * @return array Data.
 	 */
-	function test_finfo_just_filename() {
-		$thing = mime::finfo('pkcs12-test-keystore.tar.gz');
-
-		$this->assertEquals(true, is_array($thing));
-		$this->assertEquals('pkcs12-test-keystore.tar.gz', $thing['basename']);
-		$this->assertEquals('gz', $thing['extension']);
-		$this->assertEquals('pkcs12-test-keystore.tar', $thing['filename']);
-		$this->assertEquals('application/gzip', $thing['mime']);
+	function data_finfo() {
+		return array(
+			array(
+				static::ASSETS . 'space.jpg',
+				array(
+					'dirname'=>rtrim(static::ASSETS, '/'),
+					'basename'=>'space.jpg',
+					'extension'=>'jpg',
+					'filename'=>'space',
+					'path'=>static::ASSETS . 'space.jpg',
+					'mime'=>'image/jpeg',
+				),
+				null
+			),
+			// Incorrect name.
+			array(
+				static::ASSETS . 'space.png',
+				array(
+					'dirname'=>rtrim(static::ASSETS, '/'),
+					'basename'=>'space.png',
+					'extension'=>'jpeg',
+					'filename'=>'space',
+					'path'=>static::ASSETS . 'space.png',
+					'mime'=>'image/jpeg',
+				),
+				'space.jpg'
+			),
+			// Just a file name.
+			array(
+				'pkcs12-test-keystore.tar.gz',
+				array(
+					'dirname'=>getcwd(),
+					'basename'=>'pkcs12-test-keystore.tar.gz',
+					'extension'=>'gz',
+					'filename'=>'pkcs12-test-keystore.tar',
+					'path'=>getcwd() . '/pkcs12-test-keystore.tar.gz',
+					'mime'=>'application/gzip',
+				),
+				null
+			),
+			// Remote file.
+			array(
+				'https://upload.wikimedia.org/wikipedia/commons/7/76/Mozilla_Firefox_logo_2013.svg',
+				array(
+					'dirname'=>'https://upload.wikimedia.org/wikipedia/commons/7/76',
+					'basename'=>'Mozilla_Firefox_logo_2013.svg',
+					'extension'=>'svg',
+					'filename'=>'Mozilla_Firefox_logo_2013',
+					'path'=>'https://upload.wikimedia.org/wikipedia/commons/7/76/Mozilla_Firefox_logo_2013.svg',
+					'mime'=>'image/svg+xml',
+				),
+				null
+			),
+		);
 	}
 
-	/**
-	 * ::finfo() Remote File
-	 *
-	 * @return void Nothing.
-	 */
-	function test_finfo_remote() {
-		$thing = mime::finfo('https://upload.wikimedia.org/wikipedia/commons/7/76/Mozilla_Firefox_logo_2013.svg');
-
-		$this->assertEquals(true, is_array($thing));
-		$this->assertEquals('Mozilla_Firefox_logo_2013.svg', $thing['basename']);
-		$this->assertEquals('svg', $thing['extension']);
-		$this->assertEquals('Mozilla_Firefox_logo_2013', $thing['filename']);
-		$this->assertEquals('image/svg+xml', $thing['mime']);
-	}
+	// -------------------------------------------------------------------- end data
 }
 
 

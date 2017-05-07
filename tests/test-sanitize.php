@@ -18,453 +18,1311 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 
 	const ASSETS = __DIR__ . '/assets/';
 
+
+
+	// --------------------------------------------------------------------
+	// Tests
+	// --------------------------------------------------------------------
+
 	/**
 	 * ::accents()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_accents
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_accents() {
-		$thing = 'Björk';
-		$this->assertEquals('Bjork', sanitize::accents($thing));
+	function test_accents($value, $expected) {
+		$this->assertEquals($expected, sanitize::accents($value));
 	}
 
 	/**
 	 * ::attribute_value()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_attribute_value
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_attribute_value() {
-		$thing = '&nbsp;Björk"&quot; ';
-		$this->assertEquals('Björk""', sanitize::attribute_value($thing));
+	function test_attribute_value($value, $expected) {
+		$this->assertEquals($expected, sanitize::attribute_value($value));
 	}
 
 	/**
 	 * ::cc()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_cc
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_cc() {
-		$thing = '4242424242424242';
-		$this->assertEquals($thing, sanitize::cc($thing));
-
-		$thing = '4242424242424241';
-		$this->assertEquals(false, sanitize::cc($thing));
+	function test_cc($value, $expected) {
+		$this->assertSame($expected, sanitize::cc($value));
 	}
 
 	/**
 	 * ::control_characters()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_control_characters
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_control_characters() {
-		$thing = '\0Björk';
-		$this->assertEquals('Björk', sanitize::control_characters($thing));
+	function test_control_characters($value, $expected) {
+		$this->assertEquals($expected, sanitize::control_characters($value));
 	}
 
 	/**
 	 * ::country()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_country
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_country() {
-		$thing = 'USA';
-		$this->assertEquals('US', sanitize::country($thing));
-
-		$thing = 'US';
-		$this->assertEquals('US', sanitize::country($thing));
-
-		$thing = 'Nobody';
-		$this->assertEquals('', sanitize::country($thing));
+	function test_country($value, $expected) {
+		$this->assertSame($expected, sanitize::country($value));
 	}
 
 	/**
 	 * ::csv()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_csv
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_csv() {
-		$thing = 'Hello"';
-		$this->assertEquals('Hello""', sanitize::csv($thing));
-
-		$thing = "New\nLine";
-		$this->assertEquals('New Line', sanitize::csv($thing));
+	function test_csv($value, $expected) {
+		$this->assertEquals($expected, sanitize::csv($value));
 	}
 
 	/**
 	 * ::datetime()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_datetime
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_datetime() {
-		$thing = '2015-01-02';
-		$this->assertEquals('2015-01-02 00:00:00', sanitize::datetime($thing));
-
-		$thing = '2015-01-02 13:23:11';
-		$this->assertEquals('2015-01-02 13:23:11', sanitize::datetime($thing));
-
-		$thing = strtotime($thing);
-		$this->assertEquals('2015-01-02 13:23:11', sanitize::datetime($thing));
-
-		$thing = 'Not Time';
-		$this->assertEquals('0000-00-00 00:00:00', sanitize::datetime($thing));
+	function test_datetime($value, $expected) {
+		$this->assertEquals($expected, sanitize::datetime($value));
 	}
 
 	/**
 	 * ::date()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_datetime
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_date() {
-		$thing = '2015-01-02';
-		$this->assertEquals('2015-01-02', sanitize::date($thing));
+	function test_date($value, $expected) {
+		// We can use the datetime test data, but need to cut
+		// it to date-size.
+		if (is_array($expected)) {
+			foreach ($expected as $k=>$v) {
+				$expected[$k] = substr($v, 0, 10);
+			}
+		}
+		else {
+			$expected = substr($expected, 0, 10);
+		}
 
-		$thing = '2015-01-02 13:23:11';
-		$this->assertEquals('2015-01-02', sanitize::date($thing));
-
-		$thing = strtotime($thing);
-		$this->assertEquals('2015-01-02', sanitize::date($thing));
-
-		$thing = 'Not Time';
-		$this->assertEquals('0000-00-00', sanitize::date($thing));
+		$this->assertEquals($expected, sanitize::date($value));
 	}
 
 	/**
 	 * ::domain()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_domain
+	 *
+	 * @param string $value Value.
+	 * @param bool $unicode Unicode.
+	 * @param string $expected Expected.
 	 */
-	function test_domain() {
-		$things = array(
-			'https://www.Google.com'=>'google.com',
-			'www.Google.com'=>'google.com',
-			'50.116.18.174'=>'',
-			'//☺.com'=>'xn--74h.com'
-		);
-
-		foreach ($things as $k=>$v) {
-			$this->assertEquals($v, sanitize::domain($k));
-		}
-
-		$this->assertEquals('☺.com', sanitize::domain('☺.com', true));
+	function test_domain($value, $unicode, $expected) {
+		$this->assertEquals($expected, sanitize::domain($value, $unicode));
 	}
 
 	/**
 	 * ::email()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_email
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_email() {
-		$thing = 'Hello@Blo"bfolio.Com';
-		$this->assertEquals('hello@blobfolio.com', sanitize::email($thing));
-
-		$thing = 'Hello@Blobfolio';
-		$this->assertEquals(false, sanitize::email($thing));
+	function test_email($value, $expected) {
+		$this->assertEquals($expected, sanitize::email($value));
 	}
 
 	/**
 	 * ::file_extension()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_file_extension
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_file_extension() {
-		$thing = 'JPEG';
-		$this->assertEquals('jpeg', sanitize::file_extension($thing));
+	function test_file_extension($value, $expected) {
+		$this->assertEquals($expected, sanitize::file_extension($value));
 	}
 
 	/**
 	 * ::html()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_html
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_html() {
-		$thing = '<b>"';
-		$this->assertEquals('&lt;b&gt;&quot;', sanitize::html($thing));
+	function test_html($value, $expected) {
+		$this->assertEquals($expected, sanitize::html($value));
 	}
 
 	/**
 	 * ::hostname()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_hostname
+	 *
+	 * @param string $value Value.
+	 * @param bool $www Keep www.
+	 * @param bool $unicode Unicode.
+	 * @param string $expected Expected.
 	 */
-	function test_hostname() {
-		$things = array(
-			'https://www.Google.com'=>'google.com',
-			'www.Google.com'=>'google.com',
-			'50.116.18.174'=>'50.116.18.174',
-			'//☺.com'=>'xn--74h.com',
-			'[2600:3c00::f03c:91ff:feae:0ff2]'=>'2600:3c00::f03c:91ff:feae:ff2',
-			'localhost'=>'localhost'
-		);
-
-		foreach ($things as $k=>$v) {
-			$this->assertEquals($v, sanitize::hostname($k));
-		}
-
-		$this->assertEquals('☺.com', sanitize::hostname('☺.com', false, true));
-
-		$this->assertEquals('www.google.com', sanitize::hostname('https://www.Google.com', true));
+	function test_hostname($value, $www, $unicode, $expected) {
+		$this->assertSame($expected, sanitize::hostname($value, $www, $unicode));
 	}
 
 	/**
 	 * ::ip()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_ip
+	 *
+	 * @param string $value Value.
+	 * @param bool $restricted Allow reserved.
+	 * @param string $expected Expected.
 	 */
-	function test_ip() {
-		$thing = '2600:3c00::f03c:91ff:feae:0ff2';
-		$this->assertEquals('2600:3c00::f03c:91ff:feae:ff2', sanitize::ip($thing));
-
-		$thing = '127.00.0.1';
-		$this->assertEquals('', sanitize::ip($thing));
+	function test_ip($value, $restricted, $expected) {
+		$this->assertEquals($expected, sanitize::ip($value, $restricted));
 	}
 
 	/**
 	 * ::iri_value()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_iri_value
+	 *
+	 * @param string $value Value.
+	 * @param mixed $protocols Allowed Protocols.
+	 * @param mixed $domains Allowed domains.
+	 * @param string $expected Expected.
 	 */
-	function test_iri_value() {
-		$thing = '#example';
-		$this->assertEquals('#example', sanitize::iri_value($thing));
-
-		$thing = '//w3.org';
-		$this->assertEquals('https://w3.org', sanitize::iri_value($thing));
-
-		$thing = 'ftp://w3.org';
-		$this->assertEquals('', sanitize::iri_value($thing));
-
-		$thing = ' script: alert(hi);';
-		$this->assertEquals('', sanitize::iri_value($thing));
-
-		$thing = constants::BLANK_IMAGE;
-		$this->assertEquals('', sanitize::iri_value($thing));
-		$this->assertEquals($thing, sanitize::iri_value($thing, 'data'));
+	function test_iri_value($value, $protocols, $domains, $expected) {
+		$this->assertEquals($expected, sanitize::iri_value($value, $protocols, $domains));
 	}
 
 	/**
 	 * ::js()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_js
+	 *
+	 * @param string $value Value.
+	 * @param string $quote Quote.
+	 * @param string $expected Expected.
 	 */
-	function test_js() {
-		$thing = "What's up?";
-		$this->assertEquals("What\'s up?", sanitize::js($thing));
+	function test_js($value, $quote, $expected) {
+		$this->assertEquals($expected, sanitize::js($value, $quote));
+	}
 
-		$thing = "What's up?";
-		$this->assertEquals("What's up?", sanitize::js($thing, '"'));
+	/**
+	 * ::mime()
+	 *
+	 * @dataProvider data_mime
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
+	 */
+	function test_mime($value, $expected) {
+		$this->assertEquals($expected, sanitize::mime($value));
 	}
 
 	/**
 	 * ::name()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_name
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_name() {
-		$thing = "åsa-britt\nkjellén";
-		$this->assertEquals('Åsa-Britt Kjellén', sanitize::name($thing));
+	function test_name($value, $expected) {
+		$this->assertEquals($expected, sanitize::name($value));
 	}
 
 	/**
 	 * ::password()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_password
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_password() {
-		$thing = " test\t ing";
-		$this->assertEquals('test ing', sanitize::password($thing));
+	function test_password($value, $expected) {
+		$this->assertEquals($expected, sanitize::password($value));
 	}
 
 	/**
 	 * ::printable()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_printable
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_printable() {
-		$thing = " test\t ing";
-		$this->assertEquals(' test ing', sanitize::printable($thing));
+	function test_printable($value, $expected) {
+		$this->assertEquals($expected, sanitize::printable($value));
 	}
 
 	/**
 	 * ::province()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_province
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_province() {
-		$thing = 'Nowhere';
-		$this->assertEquals('', sanitize::province($thing));
-
-		$thing = 'ontario';
-		$this->assertEquals('ON', sanitize::province($thing));
-
-		$thing = 'ab';
-		$this->assertEquals('AB', sanitize::province($thing));
+	function test_province($value, $expected) {
+		$this->assertEquals($expected, sanitize::province($value));
 	}
 
 	/**
 	 * ::quotes()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_quotes
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_quotes() {
-		$thing = '“T’was the night before Christmas...”';
-		$this->assertEquals('"T\'was the night before Christmas..."', sanitize::quotes($thing));
+	function test_quotes($value, $expected) {
+		$this->assertEquals($expected, sanitize::quotes($value));
 	}
 
 	/**
 	 * ::state()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_state
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_state() {
-		$thing = 'puerto rico';
-		$this->assertEquals('PR', sanitize::state($thing));
-
-		$thing = 'tx';
-		$this->assertEquals('TX', sanitize::state($thing));
-
-		$thing = 'Nowhere';
-		$this->assertEquals('', sanitize::state($thing));
+	function test_state($value, $expected) {
+		$this->assertEquals($expected, sanitize::state($value));
 	}
 
 	/**
 	 * ::svg()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_svg
+	 *
+	 * @param string $svg SVG.
 	 */
-	function test_svg() {
-		$svg = file_get_contents(self::ASSETS . 'enshrined.svg');
+	function test_svg($svg) {
+		if (!class_exists('DOMDocument') || !class_exists('DOMXPath')) {
+			$this->markTestSkipped('DOM is not installed.');
+		}
 
-		// Before.
-		$this->assertEquals(true, strpos($svg, 'onload'));
-		$this->assertEquals(true, strpos($svg, 'data:'));
-		$this->assertEquals(true, strpos($svg, '<script'));
-		$this->assertEquals(true, strpos($svg, 'http://example.com'));
-		$this->assertEquals(true, strpos($svg, 'XSS'));
+		$tests = array(
+			'&#109;',
+			'&#123',
+			'//hello',
+			'<script',
+			'comment',
+			'data:',
+			'Gotcha',
+			'http://example.com',
+			'max:volume',
+			'onclick',
+			'onload',
+			'xmlns:foobar',
+			'XSS',
+		);
 
-		$thing = sanitize::svg($svg);
+		$result = sanitize::svg($svg);
 
-		// After.
-		$this->assertEquals(true, false !== strpos($thing, '<svg'));
-		$this->assertEquals(false, strpos($thing, 'onload'));
-		$this->assertEquals(false, strpos($thing, 'data:'));
-		$this->assertEquals(false, strpos($thing, '<script'));
-		$this->assertEquals(false, strpos($thing, 'http://example.com'));
-		$this->assertEquals(false, strpos($thing, 'XSS'));
-
-		// Check whitelisted domains.
-		$thing = sanitize::svg($svg, null, null, null, 'example.com');
-		$this->assertEquals(true, strpos($thing, 'http://example.com'));
-
-		// Make sure styles get decoded too.
-		$svg = file_get_contents(self::ASSETS . 'minus.svg');
-
-		// Pre Validate.
-		$this->assertEquals(true, strpos($svg, '&#109;'));
-		$this->assertEquals(true, strpos($svg, '&#123;'));
-
-		$thing = sanitize::svg($svg);
-
-		// Missing bad stuff.
-		$this->assertEquals(true, false !== strpos($thing, '<svg'));
-		$this->assertEquals(false, strpos($thing, '&#109;'));
-		$this->assertEquals(false, strpos($thing, '&#123;'));
+		foreach ($tests as $v) {
+			$this->assertSame(false, strpos($result, $v));
+		}
 	}
 
 	/**
 	 * ::timezone()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_timezone
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_timezone() {
-		$thing = 'Notime';
-		$this->assertEquals('UTC', sanitize::timezone($thing));
-
-		$thing = 'america/los_angeles';
-		$this->assertEquals('America/Los_Angeles', sanitize::timezone($thing));
-
-		$thing = 'GMT';
-		$this->assertEquals('UTC', sanitize::timezone($thing));
+	function test_timezone($value, $expected) {
+		$this->assertEquals($expected, sanitize::timezone($value));
 	}
 
 	/**
 	 * ::to_range()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_to_range
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @param mixed $expected Expected.
 	 */
-	function test_to_range() {
-		$this->assertEquals(3, sanitize::to_range(3, 1, 5));
-		$this->assertEquals(3, sanitize::to_range(3, 1));
-		$this->assertEquals(3, sanitize::to_range(3, null, 5));
-
-		$this->assertEquals('2015-01-15', sanitize::to_range('2015-01-01', '2015-01-15', '2015-02-01'));
+	function test_to_range($value, $min, $max, $expected) {
+		$this->assertEquals($expected, sanitize::to_range($value, $min, $max));
 	}
 
 	/**
 	 * ::url()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_url
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $expected Expected.
 	 */
-	function test_url() {
-		$things = array(
-			'google.com'=>'',
-			'//google.com'=>'https://google.com',
-			'http://google.com'=>'http://google.com',
-			'http://user:pass@domain.com'=>'http://user:pass@domain.com',
-			'//☺.com/hello?awesome'=>'https://xn--74h.com/hello?awesome'
-		);
-		foreach ($things as $k=>$v) {
-			$this->assertEquals($v, sanitize::url($k));
-		}
+	function test_url($value, $expected) {
+		$this->assertEquals($expected, sanitize::url($value));
 	}
 
 	/**
 	 * ::utf8()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_utf8
+	 *
+	 * @param mixed $value Value.
 	 */
-	function test_utf8() {
-		$thing = 'Björk Guðmundsdóttir';
-
-		$thing = sanitize::utf8($thing);
-		$this->assertEquals('UTF-8', mb_detect_encoding($thing));
+	function test_utf8($value) {
+		$encoding = strtoupper(mb_detect_encoding(sanitize::utf8($value)));
+		$this->assertSame(true, in_array($encoding, array('ASCII', 'UTF-8'), true));
 	}
 
 	/**
 	 * ::whitespace()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_whitespace
+	 *
+	 * @param string $value Value.
+	 * @param int $newlines Newlines.
+	 * @param string $expected Expected.
 	 */
-	function test_whitespace() {
-		$thing = "Björk  Guðmundsdóttir\n";
-
-		$this->assertEquals('Björk Guðmundsdóttir', sanitize::whitespace($thing));
-		$this->assertEquals('Björk Guðmundsdóttir', sanitize::whitespace($thing, 1));
-
-		$thing = "New\n\n\nLine!";
-		$this->assertEquals("New\n\nLine!", sanitize::whitespace($thing, 2));
+	function test_whitespace($value, $newlines, $expected) {
+		$this->assertEquals($expected, sanitize::whitespace($value, $newlines));
 	}
 
 	/**
 	 * ::whitespace_multiline()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_whitespace
+	 *
+	 * @param string $value Value.
+	 * @param int $newlines Newlines.
+	 * @param string $expected Expected.
 	 */
-	function test_whitespace_multiline() {
-		$thing = "New\n\n\nLine!";
-		$this->assertEquals("New\n\nLine!", sanitize::whitespace_multiline($thing, 2));
+	function test_whitespace_multiline($value, $newlines, $expected) {
+		$this->assertEquals($expected, sanitize::whitespace_multiline($value, $newlines));
 	}
 
 	/**
 	 * ::zip5()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_zip5
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
 	 */
-	function test_zip5() {
-		$this->assertEquals('00123', sanitize::zip5(123));
-		$this->assertEquals('12345', sanitize::zip5(12345));
-		$this->assertEquals('', sanitize::zip5('no'));
-		$this->assertEquals('', sanitize::zip5(0));
+	function test_zip5($value, $expected) {
+		$this->assertEquals($expected, sanitize::zip5($value));
 	}
+
+	// -------------------------------------------------------------------- end tests
+
+
+
+	// --------------------------------------------------------------------
+	// Data
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data for ::accents()
+	 *
+	 * @return array Data.
+	 */
+	function data_accents() {
+		return array(
+			array(
+				'Björk Guðmundsdóttir, best þekkt sem Björk (fædd 21. nóvember 1965 í Reykjavík) er íslenskur popptónlistarmaður, sem hefur náð alþjóðlegri hylli.',
+				'Bjork Gudmundsdottir, best thekkt sem Bjork (faedd 21. november 1965 i Reykjavik) er islenskur popptonlistarmadur, sem hefur nad althjodlegri hylli.'
+			),
+			array(
+				'Nabokov explore plusieurs thèmes, dont certains déjà présents dans ses ouvrages précédents.',
+				'Nabokov explore plusieurs themes, dont certains deja presents dans ses ouvrages precedents.'
+			),
+			array(
+				array('Björk'),
+				array('Bjork')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::attribute_value()
+	 *
+	 * @return array Data.
+	 */
+	function data_attribute_value() {
+		return array(
+			array(
+				'&nbsp;Björk"&amp;quot; ',
+				'Björk""'
+			),
+			array(
+				array('&nbsp;Björk"&amp;quot; '),
+				array('Björk""')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::cc()
+	 *
+	 * @return array Data.
+	 */
+	function data_cc() {
+		return array(
+			array(
+				'4242424242424242',
+				'4242424242424242'
+			),
+			array(
+				4242424242424242,
+				'4242424242424242'
+			),
+			array(
+				'4242424242424241',
+				false
+			),
+			array(
+				'5555555555554444',
+				'5555555555554444'
+			),
+			array(
+				'378282246310005',
+				'378282246310005'
+			),
+			array(
+				'378734493671000',
+				'378734493671000'
+			),
+			array(
+				'6011111111111117',
+				'6011111111111117'
+			),
+			array(
+				'4012888888881881',
+				'4012888888881881'
+			),
+			array(
+				'4222222222222',
+				'4222222222222'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::control_characters()
+	 *
+	 * @return array Data.
+	 */
+	function data_control_characters() {
+		return array(
+			array(
+				'\0Björk',
+				'Björk'
+			),
+			array(
+				array('\0Björk'),
+				array('Björk')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::country()
+	 *
+	 * @return array Data.
+	 */
+	function data_country() {
+		return array(
+			array(
+				'USA',
+				'US'
+			),
+			array(
+				'us',
+				'US'
+			),
+			array(
+				'Nobody',
+				''
+			),
+			array(
+				'CANADA',
+				'CA'
+			),
+			array(
+				array('CANADA'),
+				array('CA')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::csv()
+	 *
+	 * @return array Data.
+	 */
+	function data_csv() {
+		return array(
+			array(
+				'\\\'hello"',
+				'\\\'hello""'
+			),
+			array(
+				"Hello\nWorld",
+				'Hello World'
+			),
+			array(
+				array("Hello\nWorld"),
+				array('Hello World')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::datetime() and ::date()
+	 *
+	 * @return array Data.
+	 */
+	function data_datetime() {
+		return array(
+			array(
+				'2015-01-02',
+				'2015-01-02 00:00:00'
+			),
+			array(
+				'2015-01-02 13:23:11',
+				'2015-01-02 13:23:11'
+			),
+			array(
+				strtotime('2015-01-02 13:23:11'),
+				'2015-01-02 13:23:11'
+			),
+			array(
+				'20150102',
+				'2015-01-02 00:00:00'
+			),
+			array(
+				20150102,
+				'2015-01-02 00:00:00'
+			),
+			array(
+				'Not Time',
+				'0000-00-00 00:00:00'
+			),
+			array(
+				'0000-00-00 12:30:30',
+				'0000-00-00 00:00:00'
+			),
+			array(
+				array(20150102),
+				array('2015-01-02 00:00:00')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::domain()
+	 *
+	 * @return array Data.
+	 */
+	function data_domain() {
+		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+
+		return array(
+			array(
+				'https://www.Google.com',
+				false,
+				'google.com'
+			),
+			array(
+				'www.Google.com',
+				false,
+				'google.com'
+			),
+			array(
+				'☺.com',
+				true,
+				'☺.com'
+			),
+			array(
+				'50.116.18.174',
+				false,
+				''
+			),
+			array(
+				'//☺.com',
+				false,
+				$smiley_host
+			),
+			array(
+				array('www.Google.com'),
+				false,
+				array('google.com')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::email()
+	 *
+	 * @return array Data.
+	 */
+	function data_email() {
+		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+
+		return array(
+			array(
+				'Hello@Blo"bfolio.Com',
+				'hello@blobfolio.com'
+			),
+			array(
+				'helo@blobfolio',
+				''
+			),
+			array(
+				'hello@☺.com',
+				"hello@$smiley_host"
+			),
+			array(
+				'hello+me@blobfolio.com',
+				'hello+me@blobfolio.com'
+			),
+			array(
+				' .hello(comment)+me@blobfolio.com',
+				'hello+me@blobfolio.com'
+			),
+			array(
+				array(' .hello(comment)+me@blobfolio.com'),
+				array('hello+me@blobfolio.com')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::file_extension()
+	 *
+	 * @return array Data.
+	 */
+	function data_file_extension() {
+		return array(
+			array(
+				'  .JPEG ',
+				'jpeg'
+			),
+			array(
+				'.tar.gz',
+				'tar.gz'
+			),
+			array(
+				array('.tar.gz'),
+				array('tar.gz')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::html()
+	 *
+	 * @return array Data.
+	 */
+	function data_html() {
+		return array(
+			array(
+				'<b>"Björk"</b>',
+				'&lt;b&gt;&quot;Björk&quot;&lt;/b&gt;'
+			),
+			array(
+				array('<b>'),
+				array('&lt;b&gt;')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::hostname()
+	 *
+	 * @return array Data.
+	 */
+	function data_hostname() {
+		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+
+		return array(
+			array(
+				'https://www.Google.com',
+				false,
+				false,
+				'google.com'
+			),
+			array(
+				'www.Google.com',
+				false,
+				false,
+				'google.com'
+			),
+			array(
+				'www.☺.com',
+				false,
+				true,
+				'☺.com'
+			),
+			array(
+				'http://www.☺.com',
+				true,
+				true,
+				'www.☺.com'
+			),
+			array(
+				'50.116.18.174',
+				false,
+				false,
+				'50.116.18.174'
+			),
+			array(
+				'//☺.com',
+				false,
+				false,
+				$smiley_host
+			),
+			array(
+				'[2600:3c00::f03c:91ff:feae:0ff2]',
+				false,
+				false,
+				'2600:3c00::f03c:91ff:feae:ff2'
+			),
+			array(
+				'localhost',
+				true,
+				true,
+				'localhost'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::ip()
+	 *
+	 * @return array Data.
+	 */
+	function data_ip() {
+		return array(
+			array(
+				'2600:3c00::f03c:91ff:feae:0ff2',
+				false,
+				'2600:3c00::f03c:91ff:feae:ff2'
+			),
+			array(
+				'[2600:3c00::f03c:91ff:feae:0ff2]',
+				false,
+				'2600:3c00::f03c:91ff:feae:ff2'
+			),
+			array(
+				'127.0.0.1',
+				false,
+				''
+			),
+			array(
+				'127.0.0.1',
+				true,
+				'127.0.0.1'
+			),
+			array(
+				'::1',
+				false,
+				''
+			),
+			array(
+				'[::1]',
+				true,
+				'::1'
+			),
+			array(
+				array('[::1]'),
+				true,
+				array('::1')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::iri_value()
+	 *
+	 * @return array Data.
+	 */
+	function data_iri_value() {
+		return array(
+			array(
+				'#example',
+				null,
+				null,
+				'#example'
+			),
+			array(
+				'//w3.org',
+				null,
+				null,
+				'https://w3.org'
+			),
+			array(
+				'http://blobfolio.com',
+				null,
+				null,
+				''
+			),
+			array(
+				'http://blobfolio.com',
+				null,
+				array('blobfolio.com'),
+				'http://blobfolio.com'
+			),
+			array(
+				'ftp://w3.org',
+				null,
+				null,
+				''
+			),
+			array(
+				'ftp://w3.org',
+				array('ftp', 'ftps'),
+				null,
+				'ftp://w3.org'
+			),
+			array(
+				' script: alert(hi);',
+				null,
+				null,
+				''
+			),
+			array(
+				constants::BLANK_IMAGE,
+				null,
+				null,
+				''
+			),
+			array(
+				constants::BLANK_IMAGE,
+				'data',
+				null,
+				constants::BLANK_IMAGE
+			),
+			array(
+				array(constants::BLANK_IMAGE),
+				'data',
+				null,
+				array(constants::BLANK_IMAGE)
+			),
+		);
+	}
+
+	/**
+	 * Data for ::js()
+	 *
+	 * @return array Data.
+	 */
+	function data_js() {
+		return array(
+			array(
+				"What's up, doc?",
+				"'",
+				'What\\\'s up, doc?'
+			),
+			array(
+				"What's up, doc?",
+				'"',
+				"What's up, doc?"
+			),
+			array(
+				'"Hello"',
+				'"',
+				'\"Hello\"'
+			),
+			array(
+				'"Hello"',
+				"'",
+				'"Hello"'
+			),
+			array(
+				array('"Hello"'),
+				'"',
+				array('\"Hello\"')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::mime()
+	 *
+	 * @return array Data.
+	 */
+	function data_mime() {
+		return array(
+			array(
+				'Application/Octet-Stream',
+				'application/octet-stream'
+			),
+			array(
+				'application/vnd.MS-OFFICE',
+				'application/vnd.ms-office'
+			),
+			array(
+				'awesome/saucE',
+				'awesome/sauce'
+			),
+			array(
+				array('awesome/saucE'),
+				array('awesome/sauce')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::name()
+	 *
+	 * @return array Data.
+	 */
+	function data_name() {
+		return array(
+			array(
+				"åsa-britt\nkjellén",
+				'Åsa-Britt Kjellén'
+			),
+			array(
+				'john   doe',
+				'John Doe'
+			),
+			array(
+				array('john   doe'),
+				array('John Doe')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::password()
+	 *
+	 * @return array Data.
+	 */
+	function data_password() {
+		return array(
+			array(
+				"\t ålén\n  ☺\0",
+				'ålén ☺'
+			),
+			array(
+				array("\t ålén\n  ☺\0"),
+				array('ålén ☺')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::printable()
+	 *
+	 * @return array Data.
+	 */
+	function data_printable() {
+		return array(
+			array(
+				"\t ålén\n  ☺\0",
+				"\t ålén\n  ☺"
+			),
+			array(
+				array("\t ålén\n  ☺\0"),
+				array("\t ålén\n  ☺")
+			),
+		);
+	}
+
+	/**
+	 * Data for ::province()
+	 *
+	 * @return array Data.
+	 */
+	function data_province() {
+		return array(
+			array(
+				'Texas',
+				''
+			),
+			array(
+				'ontario',
+				'ON'
+			),
+			array(
+				'ab',
+				'AB'
+			),
+			array(
+				array('ab'),
+				array('AB')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::quotes()
+	 *
+	 * @return array Data.
+	 */
+	function data_quotes() {
+		return array(
+			array(
+				'“T’was the night before Christmas...”',
+				'"T\'was the night before Christmas..."'
+			),
+			array(
+				array('“T’was the night before Christmas...”'),
+				array('"T\'was the night before Christmas..."')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::state()
+	 *
+	 * @return array Data.
+	 */
+	function data_state() {
+		return array(
+			array(
+				'Texas',
+				'TX'
+			),
+			array(
+				'ontario',
+				''
+			),
+			array(
+				'il',
+				'IL'
+			),
+			array(
+				'puerto RICO',
+				'PR'
+			),
+			array(
+				array('puerto RICO'),
+				array('PR')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::svg()
+	 *
+	 * @return array Data.
+	 */
+	function data_svg() {
+		return array(
+			array(file_get_contents(static::ASSETS . 'monogram-inkscape.svg')),
+			array(file_get_contents(static::ASSETS . 'enshrined.svg')),
+			array(file_get_contents(static::ASSETS . 'pi.svg')),
+			array(file_get_contents(static::ASSETS . 'minus.svg'))
+		);
+	}
+
+	/**
+	 * Data for ::timezone()
+	 *
+	 * @return array Data.
+	 */
+	function data_timezone() {
+		return array(
+			array('Notime', 'UTC'),
+			array('america/Los_angeles', 'America/Los_Angeles'),
+			array('GMT', 'UTC'),
+			array(
+				array('GMT'),
+				array('UTC')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::to_range()
+	 *
+	 * @return array Data.
+	 */
+	function data_to_range() {
+		return array(
+			array(
+				5,
+				1,
+				4,
+				4
+			),
+			array(
+				5,
+				1,
+				null,
+				5
+			),
+			array(
+				5,
+				null,
+				4,
+				4
+			),
+			array(
+				5.5,
+				1.3,
+				5.2,
+				5.2
+			),
+			array(
+				'2016-01-15',
+				'2016-01-20',
+				null,
+				'2016-01-20'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::url()
+	 *
+	 * @return array Data.
+	 */
+	function data_url() {
+		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+
+		return array(
+			array(
+				'google.com',
+				''
+			),
+			array(
+				'//google.com',
+				'https://google.com'
+			),
+			array(
+				'HTTP://google.com',
+				'http://google.com'
+			),
+			array(
+				'http://user:pass@domain.com/foobar?hello#there',
+				'http://user:pass@domain.com/foobar?hello#there'
+			),
+			array(
+				'//www.☺.com/hello?awesome',
+				'https://www.' . $smiley_host . '/hello?awesome'
+			),
+			array(
+				array('HTTP://google.com'),
+				array('http://google.com')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::utf8()
+	 *
+	 * @return array Data.
+	 */
+	function data_utf8() {
+		return array(
+			array('Björk Guðmundsdóttir'),
+			array("Hello\nWorld"),
+			array(123),
+		);
+	}
+
+	/**
+	 * Data for ::whitespace()
+	 *
+	 * @return array Data.
+	 */
+	function data_whitespace() {
+		return array(
+			array(
+				" Björk\n\n",
+				0,
+				'Björk'
+			),
+			array(
+				" Björk\n\n",
+				2,
+				'Björk'
+			),
+			array(
+				"Happy\n\n\nSpaces",
+				2,
+				"Happy\n\nSpaces"
+			),
+			array(
+				"Happy\n\n\nSpaces\t&\tPlaces",
+				0,
+				'Happy Spaces & Places'
+			),
+			array(
+				array("Happy\n\n\nSpaces"),
+				2,
+				array("Happy\n\nSpaces")
+			),
+		);
+	}
+
+	/**
+	 * Data for ::zip5()
+	 *
+	 * @return array Data.
+	 */
+	function data_zip5() {
+		return array(
+			array(
+				'Björk',
+				''
+			),
+			array(
+				'123',
+				'00123'
+			),
+			array(
+				'000',
+				''
+			),
+			array(
+				12345,
+				'12345'
+			),
+			array(
+				'12345-6789',
+				'12345'
+			),
+			array(
+				array('12345-6789'),
+				array('12345')
+			),
+		);
+	}
+
+	// -------------------------------------------------------------------- end data
 }
 
 

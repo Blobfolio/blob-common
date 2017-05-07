@@ -70,189 +70,94 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	/**
 	 * ::excerpt()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_excerpt
+	 *
+	 * @param string $value Value.
+	 * @param array $args Args.
+	 * @param string $expected Expected.
 	 */
-	function test_excerpt() {
-		$thing = 'It ẉẩṩ a dark and stormy night.';
-
-		$this->assertEquals('It ẉẩṩ a!', format::excerpt($thing, array('unit'=>'word', 'length'=>3, 'suffix'=>'!')));
-		$this->assertEquals('It ẉẩṩ a…', format::excerpt($thing, array('unit'=>'word', 'length'=>3)));
-		$this->assertEquals('It ẉẩṩ…', format::excerpt($thing, array('unit'=>'char', 'length'=>6)));
+	function test_excerpt($value, $args, $expected) {
+		$this->assertEquals($expected, format::excerpt($value, $args));
 	}
 
 	/**
 	 * ::inflect()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_inflect
+	 *
+	 * @param mixed $count Count.
+	 * @param string $single Single.
+	 * @param string $plural Plural.
+	 * @param string $expected Expected.
 	 */
-	function test_inflect() {
-		$count = 1;
-		$single = '%d book';
-		$plural = '%d books';
-
-		$this->assertEquals('1 book', format::inflect($count, $single, $plural));
-
-		$count = 2;
-		$this->assertEquals('2 books', format::inflect($count, $single, $plural));
-
-		$count = 0;
-		$this->assertEquals('0 books', format::inflect($count, $single, $plural));
+	function test_inflect($count, $single, $plural, $expected) {
+		$this->assertEquals($expected, format::inflect($count, $single, $plural));
 	}
 
 	/**
 	 * ::ip_to_number()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_ip_to_number
+	 *
+	 * @param string $ip IP.
+	 * @param string $expected Expected.
 	 */
-	function test_ip_to_number() {
-		$thing = '50.116.18.174';
-		$this->assertEquals(846467758, format::ip_to_number($thing));
-
-		$thing = '2600:3c00::f03c:91ff:feae:0ff2';
-		$this->assertEquals(50511880784403022287880976722111107058, format::ip_to_number($thing));
+	function test_ip_to_number($ip, $expected) {
+		$this->assertEquals($expected, format::ip_to_number($ip));
 	}
 
 	/**
 	 * ::json()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_json
+	 *
+	 * @param string $json JSON.
+	 * @param bool $pretty Pretty.
+	 * @param string $expected Expected.
 	 */
-	function test_json() {
-		$things = array(
-			array(
-				'key'=>"{'hello':'there' } ",
-				'value'=>'{"hello":"there"}'
-			),
-			array(
-				'key'=>"{hello:'there' } ",
-				'value'=>'{"hello":"there"}'
-			),
-			array(
-				'key'=>"['hello','there' ] ",
-				'value'=>'["hello","there"]'
-			),
-			array(
-				'key'=>'["hello","\"there" ] ',
-				'value'=>'["hello","\"there"]'
-			),
-			array(
-				'key'=>"['\"there']",
-				'value'=>'["\"there"]'
-			),
-			array(
-				'key'=>23,
-				'value'=>'23'
-			),
-			array(
-				'key'=>array('there'),
-				'value'=>'["there"]'
-			),
-			array(
-				'key'=>array('hello'=>array('there')),
-				'value'=>'{"hello":["there"]}'
-			),
-		);
-
-		foreach ($things as $thing) {
-			$this->assertEquals($thing['value'], format::json($thing['key'], false));
-		}
-
-		$expected = '[
-    "hello",
-    "there"
-]';
-		$this->assertEquals($expected, format::json("['hello','there' ] ", true));
+	function test_json($json, $pretty, $expected) {
+		$this->assertSame($expected, format::json($json, $pretty));
 	}
 
 	/**
 	 * ::links()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_links
+	 *
+	 * @param string $value Value.
+	 * @param array $args Args.
+	 * @param string $expected Expected.
 	 */
-	function test_links() {
-		$things = array(
-			'blobfolio.com'=>'<a href="http://blobfolio.com">blobfolio.com</a>',
-			'https://blobfolio.com/'=>'<a href="https://blobfolio.com/">https://blobfolio.com/</a>',
-			'Welcome to blobfolio.com!'=>'Welcome to <a href="http://blobfolio.com">blobfolio.com</a>!',
-			'bad.sch.uk'=>'bad.sch.uk',
-			'www.blobfolio.com'=>'<a href="http://www.blobfolio.com">www.blobfolio.com</a>',
-			'me@localhost'=>'me@localhost',
-			'me@bad.sch.uk'=>'me@bad.sch.uk',
-			'"blobfolio.com"'=>'"<a href="http://blobfolio.com">blobfolio.com</a>"',
-			'(blobfolio.com)'=>'(<a href="http://blobfolio.com">blobfolio.com</a>)',
-			'[blobfolio.com]'=>'[<a href="http://blobfolio.com">blobfolio.com</a>]',
-			'{blobfolio.com}'=>'{<a href="http://blobfolio.com">blobfolio.com</a>}',
-			'me@blobfolio.com'=>'<a href="mailto:me@blobfolio.com">me@blobfolio.com</a>',
-			'Email me@blobfolio.com for more.'=>'Email <a href="mailto:me@blobfolio.com">me@blobfolio.com</a> for more.',
-			'blobfolio.com me@blobfolio.com'=>'<a href="http://blobfolio.com">blobfolio.com</a> <a href="mailto:me@blobfolio.com">me@blobfolio.com</a>',
-			'ftp://user:pass@☺.com'=>'<a href="ftp://user:pass@xn--74h.com">ftp://user:pass@☺.com</a>',
-			'smiley@☺.com'=>'<a href="mailto:smiley@xn--74h.com">smiley@☺.com</a>',
-			'+12015550123'=>'<a href="tel:+12015550123">+12015550123</a>',
-			'+1 201-555-0123'=>'<a href="tel:+12015550123">+1 201-555-0123</a>',
-			'201-555-0123'=>'<a href="tel:+12015550123">201-555-0123</a>',
-			'(201) 555-0123'=>'<a href="tel:+12015550123">(201) 555-0123</a>',
-			'201.555.0123'=>'<a href="tel:+12015550123">201.555.0123</a>',
-			'I ate 234234234 apples!'=>'I ate 234234234 apples!',
-			'Call me at (201) 555-0123.'=>'Call me at <a href="tel:+12015550123">(201) 555-0123</a>.'
-		);
-
-		foreach ($things as $k=>$v) {
-			$this->assertEquals($v, format::links($k));
-		}
-
-		$args = array(
-			'class'=>array('link', 'nav'),
-			'rel'=>'apples',
-			'target'=>'_blank'
-		);
-		$thing = format::links('blobfolio.com', $args);
-		$this->assertEquals('<a href="http://blobfolio.com" class="link nav" rel="apples" target="_blank">blobfolio.com</a>', $thing);
-
-		$thing = format::links('me@blobfolio.com', $args);
-		$this->assertEquals('<a href="mailto:me@blobfolio.com" class="link nav" rel="apples" target="_blank">me@blobfolio.com</a>', $thing);
-
-		$args = array(
-			'class'=>'link'
-		);
-		$thing = format::links('blobfolio.com', $args);
-		$this->assertEquals('<a href="http://blobfolio.com" class="link">blobfolio.com</a>', $thing);
+	function test_links($value, $args, $expected) {
+		$this->assertEquals($expected, format::links($value, $args));
 	}
 
 	/**
 	 * ::money()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_money
+	 *
+	 * @param mixed $value Value.
+	 * @param bool $cents Cents.
+	 * @param string $separator Separator.
+	 * @param bool $no00 No ~.00.
+	 * @param string $expected Expected.
 	 */
-	function test_money() {
-		$thing = 2.5;
-		$this->assertEquals('$2.50', format::money($thing));
-
-		$thing = '1';
-		$this->assertEquals('$1.00', format::money($thing));
-
-		$this->assertEquals('$1', format::money($thing, false, ',', true));
-
-		$thing = 2500;
-		$this->assertEquals('$2500.00', format::money($thing));
-
-		$thing = 2500;
-		$this->assertEquals('$2,500.00', format::money($thing, false, ','));
-
-		$thing = .23;
-		$this->assertEquals('$0.23', format::money($thing, false));
-		$this->assertEquals('23¢', format::money($thing, true));
+	function test_money($value, $cents, $separator, $no00, $expected) {
+		$this->assertEquals($expected, format::money($value, $cents, $separator, $no00));
 	}
 
 	/**
 	 * ::phone()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_phone
+	 *
+	 * @param mixed $value Value.
+	 * @param string $country Country.
+	 * @param string $expected Expected.
 	 */
-	function test_phone() {
-		$thing = '2015550123';
-		$this->assertEquals('+1 201-555-0123', format::phone($thing));
-
-		$this->assertEquals('+1 201-555-0123', format::phone($thing, 'US'));
+	function test_phone($value, $country, $expected) {
+		$this->assertEquals($expected, format::phone($value, $country));
 	}
 
 	/**
@@ -265,25 +170,27 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$headers = array('FIRST NAME', 'PHONE NUMBER');
 
 		$csv = format::to_csv($data);
-		$this->assertEquals(true, false !== strpos($csv, 'NAME'));
+		$this->assertSame(true, false !== strpos($csv, 'NAME'));
 
 		$csv = format::to_csv($data, $headers);
-		$this->assertEquals(true, false !== strpos($csv, 'FIRST NAME'));
+		$this->assertSame(true, false !== strpos($csv, 'FIRST NAME'));
 
 		$csv = format::to_csv($data, $headers, "\t");
-		$this->assertEquals(true, false !== strpos($csv, "\t"));
+		$this->assertSame(true, false !== strpos($csv, "\t"));
 	}
 
 	/**
 	 * ::to_timezone()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_to_timezone
+	 *
+	 * @param mixed $date Date.
+	 * @param string $from From.
+	 * @param string $to To.
+	 * @param string $expected Expected.
 	 */
-	function test_to_timezone() {
-		$thing = '2015-01-15 01:12:23';
-
-		$this->assertEquals('2015-01-15 09:12:23', format::to_timezone($thing, 'America/Los_Angeles'));
-		$this->assertEquals('2015-01-14 17:12:23', format::to_timezone($thing, 'UTC', 'America/Los_Angeles'));
+	function test_to_timezone($date, $from, $to, $expected) {
+		$this->assertEquals($expected, format::to_timezone($date, $from, $to));
 	}
 
 	/**
@@ -296,10 +203,10 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$headers = array('FIRST NAME', 'PHONE NUMBER');
 
 		$csv = format::to_xls($data);
-		$this->assertEquals(true, false !== strpos($csv, 'NAME'));
+		$this->assertSame(true, false !== strpos($csv, 'NAME'));
 
 		$csv = format::to_xls($data, $headers);
-		$this->assertEquals(true, false !== strpos($csv, 'FIRST NAME'));
+		$this->assertSame(true, false !== strpos($csv, 'FIRST NAME'));
 	}
 
 	// -------------------------------------------------------------------- end tests
@@ -410,6 +317,383 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'\\\\u75\\u30\\u30\\u63\\u31',
 				'Á'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::excerpt()
+	 *
+	 * @return array Data.
+	 */
+	function data_excerpt() {
+		return array(
+			array(
+				'It ẉẩṩ a dark and stormy night.',
+				array(
+					'unit'=>'word',
+					'length'=>3,
+					'suffix'=>'!'
+				),
+				'It ẉẩṩ a!'
+			),
+			array(
+				'It ẉẩṩ a dark and stormy night.',
+				array(
+					'unit'=>'word',
+					'length'=>30,
+					'suffix'=>'!'
+				),
+				'It ẉẩṩ a dark and stormy night.'
+			),
+			array(
+				'It ẉẩṩ a dark and stormy night.',
+				array(
+					'unit'=>'word',
+					'length'=>3,
+				),
+				'It ẉẩṩ a…'
+			),
+			array(
+				'It ẉẩṩ a dark and stormy night.',
+				array(
+					'unit'=>'char',
+					'length'=>6,
+				),
+				'It ẉẩṩ…'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::inflect()
+	 *
+	 * @return array Data.
+	 */
+	function data_inflect() {
+		return array(
+			array(
+				1,
+				'%d book',
+				'%d books',
+				'1 book'
+			),
+			array(
+				0,
+				'%d book',
+				'%d books',
+				'0 books'
+			),
+			array(
+				1.5,
+				'%.01f book',
+				'%.01f books',
+				'1.5 books'
+			),
+			array(
+				array(1,2,3),
+				'%d book',
+				'%d books',
+				'3 books'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::ip_to_number()
+	 *
+	 * @return array Data.
+	 */
+	function data_ip_to_number() {
+		return array(
+			array(
+				'50.116.18.174',
+				846467758
+			),
+			array(
+				'2600:3c00::f03c:91ff:feae:0ff2',
+				50511880784403022287880976722111107058
+			),
+			array(
+				'2600:3c00::f03c:91ff:feae:ff2',
+				50511880784403022287880976722111107058
+			),
+			array(
+				'127.0.0.1',
+				2130706433
+			),
+		);
+	}
+
+	/**
+	 * Data for ::json()
+	 *
+	 * @return array Data.
+	 */
+	function data_json() {
+		return array(
+			array(
+				"{'hello':'there' } ",
+				false,
+				'{"hello":"there"}'
+			),
+			array(
+				"{hello:'there' } ",
+				false,
+				'{"hello":"there"}'
+			),
+			array(
+				"['hello','there' ] ",
+				false,
+				'["hello","there"]'
+			),
+			array(
+				'["hello","\"there" ] ',
+				false,
+				'["hello","\"there"]'
+			),
+			array(
+				"['\"there']",
+				false,
+				'["\"there"]'
+			),
+			array(
+				23,
+				false,
+				'23'
+			),
+			array(
+				array('there'),
+				false,
+				'["there"]'
+			),
+			array(
+				array('hello'=>array('there')),
+				false,
+				'{"hello":["there"]}'
+			),
+			array(
+				'["hello","there" ]',
+				true,
+				"[\n    \"hello\",\n    \"there\"\n]"
+			),
+		);
+	}
+
+	/**
+	 * Data for ::links()
+	 *
+	 * @return array Data.
+	 */
+	function data_links() {
+		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+
+		return array(
+			array(
+				'blobfolio.com',
+				null,
+				'<a href="http://blobfolio.com">blobfolio.com</a>',
+			),
+			array(
+				'https://blobfolio.com/',
+				null,
+				'<a href="https://blobfolio.com/">https://blobfolio.com/</a>',
+			),
+			array(
+				'Welcome to blobfolio.com!',
+				null,
+				'Welcome to <a href="http://blobfolio.com">blobfolio.com</a>!',
+			),
+			array(
+				'bad.sch.uk',
+				null,
+				'bad.sch.uk',
+			),
+			array(
+				'www.blobfolio.com',
+				null,
+				'<a href="http://www.blobfolio.com">www.blobfolio.com</a>',
+			),
+			array(
+				'me@localhost',
+				null,
+				'me@localhost',
+			),
+			array(
+				'me@bad.sch.uk',
+				null,
+				'me@bad.sch.uk',
+			),
+			array(
+				'"blobfolio.com"',
+				null,
+				'"<a href="http://blobfolio.com">blobfolio.com</a>"',
+			),
+			array(
+				'(blobfolio.com)',
+				null,
+				'(<a href="http://blobfolio.com">blobfolio.com</a>)',
+			),
+			array(
+				'[blobfolio.com]',
+				null,
+				'[<a href="http://blobfolio.com">blobfolio.com</a>]',
+			),
+			array(
+				'{blobfolio.com}',
+				null,
+				'{<a href="http://blobfolio.com">blobfolio.com</a>}',
+			),
+			array(
+				'me@blobfolio.com',
+				null,
+				'<a href="mailto:me@blobfolio.com">me@blobfolio.com</a>',
+			),
+			array(
+				'Email me@blobfolio.com for more.',
+				null,
+				'Email <a href="mailto:me@blobfolio.com">me@blobfolio.com</a> for more.',
+			),
+			array(
+				'blobfolio.com me@blobfolio.com',
+				null,
+				'<a href="http://blobfolio.com">blobfolio.com</a> <a href="mailto:me@blobfolio.com">me@blobfolio.com</a>',
+			),
+			array(
+				'ftp://user:pass@☺.com',
+				null,
+				'<a href="ftp://user:pass@' . $smiley_host . '">ftp://user:pass@☺.com</a>',
+			),
+			array(
+				'smiley@☺.com',
+				null,
+				'<a href="mailto:smiley@' . $smiley_host . '">smiley@☺.com</a>',
+			),
+			array(
+				'+12015550123',
+				null,
+				'<a href="tel:+12015550123">+12015550123</a>',
+			),
+			array(
+				'+1 201-555-0123',
+				null,
+				'<a href="tel:+12015550123">+1 201-555-0123</a>',
+			),
+			array(
+				'201-555-0123',
+				null,
+				'<a href="tel:+12015550123">201-555-0123</a>',
+			),
+			array(
+				'(201) 555-0123',
+				null,
+				'<a href="tel:+12015550123">(201) 555-0123</a>',
+			),
+			array(
+				'201.555.0123',
+				null,
+				'<a href="tel:+12015550123">201.555.0123</a>',
+			),
+			array(
+				'I ate 234234234 apples!',
+				null,
+				'I ate 234234234 apples!',
+			),
+			array(
+				'Call me at (201) 555-0123.',
+				null,
+				'Call me at <a href="tel:+12015550123">(201) 555-0123</a>.'
+			),
+			array(
+				'blobfolio.com',
+				array(
+					'class'=>array('link', 'nav'),
+					'rel'=>'apples',
+					'target'=>'_blank'
+				),
+				'<a href="http://blobfolio.com" class="link nav" rel="apples" target="_blank">blobfolio.com</a>'
+			),
+			array(
+				'me@blobfolio.com',
+				array(
+					'class'=>array('link', 'nav'),
+					'rel'=>'apples',
+					'target'=>'_blank'
+				),
+				'<a href="mailto:me@blobfolio.com" class="link nav" rel="apples" target="_blank">me@blobfolio.com</a>'
+			),
+			array(
+				'blobfolio.com',
+				array(
+					'class'=>'link'
+				),
+				'<a href="http://blobfolio.com" class="link">blobfolio.com</a>'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::money()
+	 *
+	 * @return array Data.
+	 */
+	function data_money() {
+		return array(
+			array(2.5, false, '', false, '$2.50'),
+			array('1', false, '', false, '$1.00'),
+			array('1', false, '', true, '$1'),
+			array(2500, false, '', false, '$2500.00'),
+			array(2500, false, ',', false, '$2,500.00'),
+			array(.23, false, '', false, '$0.23'),
+			array(.23, true, '', false, '23¢'),
+			array(array(.23), true, '', false, array('23¢')),
+		);
+	}
+
+	/**
+	 * Data for ::phone()
+	 *
+	 * @return array Data.
+	 */
+	function data_phone() {
+		return array(
+			array(2015550123, null, '+1 201-555-0123'),
+			array(2015550123, 'US', '+1 201-555-0123'),
+			array(2015550123, 'CA', '+1 201-555-0123'),
+			array(array(2015550123), 'CA', array('+1 201-555-0123')),
+		);
+	}
+
+	/**
+	 * Data for ::to_timezone()
+	 *
+	 * @return array Data.
+	 */
+	function data_to_timezone() {
+		return array(
+			array(
+				'2015-01-15 01:12:23',
+				'America/Los_Angeles',
+				null,
+				'2015-01-15 09:12:23'
+			),
+			array(
+				'2015-01-15 01:12:23',
+				'America/Los_Angeles',
+				'UTC',
+				'2015-01-15 09:12:23'
+			),
+			array(
+				strtotime('2015-01-15 01:12:23'),
+				'America/Los_Angeles',
+				null,
+				'2015-01-15 09:12:23'
+			),
+			array(
+				'2015-01-15 01:12:23',
+				'UTC',
+				'America/Los_Angeles',
+				'2015-01-14 17:12:23'
 			),
 		);
 	}

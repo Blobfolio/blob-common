@@ -489,7 +489,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				"Hello-world\n",
 				"hello-world\n"
-			)
+			),
+			array(
+				array("Hello-world\n"),
+				array("hello-world\n")
+			),
 		);
 	}
 
@@ -507,7 +511,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				"Hello-world\n",
 				"HELLO-WORLD\n"
-			)
+			),
+			array(
+				array("Hello-world\n"),
+				array("HELLO-WORLD\n")
+			),
 		);
 	}
 
@@ -582,7 +590,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				chr(0xA0) . ' test' . chr(0xA0),
 				'test'
-			)
+			),
+			array(
+				array("\ntöast"),
+				array('töast')
+			),
 		);
 	}
 
@@ -601,6 +613,10 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				'hello-world',
 				'Hello-world'
 			),
+			array(
+				array('hello-world'),
+				array('Hello-world')
+			),
 		);
 	}
 
@@ -618,6 +634,10 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'hello-world',
 				'Hello-World'
+			),
+			array(
+				array('hello-world'),
+				array('Hello-World')
 			),
 		);
 	}

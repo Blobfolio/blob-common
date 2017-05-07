@@ -26,7 +26,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$svg = image::clean_svg(self::ASSETS . 'enshrined.svg');
 
 		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(false, strpos($svg, '<script'));
+		$this->assertSame(false, strpos($svg, '<script'));
 	}
 
 	/**
@@ -38,7 +38,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$cwebp = self::ASSETS . 'webp/bin/cwebp';
 		$gif2webp = self::ASSETS . 'webp/bin/gif2webp';
 
-		$this->assertEquals(true, image::has_webp($cwebp, $gif2webp));
+		$this->assertSame(true, image::has_webp($cwebp, $gif2webp));
 	}
 
 	/**
@@ -65,16 +65,15 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		if (!image::has_webp()) {
 			$this->markTestSkipped('Native WebP binaries not detected.');
 		}
-		else {
-			image::to_webp($in, null);
-			$this->assertEquals(true, file_exists(self::ASSETS . 'space.webp'));
-			@unlink(self::ASSETS . 'space.webp');
 
-			$out = static::ASSETS . 'space2.webp';
-			image::to_webp($in, $out);
-			$this->assertEquals(true, file_exists($out));
-			@unlink($out);
-		}
+		image::to_webp($in, null);
+		$this->assertEquals(true, file_exists(self::ASSETS . 'space.webp'));
+		@unlink(self::ASSETS . 'space.webp');
+
+		$out = static::ASSETS . 'space2.webp';
+		image::to_webp($in, $out);
+		$this->assertEquals(true, file_exists($out));
+		@unlink($out);
 	}
 }
 

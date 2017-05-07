@@ -43,11 +43,13 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_empty_dir() {
-		$this->assertEquals(false, file::empty_dir(self::ASSETS));
+		$this->assertSame(false, file::empty_dir(self::ASSETS));
 
 		$new = self::ASSETS . 'empty';
-		mkdir($new);
-		$this->assertEquals(true, file::empty_dir($new));
+		if (!file_exists($new)) {
+			mkdir($new);
+		}
+		$this->assertSame(true, file::empty_dir($new));
 		rmdir($new);
 	}
 
@@ -160,6 +162,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 				'file/here',
 				'/file/here',
 			),
+			array(
+				array('file/here'),
+				array('/file/here'),
+			),
 		);
 	}
 
@@ -200,6 +206,21 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 				true,
 				static::ASSETS . 'pi.svg'
 			),
+			array(
+				'file://' . static::ASSETS,
+				true,
+				static::ASSETS
+			),
+			array(
+				'htTps://google.com/',
+				true,
+				'https://google.com/'
+			),
+			array(
+				array('htTps://google.com/'),
+				true,
+				array('https://google.com/')
+			),
 		);
 	}
 
@@ -217,6 +238,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'file/here',
 				'file/here/',
+			),
+			array(
+				array('file/here'),
+				array('file/here/'),
 			),
 		);
 	}
@@ -244,6 +269,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 				'/path//to/foobar',
 				'/path/to/foobar',
 			),
+			array(
+				array('/path//to/foobar'),
+				array('/path/to/foobar',)
+			),
 		);
 	}
 
@@ -261,6 +290,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'file/here',
 				'file/here',
+			),
+			array(
+				array('file/here'),
+				array('file/here')
 			),
 		);
 	}
@@ -293,6 +326,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'file/here',
 				'file/here',
+			),
+			array(
+				array('file/here'),
+				array('file/here'),
 			),
 		);
 	}
