@@ -534,7 +534,7 @@ Returns the password by value, otherwise `TRUE`.
 
 ## printable()
 
-This strips out everything other than tabs, spaces, and characters that "use ink". Note: the behaviors may vary by environment, so be sure to test before implementing.
+This strips out everything other than tabs, spaces, newlines, and characters that "use ink". Note: the behaviors may vary by environment, so be sure to test before implementing.
 
 #### Arguments
 
