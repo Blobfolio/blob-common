@@ -18,4 +18,6 @@ php:
 
 install: travis_retry composer install --no-interaction
 
-script: lib/vendor/bin/phpunit --configuration phpunit.xml.dist
+script:
+  - lib/vendor/bin/phpunit --configuration phpunit.xml.dist
+  - lib/vendor/bin/phpunit --configuration phpunit-phar.xml.dist
