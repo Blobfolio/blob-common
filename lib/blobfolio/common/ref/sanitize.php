@@ -252,16 +252,29 @@ class sanitize {
 			}
 		}
 		else {
-			if (is_int($str)) {
+			// An obviously bad string.
+			if (
+				is_string($str) &&
+				(!v_mb::strlen(v_mb::trim($str)) || (0 === v_mb::strpos($str, '0000-00-00')))
+			) {
+				$str = '0000-00-00 00:00:00';
+				return true;
+			}
+
+			if (
+				(is_int($str) && (strlen($str) !== 8)) ||
+				preg_match('/^\d{9,}$/', $str)
+			) {
 				$str = date('Y-m-d H:i:s', $str);
 			}
 
 			cast::to_string($str);
+			mb::trim($str);
 
 			if (
 				!v_mb::strlen($str) ||
-				v_mb::substr($str, 0, 10) === '0000-00-00' ||
-				false === $str = strtotime($str)
+				(v_mb::substr($str, 0, 10) === '0000-00-00') ||
+				(false === ($str = strtotime($str)))
 			) {
 				$str = '0000-00-00 00:00:00';
 			}
@@ -473,6 +486,11 @@ class sanitize {
 			// Start by getting rid of obviously bad data.
 			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
 
+			// IPv6 might be encased in brackets.
+			if (preg_match('/^\[[\d\:a-f]+\]$/', $str)) {
+				$str = substr($str, 1, -1);
+			}
+
 			// Try to compact IPv6.
 			if (filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 				$str = inet_ntop(inet_pton($str));
@@ -504,7 +522,7 @@ class sanitize {
 	public static function iri_value(&$str='', $protocols=null, $domains=null) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::iri_value($str[$k]);
+				static::iri_value($str[$k], $protocols, $domains);
 			}
 		}
 		else {
@@ -680,7 +698,25 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
-			$str = preg_replace('/[^[:print:]]/u', '', $str);
+			$str = str_replace("\r\n", "\n", $str);
+			$str = str_replace("\r", "\n", $str);
+			$str = preg_replace_callback(
+				'/[^[:print:]]/u',
+				function($match) {
+					// Allow newlines and tabs, in case the OS considers
+					// those non-printable.
+					if (
+						("\n" === $match[0]) ||
+						("\t" === $match[0])
+					) {
+						return $match[0];
+					}
+
+					// Ignore everything else.
+					return '';
+				},
+				$str
+			);
 		}
 
 		return true;
@@ -704,9 +740,7 @@ class sanitize {
 			mb::strtoupper($str);
 
 			if (!array_key_exists($str, constants::PROVINCES)) {
-				$haystack = constants::PROVINCES;
-				mb::strtoupper($haystack);
-				if (false === $str = array_search($str, $haystack, true)) {
+				if (false === ($str = data::array_isearch($str, constants::PROVINCES, true))) {
 					$str = '';
 				}
 			}
@@ -758,9 +792,7 @@ class sanitize {
 			mb::strtoupper($str);
 
 			if (!array_key_exists($str, constants::STATES)) {
-				$haystack = constants::STATES;
-				mb::strtoupper($haystack);
-				if (false === $str = array_search($str, $haystack, true)) {
+				if (false === ($str = data::array_isearch($str, constants::STATES, true))) {
 					$str = '';
 				}
 			}
@@ -1065,9 +1097,15 @@ class sanitize {
 		else {
 			cast::to_string($str);
 
+			$tmp = v_mb::parse_url($str);
+
+			// Schemes can be lowercase.
+			if (isset($tmp['scheme'])) {
+				mb::strtolower($tmp['scheme']);
+			}
+
 			// Validate the host, and ASCIIfy international bits
 			// to keep PHP happy.
-			$tmp = v_mb::parse_url($str);
 			if (!isset($tmp['host'])) {
 				return false;
 			}
@@ -1076,6 +1114,7 @@ class sanitize {
 				return false;
 			}
 			$tmp['host'] = (string) $tmp['host'];
+
 			$str = v_file::unparse_url($tmp);
 
 			$str = filter_var($str, FILTER_SANITIZE_URL);
@@ -1170,15 +1209,7 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function whitespace_multiline(&$str='', $newlines=1) {
-		if (is_array($str)) {
-			foreach ($str as $k=>$v) {
-				static::whitespace_multiline($str[$k], $newlines);
-			}
-		}
-		else {
-			static::whitespace($str, $newlines);
-		}
-
+		static::whitespace($str, $newlines);
 		return true;
 	}
 
