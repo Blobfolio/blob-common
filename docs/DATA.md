@@ -17,6 +17,8 @@ echo $first; //apples
 ##### Table of Contents
 
  * [array_compare()](#array_compare)
+ * [array_idiff()](#array_idiff)
+ * [array_iintersect()](#array_iintersect)
  * [array_ikey_exists()](#array_ikey_exists)
  * [array_isearch()](#array_isearch)
  * [array_map_recursive()](#array_map_recursive)
@@ -60,6 +62,38 @@ $arr1 = array('apples','bananas','carrots');
 $arr2 = array('bananas','carrots','apples');
 var_dump(blobfolio\common\data::array_compare($arr1, $arr2)); //TRUE
 ```
+
+
+
+## array_idiff()
+
+A case-insensitive version of `array_diff()`. Unlike `array_diff()`, however, type matters. That is, `2` !== `"2"`, but `"TWO"` === `"two"`.
+
+#### Arguments
+
+ * (*array*) Array 1
+ * (*array*) Array 2
+ * *More arrays...*
+
+#### Returns
+
+Returns an array containing items from the first array that were not present in any of the others.
+
+
+
+## array_iintersect()
+
+A case-insensitive version of `array_intersect()`. Unlike `array_intersect()`, however, type matters. That is, `2` !== `"2"`, but `"TWO"` === `"two"`.
+
+#### Arguments
+
+ * (*array*) Array 1
+ * (*array*) Array 2
+ * *More arrays...*
+
+#### Returns
+
+Returns an array containing items from the first array that were present in all others.
 
 
 

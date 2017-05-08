@@ -56,6 +56,142 @@ class data {
 	}
 
 	/**
+	 * Case-insensitive array_diff()
+	 *
+	 * Note: Type matters.
+	 *
+	 * @param array $arr1 Array.
+	 * @param array $arr2 Array.
+	 * @return array Difference.
+	 */
+	public static function array_idiff($arr1, $arr2) {
+		// First off, a variable number of arguments can be passed.
+		// Let's take a look and see what we have.
+		$arrays = func_get_args();
+		if (!is_array($arrays) || count($arrays) < 1) {
+			return array();
+		}
+		foreach ($arrays as $a) {
+			if (!is_array($a)) {
+				return array();
+			}
+		}
+
+		// Compare the first to each.
+		for ($x = 1; $x < count($arrays); $x++) {
+			$common = array();
+
+			// If the arrays are the same, or the second is empty,
+			// we can skip the tests.
+			if (!count($arrays[$x])) {
+				continue;
+			}
+
+			// Lowercase for comparison.
+			$arr1 = mb::strtolower($arrays[0], true);
+			$arr2 = mb::strtolower($arrays[$x], true);
+
+			foreach ($arr1 as $k=>$v) {
+				if (!is_array($v) && !in_array($v, $arr2, true)) {
+					$common[$k] = $arrays[0][$k];
+				}
+			}
+
+			// Nothing left? The end!
+			if (!count($common)) {
+				return $common;
+			}
+
+			$arrays[0] = $common;
+		}
+
+		return $arrays[0];
+	}
+
+	/**
+	 * Case-insensitive array_intersect()
+	 *
+	 * @param array $arr1 Array.
+	 * @param array $arr2 Array.
+	 * @return array Intersection.
+	 */
+	public static function array_iintersect($arr1, $arr2) {
+		// First off, a variable number of arguments can be passed.
+		// Let's take a look and see what we have.
+		$arrays = func_get_args();
+		if (!is_array($arrays) || count($arrays) < 2) {
+			return array();
+		}
+		foreach ($arrays as $a) {
+			if (!is_array($a) || !count($a)) {
+				return array();
+			}
+		}
+
+		// Compare the first to each.
+		for ($x = 1; $x < count($arrays); $x++) {
+			$common = array();
+
+			// Lowercase for comparison.
+			$arr1 = mb::strtolower($arrays[0], true);
+			$arr2 = mb::strtolower($arrays[$x], true);
+
+			foreach ($arr1 as $k=>$v) {
+				if (!is_array($v) && in_array($v, $arr2, true)) {
+					$common[$k] = $arrays[0][$k];
+				}
+			}
+
+			// Nothing left? The end!
+			if (!count($common)) {
+				return $common;
+			}
+
+			$arrays[0] = $common;
+		}
+
+		return $arrays[0];
+	}
+
+	/**
+	 * Case-insensitive array_key_exists()
+	 *
+	 * @param string $needle Needle.
+	 * @param array $haystack Haystack.
+	 * @return bool True/false.
+	 */
+	public static function array_ikey_exists($needle, $haystack) {
+		if (!is_array($haystack) || !count($haystack)) {
+			return false;
+		}
+		$haystack = array_keys($haystack);
+
+		return (false !== static::array_isearch($needle, $haystack));
+	}
+
+	/**
+	 * Case-insensitive array_search()
+	 *
+	 * @param string $needle Needle.
+	 * @param array $haystack Haystack.
+	 * @param bool $strict Strict.
+	 * @return mixed Key or false.
+	 */
+	public static function array_isearch($needle, $haystack, $strict=false) {
+		if (!is_array($haystack) || !count($haystack)) {
+			return false;
+		}
+
+		// Lowercase for comparison.
+		ref\mb::strtolower($needle, true);
+		ref\mb::strtolower($haystack, true);
+
+		ref\cast::to_bool($strict);
+
+		return array_search($needle, $haystack, $strict);
+	}
+
+	/**
 	 * Recursive Array Map
 	 *
 	 * @param callable $func Callback function.
@@ -146,52 +282,6 @@ class data {
 
 		reset($arr);
 		return $arr[key($arr)];
-	}
-
-	/**
-	 * Case-insensitive array_key_exists()
-	 *
-	 * @param string $needle Needle.
-	 * @param array $haystack Haystack.
-	 * @return bool True/false.
-	 */
-	public static function array_ikey_exists($needle, $haystack) {
-		if (!is_array($haystack) || !count($haystack)) {
-			return false;
-		}
-		$haystack = array_keys($haystack);
-
-		return (false !== static::array_isearch($needle, $haystack));
-	}
-
-	/**
-	 * Case-insensitive array_search()
-	 *
-	 * @param string $needle Needle.
-	 * @param array $haystack Haystack.
-	 * @param bool $strict Strict.
-	 * @return mixed Key or false.
-	 */
-	public static function array_isearch($needle, $haystack, $strict=false) {
-		if (!is_array($haystack) || !count($haystack)) {
-			return false;
-		}
-
-		// Lowercase for comparison.
-		if (is_string($needle)) {
-			ref\mb::strtolower($needle);
-		}
-
-		// Lowercase any strings in haystack too.
-		foreach ($haystack as $k=>$v) {
-			if (is_string($v)) {
-				ref\mb::strtolower($haystack[$k]);
-			}
-		}
-
-		ref\cast::to_bool($strict);
-
-		return array_search($needle, $haystack, $strict);
 	}
 
 	/**
