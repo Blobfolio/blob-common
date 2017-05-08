@@ -250,10 +250,11 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtolower($str='') {
-		ref\mb::strtolower($str);
+	public static function strtolower($str='', $strict=false) {
+		ref\mb::strtolower($str, $strict);
 		return $str;
 	}
 
@@ -264,10 +265,11 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtoupper($str='') {
-		ref\mb::strtoupper($str);
+	public static function strtoupper($str='', $strict=false) {
+		ref\mb::strtoupper($str, $strict);
 		return $str;
 	}
 
@@ -329,10 +331,11 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucfirst($str='') {
-		ref\mb::ucfirst($str);
+	public static function ucfirst($str='', $strict=false) {
+		ref\mb::ucfirst($str, $strict);
 		return $str;
 	}
 
@@ -343,10 +346,11 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucwords($str='') {
-		ref\mb::ucwords($str);
+	public static function ucwords($str='', $strict=false) {
+		ref\mb::ucwords($str, $strict);
 		return $str;
 	}
 }

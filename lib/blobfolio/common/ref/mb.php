@@ -131,15 +131,16 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtolower(&$str='') {
+	public static function strtolower(&$str='', $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::strtolower($str[$k]);
+				static::strtolower($str[$k], $strict);
 			}
 		}
-		else {
+		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
 			if (function_exists('mb_strtolower')) {
@@ -165,15 +166,16 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtoupper(&$str='') {
+	public static function strtoupper(&$str='', $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::strtoupper($str[$k]);
+				static::strtoupper($str[$k], $strict);
 			}
 		}
-		else {
+		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
 			if (function_exists('mb_strtoupper')) {
@@ -223,15 +225,16 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucfirst(&$str='') {
+	public static function ucfirst(&$str='', $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::ucfirst($str[$k]);
+				static::ucfirst($str[$k], $strict);
 			}
 		}
-		else {
+		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
 			if (function_exists('mb_substr')) {
@@ -254,15 +257,16 @@ class mb {
 	 * the native PHP functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucwords(&$str='') {
+	public static function ucwords(&$str='', $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::ucwords($str[$k]);
+				static::ucwords($str[$k], $strict);
 			}
 		}
-		else {
+		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
 			// Don't use the built-in case functions as those

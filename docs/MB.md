@@ -237,6 +237,7 @@ Lowercase a string. This function additionally catches various unicode character
 #### Arguments
 
  * (*mixed*) String. If an array is passed, each value will be recursively lowercased.
+ * (*bool*) (*optional*) Strict. If `TRUE`, non-string types will be ignored. If `FALSE`, they'll be typecast to strings (i.e. what the native functions do). Recursion is not affected either way. Default: `FALSE`
 
 #### Returns
 
@@ -263,6 +264,7 @@ Uppercase a string. This function additionally catches various unicode character
 #### Arguments
 
  * (*mixed*) String. If an array is passed, each value will be recursively uppercased.
+ * (*bool*) (*optional*) Strict. If `TRUE`, non-string types will be ignored. If `FALSE`, they'll be typecast to strings (i.e. what the native functions do). Recursion is not affected either way. Default: `FALSE`
 
 #### Returns
 
@@ -339,6 +341,7 @@ Sentence-case a string. This function additionally catches various unicode chara
 #### Arguments
 
  * (*mixed*) String. If an array is passed, each value will be recursively sentence-cased.
+ * (*bool*) (*optional*) Strict. If `TRUE`, non-string types will be ignored. If `FALSE`, they'll be typecast to strings (i.e. what the native functions do). Recursion is not affected either way. Default: `FALSE`
 
 #### Returns
 
@@ -365,6 +368,7 @@ Title-case a string. This function additionally catches various unicode characte
 #### Arguments
 
  * (*mixed*) String. If an array is passed, each value will be recursively title-cased.
+ * (*bool*) (*optional*) Strict. If `TRUE`, non-string types will be ignored. If `FALSE`, they'll be typecast to strings (i.e. what the native functions do). Recursion is not affected either way. Default: `FALSE`
 
 #### Returns
 
