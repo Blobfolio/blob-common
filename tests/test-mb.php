@@ -131,10 +131,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_strtolower
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_strtolower($str, $expected) {
-		$this->assertEquals($expected, mb::strtolower($str));
+	function test_strtolower($str, $strict, $expected) {
+		$this->assertSame($expected, mb::strtolower($str, $strict));
 	}
 
 	/**
@@ -143,10 +144,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_strtoupper
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_strtoupper($str, $expected) {
-		$this->assertEquals($expected, mb::strtoupper($str));
+	function test_strtoupper($str, $strict, $expected) {
+		$this->assertSame($expected, mb::strtoupper($str, $strict));
 	}
 
 	/**
@@ -194,10 +196,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_ucfirst
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_ucfirst($str, $expected) {
-		$this->assertEquals($expected, mb::ucfirst($str));
+	function test_ucfirst($str, $strict, $expected) {
+		$this->assertSame($expected, mb::ucfirst($str, $strict));
 	}
 
 	/**
@@ -206,10 +209,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_ucwords
 	 *
 	 * @param string $str String.
+	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_ucwords($str, $expected) {
-		$this->assertEquals($expected, mb::ucwords($str));
+	function test_ucwords($str, $strict, $expected) {
+		$this->assertSame($expected, mb::ucwords($str, $strict));
 	}
 
 	// -------------------------------------------------------------------- end tests
@@ -484,15 +488,38 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
+				false,
 				'queen björk ⅷ loves 3 apples.'
 			),
 			array(
 				"Hello-world\n",
+				false,
 				"hello-world\n"
 			),
 			array(
 				array("Hello-world\n"),
+				false,
 				array("hello-world\n")
+			),
+			array(
+				13,
+				false,
+				'13'
+			),
+			array(
+				13,
+				true,
+				13
+			),
+			array(
+				array(13, 'HAPPY'),
+				false,
+				array('13', 'happy')
+			),
+			array(
+				array(13, 'HAPPY'),
+				true,
+				array(13, 'happy')
 			),
 		);
 	}
@@ -506,15 +533,38 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'THE lazY Rex ⅸ eAtS f00d.',
+				false,
 				'THE LAZY REX Ⅸ EATS F00D.'
 			),
 			array(
 				"Hello-world\n",
+				false,
 				"HELLO-WORLD\n"
 			),
 			array(
 				array("Hello-world\n"),
+				false,
 				array("HELLO-WORLD\n")
+			),
+			array(
+				13,
+				false,
+				'13'
+			),
+			array(
+				13,
+				true,
+				13
+			),
+			array(
+				array(13, 'happy'),
+				false,
+				array('13', 'HAPPY')
+			),
+			array(
+				array(13, 'happy'),
+				true,
+				array(13, 'HAPPY')
 			),
 		);
 	}
@@ -607,15 +657,38 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
+				false,
 				'QuEen BjöRk Ⅷ loVes 3 aPplEs.'
 			),
 			array(
 				'hello-world',
+				false,
 				'Hello-world'
 			),
 			array(
 				array('hello-world'),
+				false,
 				array('Hello-world')
+			),
+			array(
+				13,
+				false,
+				'13'
+			),
+			array(
+				13,
+				true,
+				13
+			),
+			array(
+				array(13, 'happy place'),
+				false,
+				array('13', 'Happy place')
+			),
+			array(
+				array(13, 'happy place'),
+				true,
+				array(13, 'Happy place')
 			),
 		);
 	}
@@ -629,15 +702,38 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
+				false,
 				'QuEen BjöRk Ⅷ LoVes 3 APplEs.'
 			),
 			array(
 				'hello-world',
+				false,
 				'Hello-World'
 			),
 			array(
 				array('hello-world'),
+				false,
 				array('Hello-World')
+			),
+			array(
+				13,
+				false,
+				'13'
+			),
+			array(
+				13,
+				true,
+				13
+			),
+			array(
+				array(13, 'happy place'),
+				false,
+				array('13', 'Happy Place')
+			),
+			array(
+				array(13, 'happy place'),
+				true,
+				array(13, 'Happy Place')
 			),
 		);
 	}

@@ -33,6 +33,44 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::array_idiff()
+	 *
+	 * @dataProvider data_array_idiff
+	 *
+	 * @param array $expected Expected.
+	 */
+	function test_array_idiff($expected) {
+		// This takes a variable number of arguments.
+		$arrays = func_get_args();
+		if (!is_array($arrays) || count($arrays) < 2) {
+			return;
+		}
+		unset($arrays[0]);
+
+		$result = call_user_func_array(array('\\blobfolio\\common\\data', 'array_idiff'), $arrays);
+		$this->assertSame($expected, $result);
+	}
+
+	/**
+	 * ::array_iintersect()
+	 *
+	 * @dataProvider data_array_iintersect
+	 *
+	 * @param array $expected Expected.
+	 */
+	function test_array_iintersect($expected) {
+		// This takes a variable number of arguments.
+		$arrays = func_get_args();
+		if (!is_array($arrays) || count($arrays) < 2) {
+			return;
+		}
+		unset($arrays[0]);
+
+		$result = call_user_func_array(array('\\blobfolio\\common\\data', 'array_iintersect'), $arrays);
+		$this->assertSame($expected, $result);
+	}
+
+	/**
 	 * ::array_ikey_exists()
 	 *
 	 * @dataProvider data_array_ikey_exists
@@ -342,6 +380,59 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			array($arr1, $arr3, false),
 			array($arr3, $arr3, true),
 			array($arr4, $arr4, true),
+		);
+	}
+
+	/**
+	 * Data for ::array_idiff()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_idiff() {
+		return array(
+			array(
+				array(
+					3=>'Sat',
+					4=>'Mat',
+					5=>'Matt',
+					6=>'Tat',
+					7=>800
+				),
+				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
+				array('rat','cat'),
+				array('BAT','800'),
+			),
+			array(
+				array(),
+				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
+				array('rat','cat','bat','sat'),
+				array('mat','matt','tat',800),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_iintersect()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_iintersect() {
+		return array(
+			array(
+				array(),
+				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
+				array('rat','cat'),
+				array('BAT', '800'),
+			),
+			array(
+				array(
+					1=>'Cat',
+					3=>'Sat'
+				),
+				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
+				array('rat','cat','sat'),
+				array('BAT','CAT','SAT'),
+			),
 		);
 	}
 
