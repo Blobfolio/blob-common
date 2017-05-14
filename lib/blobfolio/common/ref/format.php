@@ -136,9 +136,9 @@ class format {
 		while ($str !== $last) {
 			$last = $str;
 
+			$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
 			$str = preg_replace_callback('/&#([0-9]+);/', array(get_called_class(), 'decode_entities_chr'), $str);
 			$str = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', array(get_called_class(), 'decode_entities_hex'), $str);
-			$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
 
 			cast::to_string($str, true);
 		}
