@@ -6,6 +6,7 @@
 /Gruntfile.js export-ignore
 /package.json export-ignore
 /phpunit.xml.dist export-ignore
+/phpunit-phar.xml.dist export-ignore
 /README.md export-ignore
 /release export-ignore
 /tests export-ignore
