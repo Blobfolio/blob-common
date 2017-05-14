@@ -737,8 +737,12 @@ class format {
 		cast::to_string($to, true);
 
 		sanitize::datetime($date);
-		sanitize::timezone($from);
-		sanitize::timezone($to);
+		if ('UTC' !== $from) {
+			sanitize::timezone($from);
+		}
+		if ('UTC' !== $to) {
+			sanitize::timezone($to);
+		}
 
 		if ('0000-00-00 00:00:00' === $date || $from === $to) {
 			return true;
