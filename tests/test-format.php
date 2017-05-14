@@ -296,6 +296,10 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				'50&amp;cent;',
 				'50¢'
 			),
+			array(
+				'I don&#8217;t like slanty quotes.',
+				"I don’t like slanty quotes.",
+			),
 		);
 	}
 
