@@ -19,21 +19,103 @@ if (!current_user_can($requires)) {
 	wp_die(__('You do not have sufficient permissions to access this page.'));
 }
 
+/**
+ * Sister Plugins
+ *
+ * Get a list of other plugins by Blobfolio.
+ *
+ * @return array Plugins.
+ */
+function sister_plugins() {
+	require_once(trailingslashit(ABSPATH) . 'wp-admin/includes/plugin.php');
+	require_once(trailingslashit(ABSPATH) . 'wp-admin/includes/plugin-install.php');
+	$response = plugins_api(
+		'query_plugins',
+		array(
+			'author'=>'blobfolio',
+			'per_page'=>20
+		)
+	);
+
+	if (!isset($response->plugins) || !is_array($response->plugins)) {
+		return array();
+	}
+
+	// We want to know whether a plugin is on the system, not
+	// necessarily whether it is active.
+	$plugin_base = dirname(BLOB_COMMON_ROOT) . '/';
+	$plugins = array();
+	foreach ($response->plugins as $p) {
+		if (('blob-common' === $p->slug) || file_exists("{$plugin_base}{$p->slug}")) {
+			continue;
+		}
+
+		$plugins[] = array(
+			'name'=>$p->name,
+			'slug'=>$p->slug,
+			'description'=>$p->short_description,
+			'url'=>$p->homepage,
+			'version'=>$p->version
+		);
+	}
+
+	usort(
+		$plugins,
+		function($a, $b) {
+			if ($a['name'] === $b['name']) {
+				return 0;
+			}
+
+			return $a['name'] > $b['name'] ? 1 : -1;
+		}
+	);
+
+	return $plugins;
+}
+
 $logpath = trailingslashit(ABSPATH) . 'wp-content/debug.log';
 $log = file_exists($logpath) ? @file_get_contents($logpath) : '';
 
 // @codingStandardsIgnoreStart
 ?><style type="text/css">
-	.blobfolio-about-logo {
-		transition: color .3s ease;
+
+	.sister-plugins {
+		padding: 0 10px;
 	}
 
-	.blobfolio-about-logo svg {
-		transition: color .3s ease;
+	.sister-plugins--blobfolio {
+		display: block;
+		width: 230px;
+		height: 60px;
+		margin: 30px auto;
+	}
+
+	.sister-plugins--blobfolio svg {
 		display: block;
 		width: 100%;
-		height: auto;
+		height: 100%;
+		color: #23282D;
+		transition: color .3s;
 	}
+
+	.sister-plugins--blobfolio:hover svg { color: #0073AA; }
+
+
+	.sister-plugins--intro {
+		font-style: italic;
+		padding: 0 10px;
+		text-align: center;
+		color: #aaa;
+		margin: 30px 0;
+	}
+
+	.sister-plugin {
+		padding: 10px 0;
+	}
+
+	.sister-plugin:first-child { padding-top: 0; }
+	.sister-plugin--name { display: block; }
+	.sister-plugin + .sister-plugin { border-top: 1px solid #F1F1F1; }
 
 	#debug-log {
 		display: block;
@@ -159,19 +241,31 @@ $log = file_exists($logpath) ? @file_get_contents($logpath) : '';
 					</div>
 				</div>
 
-				<div class="postbox">
-					<div class="inside blobfolio-about">
-						<a href="https://blobfolio.com/" target="_blank" class="blobfolio-about-logo"><?php echo file_get_contents(dirname(__FILE__) . '/img/blobfolio.svg'); ?></a>
+				<?php
+				$plugins = sister_plugins();
+				if (count($plugins)) {
+					?>
+					<div class="postbox">
+						<div class="inside">
+							<a href="https://blobfolio.com/" target="_blank" class="sister-plugins--blobfolio"><?php echo file_get_contents(BLOB_COMMON_ROOT . '/img/blobfolio.svg'); ?></a>
 
-						<p>We hope you find this plugin useful!  If you do, you might be interested in our other plugins, which are also completely free (and useful).</p>
-						<ul>
-							<li><a href="https://wordpress.org/plugins/apocalypse-meow/" target="_blank" title="Apocalypse Meow">Apocalypse Meow</a>: a simple, light-weight collection of tools to help protect wp-admin, including password strength requirements and brute-force log-in prevention.</li>
-							<li><a href="https://wordpress.org/plugins/look-see-security-scanner/" target="_blank" rel="noopener" title="Look-See Security Scanner">Look-See Security Scanner</a>: a simple and efficient set of tools to locate file irregularities, configuration weaknesses, and vulnerabilities.</li>
-							<li><a href="https://wordpress.org/plugins/sockem-spambots/" target="_blank" rel="noopener" title="Sock'Em SPAMbots">Sock'Em SPAMbots</a>: a more seamless approach to deflecting the vast majority of SPAM comments.</li>
-							<li><a href="https://wordpress.org/plugins/wherewithal/" target="_blank" rel="noopener" title="Wherewithal Enhanced Search">Wherewithal Enhanced Search</a>: extend the default WP search to pull matches from custom fields, taxonomy, and more.</li>
-						</ul>
+							<div class="sister-plugins--intro">
+								We hope you find this plugin useful!  If you do, you might be interested in our other plugins, which are also completely free (and useful).
+							</div>
+
+							<nav class="sister-plugins">
+								<?php foreach ($plugins as $p) { ?>
+									<div class="sister-plugin">
+										<a href="<?php echo esc_attr($p['url']); ?>" target="_blank" class="sister-plugin--name"><?php echo esc_html($p['name']); ?></a>
+
+										<div class="sister-plugin--text"><?php echo esc_html($p['description']); ?></div>
+									</div>
+								<?php } ?>
+							</nav>
+						</div>
 					</div>
-				</div>
+				<?php } ?>
+
 			</div><!--.postbox-container-->
 
 			<div class="postbox-container" id="postbox-container-2">
