@@ -21,7 +21,11 @@ if (!defined('ABSPATH')) {
 // MIME Fix
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_upload_real_mimes')) {
+// Not needed if Lord of the Files is around.
+if (
+	!function_exists('common_upload_real_mimes') &&
+	!in_array('blob-mimes/index.php', get_option('active_plugins', array()), true)
+) {
 	/**
 	 * Fix/Improve Upload MIME Detection
 	 *
@@ -40,7 +44,6 @@ if (!function_exists('common_upload_real_mimes')) {
 	 * @return array Checked data.
 	 */
 	function common_upload_real_mimes($checked, $file, $filename, $mimes) {
-
 		// Only worry if the first check failed.
 		if (!$checked['type'] || !$checked['ext']) {
 			$finfo = \blobfolio\common\mime::finfo($file, $filename);
