@@ -123,6 +123,15 @@ class dom {
 				return '';
 			}
 
+			// Find the start and end tags so we can cut out miscellaneous garbage.
+			if (
+				false === ($start = mb::strpos($svg, '<svg')) ||
+				false === ($end = mb::strrpos($svg, '</svg>'))
+			) {
+				return false;
+			}
+			$svg = mb::substr($svg, $start, ($end - $start + 6));
+
 			return $svg;
 		} catch (\Throwable $e) {
 			return '';
