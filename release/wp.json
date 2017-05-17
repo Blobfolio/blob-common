@@ -1,9 +1,9 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.2.0-0",
+  "Version": "7.2.0-1",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
-  "Tested": "4.7.4",
+  "Tested": "4.7.5",
   "License": "WTFPL",
   "First": "2015-03-31",
   "Branch": "Current",
@@ -15,6 +15,15 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.2.0-1",
+      "notes": [
+        {
+          "type": "change",
+          "note": "Skip file validation fix if Lord of the Files plugin is active."
+        }
+      ]
+    },
     {
       "version": "7.2.0-0",
       "notes": [
