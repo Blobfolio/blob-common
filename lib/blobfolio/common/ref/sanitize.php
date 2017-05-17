@@ -1014,9 +1014,9 @@ class sanitize {
 					static::$timezones[v_mb::strtoupper($t)] = $t;
 				}
 				unset($tmp);
-			} catch(\Throwable $e) {
+			} catch (\Throwable $e) {
 				$noop;
-			} catch(\Exception $e) {
+			} catch (\Exception $e) {
 				$noop;
 			}
 		}
