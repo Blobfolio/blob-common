@@ -24,7 +24,8 @@ if (!defined('ABSPATH')) {
 // Not needed if Lord of the Files is around.
 if (
 	!function_exists('common_upload_real_mimes') &&
-	!in_array('blob-mimes/index.php', get_option('active_plugins', array()), true)
+	!in_array('blob-mimes/index.php', get_option('active_plugins', array()), true) &&
+	(!defined('WPMU_PLUGIN_DIR') || !WPMU_PLUGIN_DIR || !is_dir(trailingslashit(WPMU_PLUGIN_DIR) . 'blob-mimes'))
 ) {
 	/**
 	 * Fix/Improve Upload MIME Detection

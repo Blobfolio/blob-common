@@ -3,7 +3,7 @@
  * Functions to assist common theme operations.
  *
  * @package blobfolio/common
- * @version 7.2.0-1
+ * @version 7.2.0-2
  *
  * @wordpress-plugin
  * Plugin Name: Tutan Common
@@ -11,7 +11,7 @@
  * Description: Functions to assist common theme operations.
  * Author: Blobfolio, LLC
  * Author URI: https://blobfolio.com/
- * Version: 7.2.0-1
+ * Version: 7.2.0-2
  * License: WTFPL
  * License URI: http://www.wtfpl.net/
  */
