@@ -315,11 +315,11 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				"\nhelloÁ"
 			),
 			array(
-				'\\u75',
+				'\\u0075',
 				'u'
 			),
 			array(
-				'\\\\u75\\u30\\u30\\u63\\u31',
+				'\\\\u0075\\u0030\\u0030\\u0063\\u0031',
 				'Á'
 			),
 		);

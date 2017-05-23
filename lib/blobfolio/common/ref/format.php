@@ -109,7 +109,7 @@ class format {
 			$last = $str;
 
 			$str = preg_replace_callback(
-				'/\\\u([0-9A-Fa-f]+)/u',
+				'/\\\u([0-9A-Fa-f]{4})/u',
 				array(get_called_class(), 'decode_entities_hex'),
 				$str
 			);
