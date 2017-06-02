@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.2.0-2",
+  "Version": "7.2.1",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.7.5",
@@ -15,6 +15,31 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.2.1",
+      "notes": [
+        {
+          "type": "misc",
+          "note": "Improved update handler."
+        },
+        {
+          "type": "new",
+          "note": "Can now be installed as Must-Use."
+        },
+        {
+          "type": "improvement",
+          "note": "Improved MIME detection."
+        },
+        {
+          "type": "misc",
+          "note": "Various performance improvements."
+        },
+        {
+          "type": "misc",
+          "note": "Remove build from version string to match WP's new standard."
+        }
+      ]
+    },
     {
       "version": "7.2.0-2",
       "notes": [
