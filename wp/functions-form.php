@@ -72,7 +72,7 @@ if (!function_exists('common_check_form_timestamp')) {
 			return false;
 		}
 		list($t,$h) = explode(',', $hash);
-		return (md5($t . $salt) === $h && time() - $t >= $elapsed);
+		return ((md5($t . $salt) === $h) && (time() - $t >= $elapsed));
 	}
 }
 // Alias.

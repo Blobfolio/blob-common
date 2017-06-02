@@ -14,7 +14,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-
+use \blobfolio\common\constants;
+use \blobfolio\common\data;
+use \blobfolio\common\file as v_file;
+use \blobfolio\common\format as v_format;
+use \blobfolio\common\mb as v_mb;
+use \blobfolio\common\mime;
+use \blobfolio\common\ref\sanitize as r_sanitize;
+use \blobfolio\common\sanitize as v_sanitize;
 
 // ---------------------------------------------------------------------
 // Geography
@@ -29,7 +36,7 @@ if (!function_exists('common_get_us_states')) {
 	 * @return array States {abbr:name}.
 	 */
 	function common_get_us_states($include_other=true, $uppercase=true) {
-		$states = \blobfolio\common\constants::STATES;
+		$states = constants::STATES;
 		$other = array('AA','AE','AP','AS','FM','GU','MH','MP','PW','PR','VI');
 
 		// Originally all results were returned in uppercase,
@@ -57,7 +64,7 @@ if (!function_exists('common_get_ca_provinces')) {
 	 * @return array Provinces {abbr:name}.
 	 */
 	function common_get_ca_provinces($uppercase=true) {
-		$provinces = \blobfolio\common\constants::PROVINCES;
+		$provinces = constants::PROVINCES;
 
 		// Originally all results were returned in uppercase,
 		// but this is a bit limiting. Raw data is now stored
@@ -80,7 +87,7 @@ if (!function_exists('common_get_countries')) {
 	 */
 	function common_get_countries($uppercase=false) {
 		$countries = array();
-		foreach (\blobfolio\common\constants::COUNTRIES as $k=>$v) {
+		foreach (constants::COUNTRIES as $k=>$v) {
 			$countries[$k] = $v['name'];
 		}
 
@@ -116,7 +123,7 @@ if (!function_exists('common_readfile_chunked')) {
 	 * @return mixed Bytes served or status.
 	 */
 	function common_readfile_chunked($file, $retbytes=true) {
-		return \blobfolio\common\file::readfile_chunked($file, $retbytes);
+		return v_file::readfile_chunked($file, $retbytes);
 	}
 }
 
@@ -128,7 +135,7 @@ if (!function_exists('common_get_data_uri')) {
 	 * @return string|bool Data-URI or false.
 	 */
 	function common_get_data_uri($path) {
-		return \blobfolio\common\file::data_uri($path);
+		return v_file::data_uri($path);
 	}
 }
 
@@ -140,7 +147,7 @@ if (!function_exists('common_get_mime_type')) {
 	 * @return string MIME type.
 	 */
 	function common_get_mime_type($file) {
-		$finfo = \blobfolio\common\mime::finfo($file);
+		$finfo = mime::finfo($file);
 		return $finfo['mime'];
 	}
 }
@@ -161,7 +168,7 @@ if (!function_exists('common_ip_to_number')) {
 	 * @return int|bool IP or false.
 	 */
 	function common_ip_to_number($ip) {
-		return \blobfolio\common\format::ip_to_number($ip);
+		return v_format::ip_to_number($ip);
 	}
 }
 
@@ -176,7 +183,7 @@ if (!function_exists('common_cidr_to_range')) {
 	 * @return array|bool Range or false.
 	 */
 	function common_cidr_to_range($cidr) {
-		return \blobfolio\common\format::cidr_to_range($cidr);
+		return v_format::cidr_to_range($cidr);
 	}
 }
 
@@ -251,7 +258,7 @@ if (!function_exists('common_is_empty_dir')) {
 	 * @return bool True/false.
 	 */
 	function common_is_empty_dir($path) {
-		return \blobfolio\common\file::empty_dir($path);
+		return v_file::empty_dir($path);
 	}
 }
 
@@ -263,8 +270,8 @@ if (!function_exists('common_is_site_url')) {
 	 * @return bool True/false.
 	 */
 	function common_is_site_url($url) {
-		$url = \blobfolio\common\sanitize::hostname($url, false);
-		$site = \blobfolio\common\sanitize::hostname(site_url(), false);
+		r_sanitize::hostname($url, false);
+		$site = v_sanitize::hostname(site_url(), false);
 		return $url === $site;
 	}
 }
@@ -284,8 +291,8 @@ if (!function_exists('common_is_current_page')) {
 		}
 
 		// Ready the test URL for comparison.
-		$url = \blobfolio\common\mb::parse_url($url, PHP_URL_PATH);
-		$url2 = \blobfolio\common\mb::parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+		$url = v_mb::parse_url($url, PHP_URL_PATH);
+		$url2 = v_mb::parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
 
 		// And check for a match.
 		return $subpages ? substr($url2, 0, common_strlen($url)) === $url : $url === $url2;
@@ -312,7 +319,7 @@ if (!function_exists('common_redirect')) {
 			$url = site_url();
 		}
 
-		\blobfolio\common\file::redirect($url);
+		v_file::redirect($url);
 	}
 }
 
@@ -326,7 +333,7 @@ if (!function_exists('common_get_site_hostname')) {
 	 * @return string Hostname.
 	 */
 	function common_get_site_hostname() {
-		return \blobfolio\common\sanitize::hostname(site_url(), false);
+		return v_sanitize::hostname(site_url(), false);
 	}
 }
 
@@ -393,7 +400,7 @@ if (!function_exists('common_datediff')) {
 	 * @return int Difference in Days.
 	 */
 	function common_datediff($date1, $date2) {
-		return \blobfolio\common\data::datediff($date1, $date2);
+		return data::datediff($date1, $date2);
 	}
 }
 
@@ -422,7 +429,7 @@ if (!function_exists('common_get_blog_timezone')) {
 				}
 			}
 
-			\blobfolio\common\ref\sanitize::timezone($tz);
+			r_sanitize::timezone($tz);
 		}
 
 		return $tz;
@@ -438,7 +445,7 @@ if (!function_exists('common_to_blogtime')) {
 	 * @return string Date.
 	 */
 	function common_to_blogtime($date, $from='UTC') {
-		return \blobfolio\common\format::to_timezone($date, $from, common_get_blog_timezone());
+		return v_format::to_timezone($date, $from, common_get_blog_timezone());
 	}
 }
 
@@ -451,7 +458,7 @@ if (!function_exists('common_from_blogtime')) {
 	 * @return string Date.
 	 */
 	function common_from_blogtime($date, $to='UTC') {
-		return \blobfolio\common\format::to_timezone($date, common_get_blog_timezone(), $to);
+		return v_format::to_timezone($date, common_get_blog_timezone(), $to);
 	}
 }
 

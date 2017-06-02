@@ -3,15 +3,17 @@
  * Functions to assist common theme operations.
  *
  * @package blobfolio/common
- * @version 7.2.0-2
+ * @version 7.2.1
  *
  * @wordpress-plugin
  * Plugin Name: Tutan Common
+ * Version: 7.2.1
  * Plugin URI: https://github.com/Blobfolio/blob-common
  * Description: Functions to assist common theme operations.
  * Author: Blobfolio, LLC
  * Author URI: https://blobfolio.com/
- * Version: 7.2.0-2
+ * Info URI: https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/wp.json
+ * Text Domain: blob-common
  * License: WTFPL
  * License URI: http://www.wtfpl.net/
  */
@@ -24,32 +26,20 @@ if (!defined('ABSPATH')) {
 
 
 // The root path to the plugin.
-define('BLOB_COMMON_ROOT', dirname(__FILE__));
+define('BLOBCOMMON_ROOT', dirname(__FILE__));
+define('BLOBCOMMON_INDEX', BLOBCOMMON_ROOT . '/index.php');
+define('BLOBCOMMON_CHMOD_DIR', (@fileperms(ABSPATH) & 0777 | 0755));
+define('BLOBCOMMON_CHMOD_FILE', (@fileperms(ABSPATH . 'index.php') & 0777 | 0644));
 
-// The blob-common library.
-@require_once(BLOB_COMMON_ROOT . '/lib/blobcommon.php');
-\blobfolio\wp\common\blobcommon::init();
-
-// And everything else.
-@require_once(BLOB_COMMON_ROOT . '/functions-behavior.php');
-@require_once(BLOB_COMMON_ROOT . '/functions-debug.php');
-@require_once(BLOB_COMMON_ROOT . '/functions-email.php');
-@require_once(BLOB_COMMON_ROOT . '/functions-form.php');
-@require_once(BLOB_COMMON_ROOT . '/functions-image.php');
-@require_once(BLOB_COMMON_ROOT . '/functions-spacetime.php');
-@require_once(BLOB_COMMON_ROOT . '/functions-sanitize.php');
-@require_once(BLOB_COMMON_ROOT . '/functions-tool.php');
+// Is this installed as a Must-Use plugin?
+$blobcommon_must_use = (
+	defined('WPMU_PLUGIN_DIR') &&
+	@is_dir(WPMU_PLUGIN_DIR) &&
+	(0 === strpos(BLOBCOMMON_ROOT, WPMU_PLUGIN_DIR))
+);
+define('BLOBCOMMON_MUST_USE', $blobcommon_must_use);
 
 
-
-
-// ---------------------------------------------------------------------
-// SELF AWARENESS/UPDATES
-// ---------------------------------------------------------------------
-// The plugin is not hosted in the WP plugin repository, so we need
-// some helpers to help it help itself. :)
-//
-// To reduce overhead, update checks are throttled to once per hour.
 
 /**
  * Activation Checks
@@ -67,7 +57,7 @@ function blobcommon_activation_requirements() {
 	}
 
 	try {
-		include_once(BLOB_COMMON_ROOT . '/lib/test.phar');
+		include_once(BLOBCOMMON_ROOT . '/lib/test.phar');
 	} catch (Throwable $e) {
 		throw new Exception('PHAR/Gzip support is required.');
 	} catch (Exception $e) {
@@ -82,161 +72,29 @@ function blobcommon_activation_requirements() {
 }
 register_activation_hook(__FILE__, 'blobcommon_activation_requirements');
 
-/**
- * Get Plugin Info (Local)
- *
- * @param string $key Key.
- * @return mixed Info.
- */
-function blobcommon_get_info($key = null) {
-	static $info;
 
-	if (is_null($info)) {
-		require_once(trailingslashit(ABSPATH) . 'wp-admin/includes/plugin.php');
-		$info = get_plugin_data(__FILE__);
-	}
 
-	// Return what corresponds to $key.
-	if (!is_null($key)) {
-		return array_key_exists($key, $info) ? $info[$key] : false;
-	}
-
-	// Return the whole thing.
-	return $info;
+// Bail now if requirements aren't met.
+try {
+	blobcommon_activation_requirements();
+} catch (Throwable $e) {
+	return;
+} catch (Exception $e) {
+	return;
 }
 
-/**
- * Get Remote Branch
- *
- * Updates are no longer provided for old versions.
- *
- * @return string Branch URL.
- */
-function blobcommon_get_release_branch() {
-	try {
-		blobcommon_activation_requirements();
-	} catch (Throwable $e) {
-		return false;
-	} catch (Exception $e) {
-		return false;
-	}
-
-	return 'https://raw.githubusercontent.com/Blobfolio/blob-common/master/release/wp.json';
-}
-
-/**
- * Get Plugin Info (Remote)
- *
- * @param string $key Key.
- * @return mixed Info.
- */
-function blobcommon_get_remote_info($key = null) {
-	static $info;
-	$transient_key = 'blobcommon_remote_info';
-
-	if (is_null($info) && false === $info = get_transient($transient_key)) {
-		$info = array();
-		if (false !== ($branch = blobcommon_get_release_branch())) {
-			$data = wp_remote_get($branch);
-			if (200 === wp_remote_retrieve_response_code($data)) {
-				try {
-					$response = json_decode(wp_remote_retrieve_body($data), true);
-					if (is_array($response)) {
-						foreach ($response as $k=>$v) {
-							$info[$k] = $v;
-						}
-
-						set_transient($transient_key, $info, 3600);
-					}
-				} catch (Throwable $e) {
-					$info = array();
-				} catch (Exception $e) {
-					$info = array();
-				}
-			}
-		}
-	}
-
-	// Return what corresponds to $key.
-	if (!is_null($key)) {
-		return array_key_exists($key, $info) ? $info[$key] : false;
-	}
-
-	// Return the whole thing.
-	return $info;
-}
-
-/**
- * Get Installed Version
- *
- * @return string Version.
- */
-function blobcommon_get_installed_version() {
-	static $version;
-
-	if (is_null($version)) {
-		$version = (string) trim(blobcommon_get_info('Version'));
-	}
-
-	return $version;
-}
-
-/**
- * Get Latest Version
- *
- * @return string Version.
- */
-function blobcommon_get_latest_version() {
-	static $version;
-
-	if (is_null($version)) {
-		$version = (string) trim(blobcommon_get_remote_info('Version'));
-	}
-
-	return $version;
-}
-
-/**
- * Check for Updates
- *
- * @param mixed $option Option.
- * @return mixed Option.
- */
-function blobcommon_check_update($option) {
-
-	// Make sure arguments make sense.
-	if (!is_object($option)) {
-		return $option;
-	}
-
-	// Local and remote versions.
-	$installed = blobcommon_get_installed_version();
-	$remote = blobcommon_get_latest_version();
-
-	// Bad data and/or match, nothing to do!
-	if (false === $remote || false === $installed || $remote <= $installed) {
-		return $option;
-	}
-
-	// Set up the entry.
-	$path = 'blob-common/index.php';
-	if (!array_key_exists($path, $option->response)) {
-		$option->response[$path] = new stdClass();
-	}
-
-	$option->response[$path]->url = blobcommon_get_info('PluginURI');
-	$option->response[$path]->slug = 'blob-common';
-	$option->response[$path]->plugin = $path;
-	$option->response[$path]->package = blobcommon_get_remote_info('DownloadURI');
-	$option->response[$path]->new_version = $remote;
-	$option->response[$path]->id = 0;
-
-	// Done.
-	return $option;
-}
-add_filter('transient_update_plugins', 'blobcommon_check_update');
-add_filter('site_transient_update_plugins', 'blobcommon_check_update');
-
-// --------------------------------------------------------------------- end updates
 
 
+// The blob-common library.
+@require_once(BLOBCOMMON_ROOT . '/lib/blobcommon.php');
+\blobfolio\wp\common\blobcommon::init();
+
+// And everything else.
+@require_once(BLOBCOMMON_ROOT . '/functions-behavior.php');
+@require_once(BLOBCOMMON_ROOT . '/functions-debug.php');
+@require_once(BLOBCOMMON_ROOT . '/functions-email.php');
+@require_once(BLOBCOMMON_ROOT . '/functions-form.php');
+@require_once(BLOBCOMMON_ROOT . '/functions-image.php');
+@require_once(BLOBCOMMON_ROOT . '/functions-spacetime.php');
+@require_once(BLOBCOMMON_ROOT . '/functions-sanitize.php');
+@require_once(BLOBCOMMON_ROOT . '/functions-tool.php');

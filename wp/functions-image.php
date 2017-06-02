@@ -13,14 +13,20 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
+use \blobfolio\common\constants;
+use \blobfolio\common\image;
+use \blobfolio\common\ref\cast as r_cast;
+use \blobfolio\common\ref\sanitize as r_sanitize;
+use \blobfolio\common\sanitize as v_sanitize;
+
 // JIT images is split off into its own file.
 if (defined('WP_JIT_IMAGES') && WP_JIT_IMAGES) {
-	@require_once(BLOB_COMMON_ROOT . '/functions-jit.php');
+	@require_once(BLOBCOMMON_ROOT . '/functions-jit.php');
 }
 
 // WebP is likewise in its own file.
 if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
-	@require_once(BLOB_COMMON_ROOT . '/functions-webp.php');
+	@require_once(BLOBCOMMON_ROOT . '/functions-webp.php');
 }
 
 
@@ -67,18 +73,18 @@ if (!function_exists('common_get_clean_svg')) {
 			$args = WP_CLEAN_SVG;
 		}
 
-		\blobfolio\common\ref\cast::to_array($args);
+		r_cast::to_array($args);
 
 		// Make sure the site URL is whitelisted.
 		if (!isset($args['whitelist_domains'])) {
 			$args['whitelist_domains'] = array();
 		}
 		else {
-			\blobfolio\common\ref\cast::to_array($args['whitelist_domains']);
+			r_cast::to_array($args['whitelist_domains']);
 		}
 		$args['whitelist_domains'][] = common_get_site_hostname();
 
-		return \blobfolio\common\image::clean_svg($path, $args);
+		return image::clean_svg($path, $args);
 	}
 }
 
@@ -95,13 +101,13 @@ if (!function_exists('common_shortcode_clean_svg')) {
 	 * @return string HTML.
 	 */
 	function common_shortcode_clean_svg($args=null, $content='') {
-		\blobfolio\common\ref\cast::to_array($args);
+		r_cast::to_array($args);
 
 		// We need to convert array fields to proper arrays.
 		foreach (array('classes','whitelist_attr','whitelist_tags','whitelist_protocols','whitelist_domains') as $field) {
 			if (isset($args[$field])) {
 				$args[$field] = explode(',', $args[$field]);
-				\blobfolio\common\ref\sanitize::whitespace($args[$field]);
+				r_sanitize::whitespace($args[$field]);
 				$args[$field] = array_unique($args[$field]);
 				$args[$field] = array_filter($args[$field], 'strlen');
 			}
@@ -151,7 +157,7 @@ if (!function_exists('common_get_svg_dimensions')) {
 	 * @return array Dimensions.
 	 */
 	function common_get_svg_dimensions($svg) {
-		if (false === ($out = \blobfolio\common\image::svg_dimensions($svg))) {
+		if (false === ($out = image::svg_dimensions($svg))) {
 			$out = array('width'=>0, 'height'=>0);
 		}
 		return $out;
@@ -214,8 +220,8 @@ if (!function_exists('_common_sort_srcset')) {
 	 * @return int Order: -1, 0, 1.
 	 */
 	function _common_sort_srcset($a, $b) {
-		$a1 = explode(' ', common_sanitize_whitespace($a));
-		$b1 = explode(' ', common_sanitize_whitespace($b));
+		$a1 = explode(' ', v_sanitize::whitespace($a));
+		$b1 = explode(' ', v_sanitize::whitespace($b));
 
 		// Can't compute, leave it alone.
 		if (count($a1) !== 2 || count($b1) !== 2) {
@@ -246,14 +252,14 @@ if (!function_exists('common_get_image_srcset')) {
 	 * @return string|bool SRCSET string or false.
 	 */
 	function common_get_image_srcset($attachment_id=0, $size) {
-		\blobfolio\common\ref\cast::int($attachment_id, true);
+		r_cast::to_int($attachment_id, true);
 
 		if ($attachment_id < 1) {
 			return false;
 		}
 
-		\blobfolio\common\ref\cast::to_array($size);
-		\blobfolio\common\ref\sanitize::whitespace($size);
+		r_cast::to_array($size);
+		r_sanitize::whitespace($size);
 		$size = array_unique($size);
 		$size = array_filter($size, 'strlen');
 		$size = array_values($size);
@@ -285,7 +291,7 @@ if (!function_exists('common_get_image_srcset')) {
 		// Convert WP's answer to an array.
 		else {
 			$srcset = explode(',', $srcset);
-			\blobfolio\common\ref\sanitize::whitespace($srcset);
+			r_sanitize::whitespace($srcset);
 		}
 
 		// Sort.
@@ -328,7 +334,7 @@ if (!function_exists('common_get_blank_image')) {
 	 * @return string Data-URI.
 	 */
 	function common_get_blank_image() {
-		return \blobfolio\common\constants::BLANK_IMAGE;
+		return constants::BLANK_IMAGE;
 	}
 }
 

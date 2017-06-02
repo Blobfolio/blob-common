@@ -14,6 +14,10 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
+use \blobfolio\common\cast as v_cast;
+use \blobfolio\common\data;
+use \blobfolio\common\mb as v_mb;
+
 // ---------------------------------------------------------------------
 // Comparison/Eval Tools
 // ---------------------------------------------------------------------
@@ -34,7 +38,7 @@ if (!function_exists('common_array_type')) {
 		if (!is_array($arr)) {
 			return false;
 		}
-		return \blobfolio\common\cast::array_type($arr);
+		return v_cast::array_type($arr);
 	}
 }
 
@@ -50,7 +54,7 @@ if (!function_exists('common_array_compare')) {
 		if (!is_array($arr1) || !is_array($arr2)) {
 			return false;
 		}
-		return \blobfolio\common\data::array_compare($arr1, $arr2);
+		return data::array_compare($arr1, $arr2);
 	}
 }
 
@@ -118,7 +122,7 @@ if (!function_exists('common_strlen')) {
 	 * @return int String length.
 	 */
 	function common_strlen($str) {
-		return \blobfolio\common\mb::strlen($str);
+		return v_mb::strlen($str);
 	}
 }
 
@@ -132,7 +136,7 @@ if (!function_exists('common_strpos')) {
 	 * @return int|bool First occurrence or false.
 	 */
 	function common_strpos($haystack, $needle, $offset=0) {
-		return \blobfolio\common\mb::strpos($haystack, $needle, $offset);
+		return v_mb::strpos($haystack, $needle, $offset);
 	}
 }
 
@@ -146,7 +150,7 @@ if (!function_exists('common_substr')) {
 	 * @return string String.
 	 */
 	function common_substr($str, $start=0, $length=null) {
-		return \blobfolio\common\mb::substr($str, $start, $length);
+		return v_mb::substr($str, $start, $length);
 	}
 }
 
@@ -159,7 +163,7 @@ if (!function_exists('common_substr_count')) {
 	 * @return int Count.
 	 */
 	function common_substr_count($haystack, $needle) {
-		return \blobfolio\common\mb::substr_count($haystack, $needle);
+		return v_mb::substr_count($haystack, $needle);
 	}
 }
 
@@ -171,7 +175,7 @@ if (!function_exists('common_to_char_array')) {
 	 * @return array|bool Split string or false.
 	 */
 	function common_to_char_array($str) {
-		return \blobfolio\common\mb::str_split($str);
+		return v_mb::str_split($str);
 	}
 }
 
@@ -184,7 +188,7 @@ if (!function_exists('common_array_map_recursive')) {
 	 * @return bool True/false.
 	 */
 	function common_array_map_recursive(callable $func, $arr) {
-		return \blobfolio\common\data::array_map_recursive($func, $arr);
+		return data::array_map_recursive($func, $arr);
 	}
 }
 
@@ -200,7 +204,7 @@ if (!function_exists('common_random_int')) {
 	 * @return int Random number.
 	 */
 	function common_random_int($min=0, $max=1) {
-		return \blobfolio\common\data::random_int($min, $max);
+		return data::random_int($min, $max);
 	}
 }
 
@@ -217,7 +221,7 @@ if (!function_exists('common_array_pop_top')) {
 		if (!is_array($arr)) {
 			return false;
 		}
-		return \blobfolio\common\data::array_pop_top($arr);
+		return data::array_pop_top($arr);
 	}
 }
 
@@ -232,7 +236,7 @@ if (!function_exists('common_array_pop')) {
 		if (!is_array($arr)) {
 			return false;
 		}
-		return \blobfolio\common\data::array_pop($arr);
+		return data::array_pop($arr);
 	}
 }
 
@@ -245,7 +249,7 @@ if (!function_exists('common_switcheroo')) {
 	 * @return bool True.
 	 */
 	function common_switcheroo(&$var1, &$var2) {
-		return \blobfolio\common\data::switcheroo($var1, $var2);
+		return data::switcheroo($var1, $var2);
 	}
 }
 
@@ -264,7 +268,7 @@ if (!function_exists('common_parse_args')) {
 	 * @return array Parsed arguments.
 	 */
 	function common_parse_args($args=null, $defaults=null, $strict=false, $recursive=false) {
-		return \blobfolio\common\data::parse_args($args, $defaults, $strict, $recursive);
+		return data::parse_args($args, $defaults, $strict, $recursive);
 	}
 }
 
@@ -283,7 +287,7 @@ if (!function_exists('common_parse_json_args')) {
 	 * @return array Parsed arguments.
 	 */
 	function common_parse_json_args($json='', $defaults=null, $strict=true, $recursive=true) {
-		return \blobfolio\common\data::json_decode_array($json, $defaults, $strict, $recursive);
+		return data::json_decode_array($json, $defaults, $strict, $recursive);
 	}
 }
 
@@ -300,7 +304,7 @@ if (!function_exists('common_generate_random_string')) {
 	 * @return string Random string.
 	 */
 	function common_generate_random_string($length=10, $soup=null) {
-		return \blobfolio\common\data::random_string($length, $soup);
+		return data::random_string($length, $soup);
 	}
 }
 
@@ -321,7 +325,7 @@ if (!function_exists('common_get_cc_exp_years')) {
 	 * @return array Years.
 	 */
 	function common_get_cc_exp_years($length=10) {
-		return \blobfolio\common\data::cc_exp_years($length);
+		return data::cc_exp_years($length);
 	}
 }
 
@@ -333,7 +337,7 @@ if (!function_exists('common_get_cc_exp_months')) {
 	 * @return array Months.
 	 */
 	function common_get_cc_exp_months($format='m - M') {
-		return \blobfolio\common\data::cc_exp_months($format);
+		return data::cc_exp_months($format);
 	}
 }
 

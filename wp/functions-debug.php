@@ -14,6 +14,9 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
+use \blobfolio\common\sanitize as v_sanitize;
+use \blobfolio\common\ref\sanitize as r_sanitize;
+
 if (!function_exists('common_debug_mail')) {
 	/**
 	 * Debug Email
@@ -32,8 +35,8 @@ if (!function_exists('common_debug_mail')) {
 	 * @return bool True.
 	 */
 	function common_debug_mail($variable, $subject=null, $mail=true, $var_dump=false) {
-		$mto = defined('WP_DEBUG_EMAIL') ? common_sanitize_email(WP_DEBUG_EMAIL) : get_bloginfo('admin_email');
-		$msub = common_sanitize_whitespace('[' . get_bloginfo('name') . '] ' . (is_null($subject) ? 'Debug' : $subject));
+		$mto = defined('WP_DEBUG_EMAIL') ? v_sanitize::email(WP_DEBUG_EMAIL) : get_bloginfo('admin_email');
+		$msub = v_sanitize::whitespace('[' . get_bloginfo('name') . '] ' . (is_null($subject) ? 'Debug' : $subject));
 
 		ob_start();
 		if ($var_dump) {
@@ -82,7 +85,7 @@ if (!function_exists('common_db_debug_log')) {
 		// global variable, so we can see what we've ended
 		// up with just before shutdown.
 		global $EZSQL_ERROR;
-		$log = ABSPATH . '/wp-content/db-debug.log';
+		$log = trailingslashit(WP_CONTENT_DIR) . 'db-debug.log';
 
 		try {
 			if (is_array($EZSQL_ERROR) && count($EZSQL_ERROR)) {
@@ -121,7 +124,14 @@ if (!function_exists('common_debug_log_menu')) {
 	 */
 	function common_debug_log_menu() {
 		$requires = defined('WP_DEBUG_LOG_CAP') ? WP_DEBUG_LOG_CAP : 'manage_options';
-		add_submenu_page('tools.php', 'Debug Log', 'Debug Log', $requires, 'common-debug-log', 'common_debug_log_page');
+		add_submenu_page(
+			'tools.php',
+			'Debug Log',
+			'Debug Log',
+			$requires,
+			'common-debug-log',
+			'common_debug_log_page'
+		);
 	}
 	add_action('admin_menu', 'common_debug_log_menu');
 }
@@ -147,7 +157,7 @@ if (!function_exists('_common_debug_log_highlight')) {
 	 */
 	function _common_debug_log_highlight($log) {
 		try {
-			$log = common_sanitize_newlines($log, 1);
+			r_sanitize::whitespace($log, 1);
 			$log = array_filter(explode("\n", $log), 'strlen');
 		} catch (Throwable $e) {
 			$log = array();
@@ -159,7 +169,7 @@ if (!function_exists('_common_debug_log_highlight')) {
 		foreach ($log as $k=>$l) {
 			$num++;
 
-			$l = common_sanitize_quotes($l);
+			r_sanitize::quotes($l);
 			$l = esc_html($l);
 
 			// Date.
@@ -177,7 +187,11 @@ if (!function_exists('_common_debug_log_highlight')) {
 
 			// Wrap and finish.
 			$classes = array('log-entry');
-			if (substr($l, 0, 1) === '#' || substr($l, 0, 12) === 'Stack trace:' || substr($l, 0, 10) === 'thrown in ') {
+			if (
+				(substr($l, 0, 1) === '#') ||
+				(substr($l, 0, 12) === 'Stack trace:') ||
+				(substr($l, 0, 10) === 'thrown in ')
+			) {
 				$classes[] = 'log-comment';
 			}
 			$l = '<div class="' . implode(' ', $classes) . '" data-number="' . $num . '">' . $l . '</div>';
@@ -209,20 +223,20 @@ if (!function_exists('common_ajax_debug_log')) {
 		}
 
 		$n = isset($_POST['n']) ? $_POST['n'] : 'n';
-		if (!wp_verify_nonce($_POST['n'], 'debug-log')) {
+		if (!wp_verify_nonce($n, 'debug-log')) {
 			$xout['errors'][] = 'This page has expired. Please reload and try again.';
 		}
 
 		if (!count($xout['errors'])) {
-			$logpath = trailingslashit(ABSPATH) . 'wp-content/debug.log';
+			$logpath = trailingslashit(WP_CONTENT_DIR) . 'debug.log';
 			$log = file_exists($logpath) ? @file_get_contents($logpath) : '';
 
-			$today = isset($_POST['today']) && intval($_POST['today']) === 1 ? true : false;
+			$today = isset($_POST['today']) && (intval($_POST['today']) === 1) ? true : false;
 			$tail = isset($_POST['tail']) ? intval($_POST['tail']) : 0;
-			$tail = common_to_range($tail, 0);
+			r_sanitize::to_range($tail, 0);
 
 			try {
-				$log = common_sanitize_newlines($log, 1);
+				r_sanitize::whitespace($log, 1);
 				$log = array_filter(explode("\n", $log), 'strlen');
 			} catch (Throwable $e) {
 				$log = array();
@@ -276,12 +290,12 @@ if (!function_exists('common_ajax_debug_log_delete')) {
 		}
 
 		$n = isset($_POST['n']) ? $_POST['n'] : 'n';
-		if (!wp_verify_nonce($_POST['n'], 'debug-log')) {
+		if (!wp_verify_nonce($n, 'debug-log')) {
 			$xout['errors'][] = 'This page has expired. Please reload and try again.';
 		}
 
 		if (!count($xout['errors'])) {
-			$logpath = trailingslashit(ABSPATH) . 'wp-content/debug.log';
+			$logpath = trailingslashit(WP_CONTENT_DIR) . 'debug.log';
 			if (file_exists($logpath)) {
 				if (false === @unlink($logpath)) {
 					$xout['errors'][] = 'The log file could not be deleted.';

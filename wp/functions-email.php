@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-
+use \blobfolio\common\sanitize as v_sanitize;
 
 if (!function_exists('common_mail')) {
 	/**
@@ -31,7 +31,7 @@ if (!function_exists('common_mail')) {
 	 */
 	function common_mail($to, $subject, $msg, $from=null, $attachments=null) {
 		if (is_null($from)) {
-			$from = common_sanitize_name(get_bloginfo('name')) . ' <' . get_bloginfo('admin_email') . '>';
+			$from = v_sanitize::name(get_bloginfo('name')) . ' <' . get_bloginfo('admin_email') . '>';
 		}
 
 		// Engage our filters.

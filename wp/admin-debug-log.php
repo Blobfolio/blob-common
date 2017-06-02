@@ -43,7 +43,7 @@ function sister_plugins() {
 
 	// We want to know whether a plugin is on the system, not
 	// necessarily whether it is active.
-	$plugin_base = dirname(BLOB_COMMON_ROOT) . '/';
+	$plugin_base = dirname(BLOBCOMMON_ROOT) . '/';
 	$plugins = array();
 	foreach ($response->plugins as $p) {
 		if (('blob-common' === $p->slug) || file_exists("{$plugin_base}{$p->slug}")) {
@@ -73,8 +73,7 @@ function sister_plugins() {
 	return $plugins;
 }
 
-$logpath = trailingslashit(ABSPATH) . 'wp-content/debug.log';
-$log = file_exists($logpath) ? @file_get_contents($logpath) : '';
+$logpath = trailingslashit(WP_CONTENT_DIR) . 'debug.log';
 
 // @codingStandardsIgnoreStart
 ?><style type="text/css">
@@ -247,7 +246,7 @@ $log = file_exists($logpath) ? @file_get_contents($logpath) : '';
 					?>
 					<div class="postbox">
 						<div class="inside">
-							<a href="https://blobfolio.com/" target="_blank" class="sister-plugins--blobfolio"><?php echo file_get_contents(BLOB_COMMON_ROOT . '/img/blobfolio.svg'); ?></a>
+							<a href="https://blobfolio.com/" target="_blank" class="sister-plugins--blobfolio"><?php echo file_get_contents(BLOBCOMMON_ROOT . '/img/blobfolio.svg'); ?></a>
 
 							<div class="sister-plugins--intro">
 								We hope you find this plugin useful!  If you do, you might be interested in our other plugins, which are also completely free (and useful).
@@ -273,7 +272,7 @@ $log = file_exists($logpath) ? @file_get_contents($logpath) : '';
 					<h3 class="hndle">Debug Log</h3>
 					<div class="inside">
 						<div id="debug-log"></div>
-						<p class="description"><?php echo $logpath; ?>wp-content/debug.log</p>
+						<p class="description"><?php echo $logpath; ?></p>
 					</div><!--.inside-->
 				</div><!--.postbox-->
 

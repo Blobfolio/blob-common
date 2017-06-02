@@ -15,7 +15,10 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-
+use \blobfolio\common\data;
+use \blobfolio\common\mb as v_mb;
+use \blobfolio\common\mime;
+use \blobfolio\common\ref\sanitize as r_sanitize;
 
 // ---------------------------------------------------------------------
 // MIME Fix
@@ -47,7 +50,7 @@ if (
 	function common_upload_real_mimes($checked, $file, $filename, $mimes) {
 		// Only worry if the first check failed.
 		if (!$checked['type'] || !$checked['ext']) {
-			$finfo = \blobfolio\common\mime::finfo($file, $filename);
+			$finfo = mime::finfo($file, $filename);
 
 			// The time for checking certain image types has passed already.
 			$mime_to_ext = apply_filters('getimagesize_mimes_to_exts', array(
@@ -58,12 +61,12 @@ if (
 				'image/tiff'=>'tif',
 			));
 			if (
-				0 !== \blobfolio\common\mb::strpos($finfo['mime'], 'image/') ||
+				0 !== v_mb::strpos($finfo['mime'], 'image/') ||
 				!in_array($finfo['extension'], $mime_to_ext, true)
 			) {
 				// Was the extension wrong?
 				if (count($finfo['suggested_filename'])) {
-					$filename = \blobfolio\common\data::array_pop_top($finfo['suggested_filename']);
+					$filename = data::array_pop_top($finfo['suggested_filename']);
 				}
 
 				// What does WP think?
@@ -79,7 +82,7 @@ if (
 		// Sanitize SVGs.
 		if ('image/svg+xml' === $checked['type']) {
 			$contents = @file_get_contents($file);
-			\blobfolio\common\ref\sanitize::svg($contents);
+			r_sanitize::svg($contents);
 			if (strlen($contents)) {
 				@file_put_contents($file, $contents);
 			}

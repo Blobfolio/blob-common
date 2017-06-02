@@ -14,7 +14,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-
+use \blobfolio\common\cast as v_cast;
+use \blobfolio\common\data;
+use \blobfolio\common\file as v_file;
+use \blobfolio\common\format as v_format;
+use \blobfolio\common\mb as v_mb;
+use \blobfolio\common\ref\cast as r_cast;
+use \blobfolio\common\sanitize as v_sanitize;
+use \blobfolio\domain\domain;
 
 // ---------------------------------------------------------------------
 // Case Conversion
@@ -31,7 +38,7 @@ if (!function_exists('common_strtolower')) {
 	 * @return string String.
 	 */
 	function common_strtolower($str='') {
-		return \blobfolio\common\mb::strtolower($str);
+		return v_mb::strtolower($str);
 	}
 }
 
@@ -46,7 +53,7 @@ if (!function_exists('common_strtoupper')) {
 	 * @return string String.
 	 */
 	function common_strtoupper($str='') {
-		return \blobfolio\common\mb::strtoupper($str);
+		return v_mb::strtoupper($str);
 	}
 }
 
@@ -61,7 +68,7 @@ if (!function_exists('common_ucwords')) {
 	 * @return string String.
 	 */
 	function common_ucwords($str='') {
-		return \blobfolio\common\mb::ucwords($str);
+		return v_mb::ucwords($str);
 	}
 }
 
@@ -76,7 +83,7 @@ if (!function_exists('common_ucfirst')) {
 	 * @return string String.
 	 */
 	function common_ucfirst($str='') {
-		return \blobfolio\common\mb::ucfirst($str);
+		return v_mb::ucfirst($str);
 	}
 }
 
@@ -97,7 +104,7 @@ if (!function_exists('common_format_money')) {
 	 * @return string Value.
 	 */
 	function common_format_money($value, $cents=false) {
-		return \blobfolio\common\format::money($value, $cents);
+		return v_format::money($value, $cents);
 	}
 	add_filter('common_format_money', 'common_format_money', 5, 2);
 }
@@ -138,7 +145,7 @@ if (!function_exists('common_inflect')) {
 	 * @return string Inflected string.
 	 */
 	function common_inflect($count, $single='', $plural='') {
-		return \blobfolio\common\format::inflect($count, $single, $plural);
+		return v_format::inflect($count, $single, $plural);
 	}
 }
 
@@ -153,9 +160,9 @@ if (!function_exists('common_get_excerpt')) {
 	 * @return string Excerpt.
 	 */
 	function common_get_excerpt($str, $length=200, $append='...', $method='chars') {
-		\blobfolio\common\mb::strtolower($method);
+		v_mb::strtolower($method);
 
-		return \blobfolio\common\format::excerpt(
+		return v_format::excerpt(
 			$str,
 			array(
 				'unit'=>$method,
@@ -174,7 +181,7 @@ if (!function_exists('common_unixslashit')) {
 	 * @return string Path.
 	 */
 	function common_unixslashit($path='') {
-		return \blobfolio\common\file::unixslash($path);
+		return v_file::unixslash($path);
 	}
 }
 
@@ -186,7 +193,7 @@ if (!function_exists('common_unleadingslashit')) {
 	 * @return string Path.
 	 */
 	function common_unleadingslashit($path='') {
-		return \blobfolio\common\file::unleadingslash($path);
+		return v_file::unleadingslash($path);
 	}
 }
 
@@ -198,7 +205,7 @@ if (!function_exists('common_leadingslashit')) {
 	 * @return string Path.
 	 */
 	function common_leadingslashit($path='') {
-		return \blobfolio\common\file::leadingslash($path);
+		return v_file::leadingslash($path);
 	}
 }
 
@@ -216,7 +223,7 @@ if (!function_exists('common_array_to_indexed')) {
 	 * @return array Array.
 	 */
 	function common_array_to_indexed($arr) {
-		return \blobfolio\common\format::array_to_indexed($arr);
+		return v_format::array_to_indexed($arr);
 	}
 }
 
@@ -231,7 +238,7 @@ if (!function_exists('common_to_csv')) {
 	 * @return string CSV content.
 	 */
 	function common_to_csv($data=null, $headers=null, $delimiter=',', $eol="\n") {
-		return \blobfolio\common\format::to_csv($data, $headers, $delimiter, $eol);
+		return v_format::to_csv($data, $headers, $delimiter, $eol);
 	}
 }
 
@@ -246,7 +253,7 @@ if (!function_exists('common_to_xls')) {
 	 * @return string XLS content.
 	 */
 	function common_to_xls($data=null, $headers=null) {
-		return \blobfolio\common\format::to_xls($data, $headers);
+		return v_format::to_xls($data, $headers);
 	}
 }
 
@@ -268,7 +275,7 @@ if (!function_exists('common_to_range')) {
 	 * @return mixed Value.
 	 */
 	function common_to_range($value, $min=null, $max=null) {
-		return \blobfolio\common\sanitize::to_range($value, $min, $max);
+		return v_sanitize::to_range($value, $min, $max);
 	}
 }
 
@@ -282,7 +289,7 @@ if (!function_exists('common_in_range')) {
 	 * @return bool True/false.
 	 */
 	function common_in_range($value, $min=null, $max=null) {
-		return \blobfolio\common\data::in_range($value, $min, $max);
+		return data::in_range($value, $min, $max);
 	}
 }
 
@@ -298,7 +305,7 @@ if (!function_exists('common_length_in_range')) {
 	 * @return bool True/false.
 	 */
 	function common_length_in_range($str, $min=null, $max=null) {
-		return \blobfolio\common\data::length_in_range($str, $min, $max);
+		return data::length_in_range($str, $min, $max);
 	}
 }
 
@@ -312,7 +319,7 @@ if (!function_exists('common_utf8')) {
 	 * @return string String.
 	 */
 	function common_utf8($str) {
-		return \blobfolio\common\sanitize::utf8($str);
+		return v_sanitize::utf8($str);
 	}
 }
 
@@ -342,7 +349,7 @@ if (!function_exists('common_sanitize_name')) {
 	 * @return string Name.
 	 */
 	function common_sanitize_name($str='') {
-		return \blobfolio\common\sanitize::name($str);
+		return v_sanitize::name($str);
 	}
 }
 
@@ -356,7 +363,7 @@ if (!function_exists('common_sanitize_printable')) {
 	 * @return string String.
 	 */
 	function common_sanitize_printable($str='') {
-		return \blobfolio\common\sanitize::printable($str);
+		return v_sanitize::printable($str);
 	}
 }
 
@@ -369,7 +376,7 @@ if (!function_exists('common_sanitize_csv')) {
 	 * @return string String.
 	 */
 	function common_sanitize_csv($str='', $newlines=false) {
-		return \blobfolio\common\sanitize::csv($str);
+		return v_sanitize::csv($str);
 	}
 }
 
@@ -385,7 +392,7 @@ if (!function_exists('common_sanitize_newlines')) {
 	 * @return string String.
 	 */
 	function common_sanitize_newlines($str='', $newlines=2) {
-		return \blobfolio\common\sanitize::whitespace($str, $newlines);
+		return v_sanitize::whitespace($str, $newlines);
 	}
 }
 
@@ -418,7 +425,7 @@ if (!function_exists('common_sanitize_whitespace')) {
 	 */
 	function common_sanitize_whitespace($str='', $multiline=false) {
 		$newlines = $multiline ? 2 : 0;
-		return \blobfolio\common\sanitize::whitespace($str, $newlines);
+		return v_sanitize::whitespace($str, $newlines);
 	}
 }
 
@@ -433,7 +440,7 @@ if (!function_exists('common_sanitize_quotes')) {
 	 * @return string String.
 	 */
 	function common_sanitize_quotes($str='') {
-		return \blobfolio\common\sanitize::quotes($str);
+		return v_sanitize::quotes($str);
 	}
 }
 
@@ -446,7 +453,7 @@ if (!function_exists('common_sanitize_js_variable')) {
 	 * @return string String.
 	 */
 	function common_sanitize_js_variable($str='', $quote="'") {
-		return \blobfolio\common\sanitize::js($str, $quote);
+		return v_sanitize::js($str, $quote);
 	}
 }
 
@@ -461,7 +468,7 @@ if (!function_exists('common_sanitize_email')) {
 	 * @return string Email.
 	 */
 	function common_sanitize_email($str='') {
-		return \blobfolio\common\sanitize::email($str);
+		return v_sanitize::email($str);
 	}
 }
 
@@ -473,7 +480,7 @@ if (!function_exists('common_sanitize_zip5')) {
 	 * @return string ZIP Code.
 	 */
 	function common_sanitize_zip5($str) {
-		return \blobfolio\common\sanitize::zip5($str);
+		return v_sanitize::zip5($str);
 	}
 }
 
@@ -485,7 +492,7 @@ if (!function_exists('common_sanitize_ip')) {
 	 * @return string IP.
 	 */
 	function common_sanitize_ip($str) {
-		return \blobfolio\common\sanitize::ip($str, true);
+		return v_sanitize::ip($str, true);
 	}
 }
 
@@ -498,7 +505,7 @@ if (!function_exists('common_sanitize_number')) {
 	 * @return float Number.
 	 */
 	function common_sanitize_number($value, $flatten=false) {
-		return \blobfolio\common\cast::to_number($value, $flatten);
+		return v_cast::to_number($value, $flatten);
 	}
 }
 
@@ -511,7 +518,7 @@ if (!function_exists('common_sanitize_bool')) {
 	 * @return bool Bool.
 	 */
 	function common_sanitize_bool($value=false, $flatten=false) {
-		return \blobfolio\common\cast::to_bool($value, $flatten);
+		return v_cast::to_bool($value, $flatten);
 	}
 }
 
@@ -538,7 +545,7 @@ if (!function_exists('common_sanitize_float')) {
 	 * @return float Float.
 	 */
 	function common_sanitize_float($value=0, $flatten=false) {
-		return \blobfolio\common\cast::to_float($value, $flatten);
+		return v_cast::to_float($value, $flatten);
 	}
 }
 
@@ -580,7 +587,7 @@ if (!function_exists('common_sanitize_by_type')) {
 	 * @return mixed Cast value.
 	 */
 	function common_sanitize_by_type($value, $type=null, $flatten=false) {
-		return \blobfolio\common\cast::to_type($value, $type, $flatten);
+		return v_cast::to_type($value, $type, $flatten);
 	}
 }
 
@@ -593,7 +600,7 @@ if (!function_exists('common_sanitize_int')) {
 	 * @return int Int.
 	 */
 	function common_sanitize_int($value=0, $flatten=false) {
-		return \blobfolio\common\cast::to_int($value, $flatten);
+		return v_cast::to_int($value, $flatten);
 	}
 }
 // Alias.
@@ -619,7 +626,7 @@ if (!function_exists('common_sanitize_string')) {
 	 * @return string String.
 	 */
 	function common_sanitize_string($value='', $flatten=false) {
-		return \blobfolio\common\cast::to_string($value, $flatten);
+		return v_cast::to_string($value, $flatten);
 	}
 }
 // Alias.
@@ -644,7 +651,7 @@ if (!function_exists('common_sanitize_array')) {
 	 * @return array Array.
 	 */
 	function common_sanitize_array($value=null) {
-		return \blobfolio\common\cast::to_array($value);
+		return v_cast::to_array($value);
 	}
 }
 
@@ -656,7 +663,7 @@ if (!function_exists('common_sanitize_datetime')) {
 	 * @return string Date.
 	 */
 	function common_sanitize_datetime($date) {
-		return \blobfolio\common\sanitize::datetime($date);
+		return v_sanitize::datetime($date);
 	}
 }
 
@@ -668,7 +675,7 @@ if (!function_exists('common_sanitize_date')) {
 	 * @return string Date.
 	 */
 	function common_sanitize_date($date) {
-		return \blobfolio\common\sanitize::date($date);
+		return v_sanitize::date($date);
 	}
 }
 
@@ -706,7 +713,7 @@ if (!function_exists('common_sanitize_domain_name')) {
 	 * @return string Domain.
 	 */
 	function common_sanitize_domain_name($str) {
-		return \blobfolio\common\sanitize::domain($str);
+		return v_sanitize::domain($str);
 	}
 }
 
@@ -726,7 +733,7 @@ if (!function_exists('common_is_utf8')) {
 	 * @return bool True/false.
 	 */
 	function common_is_utf8($str) {
-		return \blobfolio\common\data::is_utf8($str);
+		return data::is_utf8($str);
 	}
 }
 
@@ -767,7 +774,7 @@ if (!function_exists('common_validate_cc')) {
 	 * @return bool True/false.
 	 */
 	function common_validate_cc($ccnum='') {
-		return false !== \blobfolio\common\sanitize::cc($ccnum);
+		return false !== v_sanitize::cc($ccnum);
 	}
 }
 
@@ -781,8 +788,7 @@ if (!function_exists('common_sanitize_url')) {
 	 * @return string URL.
 	 */
 	function common_sanitize_url($url='') {
-		\blobfolio\common\ref\sanitize::url($url);
-		return $url;
+		return v_sanitize::url($url);
 	}
 }
 
@@ -797,9 +803,9 @@ if (!function_exists('common_validate_domain_name')) {
 	 * @return bool True/false.
 	 */
 	function common_validate_domain_name($domain, $live=true) {
-		\blobfolio\common\ref\cast::bool($live, true);
+		r_cast::to_bool($live, true);
 
-		$host = new \blobfolio\domain\domain($domain);
+		$host = new domain($domain);
 		if (!$host->is_valid() || $host->is_ip()) {
 			return false;
 		}

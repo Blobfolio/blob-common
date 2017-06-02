@@ -25,12 +25,18 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
+use \blobfolio\common\constants;
+use \blobfolio\common\data;
+use \blobfolio\common\image;
+use \blobfolio\common\ref\cast as r_cast;
+use \blobfolio\common\ref\sanitize as r_sanitize;
+
 // Binary paths.
 if (!defined('WP_WEBP_CWEBP')) {
-	define('WP_WEBP_CWEBP', \blobfolio\common\constants::CWEBP);
+	define('WP_WEBP_CWEBP', constants::CWEBP);
 }
 if (!defined('WP_WEBP_GIF2WEBP')) {
-	define('WP_WEBP_GIF2WEBP', \blobfolio\common\constants::GIF2WEBP);
+	define('WP_WEBP_GIF2WEBP', constants::GIF2WEBP);
 }
 
 if (!function_exists('common_supports_webp')) {
@@ -43,7 +49,7 @@ if (!function_exists('common_supports_webp')) {
 		static $support;
 
 		if (is_null($support)) {
-			$support = \blobfolio\common\image::has_webp(WP_WEBP_CWEBP, WP_WEBP_GIF2WEBP);
+			$support = image::has_webp(WP_WEBP_CWEBP, WP_WEBP_GIF2WEBP);
 		}
 
 		return $support;
@@ -122,7 +128,7 @@ if (!function_exists('common_get_webp_src')) {
 		}
 
 		// Sanitize classes.
-		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
+		r_sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
@@ -152,7 +158,7 @@ if (!function_exists('common_get_webp_src')) {
 	 * @return string HTML.
 	 */
 	function common_shortcode_webp_src($args=null, $content='') {
-		\blobfolio\common\ref\cast::to_array($args);
+		r_cast::to_array($args);
 
 		// Classes is going somewhere else.
 		$classes = '';
@@ -205,12 +211,12 @@ if (!function_exists('common_get_webp_srcset')) {
 		}
 
 		// Sanitize classes.
-		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
+		r_sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
 		// And sizes.
-		\blobfolio\common\ref\sanitize::whitespace($data['sizes']);
+		r_sanitize::whitespace($data['sizes']);
 		$data['sizes'] = array_filter($data['sizes'], 'strlen');
 		if (!count($data['sizes'])) {
 			$data['sizes'] = array('100vw');
@@ -221,7 +227,7 @@ if (!function_exists('common_get_webp_srcset')) {
 		$source = '<source type="%s" srcset="%s" sizes="%s" />';
 
 		// Sort out our srcset size(s).
-		\blobfolio\common\ref\sanitize::whitespace($data['size']);
+		r_sanitize::whitespace($data['size']);
 		$data['size'] = array_unique($data['size']);
 		$data['size'] = array_filter($data['size'], 'strlen');
 		$data['size'] = array_values($data['size']);
@@ -236,7 +242,7 @@ if (!function_exists('common_get_webp_srcset')) {
 
 		// Convert srcset to an array.
 		$srcset = explode(',', $srcset);
-		\blobfolio\common\ref\sanitize::whitespace($srcset);
+		r_sanitize::whitespace($srcset);
 
 		// Our default default image.
 		if (false === $image = wp_get_attachment_image_src($data['attachment_id'], $data['size'][0])) {
@@ -354,9 +360,9 @@ if (!function_exists('common_shortcode_webp_caption')) {
 			'classes'=>'',
 			'caption'=>''
 		);
-		$data = \blobfolio\common\data::parse_args($args, $defaults);
+		$data = data::parse_args($args, $defaults);
 		$data['classes'] = explode(',', $data['classes']);
-		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
+		r_sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
@@ -412,7 +418,7 @@ if (!function_exists('common_get_webp_picture')) {
 		}
 
 		// Sanitize classes.
-		\blobfolio\common\ref\sanitize::whitespace($data['classes']);
+		r_sanitize::whitespace($data['classes']);
 		$data['classes'] = array_unique($data['classes']);
 		$data['classes'] = array_filter($data['classes'], 'strlen');
 
@@ -428,14 +434,14 @@ if (!function_exists('common_get_webp_picture')) {
 			}
 
 			// Sanitize sizes.
-			\blobfolio\common\ref\sanitize::whitespace($data['sources'][$k]['sizes']);
+			r_sanitize::whitespace($data['sources'][$k]['sizes']);
 			$data['sources'][$k]['sizes'] = array_filter($data['sources'][$k]['sizes'], 'strlen');
 			if (!count($data['sources'][$k]['sizes'])) {
 				$data['sources'][$k]['sizes'] = array('100vw');
 			}
 
 			// Sort out our srcset size(s).
-			\blobfolio\common\ref\sanitize::whitespace($data['sources'][$k]['size']);
+			r_sanitize::whitespace($data['sources'][$k]['size']);
 			$data['sources'][$k]['size'] = array_unique($data['sources'][$k]['size']);
 			$data['sources'][$k]['size'] = array_filter($data['sources'][$k]['size'], 'strlen');
 			$data['sources'][$k]['size'] = array_values($data['sources'][$k]['size']);
@@ -450,7 +456,7 @@ if (!function_exists('common_get_webp_picture')) {
 
 			// Multiple sources.
 			$srcset = explode(',', $srcset);
-			\blobfolio\common\ref\sanitize::whitespace($srcset);
+			r_sanitize::whitespace($srcset);
 			usort($srcset, '_common_sort_srcset');
 
 			$tmp_webp = array();
@@ -514,7 +520,7 @@ if (!function_exists('common_generate_webp')) {
 	 * @return bool True/false.
 	 */
 	function common_generate_webp($in, $out) {
-		return \blobfolio\common\image::to_webp($in, $out, WP_WEBP_CWEBP, WP_WEBP_GIF2WEBP);
+		return image::to_webp($in, $out, WP_WEBP_CWEBP, WP_WEBP_GIF2WEBP);
 	}
 }
 

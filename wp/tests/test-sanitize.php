@@ -264,8 +264,8 @@ class SanitizeTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_sanitize_printable() {
-		$thing = " test\t ing";
-		$this->assertEquals(' test ing', common_sanitize_printable($thing));
+		$thing = " test\t ing\n";
+		$this->assertEquals(" test\t ing\n", common_sanitize_printable($thing));
 	}
 
 	/**
