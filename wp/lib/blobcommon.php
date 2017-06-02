@@ -23,7 +23,7 @@ class blobcommon {
 	/**
 	 * Init
 	 *
-	 * @return void Nothing.
+	 * @return bool True.
 	 */
 	public static function init() {
 		// Only need to run once.
@@ -66,6 +66,8 @@ class blobcommon {
 			add_filter('transient_update_plugins', array($class, 'update_plugins'));
 			add_filter('site_transient_update_plugins', array($class, 'update_plugins'));
 		}
+
+		return true;
 	}
 
 
