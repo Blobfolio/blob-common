@@ -1481,6 +1481,16 @@ class constants {
 		'number'=>'to_number',
 		'string'=>'to_string'
 	);
+
+	// Bitwise Operators.
+	const BITWISE_OPERATORS = array(
+		'&'=>'AND',
+		'<<'=>'LEFT',
+		'>>'=>'RIGHT',
+		'^'=>'XOR',
+		'|'=>'OR',
+		'~'=>'NOT',
+	);
 }
 
 
