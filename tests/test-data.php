@@ -214,6 +214,20 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::ip_in_range()
+	 *
+	 * @dataProvider data_ip_in_range
+	 *
+	 * @param mixed $ip IP.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @param array $expected Expected.
+	 */
+	function test_ip_in_range($ip, $min, $max, $expected) {
+		$this->assertSame($expected, data::ip_in_range($ip, $min, $max));
+	}
+
+	/**
 	 * ::is_json()
 	 *
 	 * @dataProvider data_is_json
@@ -811,6 +825,40 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				null,
 				'E',
 				false
+			),
+		);
+	}
+
+	/**
+	 * Data for ::ip_in_range()
+	 *
+	 * @return array Data.
+	 */
+	function data_ip_in_range() {
+		return array(
+			array(
+				'127.0.0.1',
+				'127.0.0.0',
+				'127.0.0.2',
+				true
+			),
+			array(
+				'127.0.0.1',
+				'127.0.0.0/24',
+				null,
+				true
+			),
+			array(
+				'127.0.0.1',
+				'192.168.1.0/24',
+				null,
+				false
+			),
+			array(
+				'2600:3c00::f03c:91ff:FEAE:0ff2',
+				'2600:3c00::/64',
+				null,
+				true
 			),
 		);
 	}

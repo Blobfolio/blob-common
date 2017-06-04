@@ -201,10 +201,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param string $value Value.
 	 * @param bool $restricted Allow reserved.
+	 * @param bool $condense Condense IPv6.
 	 * @param string $expected Expected.
 	 */
-	function test_ip($value, $restricted, $expected) {
-		$this->assertEquals($expected, sanitize::ip($value, $restricted));
+	function test_ip($value, $restricted, $condense, $expected) {
+		$this->assertEquals($expected, sanitize::ip($value, $restricted, $condense));
 	}
 
 	/**
@@ -835,37 +836,68 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2',
 				false,
+				true,
 				'2600:3c00::f03c:91ff:feae:ff2'
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
 				false,
+				true,
 				'2600:3c00::f03c:91ff:feae:ff2'
+			),
+			array(
+				'2600:3c00::f03c:91ff:feae:ff2',
+				false,
+				false,
+				'2600:3c00:0000:0000:f03c:91ff:feae:0ff2'
 			),
 			array(
 				'127.0.0.1',
 				false,
+				true,
 				''
 			),
 			array(
 				'127.0.0.1',
+				true,
+				true,
+				'127.0.0.1'
+			),
+			array(
+				'::127.0.0.1',
+				true,
+				true,
+				'127.0.0.1'
+			),
+			array(
+				'[::127.0.0.1]',
+				true,
 				true,
 				'127.0.0.1'
 			),
 			array(
 				'::1',
 				false,
+				true,
 				''
 			),
 			array(
 				'[::1]',
+				true,
 				true,
 				'::1'
 			),
 			array(
 				array('[::1]'),
 				true,
+				true,
 				array('::1')
+			),
+			array(
+				array('[::1]'),
+				true,
+				false,
+				array('0000:0000:0000:0000:0000:0000:0000:0001')
 			),
 		);
 	}

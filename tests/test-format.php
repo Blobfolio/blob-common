@@ -107,6 +107,18 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::ip_to_subnet()
+	 *
+	 * @dataProvider data_ip_to_subnet
+	 *
+	 * @param string $ip IP.
+	 * @param string $expected Expected.
+	 */
+	function test_ip_to_subnet($ip, $expected) {
+		$this->assertEquals($expected, format::ip_to_subnet($ip));
+	}
+
+	/**
 	 * ::json()
 	 *
 	 * @dataProvider data_json
@@ -260,14 +272,21 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				'50.116.18.174/24',
 				array(
 					'min'=>'50.116.18.0',
-					'max'=>'50.116.19.173'
+					'max'=>'50.116.18.255'
 				)
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2/64',
 				array(
-					'min'=>'2600:3c00::f03c:91ff:feae:ff2',
+					'min'=>'2600:3c00::',
 					'max'=>'2600:3c00::ffff:ffff:ffff:ffff'
+				)
+			),
+			array(
+				'2600:3c00::f03c:91ff:feae:0ff2/96',
+				array(
+					'min'=>'2600:3c00::f03c:91ff:0:0',
+					'max'=>'2600:3c00::f03c:91ff:ffff:ffff'
 				)
 			),
 			array(
@@ -425,6 +444,28 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'127.0.0.1',
 				2130706433
+			),
+		);
+	}
+
+	/**
+	 * Data for ::ip_to_subnet()
+	 *
+	 * @return array Data.
+	 */
+	function data_ip_to_subnet() {
+		return array(
+			array(
+				'50.116.18.174',
+				'50.116.18.0/24'
+			),
+			array(
+				'2600:3c00::f03c:91ff:FEAE:0ff2',
+				'2600:3c00::/64',
+			),
+			array(
+				'127.0.0.1',
+				'127.0.0.0/24'
 			),
 		);
 	}
