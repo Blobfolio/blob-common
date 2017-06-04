@@ -30,6 +30,7 @@ echo $first; //apples
  * [datediff()](#datediff)
  * [iin_array()](#iin_array)
  * [in_range()](#in_range)
+ * [ip_in_range()](#ip_in_range)
  * [is_json()](#is_json)
  * [is_utf8()](#is_utf8)
  * [json_decode_array()](#json_decode_array)
@@ -330,6 +331,32 @@ Returns `TRUE` or `FALSE`. Only passed boundaries are tested.
 
 ```php
 var_dump(blobfolio\common\data::in_range(3, 0, 300)); //TRUE
+```
+
+
+
+## ip_in_range()
+
+Determine if an IP address is within the range.
+
+#### Arguments
+
+ * (*string*) IP
+ * (*string*) Min IP or a CIDR.
+ * (*string*) (*optional*) Max IP. This argument is ignored if a CIDR is passed in #2. Default: `NULL`
+
+#### Returns
+
+Returns `TRUE` or `FALSE`.
+
+#### Example
+
+```php
+// Test against a CIDR.
+blobfolio\common\data::in_range('127.0.0.1', '127.0.0.0/24'); //TRUE
+
+// Test against two IPs.
+blobfolio\common\data::in_range('127.0.0.1', '127.0.0.0', '127.0.0.255'); //TRUE
 ```
 
 

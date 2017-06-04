@@ -30,10 +30,12 @@ blobfolio\common\ref\format::money($foo);
  * [excerpt()](#excerpt)
  * [inflect()](#inflect)
  * [ip_to_number()](#ip_to_number)
+ * [ip_to_subnet()](#ip_to_subnet)
  * [json()](#json)
  * [json_decode()](#json_decode)
  * [links()](#links)
  * [money()](#money)
+ * [number_to_ip()](#number_to_ip)
  * [phone()](#phone)
  * [to_csv()](#to_csv)
  * [to_timezone()](#to_timezone)
@@ -253,7 +255,7 @@ Convert an IPv4 or IPv6 address to its numerical equivalent. IPv6 addresses requ
 
 #### Returns
 
-If passed by value, returns the numerical IP address of `FALSE`, otherwise `TRUE`/`FALSE`.
+If passed by value, returns the numerical IP address or `FALSE`, otherwise `TRUE`/`FALSE`.
 
 #### Example
 
@@ -263,6 +265,35 @@ $foo = blobfolio\common\format::ip_to_number('50.116.18.174'); //846467758
 
 //by reference
 blobfolio\common\ref\format::ip_to_number($foo);
+```
+
+
+
+## ip_to_subnet()
+
+Retrieve the subnet range for an IP address. This assumes `/24` for IPv4 and `/64` for IPv6.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) IP
+
+#### Returns
+
+If passed by value, returns the subnet or `FALSE`, otherwise `TRUE`/`FALSE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\format::ip_to_subnet('50.116.18.174'); //50.116.18.0/24
+
+//by reference
+blobfolio\common\ref\format::ip_to_subnet($foo);
 ```
 
 
@@ -376,6 +407,35 @@ $foo = blobfolio\common\format::money(.75, false); //$0.75
 
 //by reference
 blobfolio\common\ref\format::money($foo);
+```
+
+
+
+## number_to_ip()
+
+Like `long2ip` but capable of handling IPv6. This requires `bcmath`.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string|int*) IP as a decimal.
+
+#### Returns
+
+If passed by value, returns the IP address or `FALSE`, otherwise `TRUE`/`FALSE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\format::number_to_ip(846467758); //50.116.18.174
+
+//by reference
+blobfolio\common\ref\format::number_to_ip($foo);
 ```
 
 

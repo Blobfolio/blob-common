@@ -400,6 +400,7 @@ Compact and range-check an IPv4 or IPv6 address.
 
  * (*mixed*) IP. If an array is passed, each value will be recursively sanitized.
  * (*bool*) (*optional*) Allow reserved. If `TRUE`, reserved/restricted IPs will be allowed. Default: `FALSE`
+ * (*bool*) (*optional*) Compact IPv6. If `TRUE`, IPv6 addresses will be returned in their condensed notation, otherwise they'll be expanded. Default: `TRUE`
 
 #### Returns
 
