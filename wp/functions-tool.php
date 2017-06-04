@@ -67,9 +67,7 @@ if (!function_exists('common_iin_array()')) {
 	 * @return bool True/false.
 	 */
 	function common_iin_array($needle, $haystack) {
-		$needle = common_strtolower($needle);
-		$haystack = array_map('common_strtolower', $haystack);
-		return in_array($needle, $haystack, true);
+		return data::iin_array($needle, $haystack, true);
 	}
 }
 
@@ -82,12 +80,7 @@ if (!function_exists('common_iarray_key_exists()')) {
 	 * @return bool True/false.
 	 */
 	function common_iarray_key_exists($needle, $haystack) {
-		if (!is_array($haystack)) {
-			return false;
-		}
-		$needle = common_strtolower($needle);
-		$haystack = array_map('common_strtolower', array_keys($haystack));
-		return in_array($needle, $haystack, true);
+		return data::array_ikey_exists($needle, $haystack);
 	}
 }
 
