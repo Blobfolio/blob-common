@@ -177,10 +177,11 @@ class sanitize {
 	 *
 	 * @param string $str IP.
 	 * @param bool $restricted Allow private/restricted values.
+	 * @param bool $condense Condense IPv6.
 	 * @return string IP.
 	 */
-	public static function ip($str='', $restricted=false) {
-		ref\sanitize::ip($str, $restricted);
+	public static function ip($str='', $restricted=false, $condense=true) {
+		ref\sanitize::ip($str, $restricted, $condense);
 		return $str;
 	}
 

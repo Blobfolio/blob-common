@@ -470,30 +470,45 @@ class sanitize {
 	 *
 	 * @param string $str IP.
 	 * @param bool $restricted Allow private/restricted values.
+	 * @param bool $condense Condense IPv6.
 	 * @return string IP.
 	 */
-	public static function ip(&$str='', $restricted=false) {
+	public static function ip(&$str='', $restricted=false, $condense=true) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::ip($str[$k], $restricted);
+				static::ip($str[$k], $restricted, $condense);
 			}
 		}
 		else {
 			cast::to_string($str);
 			mb::strtolower($str);
 			cast::to_bool($restricted, true);
+			cast::to_bool($condense, true);
 
 			// Start by getting rid of obviously bad data.
 			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
 
 			// IPv6 might be encased in brackets.
-			if (preg_match('/^\[[\d\:a-f]+\]$/', $str)) {
+			if (preg_match('/^\[[\d\.\:a-f]+\]$/', $str)) {
 				$str = substr($str, 1, -1);
 			}
 
-			// Try to compact IPv6.
+			// Turn IPv6-ized 4s back into IPv4.
+			if (preg_match('/^::/', $str) && (false !== strpos($str, '.'))) {
+				$str = substr($str, 2);
+			}
+
+			// IPv6.
 			if (filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-				$str = inet_ntop(inet_pton($str));
+				// Condense it?
+				if ($condense) {
+					$str = inet_ntop(inet_pton($str));
+				}
+				// Expand.
+				else {
+					$hex = unpack('H*hex', inet_pton($str));
+					$str = substr(preg_replace('/([A-f0-9]{4})/', '$1:', $hex['hex']), 0, -1);
+				}
 			}
 			elseif (!filter_var($str, FILTER_VALIDATE_IP)) {
 				$str = '';
@@ -501,7 +516,7 @@ class sanitize {
 
 			if (
 				!$restricted &&
-				v_mb::strlen($str) &&
+				strlen($str) &&
 				!filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
 			) {
 				$str = '';
