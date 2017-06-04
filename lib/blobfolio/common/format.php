@@ -42,75 +42,55 @@ class format {
 		ref\cast::to_string($cidr, true);
 
 		$range = array('min'=>0, 'max'=>0);
-		$cidr = explode('/', $cidr);
+		$cidr = array_pad(explode('/', $cidr), 2, 0);
+		ref\cast::to_int($cidr[1]);
 
 		// IPv4?
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-			if (count($cidr) === 1) {
+			// IPv4 is only 32-bit.
+			ref\sanitize::to_range($cidr[1], 0, 32);
+
+			if (0 === $cidr[1]) {
 				$range['min'] = $range['max'] = sanitize::ip($cidr[0]);
 			}
 			else {
-				$range['min'] = long2ip((ip2long($cidr[0])) & ((-1 << (32 - (int) $cidr[1]))));
-				$range['max'] = long2ip((ip2long($cidr[0])) + pow(2, (32 - (int) $cidr[1])) - 1);
+				// Work from binary.
+				$cidr[1] = bindec(str_pad(str_repeat('1', $cidr[1]), 32, '0'));
+
+				// Calculate the range.
+				$ip = ip2long($cidr[0]);
+				$netmask = $cidr[1];
+				$first = ($ip & $netmask);
+				$bc = $first | ~$netmask;
+
+				$range['min'] = long2ip($first);
+				$range['max'] = long2ip($bc);
 			}
 			return $range;
 		}
 
 		// IPv6? Of course a little more complicated.
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-			if (count($cidr) === 1) {
+			// IPv6 is only 128-bit.
+			ref\sanitize::to_range($cidr[1], 0, 128);
+
+			if (0 === $cidr[1]) {
 				$range['min'] = $range['max'] = sanitize::ip($cidr[0]);
 				return $range;
 			}
 
-			// Parse the address into a binary string.
-			$firstaddrbin = inet_pton($cidr[0]);
+			// Work from binary.
+			$cidr[1] = bc::bindec(str_pad(str_repeat('1', $cidr[1]), 128, '0'));
 
-			// Convert the binary string to a string with hexadecimal characters (bin2hex).
-			$tmp = unpack('H*', $firstaddrbin);
-			$firstaddrhex = reset($tmp);
+			// Calculate the range.
+			$ip = static::ip_to_number($cidr[0]);
+			$netmask = $cidr[1];
+			$first = bc::bitwise('&', $ip, $netmask);
+			$bc = bc::bitwise('|', $first, bc::bitwise('~', $netmask, null, 128));
 
-			// Overwriting first address string to make sure notation is optimal.
-			$cidr[0] = inet_ntop($firstaddrbin);
+			$range['min'] = static::number_to_ip($first);
+			$range['max'] = static::number_to_ip($bc);
 
-			// Calculate the number of 'flexible' bits.
-			$flexbits = 128 - $cidr[1];
-
-			// Build the hexadecimal string of the last address.
-			$lastaddrhex = $firstaddrhex;
-
-			// We start at the end of the string (which is always 32 characters long).
-			$pos = 31;
-			while ($flexbits > 0) {
-				// Get the character at this position.
-				$orig = substr($lastaddrhex, $pos, 1);
-
-				// Convert it to an integer.
-				$origval = hexdec($orig);
-
-				// OR it with (2^flexbits)-1, with flexbits limited to 4 at a time.
-				$newval = $origval | (pow(2, min(4, $flexbits)) - 1);
-
-				// Convert it back to a hexadecimal character.
-				$new = dechex($newval);
-
-				// And put that character back in the string.
-				$lastaddrhex = substr_replace($lastaddrhex, $new, $pos, 1);
-
-				// We processed one nibble, move to previous position.
-				$flexbits -= 4;
-				$pos -= 1;
-			}
-
-			// Convert the hexadecimal string to a binary string (hex2bin).
-			$lastaddrbin = pack('H*', $lastaddrhex);
-
-			// And create an IPv6 address from the binary string.
-			$lastaddrstr = inet_ntop($lastaddrbin);
-
-			// Pack and done!
-			$range['min'] = sanitize::ip($cidr[0]);
-			$range['max'] = sanitize::ip($lastaddrstr);
 			return $range;
 		}
 
@@ -260,6 +240,20 @@ class format {
 	}
 
 	/**
+	 * IP to Subnet
+	 *
+	 * This assumes the standard ranges
+	 * of 24 for IPv4 and 64 for IPv6.
+	 *
+	 * @param string $ip IP.
+	 * @return string|bool Subnet or false.
+	 */
+	public static function ip_to_subnet($ip) {
+		ref\format::ip_to_subnet($ip);
+		return $ip;
+	}
+
+	/**
 	 * JSON
 	 *
 	 * Fix JSON formatting.
@@ -321,6 +315,17 @@ class format {
 	public static function money($value=0, $cents=false, $separator='', $no00=false) {
 		ref\format::money($value, $cents, $separator, $no00);
 		return $value;
+	}
+
+	/**
+	 * Number to IP
+	 *
+	 * @param string $ip Decimal.
+	 * @return string|bool IP or false.
+	 */
+	public static function number_to_ip($ip) {
+		ref\format::number_to_ip($ip);
+		return $ip;
 	}
 
 	/**

@@ -170,14 +170,14 @@ class format {
 	 * IP to Number
 	 *
 	 * @param string $ip IP.
-	 * @return bool True.
+	 * @return bool True/false.
 	 */
 	public static function ip_to_number(&$ip) {
 		cast::to_string($ip, true);
 
 		if (!filter_var($ip, FILTER_VALIDATE_IP)) {
 			$ip = false;
-			return true;
+			return false;
 		}
 
 		// IPv4 is easy.
@@ -211,6 +211,43 @@ class format {
 		}
 
 		$ip = false;
+		return false;
+	}
+
+	/**
+	 * IP to Subnet
+	 *
+	 * This assumes the standard ranges
+	 * of 24 for IPv4 and 64 for IPv6.
+	 *
+	 * @param string $ip IP.
+	 * @return bool True/false.
+	 */
+	public static function ip_to_subnet(&$ip) {
+		sanitize::ip($ip, true, false);
+
+		// Not an IP.
+		if (!$ip) {
+			$ip = false;
+			return false;
+		}
+		// IPv4, as always, easy.
+		elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+			// Find the minimum IP (simply last chunk to 0).
+			$bits = explode('.', $ip);
+			$bits[3] = 0;
+			$ip = implode('.', $bits) . '/24';
+		}
+		// IPv6, more annoying.
+		else {
+			// Find the minimum IP (last 64 bytes to 0).
+			$bits = explode(':', $ip);
+			for ($x = 4; $x <= 7; $x++) {
+				$bits[$x] = 0;
+			}
+			$ip = v_sanitize::ip(implode(':', $bits), true) . '/64';
+		}
+
 		return true;
 	}
 
@@ -682,6 +719,43 @@ class format {
 			}
 		}
 
+		return true;
+	}
+
+	/**
+	 * Number to IP
+	 *
+	 * @param string $ip Decimal.
+	 * @return bool True/false.
+	 */
+	public static function number_to_ip(&$ip) {
+		cast::to_string($ip, true);
+		if (!$ip || ('0' === $ip)) {
+			$ip = false;
+			return false;
+		}
+
+		$bin = '';
+		do {
+			$bin = bcmod($ip, '2') . $bin;
+			$ip = bcdiv($ip, '2', 0);
+		} while (bccomp($ip, '0'));
+
+		$bin = str_pad($bin, 128, '0', STR_PAD_LEFT);
+		$chunk = array();
+		for ($bit = 0; $bit <= 7; $bit++) {
+			$bin_part = substr($bin, $bit * 16, 16);
+			$chunk[] = dechex(bindec($bin_part));
+		}
+		$ip = implode(':', $chunk);
+		$ip = inet_ntop(inet_pton($ip));
+
+		// Make sure IPv4 is normal.
+		if (!$ip || '::' === $ip) {
+			$ip = '0.0.0.0';
+		}
+
+		sanitize::ip($ip, true);
 		return true;
 	}
 
