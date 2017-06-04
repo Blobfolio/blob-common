@@ -385,6 +385,56 @@ class data {
 	}
 
 	/**
+	 * IP in Range?
+	 *
+	 * Check to see if an IP is in range. This
+	 * either accepts a minimum and maximum IP,
+	 * or a CIDR.
+	 *
+	 * @param string $ip String.
+	 * @param string $min Min or CIDR.
+	 * @param string $max Max.
+	 * @return bool True/false.
+	 */
+	public static function ip_in_range($ip, $min, $max=null) {
+		ref\sanitize::ip($ip, true);
+		ref\cast::to_string($min);
+
+		// Bad IP.
+		if (!$ip) {
+			return false;
+		}
+
+		// Is $min a range?
+		if (false !== strpos($min, '/')) {
+			if (false === ($range = format::cidr_to_range($min))) {
+				return false;
+			}
+			$min = $range['min'];
+			$max = $range['max'];
+		}
+		// Max is required otherwise.
+		elseif (is_null($max)) {
+			return false;
+		}
+
+		// Convert everything to a number.
+		ref\format::ip_to_number($ip);
+		ref\format::ip_to_number($min);
+		ref\format::ip_to_number($max);
+
+		if (
+			(false !== $ip) &&
+			(false !== $min) &&
+			(false !== $max)
+		) {
+			return static::in_range($ip, $min, $max);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Is JSON?
 	 *
 	 * @param string $str String.
