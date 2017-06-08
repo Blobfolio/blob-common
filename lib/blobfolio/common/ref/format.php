@@ -10,6 +10,7 @@
 
 namespace blobfolio\common\ref;
 
+use \blobfolio\common\bc;
 use \blobfolio\common\constants;
 use \blobfolio\common\data;
 use \blobfolio\common\file as v_file;
@@ -190,16 +191,14 @@ class format {
 		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 			try {
 				$ip_n = inet_pton($ip);
+
 				$bin = '';
-				for ($bit = strlen($ip_n) - 1; $bit >= 0; $bit--) {
+				$length = strlen($ip_n) - 1;
+				for ($bit = $length; $bit >= 0; $bit--) {
 					$bin = sprintf('%08b', ord($ip_n[$bit])) . $bin;
 				}
-				$dec = '0';
-				for ($i = 0; $i < strlen($bin); $i++) {
-					$dec = bcmul($dec, '2', 0);
-					$dec = bcadd($dec, $bin[$i], 0);
-				}
-				$ip = $dec;
+
+				$ip = bc::bindec($bin);
 				return true;
 			} catch (\Throwable $e) {
 				$ip = false;
@@ -735,13 +734,8 @@ class format {
 			return false;
 		}
 
-		$bin = '';
-		do {
-			$bin = bcmod($ip, '2') . $bin;
-			$ip = bcdiv($ip, '2', 0);
-		} while (bccomp($ip, '0'));
+		$bin = bc::decbin($ip, 128);
 
-		$bin = str_pad($bin, 128, '0', STR_PAD_LEFT);
 		$chunk = array();
 		for ($bit = 0; $bit <= 7; $bit++) {
 			$bin_part = substr($bin, $bit * 16, 16);
