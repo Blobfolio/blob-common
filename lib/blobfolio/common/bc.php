@@ -2,8 +2,7 @@
 /**
  * Helpers for bcmath
  *
- * Just like mbstring, bcmath is missing
- * some low-hanging fruit that we need.
+ * Fill in some missing bcmath-type operations.
  *
  * @see {https://github.com/lifo101/ip/blob/master/src/Lifo/IP/BC.php}
  * @see {http://cct.me.ntut.edu.tw/ccteducation/chchting/aiahtm/computer/phphelp/ref.bc.php.htm}
@@ -18,6 +17,13 @@ class bc {
 
 	/**
 	 * Bitwise Operations
+	 *
+	 * Note: this probably should not be referenced directly in your
+	 * projects.
+	 *
+	 * While similar to native bitwise operations, it is not fully
+	 * consistent behaviorally. Within blob-common, this helps with IPv6
+	 * calculations; results for other purposes will vary.
 	 *
 	 * @param string $method Bitwise operator.
 	 * @param string $left Left argument.
@@ -64,8 +70,8 @@ class bc {
 		}
 
 		// Pad all arguments to the longest bit_size.
-		$length   = max(strlen($left), strlen($right), $bits);
-		$left  = sprintf("%0{$length}s", $left);
+		$length = max(strlen($left), strlen($right), $bits);
+		$left = sprintf("%0{$length}s", $left);
 		$right = sprintf("%0{$length}s", $right);
 
 		// Build the output bit-by-bit.
