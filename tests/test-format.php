@@ -160,6 +160,18 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::number_to_ip()
+	 *
+	 * @dataProvider data_number_to_ip
+	 *
+	 * @param string $ip IP.
+	 * @param string $expected Expected.
+	 */
+	function test_number_to_ip($ip, $expected) {
+		$this->assertEquals($expected, format::number_to_ip($ip));
+	}
+
+	/**
 	 * ::phone()
 	 *
 	 * @dataProvider data_phone
@@ -692,6 +704,28 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(.23, false, '', false, '$0.23'),
 			array(.23, true, '', false, '23¢'),
 			array(array(.23), true, '', false, array('23¢')),
+		);
+	}
+
+	/**
+	 * Data for ::number_to_ip()
+	 *
+	 * @return array Data.
+	 */
+	function data_number_to_ip() {
+		return array(
+			array(
+				846467758,
+				'50.116.18.174',
+			),
+			array(
+				'50511880784403022287880976722111107058',
+				'2600:3c00::f03c:91ff:feae:ff2',
+			),
+			array(
+				2130706433,
+				'127.0.0.1',
+			),
 		);
 	}
 
