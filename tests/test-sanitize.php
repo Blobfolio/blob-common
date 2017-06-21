@@ -145,6 +145,19 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::ean()
+	 *
+	 * @dataProvider data_ean
+	 *
+	 * @param string $value Value.
+	 * @param bool $formatted Formatted.
+	 * @param string $expected Expected.
+	 */
+	function test_ean($value, $formatted, $expected) {
+		$this->assertEquals($expected, sanitize::ean($value, $formatted));
+	}
+
+	/**
 	 * ::email()
 	 *
 	 * @dataProvider data_email
@@ -220,6 +233,19 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_iri_value($value, $protocols, $domains, $expected) {
 		$this->assertEquals($expected, sanitize::iri_value($value, $protocols, $domains));
+	}
+
+	/**
+	 * ::isbn()
+	 *
+	 * @dataProvider data_isbn
+	 *
+	 * @param string $value Value.
+	 * @param bool $formatted Formatted.
+	 * @param string $expected Expected.
+	 */
+	function test_isbn($value, $formatted, $expected) {
+		$this->assertEquals($expected, sanitize::isbn($value, $formatted));
 	}
 
 	/**
@@ -378,6 +404,19 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_to_range($value, $min, $max, $expected) {
 		$this->assertEquals($expected, sanitize::to_range($value, $min, $max));
+	}
+
+	/**
+	 * ::upc()
+	 *
+	 * @dataProvider data_upc
+	 *
+	 * @param string $value Value.
+	 * @param bool $formatted Formatted.
+	 * @param string $expected Expected.
+	 */
+	function test_upc($value, $formatted, $expected) {
+		$this->assertEquals($expected, sanitize::upc($value, $formatted));
 	}
 
 	/**
@@ -691,6 +730,57 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Data for ::ean()
+	 *
+	 * @return array Data.
+	 */
+	function data_ean() {
+		return array(
+			array(
+				'0',
+				false,
+				''
+			),
+			array(
+				'074299160691',
+				false,
+				'0074299160691'
+			),
+			array(
+				'00709077260149',
+				false,
+				'0709077260149'
+			),
+			array(
+				'709077260149',
+				false,
+				'0709077260149'
+			),
+			array(
+				'0709077260555',
+				false,
+				''
+			),
+			array(
+				'0709077260149',
+				true,
+				'0-709077-260149'
+			),
+			array(
+				array(
+					'0709077260149',
+					'0051511500275'
+				),
+				true,
+				array(
+					'0-709077-260149',
+					'0-051511-500275'
+				)
+			),
+		);
+	}
+
+	/**
 	 * Data for ::email()
 	 *
 	 * @return array Data.
@@ -973,6 +1063,46 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Data for ::isbn()
+	 *
+	 * @return array Data.
+	 */
+	function data_isbn() {
+		return array(
+			array(
+				'0',
+				false,
+				''
+			),
+			array(
+				'0939117606',
+				false,
+				'0939117606'
+			),
+			array(
+				'939117606',
+				false,
+				'0939117606'
+			),
+			array(
+				'9780939117604',
+				false,
+				'9780939117604'
+			),
+			array(
+				'0-9752298-0-X',
+				false,
+				'097522980X'
+			),
+			array(
+				'0975229800',
+				false,
+				''
+			)
+		);
+	}
+
+	/**
 	 * Data for ::js()
 	 *
 	 * @return array Data.
@@ -1232,6 +1362,52 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'2016-01-20',
 				null,
 				'2016-01-20'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::upc()
+	 *
+	 * @return array Data.
+	 */
+	function data_upc() {
+		return array(
+			array(
+				'0',
+				false,
+				''
+			),
+			array(
+				'089218545992',
+				false,
+				'089218545992'
+			),
+			array(
+				'0089218545992',
+				false,
+				'089218545992'
+			),
+			array(
+				'89218545992',
+				false,
+				'089218545992'
+			),
+			array(
+				'089218545555',
+				false,
+				''
+			),
+			array(
+				array(
+					'89218545992',
+					'075597996524'
+				),
+				true,
+				array(
+					'0-89218-54599-2',
+					'0-75597-99652-4'
+				)
 			),
 		);
 	}

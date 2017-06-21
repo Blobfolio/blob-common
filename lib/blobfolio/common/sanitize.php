@@ -124,6 +124,20 @@ class sanitize {
 	}
 
 	/**
+	 * EAN13
+	 *
+	 * Almost exactly like UPC, but not quite.
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return string String.
+	 */
+	public static function ean($str, $formatted=false) {
+		ref\sanitize::ean($str, $formatted);
+		return $str;
+	}
+
+	/**
 	 * Email
 	 *
 	 * Converts the email to lowercase, strips
@@ -195,6 +209,20 @@ class sanitize {
 	 */
 	public static function iri_value($str='', $protocols=null, $domains=null) {
 		ref\sanitize::iri_value($str, $protocols, $domains);
+		return $str;
+	}
+
+	/**
+	 * ISBN
+	 *
+	 * Validate an ISBN 10 or 13.
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return bool True/false.
+	 */
+	public static function isbn($str, $formatted=false) {
+		ref\sanitize::isbn($str, $formatted);
 		return $str;
 	}
 
@@ -337,6 +365,18 @@ class sanitize {
 	public static function to_range($value, $min=null, $max=null) {
 		ref\sanitize::to_range($value, $min, $max);
 		return $value;
+	}
+
+	/**
+	 * UPC
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return string String.
+	 */
+	public static function upc($str, $formatted=false) {
+		ref\sanitize::upc($str, $formatted);
+		return $str;
 	}
 
 	/**

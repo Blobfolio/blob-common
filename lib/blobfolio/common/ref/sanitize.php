@@ -340,6 +340,54 @@ class sanitize {
 	}
 
 	/**
+	 * EAN13
+	 *
+	 * Almost exactly like UPC, but not quite.
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return string String.
+	 */
+	public static function ean(&$str, $formatted=false) {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::ean($str[$k], $formatted);
+			}
+		}
+		else {
+			cast::to_string($str);
+			$str = preg_replace('/[^\d]/', '', $str);
+			$str = str_pad($str, 13, '0', STR_PAD_LEFT);
+
+			// Trim leading zeroes if it is too long.
+			while (strlen($str) > 13 && (0 === strpos($str, '0'))) {
+				$str = substr($str, 1);
+			}
+
+			if (strlen($str) !== 13 || ('0000000000000' === $str)) {
+				$str = '';
+				return false;
+			}
+
+			// Try to pad it.
+			while (!static::gtin($str) && strlen($str) <= 18) {
+				$str = "0$str";
+			}
+			if (!static::gtin($str)) {
+				$str = '';
+				return false;
+			}
+
+			// Last thing, format?
+			if ($formatted) {
+				$str = preg_replace('/^(\d{1})(\d{6})(\d{6})$/', '$1-$2-$3', $str);
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Email
 	 *
 	 * Converts the email to lowercase, strips
@@ -419,6 +467,29 @@ class sanitize {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validate GTIN
+	 *
+	 * This validates the GTIN checksum for`EAN, UPC, etc. The check
+	 * character is expected to be lopped on the end.
+	 *
+	 * @param string $str String.
+	 * @return bool True/false.
+	 */
+	protected static function gtin($str) {
+		$str = preg_replace('/[^\d]/', '', $str);
+		$code = str_split(substr($str, 0, -1));
+		$check = (int) substr($str, -1);
+
+		$total = 0;
+		for ($x = count($code) - 1; $x >= 0; $x--) {
+			$total += (($x % 2) * 2 + 1 ) * $code[$x];
+		}
+		$checksum = (10 - ($total % 10));
+
+		return $checksum === $check;
 	}
 
 	/**
@@ -587,6 +658,104 @@ class sanitize {
 				$domain = v_sanitize::domain($str);
 				if (strlen($domain) && !in_array($domain, $allowed_domains, true)) {
 					$str = '';
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * ISBN
+	 *
+	 * Validate an ISBN 10 or 13.
+	 *
+	 * @see {https://www.isbn-international.org/export_rangemessage.xml}
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return bool True/false.
+	 */
+	public static function isbn(&$str, $formatted=false) {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::isbn($str[$k], $formatted);
+			}
+		}
+		else {
+			cast::to_string($str, true);
+			mb::strtoupper($str);
+			$str = preg_replace('/[^\dX]/', '', $str);
+
+			// Zero-pad.
+			if (strlen($str) <= 10) {
+				$str = str_pad($str, 10, '0', STR_PAD_LEFT);
+			}
+			elseif (strlen($str) < 13) {
+				$str = preg_replace('/[^\d]/', '', $str);
+				$str = str_pad($str, 13, '0', STR_PAD_LEFT);
+			}
+
+			if (
+				('0000000000' === $str) ||
+				('0000000000000' === $str) ||
+				strlen($str) > 13
+			) {
+				$str = '';
+				return false;
+			}
+
+			// Validate a 10.
+			if (strlen($str) === 10) {
+				$checksum = 0;
+				for ($x = 0; $x < 9; $x++) {
+					if ('X' === $str[$x]) {
+						$checksum += 10 * (10 - $x);
+					}
+					else {
+						$checksum += intval($str[$x]) * (10 - $x);
+					}
+				}
+
+				$checksum = 11 - $checksum % 11;
+				if (10 === $checksum) {
+					$checksum = 'X';
+				}
+				elseif (11 === $checksum) {
+					$checksum = 0;
+				}
+				else {
+					$checksum = (int) $checksum;
+				}
+
+				$check = ('X' === $str[9]) ? 'X' : intval($str[9]);
+				if ($check !== $checksum) {
+					$str = '';
+					return false;
+				}
+			}
+			// Validate a 13.
+			else {
+				if (!static::gtin($str)) {
+					$str = '';
+					return false;
+				}
+			}
+
+			// Formatting is a massive pain.
+			if ($formatted) {
+				$chunk = array();
+				if (strlen($str) === 13) {
+					$chunk[] = substr($str, 0, 3);
+				}
+
+				// Registration Group.
+				if (!count($chunk) || '978' === $chunk[0]) {
+
+				}
+
+				if (count($chunk) && '979' === $chunk[0]) {
+
 				}
 			}
 		}
@@ -1095,6 +1264,53 @@ class sanitize {
 				$value = $original;
 			} catch (\Exception $e) {
 				$value = $original;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * UPC-A
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return string String.
+	 */
+	public static function upc(&$str, $formatted=false) {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::upc($str[$k], $formatted);
+			}
+		}
+		else {
+			cast::to_string($str);
+			$str = preg_replace('/[^\d]/', '', $str);
+			$str = str_pad($str, 12, '0', STR_PAD_LEFT);
+
+			// Trim leading zeroes if it is too long.
+			while (strlen($str) > 12 && (0 === strpos($str, '0'))) {
+				$str = substr($str, 1);
+			}
+
+			if (strlen($str) !== 12 || ('000000000000' === $str)) {
+				$str = '';
+				return false;
+			}
+
+			// Temporarily add an extra 0 to validate the GTIN.
+			$str = "0$str";
+			if (static::gtin($str)) {
+				$str = substr($str, 1);
+			}
+			else {
+				$str = '';
+				return false;
+			}
+
+			// Last thing, format?
+			if ($formatted) {
+				$str = preg_replace('/^(\d)(\d{5})(\d{5})(\d)$/', '$1-$2-$3-$4', $str);
 			}
 		}
 
