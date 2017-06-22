@@ -218,11 +218,10 @@ class sanitize {
 	 * Validate an ISBN 10 or 13.
 	 *
 	 * @param string $str String.
-	 * @param bool $formatted Formatted.
 	 * @return bool True/false.
 	 */
-	public static function isbn($str, $formatted=false) {
-		ref\sanitize::isbn($str, $formatted);
+	public static function isbn($str) {
+		ref\sanitize::isbn($str);
 		return $str;
 	}
 

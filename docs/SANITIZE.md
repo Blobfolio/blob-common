@@ -30,12 +30,14 @@ blobfolio\common\ref\sanitize::email($foo);
  * [date()](#date)
  * [datetime()](#datetime)
  * [domain()](#domain)
+ * [ean()](#ean)
  * [email()](#email)
  * [file_extension()](#file_extension)
  * [html()](#html)
  * [hostname()](#hostname)
  * [ip()](#ip)
  * [iri_value()](#iri_value)
+ * [isbn()](#isbn)
  * [js()](#js)
  * [mime()](#mime)
  * [name()](#name)
@@ -49,6 +51,7 @@ blobfolio\common\ref\sanitize::email($foo);
  * [to_range()](#to_range)
  * [url()](#url)
  * [utf8()](#utf8)
+ * [upc()](#upc)
  * [whitespace()](#whitespace)
  * [whitespace_multiline()](#whitespace_multiline)
  * [zip5()](#zip5)
@@ -285,6 +288,31 @@ blobfolio\common\ref\sanitize::domain($foo);
 
 
 
+## ean()
+
+Validate/sanitize an [EAN-13](https://en.wikipedia.org/wiki/International_Article_Number). This should work with EAN-8 as well, but will zero-pad the results.
+
+#### Arguments
+
+ * (*string*) EAN.
+ * (*bool*) (*optional*) Hyphenate output. Default: `FALSE`.
+
+#### Returns
+
+Returns the EAN or `""` by value, otherwise `TRUE`/`FALSE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\sanitize::ean('0709077260149', true); //0-709077-260149
+
+//by ref
+blobfolio\common\ref\sanitize::ean($foo);
+```
+
+
+
 ## email()
 
 Sanitize an email address. This will remove invalid characters, quotes and apostrophes, convert to lowercase, and ensure that the host is a FQDN.
@@ -440,6 +468,30 @@ $foo = blobfolio\common\sanitize::iri_value('javascript: alert(Hi);'); //""
 
 //by reference
 blobfolio\common\ref\sanitize::iri_value($foo);
+```
+
+
+
+## isbn()
+
+Validate/sanitize an ISBN-10 or ISBN-13 code.
+
+#### Arguments
+
+ * (*string*) ISBN.
+
+#### Returns
+
+Returns the ISBN or `""` by value, otherwise `TRUE`/`FALSE`. Note: this will strip hyphenation.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\sanitize::isbn('0939117606'); //0939117606
+
+//by ref
+blobfolio\common\ref\sanitize::isbn($foo);
 ```
 
 
@@ -732,6 +784,31 @@ $foo = blobfolio\common\sanitize::url('//fonts.google.com'); //https://fonts.goo
 
 //by reference
 blobfolio\common\ref\sanitize::url($foo);
+```
+
+
+
+## upc()
+
+Validate/sanitize a UPC code.
+
+#### Arguments
+
+ * (*string*) UPC.
+ * (*bool*) (*optional*) Hyphenate output. Default: `FALSE`.
+
+#### Returns
+
+Returns the UPC or `""` by value, otherwise `TRUE`/`FALSE`.
+
+#### Example
+
+```php
+//by value
+$foo = blobfolio\common\sanitize::upc('089218545992', true); //0-89218-54599-2
+
+//by ref
+blobfolio\common\ref\sanitize::upc($foo);
 ```
 
 

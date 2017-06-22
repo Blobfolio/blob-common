@@ -241,11 +241,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_isbn
 	 *
 	 * @param string $value Value.
-	 * @param bool $formatted Formatted.
 	 * @param string $expected Expected.
 	 */
-	function test_isbn($value, $formatted, $expected) {
-		$this->assertEquals($expected, sanitize::isbn($value, $formatted));
+	function test_isbn($value, $expected) {
+		$this->assertEquals($expected, sanitize::isbn($value));
 	}
 
 	/**
@@ -1071,32 +1070,26 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'0',
-				false,
 				''
 			),
 			array(
 				'0939117606',
-				false,
 				'0939117606'
 			),
 			array(
 				'939117606',
-				false,
 				'0939117606'
 			),
 			array(
 				'9780939117604',
-				false,
 				'9780939117604'
 			),
 			array(
 				'0-9752298-0-X',
-				false,
 				'097522980X'
 			),
 			array(
 				'0975229800',
-				false,
 				''
 			)
 		);

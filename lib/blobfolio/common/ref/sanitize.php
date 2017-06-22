@@ -673,13 +673,12 @@ class sanitize {
 	 * @see {https://www.isbn-international.org/export_rangemessage.xml}
 	 *
 	 * @param string $str String.
-	 * @param bool $formatted Formatted.
 	 * @return bool True/false.
 	 */
-	public static function isbn(&$str, $formatted=false) {
+	public static function isbn(&$str) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::isbn($str[$k], $formatted);
+				static::isbn($str[$k]);
 			}
 		}
 		else {
@@ -739,23 +738,6 @@ class sanitize {
 				if (!static::gtin($str)) {
 					$str = '';
 					return false;
-				}
-			}
-
-			// Formatting is a massive pain.
-			if ($formatted) {
-				$chunk = array();
-				if (strlen($str) === 13) {
-					$chunk[] = substr($str, 0, 3);
-				}
-
-				// Registration Group.
-				if (!count($chunk) || '978' === $chunk[0]) {
-
-				}
-
-				if (count($chunk) && '979' === $chunk[0]) {
-
 				}
 			}
 		}
