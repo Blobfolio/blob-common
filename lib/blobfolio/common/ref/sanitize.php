@@ -682,7 +682,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str, true);
+			cast::to_string($str);
 			mb::strtoupper($str);
 			$str = preg_replace('/[^\dX]/', '', $str);
 
