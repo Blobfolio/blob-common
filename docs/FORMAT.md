@@ -34,6 +34,7 @@ blobfolio\common\ref\format::money($foo);
  * [json()](#json)
  * [json_decode()](#json_decode)
  * [links()](#links)
+ * [list_to_array()](#list_to_array)
  * [money()](#money)
  * [number_to_ip()](#number_to_ip)
  * [phone()](#phone)
@@ -376,6 +377,58 @@ $foo = blobfolio\common\format::links('me@domain.com', $args); //<a href="mailto
 
 //by reference
 blobfolio\common\ref\format::links($foo);
+```
+
+
+
+## list_to_array()
+
+Convert a delimited list, or array of delimited lists, into a normal, single-dimensional array.
+
+This is useful, e.g., in parsing function arguments that might be passed as proper arrays or comma-delimited strings.
+
+Note: empty values are always ignored, but other types of falsey values are fine.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*mixed*) List
+ * (*array*) (*optional*) Arguments. See below for details. Default: `NULL`
+
+#### Returns
+
+If passed by value, returns an array of values, otherwise `TRUE`.
+
+#### Example
+
+```php
+// Possible arguments, defaults shown.
+$args = array(
+  'delimiter'=>',', // List delimiter.
+  'cast'=>'string', // Cast output values as this type.
+  
+  'trim'=>true,     // Trim values, so e.g. "1, 2" and "1,2" wind up the same.
+  'min'=>null,      // Remove values less than this.
+  'max'=>null,      // Remove values greater than this.
+
+  'unique'=>true,   // Remove duplicate values.
+  'sort'=>false,    // Sort values.
+);
+
+// By value.
+$foo = blobfolio\common\format::list_to_array('1,,2,3', $args); //[1, 2, 3]
+
+$args = array(
+  'min'=>'2'
+);
+$foo = blobfolio\common\format::list_to_array('1,2,3', $args); //[2,3]
+
+// By reference.
+blobfolio\common\ref\format::list_to_array($foo, $args);
 ```
 
 
