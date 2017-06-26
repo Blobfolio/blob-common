@@ -145,6 +145,19 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::list_to_array()
+	 *
+	 * @dataProvider data_list_to_array
+	 *
+	 * @param string $value Value.
+	 * @param array $args Args.
+	 * @param string $expected Expected.
+	 */
+	function test_list_to_array($value, $args, $expected) {
+		$this->assertEquals($expected, format::list_to_array($value, $args));
+	}
+
+	/**
 	 * ::money()
 	 *
 	 * @dataProvider data_money
@@ -685,6 +698,63 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 					'class'=>'link'
 				),
 				'<a href="http://blobfolio.com" class="link">blobfolio.com</a>'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::list_to_array()
+	 *
+	 * @return array Data.
+	 */
+	function data_list_to_array() {
+		return array(
+			array(
+				'1,2,3',
+				null,
+				array('1','2','3')
+			),
+			array(
+				array(0, '1,2,3'),
+				null,
+				array('0','1','2','3')
+			),
+			array(
+				array('1,2;3,4'),
+				';',
+				array('1,2', '3,4')
+			),
+			array(
+				array('1, 2, 3,, 3, 4, 4'),
+				array(
+					'delimiter'=>',',
+					'trim'=>true,
+					'unique'=>true,
+					'sort'=>false,
+					'cast'=>'int',
+					'min'=>2,
+					'max'=>3,
+				),
+				array(2,3)
+			),
+			array(
+				array('1, 2, 3,, 3, 4, 4'),
+				array(
+					'unique'=>false,
+					'cast'=>'int',
+					'min'=>2,
+					'max'=>3,
+				),
+				array(2,3,3)
+			),
+			array(
+				array('2015-01-01', array(array('2010-01-01,2014-06-01'))),
+				array(
+					'unique'=>true,
+					'min'=>'2011',
+					'sort'=>true
+				),
+				array('2014-06-01','2015-01-01')
 			),
 		);
 	}
