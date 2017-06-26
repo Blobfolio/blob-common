@@ -681,6 +681,104 @@ class format {
 	}
 
 	/**
+	 * List to Array
+	 *
+	 * Convert a delimited list into a proper array.
+	 *
+	 * @param mixed $list List.
+	 * @param mixed $args Arguments or delimiter.
+	 *
+	 * @args string $delimiter Delimiter.
+	 * @args bool $trim Trim.
+	 * @args bool $unique Unique.
+	 * @args bool $sort Sort output.
+	 * @args string $cast Cast to type.
+	 * @args mixed $min Minimum value.
+	 * @args mixed $max Maximum value.
+	 *
+	 * @return bool True.
+	 */
+	public static function list_to_array(&$list, $args=null) {
+		$out = array();
+
+		// If the arguments are a string, we'll assume the delimiter was
+		// passed.
+		if (is_string($args)) {
+			$args = array('delimiter'=>$args);
+		}
+
+		$args = data::parse_args($args, constants::LIST_TO_ARRAY);
+
+		// Sanitize cast type.
+		mb::strtolower($args['cast']);
+		if (
+			('array' === $args['cast']) ||
+			!array_key_exists($args['cast'], constants::CAST_TYPES)
+		) {
+			$args['cast'] = 'string';
+		}
+
+		// Sanitize min/max.
+		if (!is_null($args['min']) && !is_null($args['max']) && $args['min'] > $args['max']) {
+			data::switcheroo($args['min'], $args['max']);
+		}
+
+		cast::to_array($list);
+		foreach ($list as $k=>$v) {
+			// Recurse if the value is an array.
+			if (is_array($list[$k])) {
+				static::list_to_array($list[$k], $args);
+			}
+			// Otherwise de-list the line.
+			else {
+				cast::to_string($list[$k], true);
+				if ($args['delimiter']) {
+					$list[$k] = explode($args['delimiter'], $list[$k]);
+				}
+				else {
+					$list[$k] = mb::str_split($list[$k]);
+				}
+
+				// Trimming?
+				if ($args['trim']) {
+					mb::trim($list[$k]);
+				}
+
+				// Get rid of empties.
+				$list[$k] = array_filter($list[$k], 'strlen');
+
+				// Casting?
+				if ('string' !== $args['cast']) {
+					cast::to_type($list[$k], $args['cast']);
+				}
+			}
+
+			// Add whatever we've got to the running total.
+			foreach ($list[$k] as $v2) {
+				if (
+					(is_null($args['min']) || $v2 >= $args['min']) &&
+					(is_null($args['max']) || $v2 <= $args['max'])
+				) {
+					$out[] = $v2;
+				}
+			}
+		}
+
+		// Unique?
+		if ($args['unique'] && count($out)) {
+			$out = array_values(array_unique($out));
+		}
+
+		// Sort?
+		if ($args['sort'] && count($out)) {
+			sort($out);
+		}
+
+		$list = $out;
+		return true;
+	}
+
+	/**
 	 * Money (USD)
 	 *
 	 * @param float $value Value.

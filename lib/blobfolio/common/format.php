@@ -304,6 +304,29 @@ class format {
 	}
 
 	/**
+	 * List to Array
+	 *
+	 * Convert a delimited list into a proper array.
+	 *
+	 * @param mixed $list List.
+	 * @param mixed $args Arguments or delimiter.
+	 *
+	 * @args string $delimiter Delimiter.
+	 * @args bool $trim Trim.
+	 * @args bool $unique Unique.
+	 * @args bool $sort Sort output.
+	 * @args string $cast Cast to type.
+	 * @args mixed $min Minimum value.
+	 * @args mixed $max Maximum value.
+	 *
+	 * @return array List.
+	 */
+	public static function list_to_array($list, $args=null) {
+		ref\format::list_to_array($list, $args);
+		return $list;
+	}
+
+	/**
 	 * Money (USD)
 	 *
 	 * @param float $value Value.

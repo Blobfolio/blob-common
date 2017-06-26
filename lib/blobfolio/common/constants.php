@@ -1491,6 +1491,17 @@ class constants {
 		'|'=>'OR',
 		'~'=>'NOT',
 	);
+
+	// Options for list-to-array.
+	const LIST_TO_ARRAY = array(
+		'cast'=>'string',
+		'delimiter'=>',',
+		'max'=>null,
+		'min'=>null,
+		'sort'=>false,
+		'trim'=>true,
+		'unique'=>true,
+	);
 }
 
 
