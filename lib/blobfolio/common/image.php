@@ -646,10 +646,10 @@ class image {
 
 			$type = $info['mime'];
 			if ('image/gif' === $type) {
-				$cmd = escapeshellarg($gif2webp) . ' -m 6 -quiet ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
+				$cmd = escapeshellcmd($gif2webp) . ' -m 6 -quiet ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
 			}
 			else {
-				$cmd = escapeshellarg($cwebp) . ' -mt -quiet -jpeg_like ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
+				$cmd = escapeshellcmd($cwebp) . ' -mt -quiet -jpeg_like ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
 			}
 
 			$process = proc_open(
