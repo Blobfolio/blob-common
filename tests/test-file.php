@@ -79,6 +79,32 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::rmdir()
+	 */
+	function test_rmdir() {
+		$path = static::ASSETS . 'rmdir-test/subdir/';
+
+		// Make a directory.
+		if (!@file_exists($path)) {
+			@mkdir($path, 0755, true);
+		}
+		if (!@file_exists($path)) {
+			$this->markTestSkipped('The test directory could not be created.');
+		}
+
+		// Toss a file in there.
+		@file_put_contents("{$path}test.file", 'hello');
+		if (!@file_exists("{$path}test.file")) {
+			$this->markTestSkipped('The test file could not be created.');
+		}
+
+		// Now delete it.
+		$path = dirname($path);
+		$this->assertSame(true, file::rmdir($path));
+		$this->assertSame(false, @file_exists($path));
+	}
+
+	/**
 	 * ::trailingslash()
 	 *
 	 * @dataProvider data_trailingslash
