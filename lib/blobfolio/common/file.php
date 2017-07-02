@@ -153,6 +153,49 @@ class file {
 	}
 
 	/**
+	 * Recursively Remove A Directory
+	 *
+	 * @param string $path Path.
+	 * @return bool True/false.
+	 */
+	public static function rmdir($path='') {
+		try {
+			ref\file::path($path, true);
+			if (!@is_readable($path) || !@is_dir($path)) {
+				return false;
+			}
+
+			// Scan all files in dir.
+			$handle = opendir($path);
+			while (false !== ($entry = readdir($handle))) {
+				// Anything but a dot === not empty.
+				if (('.' === $entry) || ('..' === $entry)) {
+					continue;
+				}
+
+				$file = "{$path}{$entry}";
+
+				// Delete files.
+				if (@is_file($file)) {
+					@unlink($file);
+				}
+				// Recursively delete directories.
+				else {
+					static::rmdir($file);
+				}
+			}
+		} catch (\Throwable $e) {
+			return false;
+		}
+
+		if (static::empty_dir($path)) {
+			@rmdir($path);
+		}
+
+		return !@file_exists($path);
+	}
+
+	/**
 	 * Add Trailing Slash
 	 *
 	 * @param string $path Path.

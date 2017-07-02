@@ -27,6 +27,7 @@ blobfolio\common\ref\file::leadingslash($path);
  * [path()](#path)
  * [readfile_chunked()](#readfile_chunked)
  * [redirect()](#redirect)
+ * [rmdir()](#rmdir)
  * [trailingslash()](#trailingslash)
  * [unixslash()](#unixslash)
  * [unleadingslash()](#unleadingslash)
@@ -145,6 +146,20 @@ Unset `$_REQUEST` data if any and issue a redirect to another location. By defau
 #### Returns
 
 N/A
+
+
+
+## rmdir()
+
+Recursively remove a directory.
+
+#### Arguments
+
+ * (*string*) Path
+
+#### Returns
+
+Returns `TRUE` if the directory was removed, `FALSE` if there was any sort of problem.
 
 
 
