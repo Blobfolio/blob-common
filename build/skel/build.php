@@ -46,6 +46,19 @@ foreach ($classMap as $k=>$v) {
 	$out[] = "'" . addslashes($k) . "'=>'phar://' . \$blobcommon_phar . '/" . addslashes(ltrim($classMap[$k], '/')) . "'";
 }
 
+// Compress PHP files.
+$dir = new RecursiveIteratorIterator(
+	new RecursiveDirectoryIterator(OUT_DIR)
+);
+foreach ($dir as $file) {
+    if (
+    	preg_match('/\.php$/i', $file) ||
+    	preg_match('#/blobfolio/blob-phone/lib/blobfolio/phone/data/src/data[A-Z]{2}.txt$#', $file)
+    ) {
+    	@file_put_contents($file, php_strip_whitespace($file));
+    }
+}
+
 // Generate the index.
 $index = file_get_contents(__DIR__ . '/index.php.template');
 $index = str_replace('CLASSMAP', "\n\t\t\t" . implode(",\n\t\t\t", $out) . "\n\t\t", $index);
