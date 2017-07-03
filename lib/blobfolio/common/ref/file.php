@@ -147,7 +147,7 @@ class file {
 			cast::to_string($path);
 			$path = str_replace('\\', '/', $path);
 			$path = str_replace('/./', '//', $path);
-			$path = preg_replace('/\/{2,}/', '/', $path);
+			$path = preg_replace('/\/{2,}/u', '/', $path);
 		}
 
 		return true;
