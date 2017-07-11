@@ -51,12 +51,12 @@ $dir = new RecursiveIteratorIterator(
 	new RecursiveDirectoryIterator(OUT_DIR)
 );
 foreach ($dir as $file) {
-    if (
-    	preg_match('/\.php$/i', $file) ||
-    	preg_match('#/blobfolio/blob-phone/lib/blobfolio/phone/data/src/data[A-Z]{2}.txt$#', $file)
-    ) {
-    	@file_put_contents($file, php_strip_whitespace($file));
-    }
+	if (
+		preg_match('/\.php$/i', $file) ||
+		preg_match('#/blobfolio/blob-phone/lib/blobfolio/phone/data/src/data[A-Z]{2}.txt$#', $file)
+	) {
+		@file_put_contents($file, php_strip_whitespace($file));
+	}
 }
 
 // Generate the index.
