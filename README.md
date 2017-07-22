@@ -31,7 +31,7 @@ For information about the plugin Tutan Common, which repackages and extends thes
 
 blob-common requires PHP 5.6+ with the following modules:
 
- * BCMath
+ * BCMath or GMP
  * DOM
  * Fileinfo
  * Filter

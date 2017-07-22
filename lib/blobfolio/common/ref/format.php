@@ -198,6 +198,11 @@ class format {
 					$bin = sprintf('%08b', ord($ip_n[$bit])) . $bin;
 				}
 
+				if (function_exists('gmp_init')) {
+					$ip = gmp_strval(gmp_init($bin, 2), 10);
+					return true;
+				}
+
 				$ip = bc::bindec($bin);
 				return true;
 			} catch (\Throwable $e) {
@@ -832,7 +837,13 @@ class format {
 			return false;
 		}
 
-		$bin = bc::decbin($ip, 128);
+		if (function_exists('gmp_init')) {
+			$bin = gmp_strval(gmp_init($ip, 10), 2);
+			$bin = sprintf("%0128s", $bin);
+		}
+		else {
+			$bin = bc::decbin($ip, 128);
+		}
 
 		$chunk = array();
 		for ($bit = 0; $bit <= 7; $bit++) {

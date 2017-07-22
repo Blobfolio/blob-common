@@ -80,13 +80,34 @@ class format {
 			}
 
 			// Work from binary.
-			$cidr[1] = bc::bindec(str_pad(str_repeat('1', $cidr[1]), 128, '0'));
+			$bin = str_pad(str_repeat('1', $cidr[1]), 128, '0');
+			if (function_exists('gmp_init')) {
+				$cidr[1] = gmp_strval(gmp_init($bin, 2), 10);
+			}
+			else {
+				$cidr[1] = bc::bindec($bin);
+			}
 
 			// Calculate the range.
 			$ip = static::ip_to_number($cidr[0]);
 			$netmask = $cidr[1];
-			$first = bc::bitwise('&', $ip, $netmask);
-			$bc = bc::bitwise('|', $first, bc::bitwise('~', $netmask, null, 128));
+
+			if (function_exists('gmp_and')) {
+				$first = gmp_and($ip, $netmask);
+
+				// GMP doesn't have the kind of ~ we're looking for. But
+				// that's fine; binary is easy.
+				$bin = gmp_strval(gmp_init($netmask, 10), 2);
+				$bin = sprintf("%0128s", $bin);
+				$bin = strtr($bin, array('0'=>'1','1'=>'0'));
+				$not = gmp_strval(gmp_init($bin, 2), 10);
+
+				$bc = gmp_or($first, $not);
+			}
+			else {
+				$first = bc::bitwise('&', $ip, $netmask);
+				$bc = bc::bitwise('|', $first, bc::bitwise('~', $netmask, null, 128));
+			}
 
 			$range['min'] = static::number_to_ip($first);
 			$range['max'] = static::number_to_ip($bc);
