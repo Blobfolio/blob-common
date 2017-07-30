@@ -29,6 +29,8 @@ class file {
 			}
 		} catch (\Throwable $e) {
 			return false;
+		} catch (\Exception $e) {
+			return false;
 		}
 
 		return false;
@@ -56,6 +58,8 @@ class file {
 				}
 			}
 		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
 			return false;
 		}
 
@@ -185,6 +189,8 @@ class file {
 				}
 			}
 		} catch (\Throwable $e) {
+			return false;
+		} catch (\Exception $e) {
 			return false;
 		}
 
