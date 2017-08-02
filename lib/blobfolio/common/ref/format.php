@@ -839,7 +839,7 @@ class format {
 
 		if (function_exists('gmp_init')) {
 			$bin = gmp_strval(gmp_init($ip, 10), 2);
-			$bin = sprintf("%0128s", $bin);
+			$bin = sprintf('%0128s', $bin);
 		}
 		else {
 			$bin = bc::decbin($ip, 128);
