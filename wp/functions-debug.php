@@ -74,35 +74,58 @@ if (!function_exists('common_db_debug_log')) {
 	 * @return bool True.
 	 */
 	function common_db_debug_log() {
-		// Check for enablement here instead of prior to
-		// enqueueing the action so we can catch very
-		// early errors.
-		if (!defined('WP_DB_DEBUG_LOG') || !WP_DB_DEBUG_LOG) {
+		global $EZSQL_ERROR;
+
+		// Not needed?
+		if (
+			!defined('WP_DB_DEBUG_LOG') ||
+			!WP_DB_DEBUG_LOG ||
+			!is_array($EZSQL_ERROR) ||
+			!count($EZSQL_ERROR)
+		) {
 			return true;
 		}
 
-		// WP already stores query errors in this obscure
-		// global variable, so we can see what we've ended
-		// up with just before shutdown.
-		global $EZSQL_ERROR;
+		// Allow sites to filter the list of log-worthy errors.
+		$errors = apply_filters('common_db_debug', $EZSQL_ERROR);
+		if (!is_array($errors) || !count($errors)) {
+			return true;
+		}
+
+		// Where we putting the errors?
 		$log = trailingslashit(WP_CONTENT_DIR) . 'db-debug.log';
 
-		try {
-			if (is_array($EZSQL_ERROR) && count($EZSQL_ERROR)) {
-				$xout = array();
-				$xout[] = 'DATE: ' . date('r', current_time('timestamp'));
-				$xout[] = 'SITE: ' . site_url();
-				$xout[] = 'IP: ' . $_SERVER['REMOTE_ADDR'];
-				$xout[] = 'UA: ' . $_SERVER['HTTP_USER_AGENT'];
-				$xout[] = 'SCRIPT: ' . $_SERVER['SCRIPT_NAME'];
-				$xout[] = 'REQUEST: ' . $_SERVER['REQUEST_URI'];
-				foreach ($EZSQL_ERROR as $e) {
-					$xout[] = str_repeat('-', 50) . "\n" . implode("\n", $e) . "\n" . str_repeat('-', 50);
-				}
-				$xout[] = "\n\n\n\n";
-
-				@file_put_contents($log, implode("\n", $xout), FILE_APPEND);
+		// Headers.
+		$headers = array(
+			'IP'=>'REMOTE_ADDR',
+			'UA'=>'HTTP_USER_AGENT',
+			'SCRIPT'=>'SCRIPT_NAME',
+			'REQUEST'=>'REQUEST_URI'
+		);
+		$xout = array(
+			'DATE: ' . date('r', current_time('timestamp')),
+			'SITE: ' . site_url(),
+		);
+		foreach ($headers as $k=>$v) {
+			if (isset($_SERVER[$v])) {
+				$xout[] = "$k: {$_SERVER[$v]}";
 			}
+		}
+
+		$divider = str_repeat('-', 50);
+		foreach ($errors as $e) {
+			$xout[] = "$divider\n" . implode("\n", $e) . "\n$divider";
+		}
+		$xout[] = "\n\n\n\n";
+
+		try {
+			@file_put_contents($log, implode("\n", $xout), FILE_APPEND);
+			if (!defined('FS_CHMOD_FILE')) {
+				define('FS_CHMOD_FILE', (@fileperms(ABSPATH . 'index.php') & 0777 | 0644));
+			}
+			@chmod($log, FS_CHMOD_FILE);
+		} catch (Throwable $e) {
+			return true;
 		} catch (Exception $e) {
 			return true;
 		}

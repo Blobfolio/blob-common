@@ -25,6 +25,28 @@ If using this on production environments, please remember to restrict access to 
 
 Note: this can be used independently of the main `WP_DEBUG*` constants.
 
+This function passes database errors through the filter hook `common_db_debug` before logging anything. You can use this filter to alter what gets logged.
+
+```php
+function my_filter_function(array $errors) {
+    // Each value in the $errors array is itself an array with "query"
+    // and "error_str" keys holding the query and error respectively.
+    foreach ($errors as $k=>$v) {
+        // Ignore e.g. SELECT queries.
+        if (preg_match('/^select /i', $v['query'])) {
+            unset($errors[$k]);
+        }
+        // Or maybe a type of error.
+        elseif (false !== strpos($v['error_str'], 'DESCRIBE')) {
+            unset($errors[$k]);
+        }
+    }
+
+    return $errors;
+}
+add_filter('common_db_debug', 'my_filter_function');
+```
+
 
 
 ## common_debug_mail()

@@ -1,9 +1,9 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.2.2",
+  "Version": "7.2.3",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
-  "Tested": "4.7.5",
+  "Tested": "4.8",
   "License": "WTFPL",
   "First": "2015-03-31",
   "Branch": "Current",
@@ -15,6 +15,15 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.2.3",
+      "notes": [
+        {
+          "type": "new",
+          "note": "Add 'common_db_debug' filter."
+        }
+      ]
+    },
     {
       "version": "7.2.2",
       "notes": [
