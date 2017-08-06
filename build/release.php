@@ -52,7 +52,6 @@ foreach ($tmp as $v) {
 // Directories.
 $tmp = array(
 	'bin',
-	'docs',
 	'node_modules',
 	'tests',
 );

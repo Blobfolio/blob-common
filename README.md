@@ -12,17 +12,7 @@ For information about the plugin Tutan Common, which repackages and extends thes
 
 1. [Requirements](#requirements)
 2. [Installation](#installation)
-3. Reference
-   * [Constants](https://github.com/Blobfolio/blob-common/blob/master/docs/CONSTANTS.md)
-   * [DOM Helpers](https://github.com/Blobfolio/blob-common/blob/master/docs/DOM.md)
-   * [Files and Paths](https://github.com/Blobfolio/blob-common/blob/master/docs/FILE.md)
-   * [Formatting](https://github.com/Blobfolio/blob-common/blob/master/docs/FORMAT.md)
-   * [General/Data](https://github.com/Blobfolio/blob-common/blob/master/docs/DATA.md)
-   * [Images](https://github.com/Blobfolio/blob-common/blob/master/docs/IMAGE.md)
-   * [MIME Types & File Extensions](https://github.com/Blobfolio/blob-common/blob/master/docs/MIME.md)
-   * [Multi-byte Wrappers](https://github.com/Blobfolio/blob-common/blob/master/docs/MB.md)
-   * [Sanitizing](https://github.com/Blobfolio/blob-common/blob/master/docs/SANITIZE.md)
-   * [Typecasting](https://github.com/Blobfolio/blob-common/blob/master/docs/CAST.md)
+3. [Reference](https://github.com/Blobfolio/blob-common/wiki)
 4. [License](#license)
 
 &nbsp;
@@ -41,7 +31,7 @@ blob-common requires PHP 5.6+ with the following modules:
 
 UTF-8 is used for all string encoding. This could create conflicts on environments using something else.
 
-The [WebP](https://github.com/Blobfolio/blob-common/blob/master/docs/IMAGE.md) functionality additionally requires access to server-side `cwebp` and `gif2webp` binaries. See the linked reference for more details.
+The [WebP](https://github.com/Blobfolio/blob-common/wiki/Images) functionality additionally requires access to server-side `cwebp` and `gif2webp` binaries. See the linked reference for more details.
 
 &nbsp;
 
