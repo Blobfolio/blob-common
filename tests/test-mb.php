@@ -216,6 +216,21 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, mb::ucwords($str, $strict));
 	}
 
+	/**
+	 * ::wordwrap()
+	 *
+	 * @dataProvider data_wordwrap
+	 *
+	 * @param string $str String.
+	 * @param int $width Width.
+	 * @param string $break Break.
+	 * @param bool $cut Cut.
+	 * @param string $expected Expected.
+	 */
+	function test_wordwrap($str, $width, $break, $cut, $expected) {
+		$this->assertEquals($expected, mb::wordwrap($str, $width, $break, $cut));
+	}
+
 	// -------------------------------------------------------------------- end tests
 
 
@@ -734,6 +749,65 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				array(13, 'happy place'),
 				true,
 				array(13, 'Happy Place')
+			),
+		);
+	}
+
+	/**
+	 * Data for ::wordwrap()
+	 *
+	 * @return array Data.
+	 */
+	function data_wordwrap() {
+		return array(
+			array(
+				'Björk',
+				2,
+				"\n",
+				false,
+				'Björk',
+			),
+			array(
+				'Björk',
+				2,
+				"\n",
+				true,
+				"Bj\nör\nk",
+			),
+			array(
+				"Björk's new album is an action-packed thrill-ride—to those with taste.",
+				35,
+				"\n",
+				false,
+				"Björk's new album is an action-\npacked thrill-ride—to those with\ntaste.",
+			),
+			array(
+				"Björk's new album is an action-packed thrill-ride—to those with taste.",
+				35,
+				"\n",
+				true,
+				"Björk's new album is an action-\npacked thrill-ride—to those with\ntaste.",
+			),
+			array(
+				"Björk's dress is attention-getting.",
+				15,
+				"\n",
+				true,
+				"Björk's dress\nis attention-\ngetting.",
+			),
+			array(
+				'Visit https://blobfolio.com for more information.',
+				10,
+				"\n",
+				false,
+				"Visit\nhttps://blobfolio.com\nfor more\ninformation.",
+			),
+			array(
+				'Visit https://blobfolio.com for more information.',
+				10,
+				"\n",
+				true,
+				"Visit\nhttps://bl\nobfolio.co\nm for more\ninformatio\nn.",
 			),
 		);
 	}

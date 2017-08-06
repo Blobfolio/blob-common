@@ -32,6 +32,19 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::ceil()
+	 *
+	 * @dataProvider data_ceil
+	 *
+	 * @param mixed $num Number.
+	 * @param int $precision Precision.
+	 * @param mixed $expected Expected.
+	 */
+	function test_ceil($num, $precision, $expected) {
+		$this->assertSame($expected, format::ceil($num, $precision));
+	}
+
+	/**
 	 * ::cidr_to_range()
 	 *
 	 * @dataProvider data_cidr_to_range
@@ -78,6 +91,19 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_excerpt($value, $args, $expected) {
 		$this->assertEquals($expected, format::excerpt($value, $args));
+	}
+
+	/**
+	 * ::floor()
+	 *
+	 * @dataProvider data_floor
+	 *
+	 * @param mixed $num Number.
+	 * @param int $precision Precision.
+	 * @param mixed $expected Expected.
+	 */
+	function test_floor($num, $precision, $expected) {
+		$this->assertSame($expected, format::floor($num, $precision));
 	}
 
 	/**
@@ -198,6 +224,20 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::round()
+	 *
+	 * @dataProvider data_round
+	 *
+	 * @param mixed $num Number.
+	 * @param int $precision Precision.
+	 * @param int $mode Mode.
+	 * @param mixed $expected Expected.
+	 */
+	function test_round($num, $precision, $mode, $expected) {
+		$this->assertSame($expected, format::round($num, $precision, $mode));
+	}
+
+	/**
 	 * ::to_csv()
 	 *
 	 * @return void Nothing.
@@ -282,6 +322,36 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 						'value'=>'Bar'
 					)
 				)
+			),
+		);
+	}
+
+	/**
+	 * Data for ::ceil()
+	 *
+	 * @return array Data.
+	 */
+	function data_ceil() {
+		return array(
+			array(
+				1,
+				1,
+				1.0
+			),
+			array(
+				1.234,
+				1,
+				1.3
+			),
+			array(
+				1.234,
+				2,
+				1.24
+			),
+			array(
+				array(1.234, '4.567'),
+				2,
+				array(1.24, 4.57)
 			),
 		);
 	}
@@ -409,6 +479,36 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 					'length'=>6,
 				),
 				'It ẉẩṩ…'
+			),
+		);
+	}
+
+	/**
+	 * Data for ::floor()
+	 *
+	 * @return array Data.
+	 */
+	function data_floor() {
+		return array(
+			array(
+				1,
+				1,
+				1.0
+			),
+			array(
+				1.234,
+				1,
+				1.2
+			),
+			array(
+				1.234,
+				2,
+				1.23
+			),
+			array(
+				array(1.234, '4.567'),
+				2,
+				array(1.23, 4.56)
 			),
 		);
 	}
@@ -810,6 +910,40 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(2015550123, 'US', '+1 201-555-0123'),
 			array(2015550123, 'CA', '+1 201-555-0123'),
 			array(array(2015550123), 'CA', array('+1 201-555-0123')),
+		);
+	}
+
+	/**
+	 * Data for ::round()
+	 *
+	 * @return array Data.
+	 */
+	function data_round() {
+		return array(
+			array(
+				1,
+				1,
+				PHP_ROUND_HALF_UP,
+				1.0
+			),
+			array(
+				1.234,
+				1,
+				PHP_ROUND_HALF_UP,
+				1.2
+			),
+			array(
+				1.234,
+				2,
+				PHP_ROUND_HALF_UP,
+				1.23
+			),
+			array(
+				array(1.234, '4.567'),
+				2,
+				PHP_ROUND_HALF_UP,
+				array(1.23, 4.57)
+			),
 		);
 	}
 
