@@ -353,6 +353,24 @@ class mb {
 		ref\mb::ucwords($str, $strict);
 		return $str;
 	}
+
+	/**
+	 * Wrapper for wordwrap()
+	 *
+	 * Wrap text to specified line length. Unlike PHP's version, this
+	 * will preferentially break long strings on any hypens or dashes
+	 * they might have.
+	 *
+	 * @param string $str String.
+	 * @param int $width Width.
+	 * @param string $break Break.
+	 * @param bool $cut Cut.
+	 * @return string String.
+	 */
+	public static function wordwrap($str, $width=75, $break="\n", $cut=false) {
+		ref\mb::wordwrap($str, $width, $break, $cut);
+		return $str;
+	}
 }
 
 

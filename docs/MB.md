@@ -36,6 +36,7 @@ blobfolio\common\ref\mb::strtolower($foo);
  * [trim()](#trim)
  * [ucfirst()](#ucfirst)
  * [ucwords()](#ucwords)
+ * [wordwrap()](#wordwrap)
 
 
 
@@ -379,4 +380,46 @@ If passing by value, the title-cased string is returned, otherwise `TRUE`.
 ```php
 $foo = 'quEen BjöRk Ⅷ loVes aPplEs.';
 echo blobfolio\common\mb::ucwords($foo); //Queen Björk Ⅷ Loves Apples.
+```
+
+
+
+## wordwrap()
+
+Wrap long lines. Unlike PHP's version, this takes hyphenation and dashes into account when deciding whether to wrap or split a word.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*string*) String
+ * (*int*) Line Width. Default: `75`
+ * (*string*) EOL. Default: `"\n"`
+ * (*bool*) Cut words longer than line width. Default: `FALSE`
+
+#### Returns
+
+Returns the wrapped string by value, `TRUE`/`FALSE` by reference.
+
+#### Example
+
+```php
+$foo = "Björk's dress is attention-getting.";
+print_r(blobfolio\common\mb::wordwrap($foo, 15));
+/*
+Björk's dress
+is attention-
+getting.
+*/
+
+// Note the hyphen. PHP's native wordwrap() would
+// instead return:
+/*
+Björk's dress
+is
+attention-getting.
+*/
 ```

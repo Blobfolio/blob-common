@@ -127,8 +127,8 @@ class mb {
 	/**
 	 * Wrapper For strtolower()
 	 *
-	 * This will catch various case-able Unicode beyond
-	 * the native PHP functions.
+	 * This will catch various case-able Unicode beyond the native PHP
+	 * functions.
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
@@ -162,8 +162,8 @@ class mb {
 	/**
 	 * Wrapper For strtoupper()
 	 *
-	 * This will catch various case-able Unicode beyond
-	 * the native PHP functions.
+	 * This will catch various case-able Unicode beyond the native PHP
+	 * functions.
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
@@ -221,8 +221,8 @@ class mb {
 	/**
 	 * Wrapper For ucfirst()
 	 *
-	 * This will catch various case-able Unicode beyond
-	 * the native PHP functions.
+	 * This will catch various case-able Unicode beyond the native PHP
+	 * functions.
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
@@ -253,8 +253,8 @@ class mb {
 	/**
 	 * Wrapper For ucwords()
 	 *
-	 * This will catch various case-able Unicode beyond
-	 * the native PHP functions.
+	 * This will catch various case-able Unicode beyond the native PHP
+	 * functions.
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
@@ -300,6 +300,123 @@ class mb {
 				$str = str_replace(array_keys($extra), array_values($extra), $str);
 			}
 		}
+
+		return true;
+	}
+
+	/**
+	 * Wrapper for wordwrap()
+	 *
+	 * Wrap text to specified line length. Unlike PHP's version, this
+	 * will preferentially break long strings on any hypens or dashes
+	 * they might have.
+	 *
+	 * @param string $str String.
+	 * @param int $width Width.
+	 * @param string $break Break.
+	 * @param bool $cut Cut.
+	 * @return bool True.
+	 */
+	public static function wordwrap(&$str, $width=75, $break="\n", $cut=false) {
+		cast::to_string($str, true);
+		cast::to_int($width, true);
+		cast::to_string($break, true);
+		cast::to_bool($cut, true);
+
+		// Bad data?
+		if (!v_mb::strlen($str) || $width <= 0) {
+			return true;
+		}
+
+		// No mbstring?
+		if (!function_exists('mb_substr')) {
+			$str = wordwrap($str, $width, $break, $cut);
+			return true;
+		}
+
+		// First, split on horizontal whitespace.
+		$chunks = preg_split('/([\s$]+)/uS', trim($str), -1, PREG_SPLIT_DELIM_CAPTURE);
+		$lines = array('');
+		$line = 0;
+
+		// Loop through chunks.
+		foreach ($chunks as $v) {
+			// Always start a new line with vertical whitespace.
+			if (preg_match('/\v/u', $v)) {
+				$line++;
+				$lines[$line] = $v;
+				$line++;
+				$lines[$line] = '';
+				continue;
+			}
+
+			// Always append horizontal whitespace.
+			if (preg_match('/\h/u', $v)) {
+				$lines[$line] .= $v;
+				continue;
+			}
+
+			// Start a new line?
+			$line_length = v_mb::strlen($lines[$line]);
+			if ($line_length >= $width) {
+				$line++;
+				$lines[$line] = '';
+				$line_length = 0;
+			}
+
+			$word_length = v_mb::strlen($v);
+
+			// We can just add it.
+			if ($word_length + $line_length <= $width) {
+				$lines[$line] .= $v;
+				continue;
+			}
+
+			// We should make sure each chunk fits.
+			if ($cut) {
+				static::str_split($v, $width);
+				$v = implode("\n", $v);
+			}
+
+			// Is this word hyphenated or dashed?
+			$v = preg_replace('/(\p{Pd})\n/u', '$1', $v);
+			$v = preg_replace('/(\p{Pd}+)/u', "$1\n", $v);
+			static::trim($v);
+
+			// Loop through word chunks to see what fits where.
+			$v = explode("\n", $v);
+			foreach ($v as $v2) {
+				$word_length = v_mb::strlen($v2);
+				$line_length = v_mb::strlen($lines[$line]);
+
+				// New line?
+				if ($word_length + $line_length > $width) {
+					$line++;
+					$lines[$line] = '';
+				}
+
+				$lines[$line] .= $v2;
+			}
+		}
+
+		// Okay, let's trim our lines real quick.
+		foreach ($lines as $k=>$v) {
+			// Ignore vertical space, unless it matches the breaker.
+			if (preg_match('/\v/u', $v)) {
+				// Don't need to double it.
+				if ($v === $break) {
+					unset($lines[$k]);
+				}
+				$lines[$k] = preg_replace('/^' . preg_quote($break, '/') . '/ui', '', $v);
+				continue;
+			}
+
+			static::trim($lines[$k]);
+		}
+
+		// Finally, join our lines by the delimiter.
+		$str = implode($break, $lines);
+		static::trim($str);
 
 		return true;
 	}
