@@ -30,6 +30,18 @@ class format {
 	}
 
 	/**
+	 * Ceil w/ Precision
+	 *
+	 * @param float $num Number.
+	 * @param int $precision Precision.
+	 * @return float Number.
+	 */
+	public static function ceil($num, $precision=0) {
+		ref\format::ceil($num, $precision);
+		return $num;
+	}
+
+	/**
 	 * CIDR to IP Range
 	 *
 	 * Find the minimum and maximum IPs in a
@@ -217,6 +229,18 @@ class format {
 	}
 
 	/**
+	 * Floor w/ Precision
+	 *
+	 * @param float $num Number.
+	 * @param int $precision Precision.
+	 * @return float Number.
+	 */
+	public static function floor($num, $precision=0) {
+		ref\format::floor($num, $precision);
+		return $num;
+	}
+
+	/**
 	 * Inflect
 	 *
 	 * Inflect a phrase given a count. `sprintf` formatting
@@ -383,6 +407,19 @@ class format {
 	public static function phone($str='', $country='', $types=array()) {
 		ref\format::phone($str, $country, $types);
 		return $str;
+	}
+
+	/**
+	 * Round w/ Precision
+	 *
+	 * @param float $num Number.
+	 * @param int $precision Precision.
+	 * @param int $mode Mode.
+	 * @return float Number.
+	 */
+	public static function round($num, $precision=0, $mode=PHP_ROUND_HALF_UP) {
+		ref\format::round($num, $precision, $mode);
+		return $num;
 	}
 
 	/**

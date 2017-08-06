@@ -51,6 +51,30 @@ class format {
 	}
 
 	/**
+	 * Ceil w/ Precision
+	 *
+	 * @param float $num Number.
+	 * @param int $precision Precision.
+	 * @return bool True.
+	 */
+	public static function ceil(&$num, $precision=0) {
+		if (is_array($num)) {
+			foreach ($num as $k=>$v) {
+				static::ceil($num[$k], $precision);
+			}
+		}
+		else {
+			cast::to_float($num, true);
+			cast::to_int($precision, true);
+			sanitize::to_range($precision, 0);
+
+			$precision = (10 ** $precision);
+			$num = ceil($num * $precision) / $precision;
+		}
+		return true;
+	}
+
+	/**
 	 * Decode JS Entities
 	 *
 	 * Decode escape and unicode chars.
@@ -165,6 +189,31 @@ class format {
 	 */
 	protected static function decode_entities_hex($matches) {
 		return chr(hexdec($matches[1]));
+	}
+
+	/**
+	 * Floor w/ Precision
+	 *
+	 * @param float $num Number.
+	 * @param int $precision Precision.
+	 * @return float Number.
+	 */
+	public static function floor(&$num, $precision=0) {
+		if (is_array($num)) {
+			foreach ($num as $k=>$v) {
+				static::floor($num[$k], $precision);
+			}
+		}
+		else {
+			cast::to_float($num, true);
+			cast::to_int($precision, true);
+			sanitize::to_range($precision, 0);
+
+			$precision = (10 ** $precision);
+			$num = floor($num * $precision) / $precision;
+		}
+
+		return true;
 	}
 
 	/**
@@ -895,6 +944,31 @@ class format {
 			}
 
 			$str = (string) $str;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Round w/ Precision
+	 *
+	 * @param float $num Number.
+	 * @param int $precision Precision.
+	 * @param int $mode Mode.
+	 * @return bool True.
+	 */
+	public static function round(&$num, $precision=0, $mode=PHP_ROUND_HALF_UP) {
+		if (is_array($num)) {
+			foreach ($num as $k=>$v) {
+				static::round($num[$k], $precision, $mode);
+			}
+		}
+		else {
+			cast::to_float($num, true);
+			cast::to_int($precision, true);
+			sanitize::to_range($precision, 0);
+
+			$num = round($num, $precision, $mode);
 		}
 
 		return true;

@@ -23,11 +23,13 @@ blobfolio\common\ref\format::money($foo);
 
  * [array_to_indexed()](#array_to_indexed)
  * [cidr_to_range()](#cidr_to_range)
+ * [ceil()](#ceil)
  * [decode_entities()](#decode_entities)
  * [decode_escape_entities()](#decode_escape_entities)
  * [decode_js_entities()](#decode_js_entities)
  * [decode_unicode_entities()](#decode_unicode_entities)
  * [excerpt()](#excerpt)
+ * [floor()](#floor)
  * [inflect()](#inflect)
  * [ip_to_number()](#ip_to_number)
  * [ip_to_subnet()](#ip_to_subnet)
@@ -37,6 +39,7 @@ blobfolio\common\ref\format::money($foo);
  * [list_to_array()](#list_to_array)
  * [money()](#money)
  * [number_to_ip()](#number_to_ip)
+ * [round()](#round)
  * [phone()](#phone)
  * [to_csv()](#to_csv)
  * [to_timezone()](#to_timezone)
@@ -108,6 +111,26 @@ array(
 )
 */
 ```
+
+
+
+## ceil()
+
+This is just like PHP's `ceil()` function, except that you can specify a decimal precision.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*float|array*) Number. If an array, each value will be processed recursively.
+ * (*int*) Precision. Default: `0`
+
+#### Returns
+
+If passing by value the rounded value is returned as a float, otherwise `TRUE`.
 
 
 
@@ -216,6 +239,26 @@ $str = "Hey good lookin'";
 $foo = blobfolio\common\format::excerpt($str, array('length'=>5, 'unit'=>'character')); //Hey g…
 $foo = blobfolio\common\format::excerpt($str, array('length'=>2, 'unit'=>'word')); //Hey good…
 ```
+
+
+
+## floor()
+
+This is just like PHP's `floor()` function, except that you can specify a decimal precision.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*float|array*) Number. If an array, each value will be processed recursively.
+ * (*int*) Precision. Default: `0`
+
+#### Returns
+
+If passing by value the rounded value is returned as a float, otherwise `TRUE`.
 
 
 
@@ -444,7 +487,7 @@ Format a value as US currency.
 
 #### Arguments
 
- * (*float*) Amount
+ * (*mixed*) Amount. If an array, each value will be formatted recursively.
  * (*bool*) (*optional*) Cents. Whether sub-dollar values should be printed as `"50¢"` or `"$0.50"`. Default: `FALSE`
  * (*string*) (*optional*) Thousands separator. Default `""`
  * (*bool*) (*optional*) Remove trailing `.00`. Default `FALSE`
@@ -530,6 +573,27 @@ $foo = blobfolio\common\format::phone('(555) 618-2086'); //+1 555-608-2086
 //by reference
 blobfolio\common\ref\format::phone($foo);
 ```
+
+
+
+## round()
+
+This is just like PHP's `round()` function, except that you can pass an array of values to process recursively if desired.
+
+#### Versions
+
+ * By Value
+ * By Reference
+
+#### Arguments
+
+ * (*float|array*) Number. If an array, each value will be processed recursively.
+ * (*int*) Precision. Default: `0`
+ * (*int*) Rounding mode. Default: `PHP_ROUND_HALF_UP`
+
+#### Returns
+
+If passing by value the rounded value is returned as a float, otherwise `TRUE`.
 
 
 
