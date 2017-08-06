@@ -42,65 +42,61 @@ Returns the SVG source code or `FALSE` on error.
 ```php
 //possible arguments
 $args = array(
-    //clean up <style> tag(s):
-    //  merge tags, group identical rules, clean up formatting
+    // Clean up <style> tag(s): merge tags, group identical rules, clean
+    // up formatting.
     'clean_styles'=>false,
 
-    //build viewBox from width/height or vice versa
-    //for every tag which supports viewBox
+    // Build viewBox from width/height or vice versa for every tag which
+    // supports viewBox.
     'fix_dimensions'=>false,
 
-    //set up an xmlns:svg namespace as a workaround for
-    //frameworks like Vue.JS which remove stray <style>
-    //tags
+    // Set up an xmlns:svg namespace as a workaround for frameworks like
+    // Vue.JS which remove stray <style> tags.
     'namespace'=>false,
 
-    //randomize any ID attributes to ensure that e.g.
-    //a million things aren't all named "layer_1"
+    // Randomize any ID attributes to ensure that e.g. a million things
+    // aren't all named "layer_1".
     'random_id'=>false,
 
-    //rename and merge all defined classes. for example,
-    //an SVG sprite might have a hundred identical
-    //classes; this will generate a new class name for
-    //each unique rule and remove all others.
+    // Rename and merge all defined classes. For example, an SVG sprite
+    // might have a hundred identical classes; this will generate a new
+    // class name for each unique rule and remove all others.
     'rewrite_styles'=>false,
 
-    //remove invalid tags and attributes, strip script-y
-    //things, fix formatting, etc. this is the only option
-    //enabled by default, and highly recommended for use
-    //on production environments.
+    // Remove invalid tags and attributes, strip script-y things, fix
+    // formatting, etc. This is the only option enabled by default, and
+    // is highly recommended for use on production environments.
     'sanitize'=>true,
 
-    //cleaning SVGs in PHP can be slow. this option will
-    //save the cleaned output so on subsequent calls
-    //the file can be delivered as-is. the original file
-    //is renamed *.dirty.123123123 in case you need to
-    //revert.
+    // Cleaning SVGs in PHP can be slow. This option will save the
+    // output so on subsequent calls the file can be delivered as-is.
+    // The original file is renamed *.dirty.123123123 in case you need
+    // to revert.
     'save'=>false,
 
-    //remove any data-* attributes
+    // Remove any data-* attributes.
     'strip_data'=>false,
 
-    //remove all ID attributes
+    // Remove all ID attributes.
     'strip_id'=>false,
 
-    //remove all <style> tags and style/class attributes
+    // Remove all <style> tags and style/class attributes.
     'strip_style'=>false,
 
-    //remove all <title> tags
+    // Remove all <title> tags.
     'strip_title'=>false,
 
-    //additional whitelist tags, beyond spec.
+    // Additional whitelist tags, beyond spec.
     'whitelist_tags'=>array(),
 
-    //additional whitelist attributes, beyond spec.
+    // Additional whitelist attributes, beyond spec.
     'whitelist_attributes'=>array(),
 
-    //additional whitelist protocols, beyond http, https
+    // Additional whitelist protocols, beyond http and https.
     'whitelist_protocols'=>array(),
 
-    //additional whitelist domains, beyond creativecommons.org,
-    //inkscape.org, sodipodi.sourceforge.net, w3.org
+    // Additional whitelist domains, beyond creativecommons.org,
+    // inkscape.org, sodipodi.sourceforge.net, w3.org
     'whitelist_domains'=>array()
 )
 ```
