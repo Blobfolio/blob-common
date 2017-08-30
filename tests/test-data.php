@@ -344,7 +344,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame(true, count($thing) === count($thing2));
 
 		// Test a custom soup.
-		$thing = array('a','b','c','d','e');
+		$thing = array('a', 'b', 'c', 'd', 'e');
 		for ($x = 0; $x < 20; $x++) {
 			$result = data::random_string(10, $thing);
 			$this->assertSame(true, !!preg_match('/^[a-e]{10}$/', $result));
@@ -380,11 +380,11 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_array_compare() {
-		$arr1 = array(1,2,3);
-		$arr2 = array(2,3,1);
+		$arr1 = array(1, 2, 3);
+		$arr2 = array(2, 3, 1);
 		$arr3 = array(
 			'Foo'=>'Bar',
-			'Bar'=>array(1,2,3)
+			'Bar'=>array(1, 2, 3),
 		);
 		$arr4 = array();
 
@@ -410,17 +410,17 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					4=>'Mat',
 					5=>'Matt',
 					6=>'Tat',
-					7=>800
+					7=>800,
 				),
-				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
-				array('rat','cat'),
-				array('BAT','800'),
+				array('Rat', 'Cat', 'Bat', 'Sat', 'Mat', 'Matt', 'Tat', 800),
+				array('rat', 'cat'),
+				array('BAT', '800'),
 			),
 			array(
 				array(),
-				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
-				array('rat','cat','bat','sat'),
-				array('mat','matt','tat',800),
+				array('Rat', 'Cat', 'Bat', 'Sat', 'Mat', 'Matt', 'Tat', 800),
+				array('rat', 'cat', 'bat', 'sat'),
+				array('mat', 'matt', 'tat', 800),
 			),
 		);
 	}
@@ -434,18 +434,18 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				array(),
-				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
-				array('rat','cat'),
+				array('Rat', 'Cat', 'Bat', 'Sat', 'Mat', 'Matt', 'Tat', 800),
+				array('rat', 'cat'),
 				array('BAT', '800'),
 			),
 			array(
 				array(
 					1=>'Cat',
-					3=>'Sat'
+					3=>'Sat',
 				),
-				array('Rat','Cat','Bat','Sat','Mat','Matt','Tat', 800),
-				array('rat','cat','sat'),
-				array('BAT','CAT','SAT'),
+				array('Rat', 'Cat', 'Bat', 'Sat', 'Mat', 'Matt', 'Tat', 800),
+				array('rat', 'cat', 'sat'),
+				array('BAT', 'CAT', 'SAT'),
 			),
 		);
 	}
@@ -460,22 +460,22 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'foo',
 				array('Foo'=>'Bar'),
-				true
+				true,
 			),
 			array(
 				'food',
 				array('Foo'=>'Bar'),
-				false
+				false,
 			),
 			array(
 				1,
-				array(2,3,4),
-				true
+				array(2, 3, 4),
+				true,
 			),
 			array(
 				18,
-				array(2,3,4),
-				false
+				array(2, 3, 4),
+				false,
 			),
 		);
 	}
@@ -491,31 +491,31 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				'foo',
 				array('Foo'=>'Bar'),
 				true,
-				false
+				false,
 			),
 			array(
 				'BAR',
 				array('Foo'=>'Bar'),
 				true,
-				'Foo'
+				'Foo',
 			),
 			array(
 				2,
-				array(2,3,4),
+				array(2, 3, 4),
 				true,
-				0
+				0,
 			),
 			array(
 				'2',
-				array(2,3,4),
+				array(2, 3, 4),
 				false,
-				0
+				0,
 			),
 			array(
 				'2',
-				array(2,3,4),
+				array(2, 3, 4),
 				true,
-				false
+				false,
 			),
 		);
 	}
@@ -529,18 +529,18 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'strval',
-				array(1,2,3),
-				array('1','2','3')
+				array(1, 2, 3),
+				array('1', '2', '3'),
 			),
 			array(
 				'strval',
 				array(
-					'foo'=>array(1,2,3),
-					'bar'=>1
+					'foo'=>array(1, 2, 3),
+					'bar'=>1,
 				),
 				array(
-					'foo'=>array('1','2','3'),
-					'bar'=>'1'
+					'foo'=>array('1', '2', '3'),
+					'bar'=>'1',
 				),
 			),
 		);
@@ -557,7 +557,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			'CA'=>200,
 			'CN'=>5,
 			'GB'=>10,
-			'MX'=>30
+			'MX'=>30,
 		);
 
 		return array(
@@ -568,8 +568,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				array(
 					'CA'=>200,
 					'US'=>100,
-					'Other'=>45
-				)
+					'Other'=>45,
+				),
 			),
 			array(
 				$arr,
@@ -580,23 +580,23 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'US'=>100,
 					'MX'=>30,
 					'GB'=>10,
-					'CN'=>5
-				)
+					'CN'=>5,
+				),
 			),
 			array(
 				$arr,
 				1,
 				'Other',
 				array(
-					'Other'=>345
-				)
+					'Other'=>345,
+				),
 			),
 			array(
 				array(
 					'US'=>'5%',
 					'CA'=>'10¢',
 					'MX'=>'$1.32',
-					'TX'=>'hotdogs'
+					'TX'=>'hotdogs',
 				),
 				4,
 				'Other',
@@ -604,8 +604,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'MX'=>1.32,
 					'CA'=>.1,
 					'US'=>.05,
-					'TX'=>0.0
-				)
+					'TX'=>0.0,
+				),
 			),
 		);
 	}
@@ -618,19 +618,19 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	function data_array_pop() {
 		return array(
 			array(
-				array(1,2,3),
-				3
+				array(1, 2, 3),
+				3,
 			),
 			array(
 				array(
 					'Foo'=>'Bar',
-					'Bar'=>'Foo'
+					'Bar'=>'Foo',
 				),
-				'Foo'
+				'Foo',
 			),
 			array(
 				array(),
-				false
+				false,
 			),
 		);
 	}
@@ -643,19 +643,19 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	function data_array_pop_top() {
 		return array(
 			array(
-				array(1,2,3),
-				1
+				array(1, 2, 3),
+				1,
 			),
 			array(
 				array(
 					'Foo'=>'Bar',
-					'Bar'=>'Foo'
+					'Bar'=>'Foo',
 				),
-				'Bar'
+				'Bar',
 			),
 			array(
 				array(),
-				false
+				false,
 			),
 		);
 	}
@@ -681,9 +681,9 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					9=>'September',
 					10=>'October',
 					11=>'November',
-					12=>'December'
-				)
-			)
+					12=>'December',
+				),
+			),
 		);
 	}
 
@@ -710,12 +710,12 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				5,
-				$arr1
+				$arr1,
 			),
 			array(
 				10,
-				$arr2
-			)
+				$arr2,
+			),
 		);
 	}
 
@@ -729,22 +729,22 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'2015-01-01',
 				'2015-01-01',
-				0
+				0,
 			),
 			array(
 				'2015-01-03',
 				'2015-01-01',
-				2
+				2,
 			),
 			array(
 				'2015-01-01',
 				'2015-01-03',
-				2
+				2,
 			),
 			array(
 				strtotime('2015-01-03'),
 				'2015-01-01',
-				2
+				2,
 			),
 		);
 	}
@@ -760,31 +760,31 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				'foo',
 				array('Foo'=>'Bar'),
 				true,
-				false
+				false,
 			),
 			array(
 				'BAR',
 				array('Foo'=>'Bar'),
 				true,
-				true
+				true,
 			),
 			array(
 				2,
-				array(2,3,4),
+				array(2, 3, 4),
 				true,
-				true
+				true,
 			),
 			array(
 				'2',
-				array(2,3,4),
+				array(2, 3, 4),
 				false,
-				true
+				true,
 			),
 			array(
 				'2',
-				array(2,3,4),
+				array(2, 3, 4),
 				true,
-				false
+				false,
 			),
 		);
 	}
@@ -800,31 +800,31 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				'2015-01-15',
 				'2015-01-01',
 				'2015-01-20',
-				true
+				true,
 			),
 			array(
 				'2015-01-15',
 				'2015-01-01',
 				'2015-01-05',
-				false
+				false,
 			),
 			array(
 				5,
 				2,
 				null,
-				true
+				true,
 			),
 			array(
 				'F',
 				null,
 				'F',
-				true
+				true,
 			),
 			array(
 				'F',
 				null,
 				'E',
-				false
+				false,
 			),
 		);
 	}
@@ -840,25 +840,25 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				'127.0.0.1',
 				'127.0.0.0',
 				'127.0.0.2',
-				true
+				true,
 			),
 			array(
 				'127.0.0.1',
 				'127.0.0.0/24',
 				null,
-				true
+				true,
 			),
 			array(
 				'127.0.0.1',
 				'192.168.1.0/24',
 				null,
-				false
+				false,
 			),
 			array(
 				'2600:3c00::f03c:91ff:FEAE:0ff2',
 				'2600:3c00::/64',
 				null,
-				true
+				true,
 			),
 		);
 	}
@@ -873,42 +873,42 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				1,
 				false,
-				false
+				false,
 			),
 			array(
 				'yes',
 				false,
-				false
+				false,
 			),
 			array(
 				'',
 				false,
-				false
+				false,
 			),
 			array(
 				'{"happy":"days"}',
 				false,
-				true
+				true,
 			),
 			array(
 				'[]',
 				false,
-				true
+				true,
 			),
 			array(
 				'[1,2,3]',
 				false,
-				true
+				true,
 			),
 			array(
 				'{"happy":"',
 				false,
-				false
+				false,
 			),
 			array(
 				'',
 				true,
-				true
+				true,
 			),
 		);
 	}
@@ -922,15 +922,15 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				1,
-				true
+				true,
 			),
 			array(
 				'Hello World',
-				true
+				true,
 			),
 			array(
 				"\xc3\x28",
-				false
+				false,
 			),
 		);
 	}
@@ -947,52 +947,52 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				null,
 				null,
 				null,
-				array()
+				array(),
 			),
 			array(
 				'{"animal":"dog"}',
 				null,
 				null,
 				null,
-				array('animal'=>'dog')
+				array('animal'=>'dog'),
 			),
 			array(
 				'{animal:"dog"}',
 				array(
 					'animal'=>'bear',
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 				null,
 				null,
 				array(
 					'animal'=>'dog',
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 			),
 			array(
 				'{animal:{"dog":"wolf"}}',
 				array(
 					'animal'=>'bear',
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 				false,
 				null,
 				array(
 					'animal'=>array('dog'=>'wolf'),
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 			),
 			array(
 				'{animal:"dog"}',
 				array(
 					'animal'=>array('bear'),
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 				true,
 				null,
 				array(
 					'animal'=>array('dog'),
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 			),
 			array(
@@ -1000,16 +1000,16 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				array(
 					'price'=>array(
 						'animal'=>12.0,
-						'fruit'=>15.0
-					)
+						'fruit'=>15.0,
+					),
 				),
 				true,
 				true,
 				array(
 					'price'=>array(
 						'animal'=>2.0,
-						'fruit'=>15.0
-					)
+						'fruit'=>15.0,
+					),
 				),
 			),
 		);
@@ -1026,25 +1026,25 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				'Ḉẩt',
 				1,
 				3,
-				true
+				true,
 			),
 			array(
 				'Ḉẩt',
 				4,
 				null,
-				false
+				false,
 			),
 			array(
 				'Cat',
 				1,
 				3,
-				true
+				true,
 			),
 			array(
 				'Cat',
 				null,
 				4,
-				true
+				true,
 			),
 		);
 	}
@@ -1061,73 +1061,73 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				array(''),
 				null,
 				null,
-				array('')
+				array(''),
 			),
 			array(
 				null,
 				array('dog'=>'wolf'),
 				null,
 				null,
-				array('dog'=>'wolf')
+				array('dog'=>'wolf'),
 			),
 			array(
 				array('animal'=>'dog'),
 				array(
 					'animal'=>'bear',
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 				null,
 				null,
 				array(
 					'animal'=>'dog',
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 			),
 			array(
 				array(
-					'animal'=>array('dog'=>'wolf')
+					'animal'=>array('dog'=>'wolf'),
 				),
 				array(
 					'animal'=>'bear',
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 				false,
 				null,
 				array(
 					'animal'=>array('dog'=>'wolf'),
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 			),
 			array(
 				array('animal'=>'dog'),
 				array(
 					'animal'=>array('bear'),
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 				true,
 				null,
 				array(
 					'animal'=>array('dog'),
-					'fruit'=>'banana'
+					'fruit'=>'banana',
 				),
 			),
 			array(
 				array(
-					'price'=>array('animal'=>'67¢')
+					'price'=>array('animal'=>'67¢'),
 				),
 				array(
 					'price'=>array(
 						'animal'=>12.0,
-						'fruit'=>15.0
-					)
+						'fruit'=>15.0,
+					),
 				),
 				true,
 				true,
 				array(
 					'price'=>array(
 						'animal'=>.67,
-						'fruit'=>15.0
-					)
+						'fruit'=>15.0,
+					),
 				),
 			),
 		);

@@ -37,7 +37,7 @@ if (!function_exists('common_get_us_states')) {
 	 */
 	function common_get_us_states($include_other=true, $uppercase=true) {
 		$states = constants::STATES;
-		$other = array('AA','AE','AP','AS','FM','GU','MH','MP','PW','PR','VI');
+		$other = array('AA', 'AE', 'AP', 'AS', 'FM', 'GU', 'MH', 'MP', 'PW', 'PR', 'VI');
 
 		// Originally all results were returned in uppercase,
 		// but this is a bit limiting. Raw data is now stored

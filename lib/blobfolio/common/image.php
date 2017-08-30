@@ -193,7 +193,7 @@ class image {
 
 				// Tags supporting viewBox, width, and height.
 				$dom = dom::load_svg($svg);
-				foreach (array('svg','pattern') as $tag) {
+				foreach (array('svg', 'pattern') as $tag) {
 					$tmp = $dom->getElementsByTagName($tag);
 					if ($tmp->length) {
 						foreach ($tmp as $t) {
@@ -639,7 +639,7 @@ class image {
 			// Proc setup.
 			$descriptors = array(
 				0=>array('pipe', 'w'), // STDOUT.
-				1=>array('file', $error_log, 'a') // STDERR.
+				1=>array('file', $error_log, 'a'), // STDERR.
 			);
 			$cwd = $tmp_dir;
 			$pipes = array();

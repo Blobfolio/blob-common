@@ -221,7 +221,7 @@ class dom {
 
 		// A few more types of comment wrappers we might see.
 		$styles = str_replace(
-			array('<!--','//-->','-->','//<![CDATA[','//]]>','<![CDATA[',']]>'),
+			array('<!--', '//-->', '-->', '//<![CDATA[', '//]]>', '<![CDATA[', ']]>'),
 			'',
 			$styles
 		);
@@ -314,7 +314,7 @@ class dom {
 
 				$tmp['selector'] = mb::strtolower(trim(mb::substr($styles[$k], 0, $start)));
 				$chunk = mb::substr($styles[$k], $start + 1, -1);
-				$chunk = str_replace(array('⠁','⠈'), array('{','}'), $chunk);
+				$chunk = str_replace(array('⠁', '⠈'), array('{', '}'), $chunk);
 				$tmp['nest'] = static::parse_css($chunk);
 
 				// And build the raw.
@@ -376,7 +376,7 @@ class dom {
 				}
 				// Who knows?
 				else {
-					$styles[$k] = str_replace(array('⠁','⠈'), array('{','}'), $styles[$k]);
+					$styles[$k] = str_replace(array('⠁', '⠈'), array('{', '}'), $styles[$k]);
 					$styles[$k] = trim(rtrim(trim($styles[$k]), ';'));
 					if (mb::substr($styles[$k], -1) !== '}') {
 						$styles[$k] .= ';';

@@ -97,7 +97,7 @@ class bc {
 		}
 		// Throw it down, flip it, and reverse it.
 		elseif ('NOT' === $method) {
-			$out = strtr($left, array('0'=>'1','1'=>'0'));
+			$out = strtr($left, array('0'=>'1', '1'=>'0'));
 		}
 
 		// Back to a decimal.

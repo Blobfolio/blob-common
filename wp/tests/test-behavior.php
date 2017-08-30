@@ -56,7 +56,7 @@ class BehaviorTests extends WP_UnitTestCase {
 			array(
 				'type'=>false,
 				'ext'=>false,
-				'proper_filename'=>''
+				'proper_filename'=>'',
 			),
 			$upload,
 			'monogram.svg',

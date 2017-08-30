@@ -306,22 +306,22 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				array(
 					array(
 						'key'=>0,
-						'value'=>1
-					)
-				)
+						'value'=>1,
+					),
+				),
 			),
 			array(
 				array(),
-				array()
+				array(),
 			),
 			array(
 				array('Foo'=>'Bar'),
 				array(
 					array(
 						'key'=>'Foo',
-						'value'=>'Bar'
-					)
-				)
+						'value'=>'Bar',
+					),
+				),
 			),
 		);
 	}
@@ -336,22 +336,22 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				1,
 				1,
-				1.0
+				1.0,
 			),
 			array(
 				1.234,
 				1,
-				1.3
+				1.3,
 			),
 			array(
 				1.234,
 				2,
-				1.24
+				1.24,
 			),
 			array(
 				array(1.234, '4.567'),
 				2,
-				array(1.24, 4.57)
+				array(1.24, 4.57),
 			),
 		);
 	}
@@ -367,26 +367,26 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				'50.116.18.174/24',
 				array(
 					'min'=>'50.116.18.0',
-					'max'=>'50.116.18.255'
-				)
+					'max'=>'50.116.18.255',
+				),
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2/64',
 				array(
 					'min'=>'2600:3c00::',
-					'max'=>'2600:3c00::ffff:ffff:ffff:ffff'
-				)
+					'max'=>'2600:3c00::ffff:ffff:ffff:ffff',
+				),
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2/96',
 				array(
 					'min'=>'2600:3c00::f03c:91ff:0:0',
-					'max'=>'2600:3c00::f03c:91ff:ffff:ffff'
-				)
+					'max'=>'2600:3c00::f03c:91ff:ffff:ffff',
+				),
 			),
 			array(
 				'26G0:3c00::f03c:91ff:feae:0ff2/64',
-				false
+				false,
 			),
 		);
 	}
@@ -400,15 +400,15 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Happy & Healthy',
-				'Happy & Healthy'
+				'Happy & Healthy',
 			),
 			array(
 				'5&#48;&cent;',
-				'50¢'
+				'50¢',
 			),
 			array(
 				'50&amp;cent;',
-				'50¢'
+				'50¢',
 			),
 			array(
 				'I don&#8217;t like slanty quotes.',
@@ -426,15 +426,15 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'\\nhello\\u00c1',
-				"\nhelloÁ"
+				"\nhelloÁ",
 			),
 			array(
 				'\\u0075',
-				'u'
+				'u',
 			),
 			array(
 				'\\\\u0075\\u0030\\u0030\\u0063\\u0031',
-				'Á'
+				'Á',
 			),
 		);
 	}
@@ -451,18 +451,18 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				array(
 					'unit'=>'word',
 					'length'=>3,
-					'suffix'=>'!'
+					'suffix'=>'!',
 				),
-				'It ẉẩṩ a!'
+				'It ẉẩṩ a!',
 			),
 			array(
 				'It ẉẩṩ a dark and stormy night.',
 				array(
 					'unit'=>'word',
 					'length'=>30,
-					'suffix'=>'!'
+					'suffix'=>'!',
 				),
-				'It ẉẩṩ a dark and stormy night.'
+				'It ẉẩṩ a dark and stormy night.',
 			),
 			array(
 				'It ẉẩṩ a dark and stormy night.',
@@ -470,7 +470,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 					'unit'=>'word',
 					'length'=>3,
 				),
-				'It ẉẩṩ a…'
+				'It ẉẩṩ a…',
 			),
 			array(
 				'It ẉẩṩ a dark and stormy night.',
@@ -478,7 +478,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 					'unit'=>'char',
 					'length'=>6,
 				),
-				'It ẉẩṩ…'
+				'It ẉẩṩ…',
 			),
 		);
 	}
@@ -493,22 +493,22 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				1,
 				1,
-				1.0
+				1.0,
 			),
 			array(
 				1.234,
 				1,
-				1.2
+				1.2,
 			),
 			array(
 				1.234,
 				2,
-				1.23
+				1.23,
 			),
 			array(
 				array(1.234, '4.567'),
 				2,
-				array(1.23, 4.56)
+				array(1.23, 4.56),
 			),
 		);
 	}
@@ -524,25 +524,25 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				1,
 				'%d book',
 				'%d books',
-				'1 book'
+				'1 book',
 			),
 			array(
 				0,
 				'%d book',
 				'%d books',
-				'0 books'
+				'0 books',
 			),
 			array(
 				1.5,
 				'%.01f book',
 				'%.01f books',
-				'1.5 books'
+				'1.5 books',
 			),
 			array(
-				array(1,2,3),
+				array(1, 2, 3),
 				'%d book',
 				'%d books',
-				'3 books'
+				'3 books',
 			),
 		);
 	}
@@ -556,19 +556,19 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'50.116.18.174',
-				846467758
+				846467758,
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2',
-				50511880784403022287880976722111107058
+				50511880784403022287880976722111107058,
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:ff2',
-				50511880784403022287880976722111107058
+				50511880784403022287880976722111107058,
 			),
 			array(
 				'127.0.0.1',
-				2130706433
+				2130706433,
 			),
 		);
 	}
@@ -582,7 +582,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'50.116.18.174',
-				'50.116.18.0/24'
+				'50.116.18.0/24',
 			),
 			array(
 				'2600:3c00::f03c:91ff:FEAE:0ff2',
@@ -590,7 +590,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				'127.0.0.1',
-				'127.0.0.0/24'
+				'127.0.0.0/24',
 			),
 		);
 	}
@@ -605,47 +605,47 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				"{'hello':'there' } ",
 				false,
-				'{"hello":"there"}'
+				'{"hello":"there"}',
 			),
 			array(
 				"{hello:'there' } ",
 				false,
-				'{"hello":"there"}'
+				'{"hello":"there"}',
 			),
 			array(
 				"['hello','there' ] ",
 				false,
-				'["hello","there"]'
+				'["hello","there"]',
 			),
 			array(
 				'["hello","\"there" ] ',
 				false,
-				'["hello","\"there"]'
+				'["hello","\"there"]',
 			),
 			array(
 				"['\"there']",
 				false,
-				'["\"there"]'
+				'["\"there"]',
 			),
 			array(
 				23,
 				false,
-				'23'
+				'23',
 			),
 			array(
 				array('there'),
 				false,
-				'["there"]'
+				'["there"]',
 			),
 			array(
 				array('hello'=>array('there')),
 				false,
-				'{"hello":["there"]}'
+				'{"hello":["there"]}',
 			),
 			array(
 				'["hello","there" ]',
 				true,
-				"[\n    \"hello\",\n    \"there\"\n]"
+				"[\n    \"hello\",\n    \"there\"\n]",
 			),
 		);
 	}
@@ -772,32 +772,32 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'Call me at (201) 555-0123.',
 				null,
-				'Call me at <a href="tel:+12015550123">(201) 555-0123</a>.'
+				'Call me at <a href="tel:+12015550123">(201) 555-0123</a>.',
 			),
 			array(
 				'blobfolio.com',
 				array(
 					'class'=>array('link', 'nav'),
 					'rel'=>'apples',
-					'target'=>'_blank'
+					'target'=>'_blank',
 				),
-				'<a href="http://blobfolio.com" class="link nav" rel="apples" target="_blank">blobfolio.com</a>'
+				'<a href="http://blobfolio.com" class="link nav" rel="apples" target="_blank">blobfolio.com</a>',
 			),
 			array(
 				'me@blobfolio.com',
 				array(
 					'class'=>array('link', 'nav'),
 					'rel'=>'apples',
-					'target'=>'_blank'
+					'target'=>'_blank',
 				),
-				'<a href="mailto:me@blobfolio.com" class="link nav" rel="apples" target="_blank">me@blobfolio.com</a>'
+				'<a href="mailto:me@blobfolio.com" class="link nav" rel="apples" target="_blank">me@blobfolio.com</a>',
 			),
 			array(
 				'blobfolio.com',
 				array(
-					'class'=>'link'
+					'class'=>'link',
 				),
-				'<a href="http://blobfolio.com" class="link">blobfolio.com</a>'
+				'<a href="http://blobfolio.com" class="link">blobfolio.com</a>',
 			),
 		);
 	}
@@ -812,17 +812,17 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'1,2,3',
 				null,
-				array('1','2','3')
+				array('1', '2', '3'),
 			),
 			array(
 				array(0, '1,2,3'),
 				null,
-				array('0','1','2','3')
+				array('0', '1', '2', '3'),
 			),
 			array(
 				array('1,2;3,4'),
 				';',
-				array('1,2', '3,4')
+				array('1,2', '3,4'),
 			),
 			array(
 				array('1, 2, 3,, 3, 4, 4'),
@@ -835,7 +835,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 					'min'=>2,
 					'max'=>3,
 				),
-				array(2,3)
+				array(2, 3),
 			),
 			array(
 				array('1, 2, 3,, 3, 4, 4'),
@@ -845,16 +845,16 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 					'min'=>2,
 					'max'=>3,
 				),
-				array(2,3,3)
+				array(2, 3, 3),
 			),
 			array(
 				array('2015-01-01', array(array('2010-01-01,2014-06-01'))),
 				array(
 					'unique'=>true,
 					'min'=>'2011',
-					'sort'=>true
+					'sort'=>true,
 				),
-				array('2014-06-01','2015-01-01')
+				array('2014-06-01', '2015-01-01'),
 			),
 		);
 	}
@@ -924,25 +924,25 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				1,
 				1,
 				PHP_ROUND_HALF_UP,
-				1.0
+				1.0,
 			),
 			array(
 				1.234,
 				1,
 				PHP_ROUND_HALF_UP,
-				1.2
+				1.2,
 			),
 			array(
 				1.234,
 				2,
 				PHP_ROUND_HALF_UP,
-				1.23
+				1.23,
 			),
 			array(
 				array(1.234, '4.567'),
 				2,
 				PHP_ROUND_HALF_UP,
-				array(1.23, 4.57)
+				array(1.23, 4.57),
 			),
 		);
 	}
@@ -958,25 +958,25 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				'2015-01-15 01:12:23',
 				'America/Los_Angeles',
 				null,
-				'2015-01-15 09:12:23'
+				'2015-01-15 09:12:23',
 			),
 			array(
 				'2015-01-15 01:12:23',
 				'America/Los_Angeles',
 				'UTC',
-				'2015-01-15 09:12:23'
+				'2015-01-15 09:12:23',
 			),
 			array(
 				strtotime('2015-01-15 01:12:23'),
 				'America/Los_Angeles',
 				null,
-				'2015-01-15 09:12:23'
+				'2015-01-15 09:12:23',
 			),
 			array(
 				'2015-01-15 01:12:23',
 				'UTC',
 				'America/Los_Angeles',
-				'2015-01-14 17:12:23'
+				'2015-01-14 17:12:23',
 			),
 		);
 	}

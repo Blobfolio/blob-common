@@ -118,7 +118,7 @@ if (!function_exists('common_get_webp_src')) {
 			'attachment_id'=>0,
 			'size'=>'full',
 			'alt'=>get_bloginfo('name'),
-			'classes'=>array()
+			'classes'=>array(),
 		);
 		$data = common_parse_args($args, $defaults, true);
 
@@ -322,7 +322,7 @@ if (!function_exists('common_get_webp_srcset')) {
 	 */
 	function common_shortcode_webp_srcset($args=null, $content='') {
 		// Explode arrayable fields by comma.
-		foreach (array('size','sizes') as $field) {
+		foreach (array('size', 'sizes') as $field) {
 			if (isset($args[$field])) {
 				$args[$field] = explode(',', $args[$field]);
 				$args[$field] = array_map('trim', $args[$field]);
@@ -358,7 +358,7 @@ if (!function_exists('common_shortcode_webp_caption')) {
 	function common_shortcode_webp_caption($args=null, $content='') {
 		$defaults = array(
 			'classes'=>'',
-			'caption'=>''
+			'caption'=>'',
 		);
 		$data = data::parse_args($args, $defaults);
 		$data['classes'] = explode(',', $data['classes']);
@@ -401,7 +401,7 @@ if (!function_exists('common_get_webp_picture')) {
 			'sources'=>array(),
 			'alt'=>get_bloginfo('name'),
 			'classes'=>array(),
-			'default_size'=>'full'
+			'default_size'=>'full',
 		);
 		$data = common_parse_args($args, $defaults, true);
 
@@ -409,7 +409,7 @@ if (!function_exists('common_get_webp_picture')) {
 			'attachment_id'=>0,
 			'size'=>array('full'),
 			'sizes'=>array(),
-			'media'=>''
+			'media'=>'',
 		);
 
 		// Before we get too into it, let's make sure the default exists.

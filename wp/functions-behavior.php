@@ -161,31 +161,31 @@ if (!function_exists('common_cron_schedules')) {
 		// Every minute.
 		$schedules['oneminute'] = array(
 			'interval'=>60,
-			'display'=>'Every 1 minute'
+			'display'=>'Every 1 minute',
 		);
 
 		// Every other minute.
 		$schedules['twominutes'] = array(
 			'interval'=>120,
-			'display'=>'Every 2 minutes'
+			'display'=>'Every 2 minutes',
 		);
 
 		// Every five minutes.
 		$schedules['fiveminutes'] = array(
 			'interval'=>300,
-			'display'=>'Every 5 minutes'
+			'display'=>'Every 5 minutes',
 		);
 
 		// Every ten minutes.
 		$schedules['tenminutes'] = array(
 			'interval'=>600,
-			'display'=>'Every 10 minutes'
+			'display'=>'Every 10 minutes',
 		);
 
 		// Ever half hour.
 		$schedules['halfhour'] = array(
 			'interval'=>1800,
-			'display'=>'Every 30 minutes'
+			'display'=>'Every 30 minutes',
 		);
 
 		return $schedules;

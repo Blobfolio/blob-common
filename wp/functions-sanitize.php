@@ -167,7 +167,7 @@ if (!function_exists('common_get_excerpt')) {
 			array(
 				'unit'=>$method,
 				'suffix'=>$append,
-				'length'=>$length
+				'length'=>$length,
 			)
 		);
 	}

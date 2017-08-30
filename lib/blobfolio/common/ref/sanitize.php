@@ -98,7 +98,7 @@ class sanitize {
 				break;
 			// Visa.
 			case 4:
-				if (!in_array(v_mb::strlen($ccnum), array(13,16), true)) {
+				if (!in_array(v_mb::strlen($ccnum), array(13, 16), true)) {
 					$ccnum = false;
 					return false;
 				}

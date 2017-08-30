@@ -48,7 +48,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_svg_dimensions() {
 		$svg = static::ASSETS . 'monogram-inkscape.svg';
-		$dimensions = array('width'=>330.056,'height'=>495.558);
+		$dimensions = array('width'=>330.056, 'height'=>495.558);
 
 		$this->assertEquals($dimensions, image::svg_dimensions($svg));
 		$this->assertEquals($dimensions, image::svg_dimensions(file_get_contents($svg)));

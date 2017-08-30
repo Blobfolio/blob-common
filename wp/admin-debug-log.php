@@ -33,7 +33,7 @@ function sister_plugins() {
 		'query_plugins',
 		array(
 			'author'=>'blobfolio',
-			'per_page'=>20
+			'per_page'=>20,
 		)
 	);
 
@@ -55,7 +55,7 @@ function sister_plugins() {
 			'slug'=>$p->slug,
 			'description'=>$p->short_description,
 			'url'=>$p->homepage,
-			'version'=>$p->version
+			'version'=>$p->version,
 		);
 	}
 

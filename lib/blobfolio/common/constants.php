@@ -17,58 +17,58 @@ class constants {
 
 	// Accented=>Regular.
 	const ACCENT_CHARS = array(
-		'ª'=>'a',	'º'=>'o',	'À'=>'A',	'Á'=>'A',	'Â'=>'A',	'Ã'=>'A',
-		'Ä'=>'A',	'Å'=>'A',	'Æ'=>'AE',	'Ç'=>'C',	'È'=>'E',	'É'=>'E',
-		'Ê'=>'E',	'Ë'=>'E',	'Ì'=>'I',	'Í'=>'I',	'Î'=>'I',	'Ï'=>'I',
-		'Ð'=>'D',	'Ñ'=>'N',	'Ò'=>'O',	'Ó'=>'O',	'Ô'=>'O',	'Õ'=>'O',
-		'Ö'=>'O',	'Ù'=>'U',	'Ú'=>'U',	'Û'=>'U',	'Ü'=>'U',	'Ý'=>'Y',
-		'Þ'=>'TH',	'ß'=>'s',	'à'=>'a',	'á'=>'a',	'â'=>'a',	'ã'=>'a',
-		'ä'=>'a',	'å'=>'a',	'æ'=>'ae',	'ç'=>'c',	'è'=>'e',	'é'=>'e',
-		'ê'=>'e',	'ë'=>'e',	'ì'=>'i',	'í'=>'i',	'î'=>'i',	'ï'=>'i',
-		'ð'=>'d',	'ñ'=>'n',	'ò'=>'o',	'ó'=>'o',	'ô'=>'o',	'õ'=>'o',
-		'ö'=>'o',	'ø'=>'o',	'ù'=>'u',	'ú'=>'u',	'û'=>'u',	'ü'=>'u',
-		'ý'=>'y',	'þ'=>'th',	'ÿ'=>'y',	'Ø'=>'O',	'Ā'=>'A',	'ā'=>'a',
-		'Ă'=>'A',	'ă'=>'a',	'Ą'=>'A',	'ą'=>'a',	'Ć'=>'C',	'ć'=>'c',
-		'Ĉ'=>'C',	'ĉ'=>'c',	'Ċ'=>'C',	'ċ'=>'c',	'Č'=>'C',	'č'=>'c',
-		'Ď'=>'D',	'ď'=>'d',	'Đ'=>'D',	'đ'=>'d',	'Ē'=>'E',	'ē'=>'e',
-		'Ĕ'=>'E',	'ĕ'=>'e',	'Ė'=>'E',	'ė'=>'e',	'Ę'=>'E',	'ę'=>'e',
-		'Ě'=>'E',	'ě'=>'e',	'Ĝ'=>'G',	'ĝ'=>'g',	'Ğ'=>'G',	'ğ'=>'g',
-		'Ġ'=>'G',	'ġ'=>'g',	'Ģ'=>'G',	'ģ'=>'g',	'Ĥ'=>'H',	'ĥ'=>'h',
-		'Ħ'=>'H',	'ħ'=>'h',	'Ĩ'=>'I',	'ĩ'=>'i',	'Ī'=>'I',	'ī'=>'i',
-		'Ĭ'=>'I',	'ĭ'=>'i',	'Į'=>'I',	'į'=>'i',	'İ'=>'I',	'ı'=>'i',
-		'Ĳ'=>'IJ',	'ĳ'=>'ij',	'Ĵ'=>'J',	'ĵ'=>'j',	'Ķ'=>'K',	'ķ'=>'k',
-		'ĸ'=>'k',	'Ĺ'=>'L',	'ĺ'=>'l',	'Ļ'=>'L',	'ļ'=>'l',	'Ľ'=>'L',
-		'ľ'=>'l',	'Ŀ'=>'L',	'ŀ'=>'l',	'Ł'=>'L',	'ł'=>'l',	'Ń'=>'N',
-		'ń'=>'n',	'Ņ'=>'N',	'ņ'=>'n',	'Ň'=>'N',	'ň'=>'n',	'ŉ'=>'N',
-		'Ŋ'=>'n',	'ŋ'=>'N',	'Ō'=>'O',	'ō'=>'o',	'Ŏ'=>'O',	'ŏ'=>'o',
-		'Ő'=>'O',	'ő'=>'o',	'Œ'=>'OE',	'œ'=>'oe',	'Ŕ'=>'R',	'ŕ'=>'r',
-		'Ŗ'=>'R',	'ŗ'=>'r',	'Ř'=>'R',	'ř'=>'r',	'Ś'=>'S',	'ś'=>'s',
-		'Ŝ'=>'S',	'ŝ'=>'s',	'Ş'=>'S',	'ş'=>'s',	'Š'=>'S',	'š'=>'s',
-		'Ţ'=>'T',	'ţ'=>'t',	'Ť'=>'T',	'ť'=>'t',	'Ŧ'=>'T',	'ŧ'=>'t',
-		'Ũ'=>'U',	'ũ'=>'u',	'Ū'=>'U',	'ū'=>'u',	'Ŭ'=>'U',	'ŭ'=>'u',
-		'Ů'=>'U',	'ů'=>'u',	'Ű'=>'U',	'ű'=>'u',	'Ų'=>'U',	'ų'=>'u',
-		'Ŵ'=>'W',	'ŵ'=>'w',	'Ŷ'=>'Y',	'ŷ'=>'y',	'Ÿ'=>'Y',	'Ź'=>'Z',
-		'ź'=>'z',	'Ż'=>'Z',	'ż'=>'z',	'Ž'=>'Z',	'ž'=>'z',	'ſ'=>'s',
-		'Ș'=>'S',	'ș'=>'s',	'Ț'=>'T',	'ț'=>'t',	'€'=>'E',	'£'=>'',
-		'Ơ'=>'O',	'ơ'=>'o',	'Ư'=>'U',	'ư'=>'u',	'Ầ'=>'A',	'ầ'=>'a',
-		'Ằ'=>'A',	'ằ'=>'a',	'Ề'=>'E',	'ề'=>'e',	'Ồ'=>'O',	'ồ'=>'o',
-		'Ờ'=>'O',	'ờ'=>'o',	'Ừ'=>'U',	'ừ'=>'u',	'Ỳ'=>'Y',	'ỳ'=>'y',
-		'Ả'=>'A',	'ả'=>'a',	'Ẩ'=>'A',	'ẩ'=>'a',	'Ẳ'=>'A',	'ẳ'=>'a',
-		'Ẻ'=>'E',	'ẻ'=>'e',	'Ể'=>'E',	'ể'=>'e',	'Ỉ'=>'I',	'ỉ'=>'i',
-		'Ỏ'=>'O',	'ỏ'=>'o',	'Ổ'=>'O',	'ổ'=>'o',	'Ở'=>'O',	'ở'=>'o',
-		'Ủ'=>'U',	'ủ'=>'u',	'Ử'=>'U',	'ử'=>'u',	'Ỷ'=>'Y',	'ỷ'=>'y',
-		'Ẫ'=>'A',	'ẫ'=>'a',	'Ẵ'=>'A',	'ẵ'=>'a',	'Ẽ'=>'E',	'ẽ'=>'e',
-		'Ễ'=>'E',	'ễ'=>'e',	'Ỗ'=>'O',	'ỗ'=>'o',	'Ỡ'=>'O',	'ỡ'=>'o',
-		'Ữ'=>'U',	'ữ'=>'u',	'Ỹ'=>'Y',	'ỹ'=>'y',	'Ấ'=>'A',	'ấ'=>'a',
-		'Ắ'=>'A',	'ắ'=>'a',	'Ế'=>'E',	'ế'=>'e',	'Ố'=>'O',	'ố'=>'o',
-		'Ớ'=>'O',	'ớ'=>'o',	'Ứ'=>'U',	'ứ'=>'u',	'Ạ'=>'A',	'ạ'=>'a',
-		'Ậ'=>'A',	'ậ'=>'a',	'Ặ'=>'A',	'ặ'=>'a',	'Ẹ'=>'E',	'ẹ'=>'e',
-		'Ệ'=>'E',	'ệ'=>'e',	'Ị'=>'I',	'ị'=>'i',	'Ọ'=>'O',	'ọ'=>'o',
-		'Ộ'=>'O',	'ộ'=>'o',	'Ợ'=>'O',	'ợ'=>'o',	'Ụ'=>'U',	'ụ'=>'u',
-		'Ự'=>'U',	'ự'=>'u',	'Ỵ'=>'Y',	'ỵ'=>'y',	'ɑ'=>'a',	'Ǖ'=>'U',
-		'ǖ'=>'u',	'Ǘ'=>'U',	'ǘ'=>'u',	'Ǎ'=>'A',	'ǎ'=>'a',	'Ǐ'=>'I',
-		'ǐ'=>'i',	'Ǒ'=>'O',	'ǒ'=>'o',	'Ǔ'=>'U',	'ǔ'=>'u',	'Ǚ'=>'U',
-		'ǚ'=>'u',	'Ǜ'=>'U',	'ǜ'=>'u'
+		'ª'=>'a', 'º'=>'o', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A',
+		'Ä'=>'A', 'Å'=>'A', 'Æ'=>'AE', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+		'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I',
+		'Ð'=>'D', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O',
+		'Ö'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y',
+		'Þ'=>'TH', 'ß'=>'s', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a',
+		'ä'=>'a', 'å'=>'a', 'æ'=>'ae', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+		'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i',
+		'ð'=>'d', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
+		'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u',
+		'ý'=>'y', 'þ'=>'th', 'ÿ'=>'y', 'Ø'=>'O', 'Ā'=>'A', 'ā'=>'a',
+		'Ă'=>'A', 'ă'=>'a', 'Ą'=>'A', 'ą'=>'a', 'Ć'=>'C', 'ć'=>'c',
+		'Ĉ'=>'C', 'ĉ'=>'c', 'Ċ'=>'C', 'ċ'=>'c', 'Č'=>'C', 'č'=>'c',
+		'Ď'=>'D', 'ď'=>'d', 'Đ'=>'D', 'đ'=>'d', 'Ē'=>'E', 'ē'=>'e',
+		'Ĕ'=>'E', 'ĕ'=>'e', 'Ė'=>'E', 'ė'=>'e', 'Ę'=>'E', 'ę'=>'e',
+		'Ě'=>'E', 'ě'=>'e', 'Ĝ'=>'G', 'ĝ'=>'g', 'Ğ'=>'G', 'ğ'=>'g',
+		'Ġ'=>'G', 'ġ'=>'g', 'Ģ'=>'G', 'ģ'=>'g', 'Ĥ'=>'H', 'ĥ'=>'h',
+		'Ħ'=>'H', 'ħ'=>'h', 'Ĩ'=>'I', 'ĩ'=>'i', 'Ī'=>'I', 'ī'=>'i',
+		'Ĭ'=>'I', 'ĭ'=>'i', 'Į'=>'I', 'į'=>'i', 'İ'=>'I', 'ı'=>'i',
+		'Ĳ'=>'IJ', 'ĳ'=>'ij', 'Ĵ'=>'J', 'ĵ'=>'j', 'Ķ'=>'K', 'ķ'=>'k',
+		'ĸ'=>'k', 'Ĺ'=>'L', 'ĺ'=>'l', 'Ļ'=>'L', 'ļ'=>'l', 'Ľ'=>'L',
+		'ľ'=>'l', 'Ŀ'=>'L', 'ŀ'=>'l', 'Ł'=>'L', 'ł'=>'l', 'Ń'=>'N',
+		'ń'=>'n', 'Ņ'=>'N', 'ņ'=>'n', 'Ň'=>'N', 'ň'=>'n', 'ŉ'=>'N',
+		'Ŋ'=>'n', 'ŋ'=>'N', 'Ō'=>'O', 'ō'=>'o', 'Ŏ'=>'O', 'ŏ'=>'o',
+		'Ő'=>'O', 'ő'=>'o', 'Œ'=>'OE', 'œ'=>'oe', 'Ŕ'=>'R', 'ŕ'=>'r',
+		'Ŗ'=>'R', 'ŗ'=>'r', 'Ř'=>'R', 'ř'=>'r', 'Ś'=>'S', 'ś'=>'s',
+		'Ŝ'=>'S', 'ŝ'=>'s', 'Ş'=>'S', 'ş'=>'s', 'Š'=>'S', 'š'=>'s',
+		'Ţ'=>'T', 'ţ'=>'t', 'Ť'=>'T', 'ť'=>'t', 'Ŧ'=>'T', 'ŧ'=>'t',
+		'Ũ'=>'U', 'ũ'=>'u', 'Ū'=>'U', 'ū'=>'u', 'Ŭ'=>'U', 'ŭ'=>'u',
+		'Ů'=>'U', 'ů'=>'u', 'Ű'=>'U', 'ű'=>'u', 'Ų'=>'U', 'ų'=>'u',
+		'Ŵ'=>'W', 'ŵ'=>'w', 'Ŷ'=>'Y', 'ŷ'=>'y', 'Ÿ'=>'Y', 'Ź'=>'Z',
+		'ź'=>'z', 'Ż'=>'Z', 'ż'=>'z', 'Ž'=>'Z', 'ž'=>'z', 'ſ'=>'s',
+		'Ș'=>'S', 'ș'=>'s', 'Ț'=>'T', 'ț'=>'t', '€'=>'E', '£'=>'',
+		'Ơ'=>'O', 'ơ'=>'o', 'Ư'=>'U', 'ư'=>'u', 'Ầ'=>'A', 'ầ'=>'a',
+		'Ằ'=>'A', 'ằ'=>'a', 'Ề'=>'E', 'ề'=>'e', 'Ồ'=>'O', 'ồ'=>'o',
+		'Ờ'=>'O', 'ờ'=>'o', 'Ừ'=>'U', 'ừ'=>'u', 'Ỳ'=>'Y', 'ỳ'=>'y',
+		'Ả'=>'A', 'ả'=>'a', 'Ẩ'=>'A', 'ẩ'=>'a', 'Ẳ'=>'A', 'ẳ'=>'a',
+		'Ẻ'=>'E', 'ẻ'=>'e', 'Ể'=>'E', 'ể'=>'e', 'Ỉ'=>'I', 'ỉ'=>'i',
+		'Ỏ'=>'O', 'ỏ'=>'o', 'Ổ'=>'O', 'ổ'=>'o', 'Ở'=>'O', 'ở'=>'o',
+		'Ủ'=>'U', 'ủ'=>'u', 'Ử'=>'U', 'ử'=>'u', 'Ỷ'=>'Y', 'ỷ'=>'y',
+		'Ẫ'=>'A', 'ẫ'=>'a', 'Ẵ'=>'A', 'ẵ'=>'a', 'Ẽ'=>'E', 'ẽ'=>'e',
+		'Ễ'=>'E', 'ễ'=>'e', 'Ỗ'=>'O', 'ỗ'=>'o', 'Ỡ'=>'O', 'ỡ'=>'o',
+		'Ữ'=>'U', 'ữ'=>'u', 'Ỹ'=>'Y', 'ỹ'=>'y', 'Ấ'=>'A', 'ấ'=>'a',
+		'Ắ'=>'A', 'ắ'=>'a', 'Ế'=>'E', 'ế'=>'e', 'Ố'=>'O', 'ố'=>'o',
+		'Ớ'=>'O', 'ớ'=>'o', 'Ứ'=>'U', 'ứ'=>'u', 'Ạ'=>'A', 'ạ'=>'a',
+		'Ậ'=>'A', 'ậ'=>'a', 'Ặ'=>'A', 'ặ'=>'a', 'Ẹ'=>'E', 'ẹ'=>'e',
+		'Ệ'=>'E', 'ệ'=>'e', 'Ị'=>'I', 'ị'=>'i', 'Ọ'=>'O', 'ọ'=>'o',
+		'Ộ'=>'O', 'ộ'=>'o', 'Ợ'=>'O', 'ợ'=>'o', 'Ụ'=>'U', 'ụ'=>'u',
+		'Ự'=>'U', 'ự'=>'u', 'Ỵ'=>'Y', 'ỵ'=>'y', 'ɑ'=>'a', 'Ǖ'=>'U',
+		'ǖ'=>'u', 'Ǘ'=>'U', 'ǘ'=>'u', 'Ǎ'=>'A', 'ǎ'=>'a', 'Ǐ'=>'I',
+		'ǐ'=>'i', 'Ǒ'=>'O', 'ǒ'=>'o', 'Ǔ'=>'U', 'ǔ'=>'u', 'Ǚ'=>'U',
+		'ǚ'=>'u', 'Ǜ'=>'U', 'ǜ'=>'u',
 	);
 
 	// Uncaught unicode upper=>lower.
@@ -229,9 +229,9 @@ class constants {
 
 	// Characters to use in random string.
 	const RANDOM_CHARS = array(
-		'A','B','C','D','E','F','G','H','J','K','L',
-		'M','N','P','Q','R','S','T','U','V','W','X',
-		'Y','Z','2','3','4','5','6','7','8','9'
+		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L',
+		'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+		'Y', 'Z', '2', '3', '4', '5', '6', '7', '8', '9',
 	);
 
 
@@ -250,638 +250,638 @@ class constants {
 		'US'=>array(
 			'name'=>'USA',
 			'region'=>'North America',
-			'currency'=>'USD'
+			'currency'=>'USD',
 		),
 		'CA'=>array(
 			'name'=>'Canada',
 			'region'=>'North America',
-			'currency'=>'CAD'
+			'currency'=>'CAD',
 		),
 		'GB'=>array(
 			'name'=>'United Kingdom',
 			'region'=>'Europe',
-			'currency'=>'GBP'
+			'currency'=>'GBP',
 		),
 		'AF'=>array(
 			'name'=>'Afghanistan',
 			'region'=>'Asia',
-			'currency'=>'AFN'
+			'currency'=>'AFN',
 		),
 		'AL'=>array(
 			'name'=>'Albania',
 			'region'=>'Europe',
-			'currency'=>'ALL'
+			'currency'=>'ALL',
 		),
 		'AR'=>array(
 			'name'=>'Argentina',
 			'region'=>'South America',
-			'currency'=>'ARS'
+			'currency'=>'ARS',
 		),
 		'AU'=>array(
 			'name'=>'Australia',
 			'region'=>'Australia',
-			'currency'=>'AUD'
+			'currency'=>'AUD',
 		),
 		'AT'=>array(
 			'name'=>'Austria',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'BD'=>array(
 			'name'=>'Bangladesh',
 			'region'=>'Asia',
-			'currency'=>'BDT'
+			'currency'=>'BDT',
 		),
 		'BE'=>array(
 			'name'=>'Belgium',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'BO'=>array(
 			'name'=>'Bolivia',
 			'region'=>'South America',
-			'currency'=>'BOB'
+			'currency'=>'BOB',
 		),
 		'BA'=>array(
 			'name'=>'Bosnia and Herzegovina',
 			'region'=>'Europe',
-			'currency'=>'BAM'
+			'currency'=>'BAM',
 		),
 		'BR'=>array(
 			'name'=>'Brazil',
 			'region'=>'South America',
-			'currency'=>'BRL'
+			'currency'=>'BRL',
 		),
 		'BG'=>array(
 			'name'=>'Bulgaria',
 			'region'=>'Europe',
-			'currency'=>'BGN'
+			'currency'=>'BGN',
 		),
 		'KH'=>array(
 			'name'=>'Cambodia',
 			'region'=>'Asia',
-			'currency'=>'KHR'
+			'currency'=>'KHR',
 		),
 		'CL'=>array(
 			'name'=>'Chile',
 			'region'=>'South America',
-			'currency'=>'CLP'
+			'currency'=>'CLP',
 		),
 		'CN'=>array(
 			'name'=>'China',
 			'region'=>'Asia',
-			'currency'=>'CNY'
+			'currency'=>'CNY',
 		),
 		'CO'=>array(
 			'name'=>'Colombia',
 			'region'=>'South America',
-			'currency'=>'COU'
+			'currency'=>'COU',
 		),
 		'CR'=>array(
 			'name'=>'Costa Rica',
 			'region'=>'South America',
-			'currency'=>'CRC'
+			'currency'=>'CRC',
 		),
 		'HR'=>array(
 			'name'=>'Croatia',
 			'region'=>'Europe',
-			'currency'=>'HRK'
+			'currency'=>'HRK',
 		),
 		'CZ'=>array(
 			'name'=>'Czech Republic',
 			'region'=>'Europe',
-			'currency'=>'CZK'
+			'currency'=>'CZK',
 		),
 		'DK'=>array(
 			'name'=>'Denmark',
 			'region'=>'Europe',
-			'currency'=>'DKK'
+			'currency'=>'DKK',
 		),
 		'DO'=>array(
 			'name'=>'Dominican Republic',
 			'region'=>'North America',
-			'currency'=>'DOP'
+			'currency'=>'DOP',
 		),
 		'EC'=>array(
 			'name'=>'Ecuador',
 			'region'=>'South America',
-			'currency'=>'USD'
+			'currency'=>'USD',
 		),
 		'EG'=>array(
 			'name'=>'Egypt',
 			'region'=>'Africa',
-			'currency'=>'EGP'
+			'currency'=>'EGP',
 		),
 		'SV'=>array(
 			'name'=>'El Salvador',
 			'region'=>'North America',
-			'currency'=>'SVC'
+			'currency'=>'SVC',
 		),
 		'EE'=>array(
 			'name'=>'Estonia',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'ET'=>array(
 			'name'=>'Ethiopia',
 			'region'=>'Africa',
-			'currency'=>'ETB'
+			'currency'=>'ETB',
 		),
 		'FJ'=>array(
 			'name'=>'Fiji',
 			'region'=>'Australia',
-			'currency'=>'FJD'
+			'currency'=>'FJD',
 		),
 		'FI'=>array(
 			'name'=>'Finland',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'FR'=>array(
 			'name'=>'France',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'DE'=>array(
 			'name'=>'Germany',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'GI'=>array(
 			'name'=>'Gibraltar',
 			'region'=>'Europe',
-			'currency'=>'GIP'
+			'currency'=>'GIP',
 		),
 		'GR'=>array(
 			'name'=>'Greece',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'GL'=>array(
 			'name'=>'Greenland',
 			'region'=>'North America',
-			'currency'=>'DKK'
+			'currency'=>'DKK',
 		),
 		'GU'=>array(
 			'name'=>'Guam',
 			'region'=>'Australia',
-			'currency'=>'USD'
+			'currency'=>'USD',
 		),
 		'GT'=>array(
 			'name'=>'Guatemala',
 			'region'=>'North America',
-			'currency'=>'GTQ'
+			'currency'=>'GTQ',
 		),
 		'GG'=>array(
 			'name'=>'Guernsey',
 			'region'=>'Europe',
-			'currency'=>'GBP'
+			'currency'=>'GBP',
 		),
 		'HT'=>array(
 			'name'=>'Haiti',
 			'region'=>'North America',
-			'currency'=>'USD'
+			'currency'=>'USD',
 		),
 		'HN'=>array(
 			'name'=>'Honduras',
 			'region'=>'North America',
-			'currency'=>'HNL'
+			'currency'=>'HNL',
 		),
 		'HK'=>array(
 			'name'=>'Hong Kong',
 			'region'=>'Asia',
-			'currency'=>'HKD'
+			'currency'=>'HKD',
 		),
 		'HU'=>array(
 			'name'=>'Hungary',
 			'region'=>'Europe',
-			'currency'=>'HUF'
+			'currency'=>'HUF',
 		),
 		'IS'=>array(
 			'name'=>'Iceland',
 			'region'=>'Europe',
-			'currency'=>'ISK'
+			'currency'=>'ISK',
 		),
 		'IN'=>array(
 			'name'=>'India',
 			'region'=>'Asia',
-			'currency'=>'INR'
+			'currency'=>'INR',
 		),
 		'ID'=>array(
 			'name'=>'Indonesia',
 			'region'=>'Asia',
-			'currency'=>'IDR'
+			'currency'=>'IDR',
 		),
 		'IQ'=>array(
 			'name'=>'Iraq',
 			'region'=>'Asia',
-			'currency'=>'IQD'
+			'currency'=>'IQD',
 		),
 		'IE'=>array(
 			'name'=>'Ireland',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'IM'=>array(
 			'name'=>'Isle of Man',
 			'region'=>'Europe',
-			'currency'=>'GBP'
+			'currency'=>'GBP',
 		),
 		'IL'=>array(
 			'name'=>'Israel',
 			'region'=>'Asia',
-			'currency'=>'ILS'
+			'currency'=>'ILS',
 		),
 		'IT'=>array(
 			'name'=>'Italy',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'JM'=>array(
 			'name'=>'Jamaica',
 			'region'=>'North America',
-			'currency'=>'JMD'
+			'currency'=>'JMD',
 		),
 		'JP'=>array(
 			'name'=>'Japan',
 			'region'=>'Asia',
-			'currency'=>'JPY'
+			'currency'=>'JPY',
 		),
 		'JE'=>array(
 			'name'=>'Jersey',
 			'region'=>'Europe',
-			'currency'=>'GBP'
+			'currency'=>'GBP',
 		),
 		'JO'=>array(
 			'name'=>'Jordan',
 			'region'=>'Asia',
-			'currency'=>'JOD'
+			'currency'=>'JOD',
 		),
 		'KZ'=>array(
 			'name'=>'Kazakhstan',
 			'region'=>'Asia',
-			'currency'=>'KZT'
+			'currency'=>'KZT',
 		),
 		'KE'=>array(
 			'name'=>'Kenya',
 			'region'=>'Africa',
-			'currency'=>'KES'
+			'currency'=>'KES',
 		),
 		'KR'=>array(
 			'name'=>'Korea, South',
 			'region'=>'Asia',
-			'currency'=>'KRW'
+			'currency'=>'KRW',
 		),
 		'KW'=>array(
 			'name'=>'Kuwait',
 			'region'=>'Asia',
-			'currency'=>'KWD'
+			'currency'=>'KWD',
 		),
 		'KG'=>array(
 			'name'=>'Kyrgyzstan',
 			'region'=>'Asia',
-			'currency'=>'KGS'
+			'currency'=>'KGS',
 		),
 		'LA'=>array(
 			'name'=>'Laos',
 			'region'=>'Asia',
-			'currency'=>'LAK'
+			'currency'=>'LAK',
 		),
 		'LV'=>array(
 			'name'=>'Latvia',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'LB'=>array(
 			'name'=>'Lebanon',
 			'region'=>'Asia',
-			'currency'=>'LBP'
+			'currency'=>'LBP',
 		),
 		'LI'=>array(
 			'name'=>'Liechtenstein',
 			'region'=>'Europe',
-			'currency'=>'CHF'
+			'currency'=>'CHF',
 		),
 		'LT'=>array(
 			'name'=>'Lithuania',
 			'region'=>'Europe',
-			'currency'=>'LTL'
+			'currency'=>'LTL',
 		),
 		'LU'=>array(
 			'name'=>'Luxembourg',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'MO'=>array(
 			'name'=>'Macao',
 			'region'=>'Asia',
-			'currency'=>'MOP'
+			'currency'=>'MOP',
 		),
 		'MK'=>array(
 			'name'=>'Macedonia',
 			'region'=>'Europe',
-			'currency'=>'MKD'
+			'currency'=>'MKD',
 		),
 		'MG'=>array(
 			'name'=>'Madagascar',
 			'region'=>'Africa',
-			'currency'=>'MGA'
+			'currency'=>'MGA',
 		),
 		'MW'=>array(
 			'name'=>'Malawi',
 			'region'=>'Africa',
-			'currency'=>'MWK'
+			'currency'=>'MWK',
 		),
 		'MY'=>array(
 			'name'=>'Malaysia',
 			'region'=>'Asia',
-			'currency'=>'MYR'
+			'currency'=>'MYR',
 		),
 		'MT'=>array(
 			'name'=>'Malta',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'MX'=>array(
 			'name'=>'Mexico',
 			'region'=>'North America',
-			'currency'=>'MXV'
+			'currency'=>'MXV',
 		),
 		'MD'=>array(
 			'name'=>'Moldova',
 			'region'=>'Europe',
-			'currency'=>'MDL'
+			'currency'=>'MDL',
 		),
 		'MC'=>array(
 			'name'=>'Monaco',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'MN'=>array(
 			'name'=>'Mongolia',
 			'region'=>'Asia',
-			'currency'=>'MNT'
+			'currency'=>'MNT',
 		),
 		'ME'=>array(
 			'name'=>'Montenegro',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'MA'=>array(
 			'name'=>'Morocco',
 			'region'=>'Africa',
-			'currency'=>'MAD'
+			'currency'=>'MAD',
 		),
 		'MZ'=>array(
 			'name'=>'Mozambique',
 			'region'=>'Africa',
-			'currency'=>'MZN'
+			'currency'=>'MZN',
 		),
 		'MM'=>array(
 			'name'=>'Myanmar (Burma)',
 			'region'=>'Asia',
-			'currency'=>'MMK'
+			'currency'=>'MMK',
 		),
 		'NA'=>array(
 			'name'=>'Namibia',
 			'region'=>'Africa',
-			'currency'=>'NAD'
+			'currency'=>'NAD',
 		),
 		'NP'=>array(
 			'name'=>'Nepal',
 			'region'=>'Asia',
-			'currency'=>'NPR'
+			'currency'=>'NPR',
 		),
 		'NL'=>array(
 			'name'=>'Netherlands',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'NZ'=>array(
 			'name'=>'New Zealand',
 			'region'=>'Australia',
-			'currency'=>'NZD'
+			'currency'=>'NZD',
 		),
 		'NI'=>array(
 			'name'=>'Nicaragua',
 			'region'=>'North America',
-			'currency'=>'NIO'
+			'currency'=>'NIO',
 		),
 		'NO'=>array(
 			'name'=>'Norway',
 			'region'=>'Europe',
-			'currency'=>'NOK'
+			'currency'=>'NOK',
 		),
 		'PK'=>array(
 			'name'=>'Pakistan',
 			'region'=>'Asia',
-			'currency'=>'PKR'
+			'currency'=>'PKR',
 		),
 		'PA'=>array(
 			'name'=>'Panama',
 			'region'=>'North America',
-			'currency'=>'PAB'
+			'currency'=>'PAB',
 		),
 		'PG'=>array(
 			'name'=>'Papua New Guinea',
 			'region'=>'Australia',
-			'currency'=>'PGK'
+			'currency'=>'PGK',
 		),
 		'PY'=>array(
 			'name'=>'Paraguay',
 			'region'=>'South America',
-			'currency'=>'PYG'
+			'currency'=>'PYG',
 		),
 		'PE'=>array(
 			'name'=>'Peru',
 			'region'=>'South America',
-			'currency'=>'PEN'
+			'currency'=>'PEN',
 		),
 		'PH'=>array(
 			'name'=>'Philippines',
 			'region'=>'Asia',
-			'currency'=>'PHP'
+			'currency'=>'PHP',
 		),
 		'PL'=>array(
 			'name'=>'Poland',
 			'region'=>'Europe',
-			'currency'=>'PLN'
+			'currency'=>'PLN',
 		),
 		'PT'=>array(
 			'name'=>'Portugal',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'PR'=>array(
 			'name'=>'Puerto Rico',
 			'region'=>'North America',
-			'currency'=>'USD'
+			'currency'=>'USD',
 		),
 		'QA'=>array(
 			'name'=>'Qatar',
 			'region'=>'Asia',
-			'currency'=>'QAR'
+			'currency'=>'QAR',
 		),
 		'RO'=>array(
 			'name'=>'Romania',
 			'region'=>'Europe',
-			'currency'=>'RON'
+			'currency'=>'RON',
 		),
 		'RU'=>array(
 			'name'=>'Russia',
 			'region'=>'Europe',
-			'currency'=>'RUB'
+			'currency'=>'RUB',
 		),
 		'RW'=>array(
 			'name'=>'Rwanda',
 			'region'=>'Africa',
-			'currency'=>'RWF'
+			'currency'=>'RWF',
 		),
 		'SM'=>array(
 			'name'=>'San Marino',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'SA'=>array(
 			'name'=>'Saudi Arabia',
 			'region'=>'Asia',
-			'currency'=>'SAR'
+			'currency'=>'SAR',
 		),
 		'SN'=>array(
 			'name'=>'Senegal',
 			'region'=>'Africa',
-			'currency'=>'XOF'
+			'currency'=>'XOF',
 		),
 		'RS'=>array(
 			'name'=>'Serbia',
 			'region'=>'Europe',
-			'currency'=>'RSD'
+			'currency'=>'RSD',
 		),
 		'SL'=>array(
 			'name'=>'Sierra Leone',
 			'region'=>'Africa',
-			'currency'=>'SLL'
+			'currency'=>'SLL',
 		),
 		'SG'=>array(
 			'name'=>'Singapore',
 			'region'=>'Asia',
-			'currency'=>'SGD'
+			'currency'=>'SGD',
 		),
 		'SK'=>array(
 			'name'=>'Slovakia',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'SI'=>array(
 			'name'=>'Slovenia',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'ZA'=>array(
 			'name'=>'South Africa',
 			'region'=>'Africa',
-			'currency'=>'ZAR'
+			'currency'=>'ZAR',
 		),
 		'ES'=>array(
 			'name'=>'Spain',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'LK'=>array(
 			'name'=>'Sri Lanka',
 			'region'=>'Asia',
-			'currency'=>'LKR'
+			'currency'=>'LKR',
 		),
 		'SZ'=>array(
 			'name'=>'Swaziland',
 			'region'=>'Africa',
-			'currency'=>'SZL'
+			'currency'=>'SZL',
 		),
 		'SE'=>array(
 			'name'=>'Sweden',
 			'region'=>'Europe',
-			'currency'=>'SEK'
+			'currency'=>'SEK',
 		),
 		'CH'=>array(
 			'name'=>'Switzerland',
 			'region'=>'Europe',
-			'currency'=>'CHW'
+			'currency'=>'CHW',
 		),
 		'SY'=>array(
 			'name'=>'Syrian Arab Republic',
 			'region'=>'Asia',
-			'currency'=>'SYP'
+			'currency'=>'SYP',
 		),
 		'TW'=>array(
 			'name'=>'Taiwan',
 			'region'=>'Asia',
-			'currency'=>'TWD'
+			'currency'=>'TWD',
 		),
 		'TJ'=>array(
 			'name'=>'Tajikistan',
 			'region'=>'Asia',
-			'currency'=>'TJS'
+			'currency'=>'TJS',
 		),
 		'TZ'=>array(
 			'name'=>'Tanzania',
 			'region'=>'Africa',
-			'currency'=>'TZS'
+			'currency'=>'TZS',
 		),
 		'TH'=>array(
 			'name'=>'Thailand',
 			'region'=>'Asia',
-			'currency'=>'THB'
+			'currency'=>'THB',
 		),
 		'TN'=>array(
 			'name'=>'Tunisia',
 			'region'=>'Africa',
-			'currency'=>'TND'
+			'currency'=>'TND',
 		),
 		'TR'=>array(
 			'name'=>'Turkey',
 			'region'=>'Europe',
-			'currency'=>'TRY'
+			'currency'=>'TRY',
 		),
 		'VI'=>array(
 			'name'=>'U.S. Virgin Islands',
 			'region'=>'North America',
-			'currency'=>'USD'
+			'currency'=>'USD',
 		),
 		'UA'=>array(
 			'name'=>'Ukraine',
 			'region'=>'Europe',
-			'currency'=>'UAH'
+			'currency'=>'UAH',
 		),
 		'AE'=>array(
 			'name'=>'United Arab Emirates',
 			'region'=>'Asia',
-			'currency'=>'AED'
+			'currency'=>'AED',
 		),
 		'UY'=>array(
 			'name'=>'Uruguay',
 			'region'=>'South America',
-			'currency'=>'UYU'
+			'currency'=>'UYU',
 		),
 		'UZ'=>array(
 			'name'=>'Uzbekistan',
 			'region'=>'Asia',
-			'currency'=>'UZS'
+			'currency'=>'UZS',
 		),
 		'VA'=>array(
 			'name'=>'Vatican City',
 			'region'=>'Europe',
-			'currency'=>'EUR'
+			'currency'=>'EUR',
 		),
 		'VE'=>array(
 			'name'=>'Venezuela',
 			'region'=>'South America',
-			'currency'=>'VEF'
+			'currency'=>'VEF',
 		),
 		'VU'=>array(
 			'name'=>'Vietnam',
 			'region'=>'Asia',
-			'currency'=>'VND'
-		)
+			'currency'=>'VND',
+		),
 	);
 
 	const PROVINCES = array(
@@ -897,7 +897,7 @@ class constants {
 		'PE'=>'Prince Edward Island',
 		'QC'=>'Quebec',
 		'SK'=>'Saskatchewan',
-		'YT'=>'Yukon'
+		'YT'=>'Yukon',
 	);
 
 	const REGIONS = array(
@@ -906,7 +906,7 @@ class constants {
 		'Australia',
 		'Europe',
 		'North America',
-		'South America'
+		'South America',
 	);
 
 	const STATES = array(
@@ -971,7 +971,7 @@ class constants {
 		'MP'=>'Northern Mariana Islands',
 		'PW'=>'Palau',
 		'PR'=>'Puerto Rico',
-		'VI'=>'Virgin Islands'
+		'VI'=>'Virgin Islands',
 	);
 
 
@@ -988,7 +988,7 @@ class constants {
 		'port'=>'',
 		'path'=>'',
 		'query'=>'',
-		'fragment'=>''
+		'fragment'=>'',
 	);
 
 	const SVG_HEADER = '<?xml version="1.0" encoding="utf-8" ?>' . "\n" . '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
@@ -999,7 +999,7 @@ class constants {
 	const SVG_ATTR_CORRECTIONS = array(
 		'xmlns="&ns_svg;"'=>'xmlns="http://www.w3.org/2000/svg"',
 		'xmlns:xlink="&ns_xlink;"'=>'xmlns:xlink="http://www.w3.org/1999/xlink"',
-		'id="Layer_1"'=>''
+		'id="Layer_1"'=>'',
 	);
 
 	// Clean svg options.
@@ -1018,7 +1018,7 @@ class constants {
 		'whitelist_attr'=>array(),		// Additional attributes to allow.
 		'whitelist_tags'=>array(),		// Additional tags to allow.
 		'whitelist_protocols'=>array(), // Additional protocols to allow.
-		'whitelist_domains'=>array()	// Additional domains to allow.
+		'whitelist_domains'=>array(),	// Additional domains to allow.
 	);
 
 	// SVG whitelisted tags.
@@ -1114,7 +1114,7 @@ class constants {
 		'use',
 		'video',
 		'view',
-		'vkern'
+		'vkern',
 	);
 
 	// SVG whitelisted attributes.
@@ -1372,19 +1372,19 @@ class constants {
 		'y2',
 		'ychannelselector',
 		'z',
-		'zoomandpan'
+		'zoomandpan',
 	);
 
 	const SVG_WHITELIST_PROTOCOLS = array(
 		'http',
-		'https'
+		'https',
 	);
 
 	const SVG_WHITELIST_DOMAINS = array(
 		'creativecommons.org',
 		'inkscape.org',
 		'sodipodi.sourceforge.net',
-		'w3.org'
+		'w3.org',
 	);
 
 	// SVG IRI attributes.
@@ -1411,7 +1411,7 @@ class constants {
 	const EXCERPT = array(
 		'length'=>200,
 		'suffix'=>'…',
-		'unit'=>'character'
+		'unit'=>'character',
 	);
 
 	// Truthy bools.
@@ -1419,7 +1419,7 @@ class constants {
 		'1',
 		'on',
 		'true',
-		'yes'
+		'yes',
 	);
 
 	// Falsey bools.
@@ -1427,7 +1427,7 @@ class constants {
 		'0',
 		'off',
 		'false',
-		'no'
+		'no',
 	);
 
 	// Flat CSS rule.
@@ -1436,7 +1436,7 @@ class constants {
 		'nested'=>false,
 		'selectors'=>array(),
 		'rules'=>array(),
-		'raw'=>''
+		'raw'=>'',
 	);
 
 	// Nested CSS rule.
@@ -1445,7 +1445,7 @@ class constants {
 		'nested'=>true,
 		'selector'=>'',
 		'nest'=>array(),
-		'raw'=>''
+		'raw'=>'',
 	);
 
 	// Link Blacklist (i.e. tags whose content shouldn't be linkified).
@@ -1466,7 +1466,7 @@ class constants {
 		'style',
 		'svg',
 		'textarea',
-		'video'
+		'video',
 	);
 
 	// Map variable types to the appropriate cast function.
@@ -1479,7 +1479,7 @@ class constants {
 		'int'=>'to_int',
 		'integer'=>'to_int',
 		'number'=>'to_number',
-		'string'=>'to_string'
+		'string'=>'to_string',
 	);
 
 	// Bitwise Operators.

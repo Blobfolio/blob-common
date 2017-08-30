@@ -31,7 +31,7 @@ function _common_intermediate_image_sizes_advanced($sizes) {
 	return array(
 		'thumbnail'=>$sizes['thumbnail'],
 		'medium'=>$sizes['medium'],
-		'large'=>$sizes['large']
+		'large'=>$sizes['large'],
 	);
 }
 add_filter('intermediate_image_sizes_advanced', '_common_intermediate_image_sizes_advanced');
@@ -118,7 +118,7 @@ function _common_image_downsize($downsize, $attachment_id, $size) {
 			'file'=>$new_f,
 			'width'=>$new_w,
 			'height'=>$new_h,
-			'mime-type'=>$src_mime
+			'mime-type'=>$src_mime,
 		);
 	}
 
@@ -206,7 +206,7 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 				'file'=>$new_f,
 				'width'=>$new_w,
 				'height'=>$new_h,
-				'mime-type'=>$src_mime
+				'mime-type'=>$src_mime,
 			);
 		}
 	}

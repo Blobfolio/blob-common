@@ -104,7 +104,7 @@ if (!function_exists('common_shortcode_clean_svg')) {
 		r_cast::to_array($args);
 
 		// We need to convert array fields to proper arrays.
-		foreach (array('classes','whitelist_attr','whitelist_tags','whitelist_protocols','whitelist_domains') as $field) {
+		foreach (array('classes', 'whitelist_attr', 'whitelist_tags', 'whitelist_protocols', 'whitelist_domains') as $field) {
 			if (isset($args[$field])) {
 				$args[$field] = explode(',', $args[$field]);
 				r_sanitize::whitespace($args[$field]);

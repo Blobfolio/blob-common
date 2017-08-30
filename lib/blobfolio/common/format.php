@@ -111,7 +111,7 @@ class format {
 				// that's fine; binary is easy.
 				$bin = gmp_strval(gmp_init($netmask, 10), 2);
 				$bin = sprintf('%0128s', $bin);
-				$bin = strtr($bin, array('0'=>'1','1'=>'0'));
+				$bin = strtr($bin, array('0'=>'1', '1'=>'0'));
 				$not = gmp_strval(gmp_init($bin, 2), 10);
 
 				$bc = gmp_or($first, $not);

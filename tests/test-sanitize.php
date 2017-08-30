@@ -497,15 +497,15 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Björk Guðmundsdóttir, best þekkt sem Björk (fædd 21. nóvember 1965 í Reykjavík) er íslenskur popptónlistarmaður, sem hefur náð alþjóðlegri hylli.',
-				'Bjork Gudmundsdottir, best thekkt sem Bjork (faedd 21. november 1965 i Reykjavik) er islenskur popptonlistarmadur, sem hefur nad althjodlegri hylli.'
+				'Bjork Gudmundsdottir, best thekkt sem Bjork (faedd 21. november 1965 i Reykjavik) er islenskur popptonlistarmadur, sem hefur nad althjodlegri hylli.',
 			),
 			array(
 				'Nabokov explore plusieurs thèmes, dont certains déjà présents dans ses ouvrages précédents.',
-				'Nabokov explore plusieurs themes, dont certains deja presents dans ses ouvrages precedents.'
+				'Nabokov explore plusieurs themes, dont certains deja presents dans ses ouvrages precedents.',
 			),
 			array(
 				array('Björk'),
-				array('Bjork')
+				array('Bjork'),
 			),
 		);
 	}
@@ -519,11 +519,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'&nbsp;Björk"&amp;quot; ',
-				'Björk""'
+				'Björk""',
 			),
 			array(
 				array('&nbsp;Björk"&amp;quot; '),
-				array('Björk""')
+				array('Björk""'),
 			),
 		);
 	}
@@ -537,39 +537,39 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'4242424242424242',
-				'4242424242424242'
+				'4242424242424242',
 			),
 			array(
 				4242424242424242,
-				'4242424242424242'
+				'4242424242424242',
 			),
 			array(
 				'4242424242424241',
-				false
+				false,
 			),
 			array(
 				'5555555555554444',
-				'5555555555554444'
+				'5555555555554444',
 			),
 			array(
 				'378282246310005',
-				'378282246310005'
+				'378282246310005',
 			),
 			array(
 				'378734493671000',
-				'378734493671000'
+				'378734493671000',
 			),
 			array(
 				'6011111111111117',
-				'6011111111111117'
+				'6011111111111117',
 			),
 			array(
 				'4012888888881881',
-				'4012888888881881'
+				'4012888888881881',
 			),
 			array(
 				'4222222222222',
-				'4222222222222'
+				'4222222222222',
 			),
 		);
 	}
@@ -583,11 +583,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'\0Björk',
-				'Björk'
+				'Björk',
 			),
 			array(
 				array('\0Björk'),
-				array('Björk')
+				array('Björk'),
 			),
 		);
 	}
@@ -601,23 +601,23 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'USA',
-				'US'
+				'US',
 			),
 			array(
 				'us',
-				'US'
+				'US',
 			),
 			array(
 				'Nobody',
-				''
+				'',
 			),
 			array(
 				'CANADA',
-				'CA'
+				'CA',
 			),
 			array(
 				array('CANADA'),
-				array('CA')
+				array('CA'),
 			),
 		);
 	}
@@ -631,15 +631,15 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'\\\'hello"',
-				'\\\'hello""'
+				'\\\'hello""',
 			),
 			array(
 				"Hello\nWorld",
-				'Hello World'
+				'Hello World',
 			),
 			array(
 				array("Hello\nWorld"),
-				array('Hello World')
+				array('Hello World'),
 			),
 		);
 	}
@@ -653,35 +653,35 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'2015-01-02',
-				'2015-01-02 00:00:00'
+				'2015-01-02 00:00:00',
 			),
 			array(
 				'2015-01-02 13:23:11',
-				'2015-01-02 13:23:11'
+				'2015-01-02 13:23:11',
 			),
 			array(
 				strtotime('2015-01-02 13:23:11'),
-				'2015-01-02 13:23:11'
+				'2015-01-02 13:23:11',
 			),
 			array(
 				'20150102',
-				'2015-01-02 00:00:00'
+				'2015-01-02 00:00:00',
 			),
 			array(
 				20150102,
-				'2015-01-02 00:00:00'
+				'2015-01-02 00:00:00',
 			),
 			array(
 				'Not Time',
-				'0000-00-00 00:00:00'
+				'0000-00-00 00:00:00',
 			),
 			array(
 				'0000-00-00 12:30:30',
-				'0000-00-00 00:00:00'
+				'0000-00-00 00:00:00',
 			),
 			array(
 				array(20150102),
-				array('2015-01-02 00:00:00')
+				array('2015-01-02 00:00:00'),
 			),
 		);
 	}
@@ -698,32 +698,32 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'https://www.Google.com',
 				false,
-				'google.com'
+				'google.com',
 			),
 			array(
 				'www.Google.com',
 				false,
-				'google.com'
+				'google.com',
 			),
 			array(
 				'☺.com',
 				true,
-				'☺.com'
+				'☺.com',
 			),
 			array(
 				'50.116.18.174',
 				false,
-				''
+				'',
 			),
 			array(
 				'//☺.com',
 				false,
-				$smiley_host
+				$smiley_host,
 			),
 			array(
 				array('www.Google.com'),
 				false,
-				array('google.com')
+				array('google.com'),
 			),
 		);
 	}
@@ -738,43 +738,43 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'0',
 				false,
-				''
+				'',
 			),
 			array(
 				'074299160691',
 				false,
-				'0074299160691'
+				'0074299160691',
 			),
 			array(
 				'00709077260149',
 				false,
-				'0709077260149'
+				'0709077260149',
 			),
 			array(
 				'709077260149',
 				false,
-				'0709077260149'
+				'0709077260149',
 			),
 			array(
 				'0709077260555',
 				false,
-				''
+				'',
 			),
 			array(
 				'0709077260149',
 				true,
-				'0-709077-260149'
+				'0-709077-260149',
 			),
 			array(
 				array(
 					'0709077260149',
-					'0051511500275'
+					'0051511500275',
 				),
 				true,
 				array(
 					'0-709077-260149',
-					'0-051511-500275'
-				)
+					'0-051511-500275',
+				),
 			),
 		);
 	}
@@ -790,27 +790,27 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Hello@Blo"bfolio.Com',
-				'hello@blobfolio.com'
+				'hello@blobfolio.com',
 			),
 			array(
 				'helo@blobfolio',
-				''
+				'',
 			),
 			array(
 				'hello@☺.com',
-				"hello@$smiley_host"
+				"hello@$smiley_host",
 			),
 			array(
 				'hello+me@blobfolio.com',
-				'hello+me@blobfolio.com'
+				'hello+me@blobfolio.com',
 			),
 			array(
 				' .hello(comment)+me@blobfolio.com',
-				'hello+me@blobfolio.com'
+				'hello+me@blobfolio.com',
 			),
 			array(
 				array(' .hello(comment)+me@blobfolio.com'),
-				array('hello+me@blobfolio.com')
+				array('hello+me@blobfolio.com'),
 			),
 		);
 	}
@@ -824,15 +824,15 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'  .JPEG ',
-				'jpeg'
+				'jpeg',
 			),
 			array(
 				'.tar.gz',
-				'tar.gz'
+				'tar.gz',
 			),
 			array(
 				array('.tar.gz'),
-				array('tar.gz')
+				array('tar.gz'),
 			),
 		);
 	}
@@ -846,11 +846,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'<b>"Björk"</b>',
-				'&lt;b&gt;&quot;Björk&quot;&lt;/b&gt;'
+				'&lt;b&gt;&quot;Björk&quot;&lt;/b&gt;',
 			),
 			array(
 				array('<b>'),
-				array('&lt;b&gt;')
+				array('&lt;b&gt;'),
 			),
 		);
 	}
@@ -868,49 +868,49 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'https://www.Google.com',
 				false,
 				false,
-				'google.com'
+				'google.com',
 			),
 			array(
 				'www.Google.com',
 				false,
 				false,
-				'google.com'
+				'google.com',
 			),
 			array(
 				'www.☺.com',
 				false,
 				true,
-				'☺.com'
+				'☺.com',
 			),
 			array(
 				'http://www.☺.com',
 				true,
 				true,
-				'www.☺.com'
+				'www.☺.com',
 			),
 			array(
 				'50.116.18.174',
 				false,
 				false,
-				'50.116.18.174'
+				'50.116.18.174',
 			),
 			array(
 				'//☺.com',
 				false,
 				false,
-				$smiley_host
+				$smiley_host,
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
 				false,
 				false,
-				'2600:3c00::f03c:91ff:feae:ff2'
+				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
 				'localhost',
 				true,
 				true,
-				'localhost'
+				'localhost',
 			),
 		);
 	}
@@ -926,67 +926,67 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'2600:3c00::f03c:91ff:feae:0ff2',
 				false,
 				true,
-				'2600:3c00::f03c:91ff:feae:ff2'
+				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
 				false,
 				true,
-				'2600:3c00::f03c:91ff:feae:ff2'
+				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:ff2',
 				false,
 				false,
-				'2600:3c00:0000:0000:f03c:91ff:feae:0ff2'
+				'2600:3c00:0000:0000:f03c:91ff:feae:0ff2',
 			),
 			array(
 				'127.0.0.1',
 				false,
 				true,
-				''
+				'',
 			),
 			array(
 				'127.0.0.1',
 				true,
 				true,
-				'127.0.0.1'
+				'127.0.0.1',
 			),
 			array(
 				'::127.0.0.1',
 				true,
 				true,
-				'127.0.0.1'
+				'127.0.0.1',
 			),
 			array(
 				'[::127.0.0.1]',
 				true,
 				true,
-				'127.0.0.1'
+				'127.0.0.1',
 			),
 			array(
 				'::1',
 				false,
 				true,
-				''
+				'',
 			),
 			array(
 				'[::1]',
 				true,
 				true,
-				'::1'
+				'::1',
 			),
 			array(
 				array('[::1]'),
 				true,
 				true,
-				array('::1')
+				array('::1'),
 			),
 			array(
 				array('[::1]'),
 				true,
 				false,
-				array('0000:0000:0000:0000:0000:0000:0000:0001')
+				array('0000:0000:0000:0000:0000:0000:0000:0001'),
 			),
 		);
 	}
@@ -1002,61 +1002,61 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'#example',
 				null,
 				null,
-				'#example'
+				'#example',
 			),
 			array(
 				'//w3.org',
 				null,
 				null,
-				'https://w3.org'
+				'https://w3.org',
 			),
 			array(
 				'http://blobfolio.com',
 				null,
 				null,
-				''
+				'',
 			),
 			array(
 				'http://blobfolio.com',
 				null,
 				array('blobfolio.com'),
-				'http://blobfolio.com'
+				'http://blobfolio.com',
 			),
 			array(
 				'ftp://w3.org',
 				null,
 				null,
-				''
+				'',
 			),
 			array(
 				'ftp://w3.org',
 				array('ftp', 'ftps'),
 				null,
-				'ftp://w3.org'
+				'ftp://w3.org',
 			),
 			array(
 				' script: alert(hi);',
 				null,
 				null,
-				''
+				'',
 			),
 			array(
 				constants::BLANK_IMAGE,
 				null,
 				null,
-				''
+				'',
 			),
 			array(
 				constants::BLANK_IMAGE,
 				'data',
 				null,
-				constants::BLANK_IMAGE
+				constants::BLANK_IMAGE,
 			),
 			array(
 				array(constants::BLANK_IMAGE),
 				'data',
 				null,
-				array(constants::BLANK_IMAGE)
+				array(constants::BLANK_IMAGE),
 			),
 		);
 	}
@@ -1070,28 +1070,28 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'0',
-				''
+				'',
 			),
 			array(
 				'0939117606',
-				'0939117606'
+				'0939117606',
 			),
 			array(
 				'939117606',
-				'0939117606'
+				'0939117606',
 			),
 			array(
 				'9780939117604',
-				'9780939117604'
+				'9780939117604',
 			),
 			array(
 				'0-9752298-0-X',
-				'097522980X'
+				'097522980X',
 			),
 			array(
 				'0975229800',
-				''
-			)
+				'',
+			),
 		);
 	}
 
@@ -1105,27 +1105,27 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				"What's up, doc?",
 				"'",
-				'What\\\'s up, doc?'
+				'What\\\'s up, doc?',
 			),
 			array(
 				"What's up, doc?",
 				'"',
-				"What's up, doc?"
+				"What's up, doc?",
 			),
 			array(
 				'"Hello"',
 				'"',
-				'\"Hello\"'
+				'\"Hello\"',
 			),
 			array(
 				'"Hello"',
 				"'",
-				'"Hello"'
+				'"Hello"',
 			),
 			array(
 				array('"Hello"'),
 				'"',
-				array('\"Hello\"')
+				array('\"Hello\"'),
 			),
 		);
 	}
@@ -1139,19 +1139,19 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Application/Octet-Stream',
-				'application/octet-stream'
+				'application/octet-stream',
 			),
 			array(
 				'application/vnd.MS-OFFICE',
-				'application/vnd.ms-office'
+				'application/vnd.ms-office',
 			),
 			array(
 				'awesome/saucE',
-				'awesome/sauce'
+				'awesome/sauce',
 			),
 			array(
 				array('awesome/saucE'),
-				array('awesome/sauce')
+				array('awesome/sauce'),
 			),
 		);
 	}
@@ -1165,15 +1165,15 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				"åsa-britt\nkjellén",
-				'Åsa-Britt Kjellén'
+				'Åsa-Britt Kjellén',
 			),
 			array(
 				'john   doe',
-				'John Doe'
+				'John Doe',
 			),
 			array(
 				array('john   doe'),
-				array('John Doe')
+				array('John Doe'),
 			),
 		);
 	}
@@ -1187,11 +1187,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				"\t ålén\n  ☺\0",
-				'ålén ☺'
+				'ålén ☺',
 			),
 			array(
 				array("\t ålén\n  ☺\0"),
-				array('ålén ☺')
+				array('ålén ☺'),
 			),
 		);
 	}
@@ -1205,11 +1205,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				"\t ålén\n  ☺\0",
-				"\t ålén\n  ☺"
+				"\t ålén\n  ☺",
 			),
 			array(
 				array("\t ålén\n  ☺\0"),
-				array("\t ålén\n  ☺")
+				array("\t ålén\n  ☺"),
 			),
 		);
 	}
@@ -1223,19 +1223,19 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Texas',
-				''
+				'',
 			),
 			array(
 				'ontario',
-				'ON'
+				'ON',
 			),
 			array(
 				'ab',
-				'AB'
+				'AB',
 			),
 			array(
 				array('ab'),
-				array('AB')
+				array('AB'),
 			),
 		);
 	}
@@ -1249,11 +1249,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'“T’was the night before Christmas...”',
-				'"T\'was the night before Christmas..."'
+				'"T\'was the night before Christmas..."',
 			),
 			array(
 				array('“T’was the night before Christmas...”'),
-				array('"T\'was the night before Christmas..."')
+				array('"T\'was the night before Christmas..."'),
 			),
 		);
 	}
@@ -1267,23 +1267,23 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Texas',
-				'TX'
+				'TX',
 			),
 			array(
 				'ontario',
-				''
+				'',
 			),
 			array(
 				'il',
-				'IL'
+				'IL',
 			),
 			array(
 				'puerto RICO',
-				'PR'
+				'PR',
 			),
 			array(
 				array('puerto RICO'),
-				array('PR')
+				array('PR'),
 			),
 		);
 	}
@@ -1298,7 +1298,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(file_get_contents(static::ASSETS . 'monogram-inkscape.svg')),
 			array(file_get_contents(static::ASSETS . 'enshrined.svg')),
 			array(file_get_contents(static::ASSETS . 'pi.svg')),
-			array(file_get_contents(static::ASSETS . 'minus.svg'))
+			array(file_get_contents(static::ASSETS . 'minus.svg')),
 		);
 	}
 
@@ -1314,7 +1314,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array('GMT', 'UTC'),
 			array(
 				array('GMT'),
-				array('UTC')
+				array('UTC'),
 			),
 		);
 	}
@@ -1330,31 +1330,31 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				5,
 				1,
 				4,
-				4
+				4,
 			),
 			array(
 				5,
 				1,
 				null,
-				5
+				5,
 			),
 			array(
 				5,
 				null,
 				4,
-				4
+				4,
 			),
 			array(
 				5.5,
 				1.3,
 				5.2,
-				5.2
+				5.2,
 			),
 			array(
 				'2016-01-15',
 				'2016-01-20',
 				null,
-				'2016-01-20'
+				'2016-01-20',
 			),
 		);
 	}
@@ -1369,38 +1369,38 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'0',
 				false,
-				''
+				'',
 			),
 			array(
 				'089218545992',
 				false,
-				'089218545992'
+				'089218545992',
 			),
 			array(
 				'0089218545992',
 				false,
-				'089218545992'
+				'089218545992',
 			),
 			array(
 				'89218545992',
 				false,
-				'089218545992'
+				'089218545992',
 			),
 			array(
 				'089218545555',
 				false,
-				''
+				'',
 			),
 			array(
 				array(
 					'89218545992',
-					'075597996524'
+					'075597996524',
 				),
 				true,
 				array(
 					'0-89218-54599-2',
-					'0-75597-99652-4'
-				)
+					'0-75597-99652-4',
+				),
 			),
 		);
 	}
@@ -1416,27 +1416,27 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'google.com',
-				''
+				'',
 			),
 			array(
 				'//google.com',
-				'https://google.com'
+				'https://google.com',
 			),
 			array(
 				'HTTP://google.com',
-				'http://google.com'
+				'http://google.com',
 			),
 			array(
 				'http://user:pass@domain.com/foobar?hello#there',
-				'http://user:pass@domain.com/foobar?hello#there'
+				'http://user:pass@domain.com/foobar?hello#there',
 			),
 			array(
 				'//www.☺.com/hello?awesome',
-				'https://www.' . $smiley_host . '/hello?awesome'
+				'https://www.' . $smiley_host . '/hello?awesome',
 			),
 			array(
 				array('HTTP://google.com'),
-				array('http://google.com')
+				array('http://google.com'),
 			),
 		);
 	}
@@ -1464,27 +1464,27 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				" Björk\n\n",
 				0,
-				'Björk'
+				'Björk',
 			),
 			array(
 				" Björk\n\n",
 				2,
-				'Björk'
+				'Björk',
 			),
 			array(
 				"Happy\n\n\nSpaces",
 				2,
-				"Happy\n\nSpaces"
+				"Happy\n\nSpaces",
 			),
 			array(
 				"Happy\n\n\nSpaces\t&\tPlaces",
 				0,
-				'Happy Spaces & Places'
+				'Happy Spaces & Places',
 			),
 			array(
 				array("Happy\n\n\nSpaces"),
 				2,
-				array("Happy\n\nSpaces")
+				array("Happy\n\nSpaces"),
 			),
 		);
 	}
@@ -1498,27 +1498,27 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Björk',
-				''
+				'',
 			),
 			array(
 				'123',
-				'00123'
+				'00123',
 			),
 			array(
 				'000',
-				''
+				'',
 			),
 			array(
 				12345,
-				'12345'
+				'12345',
 			),
 			array(
 				'12345-6789',
-				'12345'
+				'12345',
 			),
 			array(
 				array('12345-6789'),
-				array('12345')
+				array('12345'),
 			),
 		);
 	}

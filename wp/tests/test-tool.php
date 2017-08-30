@@ -34,7 +34,7 @@ class ToolTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_iin_array() {
-		$thing = array('Apples','Bananas');
+		$thing = array('Apples', 'Bananas');
 
 		$this->assertEquals(false, in_array('apples', $thing, true));
 		$this->assertEquals(true, common_iin_array('apples', $thing));
@@ -46,7 +46,7 @@ class ToolTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_iarray_key_exists() {
-		$thing = array('Apples'=>'Green','Bananas'=>'Yellow');
+		$thing = array('Apples'=>'Green', 'Bananas'=>'Yellow');
 
 		$this->assertEquals(false, array_key_exists('apples', $thing));
 		$this->assertEquals(true, common_iarray_key_exists('apples', $thing));
@@ -119,7 +119,7 @@ class ToolTests extends WP_UnitTestCase {
 	 */
 	function test_common_to_char_array() {
 		$thing = 'BjöRk';
-		$this->assertEquals(array('B','j','ö','R','k'), common_to_char_array($thing));
+		$this->assertEquals(array('B', 'j', 'ö', 'R', 'k'), common_to_char_array($thing));
 	}
 
 	/**
@@ -128,11 +128,11 @@ class ToolTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_array_map_recursive() {
-		$thing = array(1,2,3,4,5);
-		$this->assertEquals(array('1','2','3','4','5'), common_array_map_recursive('strval', $thing));
+		$thing = array(1, 2, 3, 4, 5);
+		$this->assertEquals(array('1', '2', '3', '4', '5'), common_array_map_recursive('strval', $thing));
 
 		$thing = array(1, array(1));
-		$this->assertEquals(array('1',array('1')), common_array_map_recursive('strval', $thing));
+		$this->assertEquals(array('1', array('1')), common_array_map_recursive('strval', $thing));
 	}
 
 	/**
@@ -165,7 +165,7 @@ class ToolTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_array_pop() {
-		$thing = array(1,2,3,4,5);
+		$thing = array(1, 2, 3, 4, 5);
 		$this->assertEquals(5, common_array_pop($thing));
 
 		$thing = array();
@@ -178,7 +178,7 @@ class ToolTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_array_pop_top() {
-		$thing = array(1,2,3,4,5);
+		$thing = array(1, 2, 3, 4, 5);
 		$this->assertEquals(1, common_array_pop_top($thing));
 
 		$thing = array();

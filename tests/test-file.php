@@ -205,47 +205,47 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'/file/here',
 				false,
-				'/file/here'
+				'/file/here',
 			),
 			array(
 				'/file/here',
 				true,
-				false
+				false,
 			),
 			array(
 				'\\file\\here',
 				false,
-				'/file/here'
+				'/file/here',
 			),
 			array(
 				static::ASSETS,
 				true,
-				static::ASSETS
+				static::ASSETS,
 			),
 			array(
 				rtrim(static::ASSETS, '/'),
 				true,
-				static::ASSETS
+				static::ASSETS,
 			),
 			array(
 				static::ASSETS . '/pi.svg',
 				true,
-				static::ASSETS . 'pi.svg'
+				static::ASSETS . 'pi.svg',
 			),
 			array(
 				'file://' . static::ASSETS,
 				true,
-				static::ASSETS
+				static::ASSETS,
 			),
 			array(
 				'htTps://google.com/',
 				true,
-				'https://google.com/'
+				'https://google.com/',
 			),
 			array(
 				array('htTps://google.com/'),
 				true,
-				array('https://google.com/')
+				array('https://google.com/'),
 			),
 		);
 	}
@@ -297,7 +297,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				array('/path//to/foobar'),
-				array('/path/to/foobar',)
+				array('/path/to/foobar'),
 			),
 		);
 	}
@@ -319,7 +319,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				array('file/here'),
-				array('file/here')
+				array('file/here'),
 			),
 		);
 	}

@@ -100,7 +100,7 @@ if (!function_exists('common_db_debug_log')) {
 			'IP'=>'REMOTE_ADDR',
 			'UA'=>'HTTP_USER_AGENT',
 			'SCRIPT'=>'SCRIPT_NAME',
-			'REQUEST'=>'REQUEST_URI'
+			'REQUEST'=>'REQUEST_URI',
 		);
 		$xout = array(
 			'DATE: ' . date('r', current_time('timestamp')),

@@ -251,19 +251,19 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'string',
-				array('string')
+				array('string'),
 			),
 			array(
 				5,
-				array(5)
+				array(5),
 			),
 			array(
 				null,
-				array()
+				array(),
 			),
 			array(
 				array('string'),
-				array('string')
+				array('string'),
 			),
 		);
 	}
@@ -277,43 +277,43 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'string',
-				false
+				false,
 			),
 			array(
 				array(),
-				false
+				false,
 			),
 			array(
-				array(1,2,3),
-				'sequential'
+				array(1, 2, 3),
+				'sequential',
 			),
 			array(
 				array(
 					0=>1,
 					1=>2,
-					2=>3
+					2=>3,
 				),
-				'sequential'
+				'sequential',
 			),
 			array(
 				array(
 					2=>3,
-					0=>1
+					0=>1,
 				),
-				'indexed'
+				'indexed',
 			),
 			array(
 				array(
 					0=>1,
 					'bat'=>2,
 				),
-				'associative'
+				'associative',
 			),
 			array(
 				array(
-					'foo'=>'bar'
+					'foo'=>'bar',
 				),
-				'associative'
+				'associative',
 			),
 		);
 	}
@@ -328,37 +328,37 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'string',
 				true,
-				true
+				true,
 			),
 			array(
 				'string',
 				false,
-				true
+				true,
 			),
 			array(
 				'off',
 				false,
-				false
+				false,
 			),
 			array(
 				'FALSE',
 				false,
-				false
+				false,
 			),
 			array(
 				1,
 				false,
-				true
+				true,
 			),
 			array(
 				array(1, 'Off', false),
 				false,
-				array(true, false, false)
+				array(true, false, false),
 			),
 			array(
 				array(1, 'Off', false),
 				true,
-				true
+				true,
 			),
 		);
 	}
@@ -373,37 +373,37 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'string',
 				true,
-				0.0
+				0.0,
 			),
 			array(
 				'$2.50',
 				false,
-				2.5
+				2.5,
 			),
 			array(
 				1,
 				false,
-				1.0
+				1.0,
 			),
 			array(
 				'50%',
 				false,
-				.5
+				.5,
 			),
 			array(
 				'67¢',
 				false,
-				.67
+				.67,
 			),
 			array(
 				array(1, '2.5', false),
 				false,
-				array(1.0, 2.5, 0.0)
+				array(1.0, 2.5, 0.0),
 			),
 			array(
 				array(1, '2.5', false),
 				true,
-				0.0
+				0.0,
 			),
 		);
 	}
@@ -418,32 +418,32 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'string',
 				true,
-				0
+				0,
 			),
 			array(
 				'$2.50',
 				false,
-				2
+				2,
 			),
 			array(
 				'on',
 				false,
-				1
+				1,
 			),
 			array(
 				'50%',
 				false,
-				0
+				0,
 			),
 			array(
 				array(1, '2.5', false),
 				false,
-				array(1, 2, 0)
+				array(1, 2, 0),
 			),
 			array(
 				array(1, '2.5', false),
 				true,
-				0
+				0,
 			),
 		);
 	}
@@ -458,27 +458,27 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				"Hello\nWorld",
 				true,
-				"Hello\nWorld"
+				"Hello\nWorld",
 			),
 			array(
 				2,
 				false,
-				'2'
+				'2',
 			),
 			array(
 				null,
 				false,
-				''
+				'',
 			),
 			array(
 				array(1, '2.5', false),
 				false,
-				array('1', '2.5', '')
+				array('1', '2.5', ''),
 			),
 			array(
 				array(1, '2.5', false),
 				true,
-				''
+				'',
 			),
 		);
 	}
@@ -494,49 +494,49 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 				null,
 				'array',
 				false,
-				array()
+				array(),
 			),
 			array(
 				array('off'),
 				'bool',
 				false,
-				array(false)
+				array(false),
 			),
 			array(
 				'off',
 				'boolean',
 				false,
-				false
+				false,
 			),
 			array(
 				2,
 				'double',
 				false,
-				2.0
+				2.0,
 			),
 			array(
 				array(2),
 				'float',
 				false,
-				array(2.0)
+				array(2.0),
 			),
 			array(
 				'500',
 				'int',
 				false,
-				500
+				500,
 			),
 			array(
-				array('2',3),
+				array('2', 3),
 				'integer',
 				false,
-				array(2,3)
+				array(2, 3),
 			),
 			array(
 				2.3,
 				'string',
 				false,
-				'2.3'
+				'2.3',
 			),
 		);
 	}

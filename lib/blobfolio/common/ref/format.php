@@ -41,7 +41,7 @@ class format {
 			foreach ($arr as $k=>$v) {
 				$out[] = array(
 					'key'=>$k,
-					'value'=>$v
+					'value'=>$v,
 				);
 			}
 			$arr = $out;
@@ -107,7 +107,7 @@ class format {
 			'\f'=>chr(0x0C),
 			'\n'=>chr(0x0A),
 			'\r'=>chr(0x0D),
-			'\t'=>chr(0x09)
+			'\t'=>chr(0x09),
 		);
 		$str = str_replace(
 			array_keys($replacements),
@@ -354,7 +354,7 @@ class format {
 				'#^\s*//(.+)$#m',
 				// Multi-line /* */.
 				'#^\s*/\*(.+)\*/#Us',
-				'#/\*(.+)\*/\s*$#Us'
+				'#/\*(.+)\*/\s*$#Us',
 			),
 			'',
 			$str
@@ -414,8 +414,8 @@ class format {
 			array(
 				'type'=>'slice',
 				'from'=>0,
-				'delimiter'=>false
-			)
+				'delimiter'=>false,
+			),
 		);
 		$out = array();
 		if (0 === v_mb::strpos($str, '[')) {
@@ -439,7 +439,7 @@ class format {
 				$slices[] = array(
 					'type'=>'slice',
 					'from'=>$x + 1,
-					'delimiter'=>false
+					'delimiter'=>false,
 				);
 
 				// Arrays are straightforward, just pop it in.
@@ -471,7 +471,7 @@ class format {
 				$slices[] = array(
 					'type'=>'string',
 					'from'=>$x,
-					'delimiter'=>$chunk{$x}
+					'delimiter'=>$chunk{$x},
 				);
 			}
 			// An end quote.
@@ -490,7 +490,7 @@ class format {
 				$slices[] = array(
 					'type'=>'array',
 					'from'=>$x,
-					'delimiter'=>false
+					'delimiter'=>false,
 				);
 			}
 			// Closing bracket.
@@ -508,7 +508,7 @@ class format {
 				$slices[] = array(
 					'type'=>'object',
 					'from'=>$x,
-					'delimiter'=>false
+					'delimiter'=>false,
 				);
 			}
 			// Closing brace.
@@ -526,7 +526,7 @@ class format {
 				$slices[] = array(
 					'type'=>'comment',
 					'from'=>$x,
-					'delimiter'=>false
+					'delimiter'=>false,
 				);
 				$x++;
 			}
@@ -570,7 +570,7 @@ class format {
 		$defaults = array(
 			'class'=>array(),
 			'rel'=>'',
-			'target'=>''
+			'target'=>'',
 		);
 		$data = data::parse_args($args, $defaults);
 		$data['class'] = implode(' ', $data['class']);

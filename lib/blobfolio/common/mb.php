@@ -83,7 +83,7 @@ class mb {
 				if (
 					'[' === static::substr($parts, 0, 1)
 				) {
-					$parts = str_replace(array('[',']'), '', $parts);
+					$parts = str_replace(array('[', ']'), '', $parts);
 					ref\sanitize::ip($parts, true);
 					$parts = "[{$parts}]";
 				}
@@ -121,7 +121,7 @@ class mb {
 
 					// Standardize IPv6 formatting.
 					if ('[' === static::substr($parts[$k], 0, 1)) {
-						$parts[$k] = str_replace(array('[',']'), '', $parts[$k]);
+						$parts[$k] = str_replace(array('[', ']'), '', $parts[$k]);
 						ref\sanitize::ip($parts[$k], true);
 						$parts[$k] = "[{$parts[$k]}]";
 					}

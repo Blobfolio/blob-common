@@ -251,42 +251,42 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'http://☺.com',
 				PHP_URL_HOST,
-				$smiley_host
+				$smiley_host,
 			),
 			array(
 				'//☺.com',
 				PHP_URL_HOST,
-				$smiley_host
+				$smiley_host,
 			),
 			array(
 				'☺.com',
 				PHP_URL_HOST,
-				$smiley_host
+				$smiley_host,
 			),
 			array(
 				'google.com',
 				PHP_URL_HOST,
-				'google.com'
+				'google.com',
 			),
 			array(
 				'//google.com',
 				PHP_URL_HOST,
-				'google.com'
+				'google.com',
 			),
 			array(
 				'http://google.com',
 				PHP_URL_HOST,
-				'google.com'
+				'google.com',
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2',
 				PHP_URL_HOST,
-				'[2600:3c00::f03c:91ff:feae:ff2]'
+				'[2600:3c00::f03c:91ff:feae:ff2]',
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
 				PHP_URL_HOST,
-				'[2600:3c00::f03c:91ff:feae:ff2]'
+				'[2600:3c00::f03c:91ff:feae:ff2]',
 			),
 			array(
 				'https://foo.bar/apples',
@@ -294,8 +294,8 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				array(
 					'scheme'=>'https',
 					'host'=>'foo.bar',
-					'path'=>'/apples'
-				)
+					'path'=>'/apples',
+				),
 			),
 		);
 	}
@@ -311,17 +311,17 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				'foo=BjöRk&bar=Ⅷ loVes',
 				array(
 					'foo'=>'BjöRk',
-					'bar'=>'Ⅷ loVes'
-				)
+					'bar'=>'Ⅷ loVes',
+				),
 			),
 			array(
 				'Björk',
-				array('Björk'=>'')
+				array('Björk'=>''),
 			),
 			array(
 				'',
-				array()
-			)
+				array(),
+			),
 		);
 	}
 
@@ -335,12 +335,12 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'Björk',
 				1,
-				array('B','j','ö','r','k')
+				array('B', 'j', 'ö', 'r', 'k'),
 			),
 			array(
 				'Björk',
 				3,
-				array('Bjö','rk')
+				array('Bjö', 'rk'),
 			),
 		);
 	}
@@ -354,11 +354,11 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Björk',
-				5
+				5,
 			),
 			array(
 				'Happy Days',
-				10
+				10,
 			),
 		);
 	}
@@ -375,35 +375,35 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				10,
 				'~',
 				STR_PAD_LEFT,
-				'~~~~~Björk'
+				'~~~~~Björk',
 			),
 			array(
 				'Björk',
 				10,
 				'~',
 				STR_PAD_BOTH,
-				'~~~Björk~~'
+				'~~~Björk~~',
 			),
 			array(
 				'Björk',
 				10,
 				'~',
 				STR_PAD_RIGHT,
-				'Björk~~~~~'
+				'Björk~~~~~',
 			),
 			array(
 				'Björk',
 				3,
 				'~',
 				STR_PAD_RIGHT,
-				'Björk'
+				'Björk',
 			),
 			array(
 				'Björk',
 				10,
 				'',
 				STR_PAD_RIGHT,
-				'Björk'
+				'Björk',
 			),
 		);
 	}
@@ -419,25 +419,25 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				'Björk Björk',
 				'r',
 				0,
-				3
+				3,
 			),
 			array(
 				'Björk Björk',
 				'ö',
 				0,
-				2
+				2,
 			),
 			array(
 				'Björk Björk',
 				'ö',
 				4,
-				8
+				8,
 			),
 			array(
 				'Björk Björk',
 				'E',
 				0,
-				false
+				false,
 			),
 		);
 	}
@@ -451,12 +451,12 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Björk',
-				'kröjB'
+				'kröjB',
 			),
 			array(
 				"Hello-World\n",
-				"\ndlroW-olleH"
-			)
+				"\ndlroW-olleH",
+			),
 		);
 	}
 
@@ -471,25 +471,25 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				'Björk Björk',
 				'r',
 				0,
-				9
+				9,
 			),
 			array(
 				'Björk Björk',
 				'ö',
 				0,
-				8
+				8,
 			),
 			array(
 				'Björk Björk',
 				'ö',
 				4,
-				8
+				8,
 			),
 			array(
 				'Björk Björk',
 				'E',
 				0,
-				false
+				false,
 			),
 		);
 	}
@@ -504,37 +504,37 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				false,
-				'queen björk ⅷ loves 3 apples.'
+				'queen björk ⅷ loves 3 apples.',
 			),
 			array(
 				"Hello-world\n",
 				false,
-				"hello-world\n"
+				"hello-world\n",
 			),
 			array(
 				array("Hello-world\n"),
 				false,
-				array("hello-world\n")
+				array("hello-world\n"),
 			),
 			array(
 				13,
 				false,
-				'13'
+				'13',
 			),
 			array(
 				13,
 				true,
-				13
+				13,
 			),
 			array(
 				array(13, 'HAPPY'),
 				false,
-				array('13', 'happy')
+				array('13', 'happy'),
 			),
 			array(
 				array(13, 'HAPPY'),
 				true,
-				array(13, 'happy')
+				array(13, 'happy'),
 			),
 		);
 	}
@@ -549,37 +549,37 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'THE lazY Rex ⅸ eAtS f00d.',
 				false,
-				'THE LAZY REX Ⅸ EATS F00D.'
+				'THE LAZY REX Ⅸ EATS F00D.',
 			),
 			array(
 				"Hello-world\n",
 				false,
-				"HELLO-WORLD\n"
+				"HELLO-WORLD\n",
 			),
 			array(
 				array("Hello-world\n"),
 				false,
-				array("HELLO-WORLD\n")
+				array("HELLO-WORLD\n"),
 			),
 			array(
 				13,
 				false,
-				'13'
+				'13',
 			),
 			array(
 				13,
 				true,
-				13
+				13,
 			),
 			array(
 				array(13, 'happy'),
 				false,
-				array('13', 'HAPPY')
+				array('13', 'HAPPY'),
 			),
 			array(
 				array(13, 'happy'),
 				true,
-				array(13, 'HAPPY')
+				array(13, 'HAPPY'),
 			),
 		);
 	}
@@ -595,20 +595,20 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				0,
 				11,
-				'quEen BjöRk'
+				'quEen BjöRk',
 			),
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				6,
 				null,
-				'BjöRk Ⅷ loVes 3 aPplEs.'
+				'BjöRk Ⅷ loVes 3 aPplEs.',
 			),
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				-7,
 				null,
-				'aPplEs.'
-			)
+				'aPplEs.',
+			),
 		);
 	}
 
@@ -622,18 +622,18 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				'BjöRk',
-				1
+				1,
 			),
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				'töast',
-				0
+				0,
 			),
 			array(
 				"Hello\nWorld\n",
 				"\n",
-				2
-			)
+				2,
+			),
 		);
 	}
 
@@ -646,19 +646,19 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				' 	test ',
-				'test'
+				'test',
 			),
 			array(
 				"\ntöast",
-				'töast'
+				'töast',
 			),
 			array(
 				chr(0xA0) . ' test' . chr(0xA0),
-				'test'
+				'test',
 			),
 			array(
 				array("\ntöast"),
-				array('töast')
+				array('töast'),
 			),
 		);
 	}
@@ -673,37 +673,37 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				false,
-				'QuEen BjöRk Ⅷ loVes 3 aPplEs.'
+				'QuEen BjöRk Ⅷ loVes 3 aPplEs.',
 			),
 			array(
 				'hello-world',
 				false,
-				'Hello-world'
+				'Hello-world',
 			),
 			array(
 				array('hello-world'),
 				false,
-				array('Hello-world')
+				array('Hello-world'),
 			),
 			array(
 				13,
 				false,
-				'13'
+				'13',
 			),
 			array(
 				13,
 				true,
-				13
+				13,
 			),
 			array(
 				array(13, 'happy place'),
 				false,
-				array('13', 'Happy place')
+				array('13', 'Happy place'),
 			),
 			array(
 				array(13, 'happy place'),
 				true,
-				array(13, 'Happy place')
+				array(13, 'Happy place'),
 			),
 		);
 	}
@@ -718,37 +718,37 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
 				false,
-				'QuEen BjöRk Ⅷ LoVes 3 APplEs.'
+				'QuEen BjöRk Ⅷ LoVes 3 APplEs.',
 			),
 			array(
 				'hello-world',
 				false,
-				'Hello-World'
+				'Hello-World',
 			),
 			array(
 				array('hello-world'),
 				false,
-				array('Hello-World')
+				array('Hello-World'),
 			),
 			array(
 				13,
 				false,
-				'13'
+				'13',
 			),
 			array(
 				13,
 				true,
-				13
+				13,
 			),
 			array(
 				array(13, 'happy place'),
 				false,
-				array('13', 'Happy Place')
+				array('13', 'Happy Place'),
 			),
 			array(
 				array(13, 'happy place'),
 				true,
-				array(13, 'Happy Place')
+				array(13, 'Happy Place'),
 			),
 		);
 	}
