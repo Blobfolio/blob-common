@@ -137,6 +137,38 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::array_pop_rand()
+	 *
+	 * @dataProvider data_array_pop_rand
+	 *
+	 * @param array $arr Array.
+	 */
+	function test_array_pop_rand($arr) {
+		if (!count($arr)) {
+			$this->assertSame(false, data::array_pop_rand($arr));
+		}
+		elseif (1 === count($arr)) {
+			$this->assertSame(data::array_pop_top($arr), data::array_pop_rand($arr));
+		}
+		else {
+			// Since this is random, we are basically just looking for a
+			// case where the previous value is not the same as the last.
+			$different = false;
+			$last = data::array_pop_rand($arr);
+			while (!$different) {
+				$v = data::array_pop_rand($arr);
+				if ($last !== $v) {
+					$different = true;
+					break;
+				}
+				$last = $v;
+			}
+
+			$this->assertSame(true, $different);
+		}
+	}
+
+	/**
 	 * ::array_pop_top()
 	 *
 	 * @dataProvider data_array_pop_top
@@ -631,6 +663,39 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				array(),
 				false,
+			),
+		);
+	}
+
+	/**
+	 * Data for ::array_pop_rand()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_pop_rand() {
+		return array(
+			array(
+				array(1, 2, 3, 4, 5, 6, 7, 8, 9, 0),
+			),
+			array(
+				array(
+					'Foo'=>'Bar',
+					'Bar'=>'Foo',
+					'You'=>'Hoo',
+					'apples',
+					'carrots',
+					'oranges',
+					8,
+					9,
+					0,
+					'hello',
+				),
+			),
+			array(
+				array(),
+			),
+			array(
+				array('foobar'),
 			),
 		);
 	}
