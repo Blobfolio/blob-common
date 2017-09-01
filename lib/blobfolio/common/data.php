@@ -270,6 +270,28 @@ class data {
 	}
 
 	/**
+	 * Return a random array element.
+	 *
+	 * @param array $arr Array.
+	 * @return mixed Value. False on error.
+	 */
+	public static function array_pop_rand(array &$arr) {
+		if (!count($arr)) {
+			return false;
+		}
+
+		// Nothing random about an array with one thing.
+		if (count($arr) === 1) {
+			return static::array_pop_top($arr);
+		}
+
+		$keys = array_keys($arr);
+		$index = static::random_int(0, count($arr) - 1);
+
+		return $arr[$keys[$index]];
+	}
+
+	/**
 	 * Return the first value of an array.
 	 *
 	 * @param array $arr Array.
