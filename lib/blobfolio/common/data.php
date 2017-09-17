@@ -594,7 +594,7 @@ class data {
 				if (
 					$recursive &&
 					is_array($defaults[$k]) &&
-					cast::array_type($defaults[$k]) === 'associative'
+					(cast::array_type($defaults[$k]) === 'associative')
 				) {
 					$defaults[$k] = static::parse_args($args[$k], $defaults[$k], $strict, $recursive);
 				}
