@@ -17,7 +17,6 @@ use \blobfolio\common\file as v_file;
 use \blobfolio\common\mb as v_mb;
 use \blobfolio\common\sanitize as v_sanitize;
 use \blobfolio\domain\domain;
-use \ForceUTF8\Encoding;
 
 class sanitize {
 
@@ -1353,6 +1352,8 @@ class sanitize {
 	 *
 	 * Ensure string contains valid UTF-8 encoding.
 	 *
+	 * @see {https://github.com/neitanod/forceutf8}
+	 *
 	 * @param string $str String.
 	 * @return string String.
 	 */
@@ -1455,14 +1456,14 @@ class sanitize {
 					}
 					// Convert it.
 					elseif (($c1 & "\xc0") === "\x80") {
-						$cord = ord($c1);
+						$o1 = ord($c1);
 
 						// Convert from Windows-1252.
-						if (array_key_exists($cord, constants::WIN1252_CHARS)) {
-							$out .= constants::WIN1252_CHARS[$cord];
+						if (array_key_exists($o1, constants::WIN1252_CHARS)) {
+							$out .= constants::WIN1252_CHARS[$o1];
 						}
 						else {
-							$cc1 = (chr($cord / 64) | "\xc0");
+							$cc1 = (chr($o1 / 64) | "\xc0");
 							$cc2 = (($c1 & "\x3f") | "\x80");
 							$out .= $cc1 . $cc2;
 						}
