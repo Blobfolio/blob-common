@@ -216,26 +216,35 @@ abstract class cast_base {
 	 */
 	public static function to_type(&$value, $type=null, $flatten=false) {
 		static::to_string($type, true);
-		if (!v_mb::strlen($type)) {
+		if (!$type) {
 			return true;
 		}
 
-		mb::strtolower($type);
-
-		if ('boolean' === $type || 'bool' === $type) {
-			static::to_bool($value, $flatten);
-		}
-		elseif ('integer' === $type || 'int' === $type) {
-			static::to_int($value, $flatten);
-		}
-		elseif ('double' === $type || 'float' === $type) {
-			static::to_float($value, $flatten);
-		}
-		elseif ('string' === $type) {
-			static::to_string($value, $flatten);
-		}
-		elseif ('array' === $type) {
-			static::to_array($value);
+		switch (strtolower($type)) {
+			case 'string':
+				static::to_string($value, $flatten);
+				break;
+			case 'integer':
+				static::to_int($value, $flatten);
+				break;
+			case 'double':
+				static::to_float($value, $flatten);
+				break;
+			case 'boolean':
+				static::to_bool($value, $flatten);
+				break;
+			case 'array':
+				static::to_array($value);
+				break;
+			case 'int':
+				static::to_int($value, $flatten);
+				break;
+			case 'float':
+				static::to_float($value, $flatten);
+				break;
+			case 'bool':
+				static::to_bool($value, $flatten);
+				break;
 		}
 
 		return true;

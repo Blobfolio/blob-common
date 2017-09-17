@@ -324,7 +324,7 @@ class mb {
 		cast::to_bool($cut, true);
 
 		// Bad data?
-		if (!v_mb::strlen($str) || $width <= 0) {
+		if (!$str || $width <= 0) {
 			return true;
 		}
 

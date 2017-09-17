@@ -364,7 +364,7 @@ class format {
 		mb::trim($str);
 
 		// Is it empty?
-		if (!strlen($str) || "''" === $str || '""' === $str) {
+		if (!$str || ("''" === $str) || ('""' === $str)) {
 			$str = '';
 			return true;
 		}
@@ -929,7 +929,7 @@ class format {
 			cast::to_string($str);
 			sanitize::whitespace($str);
 
-			if (!v_mb::strlen($str)) {
+			if (!$str) {
 				$str = '';
 				return false;
 			}

@@ -17,7 +17,6 @@ use \blobfolio\common\file as v_file;
 use \blobfolio\common\mb as v_mb;
 use \blobfolio\common\sanitize as v_sanitize;
 use \blobfolio\domain\domain;
-use \ForceUTF8\Encoding;
 
 class sanitize {
 
@@ -88,31 +87,34 @@ class sanitize {
 		$str = $ccnum;
 
 		// Different cards have different length requirements.
-		switch (v_mb::substr($ccnum, 0, 1)) {
+		switch (substr($ccnum, 0, 1)) {
 			// Amex.
 			case 3:
-				if (v_mb::strlen($ccnum) !== 15 || !preg_match('/3[47]/', $ccnum)) {
+				if ((strlen($ccnum) !== 15) || !preg_match('/3[47]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Visa.
 			case 4:
-				if (!in_array(v_mb::strlen($ccnum), array(13, 16), true)) {
+				if (!in_array(strlen($ccnum), array(13, 16), true)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// MC.
 			case 5:
-				if (v_mb::strlen($ccnum) !== 16 || !preg_match('/5[1-5]/', $ccnum)) {
+				if ((strlen($ccnum) !== 16) || !preg_match('/5[1-5]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Disc.
 			case 6:
-				if (v_mb::strlen($ccnum) !== 16 || intval(v_mb::substr($ccnum, 0, 4)) !== 6011) {
+				if (
+					(strlen($ccnum) !== 16) ||
+					(intval(substr($ccnum, 0, 4)) !== 6011)
+				) {
 					$ccnum = false;
 					return false;
 				}
@@ -124,7 +126,7 @@ class sanitize {
 		}
 
 		// MOD10 checks.
-		$dig = v_mb::str_split($ccnum);
+		$dig = str_split($ccnum);
 		$numdig = count($dig);
 		$j = 0;
 		for ($i = ($numdig - 2); $i >= 0; $i -= 2) {
@@ -134,7 +136,7 @@ class sanitize {
 		$dblsz = count($dbl);
 		$validate = 0;
 		for ($i = 0; $i < $dblsz; $i++) {
-			$add = v_mb::str_split($dbl[$i]);
+			$add = str_split($dbl[$i]);
 			for ($j = 0; $j < count($add); $j++) {
 				$validate += $add[$j];
 			}
@@ -144,7 +146,7 @@ class sanitize {
 			$validate += $dig[$i];
 		}
 
-		if (intval(v_mb::substr($validate, -1, 1)) === 0) {
+		if (intval(substr($validate, -1, 1)) === 0) {
 			$ccnum = $str;
 		}
 		else {
@@ -272,7 +274,7 @@ class sanitize {
 			mb::trim($str);
 
 			if (
-				!v_mb::strlen($str) ||
+				!$str ||
 				(v_mb::substr($str, 0, 10) === '0000-00-00') ||
 				(false === ($str = strtotime($str)))
 			) {
@@ -360,7 +362,7 @@ class sanitize {
 			$str = str_pad($str, 13, '0', STR_PAD_LEFT);
 
 			// Trim leading zeroes if it is too long.
-			while (strlen($str) > 13 && (0 === strpos($str, '0'))) {
+			while (isset($str[13]) && (0 === strpos($str, '0'))) {
 				$str = substr($str, 1);
 			}
 
@@ -422,7 +424,7 @@ class sanitize {
 				$parts[0] = ltrim($parts[0], '.');
 				$parts[0] = rtrim($parts[0], '.');
 
-				if (!strlen($parts[0])) {
+				if (!$parts[0]) {
 					$str = '';
 					return true;
 				}
@@ -587,7 +589,7 @@ class sanitize {
 
 			if (
 				!$restricted &&
-				strlen($str) &&
+				$str &&
 				!filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
 			) {
 				$str = '';
@@ -656,7 +658,7 @@ class sanitize {
 			// Check the domain, if applicable.
 			if (preg_match('/^[\w\d]+:\/\//i', $str)) {
 				$domain = v_sanitize::domain($str);
-				if (strlen($domain) && !in_array($domain, $allowed_domains, true)) {
+				if ($domain && !in_array($domain, $allowed_domains, true)) {
 					$str = '';
 				}
 			}
@@ -687,10 +689,10 @@ class sanitize {
 			$str = preg_replace('/[^\dX]/', '', $str);
 
 			// Zero-pad.
-			if (strlen($str) <= 10) {
+			if (!isset($str[10])) {
 				$str = str_pad($str, 10, '0', STR_PAD_LEFT);
 			}
-			elseif (strlen($str) < 13) {
+			elseif (!isset($str[12])) {
 				$str = preg_replace('/[^\d]/', '', $str);
 				$str = str_pad($str, 13, '0', STR_PAD_LEFT);
 			}
@@ -698,7 +700,7 @@ class sanitize {
 			if (
 				('0000000000' === $str) ||
 				('0000000000000' === $str) ||
-				strlen($str) > 13
+				isset($str[13])
 			) {
 				$str = '';
 				return false;
@@ -1125,7 +1127,7 @@ class sanitize {
 				$node_value = v_sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains);
 
 				// Remove invalid.
-				if (!strlen($node_value)) {
+				if (!$node_value) {
 					dom::remove_namespace($dom, $node->localName);
 				}
 			}
@@ -1146,7 +1148,7 @@ class sanitize {
 
 				static::iri_value($str, $allowed_protocols, $allowed_domains);
 
-				if (strlen($str)) {
+				if ($str) {
 					return "url('$str')";
 				}
 
@@ -1271,11 +1273,11 @@ class sanitize {
 			$str = str_pad($str, 12, '0', STR_PAD_LEFT);
 
 			// Trim leading zeroes if it is too long.
-			while (strlen($str) > 12 && (0 === strpos($str, '0'))) {
+			while (isset($str[12]) && (0 === strpos($str, '0'))) {
 				$str = substr($str, 1);
 			}
 
-			if (strlen($str) !== 12 || ('000000000000' === $str)) {
+			if ((strlen($str) !== 12) || ('000000000000' === $str)) {
 				$str = '';
 				return false;
 			}
@@ -1350,6 +1352,8 @@ class sanitize {
 	 *
 	 * Ensure string contains valid UTF-8 encoding.
 	 *
+	 * @see {https://github.com/neitanod/forceutf8}
+	 *
 	 * @param string $str String.
 	 * @return string String.
 	 */
@@ -1359,7 +1363,7 @@ class sanitize {
 				static::utf8($str[$k]);
 			}
 		}
-		elseif (!is_numeric($str) && !is_bool($str)) {
+		elseif ($str && !is_numeric($str) && !is_bool($str)) {
 			try {
 				$str = (string) $str;
 			} catch (\Throwable $e) {
@@ -1368,8 +1372,110 @@ class sanitize {
 				$str = '';
 			}
 
-			$str = Encoding::toUTF8($str);
-			$str = (1 === @preg_match('/^./us', $str)) ? $str : '';
+			if ($str) {
+				if (
+					function_exists('mb_strlen') &&
+					(intval(ini_get('mbstring.func_overload'))) & 2
+				) {
+					$length = mb_strlen($str, '8bit');
+				}
+				else {
+					$length = strlen($str);
+				}
+
+				$out = '';
+				for ($x = 0; $x < $length; $x++) {
+					$c1 = $str[$x];
+
+					// Should be converted to UTF-8 if not already.
+					if ($c1 >= "\xc0") {
+						$c2 = $x + 1 >= $length ? "\x00" : $str[$x + 1];
+						$c3 = $x + 2 >= $length ? "\x00" : $str[$x + 2];
+						$c4 = $x + 3 >= $length ? "\x00" : $str[$x + 3];
+
+						// Probably 2-byte UTF-8.
+						if ($c1 >= "\xc0" & $c1 <= "\xdf") {
+							// Looks good.
+							if ($c2 >= "\x80" && $c2 <= "\xbf") {
+								$out .= $c1 . $c2;
+								$x++;
+							}
+							// Invalid; convert it.
+							else {
+								$cc1 = (chr(ord($c1) / 64) | "\xc0");
+								$cc2 = ($c1 & "\x3f") | "\x80";
+								$out .= $cc1 . $cc2;
+							}
+						}
+						// Probably 3-byte UTF-8.
+						elseif ($c1 >= "\xe0" & $c1 <= "\xef") {
+							// Looks good.
+							if (
+								$c2 >= "\x80" &&
+								$c2 <= "\xbf" &&
+								$c3 >= "\x80" &&
+								$c3 <= "\xbf"
+							) {
+								$out .= $c1 . $c2 . $c3;
+								$x += 2;
+							}
+							// Invalid; convert it.
+							else {
+								$cc1 = (chr(ord($c1) / 64) | "\xc0");
+								$cc2 = ($c1 & "\x3f") | "\x80";
+								$out .= $cc1 . $cc2;
+							}
+						}
+						// Probably 4-byte UTF-8.
+						elseif ($c1 >= "\xf0" & $c1 <= "\xf7") {
+							// Looks good.
+							if (
+								$c2 >= "\x80" &&
+								$c2 <= "\xbf" &&
+								$c3 >= "\x80" &&
+								$c3 <= "\xbf" &&
+								$c4 >= "\x80" &&
+								$c4 <= "\xbf"
+							) {
+								$out .= $c1 . $c2 . $c3 . $c4;
+								$x += 3;
+							}
+							// Invalid; convert it.
+							else {
+								$cc1 = (chr(ord($c1) / 64) | "\xc0");
+								$cc2 = ($c1 & "\x3f") | "\x80";
+								$out .= $cc1 . $cc2;
+							}
+						}
+						// Doesn't appear to be UTF-8; convert it.
+						else {
+							$cc1 = (chr(ord($c1) / 64) | "\xc0");
+							$cc2 = (($c1 & "\x3f") | "\x80");
+							$out .= $cc1 . $cc2;
+						}
+					}
+					// Convert it.
+					elseif (($c1 & "\xc0") === "\x80") {
+						$o1 = ord($c1);
+
+						// Convert from Windows-1252.
+						if (array_key_exists($o1, constants::WIN1252_CHARS)) {
+							$out .= constants::WIN1252_CHARS[$o1];
+						}
+						else {
+							$cc1 = (chr($o1 / 64) | "\xc0");
+							$cc2 = (($c1 & "\x3f") | "\x80");
+							$out .= $cc1 . $cc2;
+						}
+					}
+					// No change.
+					else {
+						$out .= $c1;
+					}
+				}
+
+				$str = (1 === @preg_match('/^./us', $out)) ? $out : '';
+			}
 		}
 
 		return true;
@@ -1448,10 +1554,10 @@ class sanitize {
 			cast::to_string($zip5);
 			$str = preg_replace('/[^\d]/', '', $str);
 
-			if (v_mb::strlen($str) < 5) {
+			if (!isset($str[4])) {
 				$str = sprintf('%05d', $str);
 			}
-			elseif (v_mb::strlen($str) > 5) {
+			elseif (isset($str[5])) {
 				$str = v_mb::substr($str, 0, 5);
 			}
 

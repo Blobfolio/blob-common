@@ -259,7 +259,7 @@ class file {
 		}
 
 		if (isset($parsed['host'])) {
-			if (strlen($url)) {
+			if ($url) {
 				$url .= '//';
 			}
 
@@ -296,7 +296,7 @@ class file {
 			$url .= "#{$parsed['fragment']}";
 		}
 
-		return strlen($url) ? $url : false;
+		return $url ? $url : false;
 	}
 
 	/**
