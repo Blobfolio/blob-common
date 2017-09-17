@@ -34,7 +34,7 @@ class bc {
 	public static function bitwise($method, $left, $right='0', $bits=null) {
 		// Sanitize the operation.
 		ref\cast::to_string($method, true);
-		ref\mb::strtoupper($method);
+		$method = strtoupper($method);
 		if (array_key_exists($method, constants::BITWISE_OPERATORS)) {
 			$method = constants::BITWISE_OPERATORS[$method];
 		}

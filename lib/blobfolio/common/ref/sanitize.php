@@ -257,7 +257,7 @@ class sanitize {
 			// An obviously bad string.
 			if (
 				is_string($str) &&
-				(!v_mb::strlen(v_mb::trim($str)) || (0 === v_mb::strpos($str, '0000-00-00')))
+				(!v_mb::trim($str) || (0 === v_mb::strpos($str, '0000-00-00')))
 			) {
 				$str = '0000-00-00 00:00:00';
 				return true;
@@ -302,7 +302,7 @@ class sanitize {
 		}
 		else {
 			static::datetime($str);
-			$str = v_mb::substr($str, 0, 10);
+			$str = substr($str, 0, 10);
 		}
 
 		return true;
@@ -554,7 +554,7 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
-			mb::strtolower($str);
+			$str = strtolower($str);
 			cast::to_bool($restricted, true);
 			cast::to_bool($condense, true);
 
@@ -685,7 +685,7 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
-			mb::strtoupper($str);
+			$str = strtoupper($str);
 			$str = preg_replace('/[^\dX]/', '', $str);
 
 			// Zero-pad.
@@ -790,7 +790,7 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
-			mb::strtolower($str);
+			$str = strtolower($str);
 			$str = preg_replace('/[^-+*.a-z0-9\/]/', '', $str);
 		}
 
@@ -905,7 +905,7 @@ class sanitize {
 		else {
 			cast::to_string($str);
 			static::whitespace($str);
-			mb::strtoupper($str);
+			$str = strtoupper($str);
 
 			if (!array_key_exists($str, constants::PROVINCES)) {
 				if (false === ($str = data::array_isearch($str, constants::PROVINCES, true))) {
@@ -957,7 +957,7 @@ class sanitize {
 		else {
 			cast::to_string($str);
 			static::whitespace($str);
-			mb::strtoupper($str);
+			$str = strtoupper($str);
 
 			if (!array_key_exists($str, constants::STATES)) {
 				if (false === ($str = data::array_isearch($str, constants::STATES, true))) {

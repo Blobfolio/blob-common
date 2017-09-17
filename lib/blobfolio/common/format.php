@@ -206,20 +206,22 @@ class format {
 			return '';
 		}
 
-		ref\mb::strtolower($options['unit']);
-		if (mb::substr($options['unit'], 0, 4) === 'char') {
-			$options['unit'] = 'character';
-		}
-		elseif (mb::substr($options['unit'], 0, 4) === 'word') {
-			$options['unit'] = 'word';
+		$options['unit'] = strtolower($options['unit']);
+		switch (substr($options['unit'], 0, 4)) {
+			case 'char':
+				$options['unit'] = 'character';
+				break;
+			case 'word':
+				$options['unit'] = 'word';
+				break;
 		}
 
 		// Character limit.
-		if ('character' === $options['unit'] && mb::strlen($str) > $options['length']) {
+		if (('character' === $options['unit']) && mb::strlen($str) > $options['length']) {
 			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
 		}
 		// Word limit.
-		elseif ('word' === $options['unit'] && mb::substr_count($str, ' ') > $options['length'] - 1) {
+		elseif (('word' === $options['unit']) && mb::substr_count($str, ' ') > $options['length'] - 1) {
 			$str = explode(' ', $str);
 			$str = array_slice($str, 0, $options['length']);
 			$str = implode(' ', $str) . $options['suffix'];

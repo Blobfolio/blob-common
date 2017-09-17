@@ -51,7 +51,7 @@ abstract class cast_base {
 		else {
 			// Evaluate special cases.
 			if (is_string($value)) {
-				mb::strtolower($value);
+				$value = strtolower($value);
 				if (in_array($value, constants::TRUE_BOOLS, true)) {
 					$value = true;
 				}
@@ -119,7 +119,7 @@ abstract class cast_base {
 		else {
 			// Evaluate special cases.
 			if (is_string($value)) {
-				mb::strtolower($value);
+				$value = strtolower($value);
 				if (in_array($value, constants::TRUE_BOOLS, true)) {
 					$value = 1;
 				}

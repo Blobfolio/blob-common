@@ -764,7 +764,7 @@ class format {
 		$args = data::parse_args($args, constants::LIST_TO_ARRAY);
 
 		// Sanitize cast type.
-		mb::strtolower($args['cast']);
+		$args['cast'] = strtolower($args['cast']);
 		if (
 			('array' === $args['cast']) ||
 			!array_key_exists($args['cast'], constants::CAST_TYPES)
