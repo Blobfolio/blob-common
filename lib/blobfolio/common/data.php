@@ -464,11 +464,11 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function is_json($str, $empty=false) {
-		if (!is_string($str) || (!$empty && !strlen($str))) {
+		if (!is_string($str) || (!$empty && !$str)) {
 			return false;
 		}
 
-		if ($empty && !strlen($str)) {
+		if ($empty && !$str) {
 			return true;
 		}
 

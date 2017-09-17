@@ -92,7 +92,7 @@ class image {
 			// Do a quick pass through DomDoc to standardize formatting.
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
-			if (!strlen($svg)) {
+			if (!$svg) {
 				return false;
 			}
 
@@ -419,7 +419,7 @@ class image {
 			// Get back to just the string.
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
-			if (!strlen($svg)) {
+			if (!$svg) {
 				return false;
 			}
 

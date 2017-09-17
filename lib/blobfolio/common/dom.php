@@ -234,7 +234,7 @@ class dom {
 		ref\sanitize::whitespace($styles);
 
 		// Early bail.
-		if (!strlen($styles)) {
+		if (!$styles) {
 			return array();
 		}
 
@@ -403,7 +403,7 @@ class dom {
 		if (
 			!is_a($dom, 'DOMDocument') ||
 			!is_string($namespace) ||
-			!strlen($namespace)
+			!$namespace
 		) {
 			return false;
 		}
