@@ -30,8 +30,7 @@
 
     "blobfolio\/blob-mimes": "*",
     "blobfolio\/blob-phone": "*",
-    "blobfolio\/blob-domain": "*",
-    "neitanod\/forceutf8": "*"
+    "blobfolio\/blob-domain": "*"
   },
   "require-dev": {
     "phpunit\/phpunit": "5.7.*"
