@@ -16,6 +16,7 @@ if (!defined('ABSPATH')) {
 use \blobfolio\common\constants;
 use \blobfolio\common\image;
 use \blobfolio\common\ref\cast as r_cast;
+use \blobfolio\common\ref\format as r_format;
 use \blobfolio\common\ref\sanitize as r_sanitize;
 use \blobfolio\common\sanitize as v_sanitize;
 
