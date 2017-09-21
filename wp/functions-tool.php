@@ -17,6 +17,7 @@ if (!defined('ABSPATH')) {
 use \blobfolio\common\cast as v_cast;
 use \blobfolio\common\data;
 use \blobfolio\common\mb as v_mb;
+use \blobfolio\common\ref\mb as r_mb;
 
 // ---------------------------------------------------------------------
 // Comparison/Eval Tools
@@ -93,9 +94,9 @@ if (!function_exists('common_isubstr_count()')) {
 	 * @return bool True/false.
 	 */
 	function common_isubstr_count($haystack, $needle) {
-		$needle = common_strtolower($needle);
-		$haystack = common_strtolower($haystack);
-		return common_substr_count($haystack, $needle);
+		r_mb::strtolower($needle);
+		r_mb::strtolower($haystack);
+		return v_mb::substr_count($haystack, $needle);
 	}
 }
 

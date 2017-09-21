@@ -28,6 +28,7 @@ if (!defined('ABSPATH')) {
 use \blobfolio\common\constants;
 use \blobfolio\common\data;
 use \blobfolio\common\image;
+use \blobfolio\common\mb as v_mb;
 use \blobfolio\common\ref\cast as r_cast;
 use \blobfolio\common\ref\sanitize as r_sanitize;
 
@@ -78,11 +79,11 @@ if (!function_exists('common_webp_cleanup')) {
 		if (false !== ($dir = opendir($path))) {
 			while (false !== ($thumb = readdir($dir))) {
 				// Wrong base.
-				if (common_substr($thumb, 0, common_strlen($stub['filename'])) !== $stub['filename']) {
+				if (0 !== v_mb::strpos($thumb, $stub['filename'])) {
 					continue;
 				}
 
-				$suffix = common_substr($thumb, common_strlen($stub['filename']));
+				$suffix = v_mb::substr($thumb, v_mb::strlen($stub['filename']));
 				if (preg_match('/^(\-\d+x\d+)?\.webp$/', $suffix)) {
 					$file = trailingslashit($path) . $thumb;
 					@unlink($file);
@@ -120,7 +121,7 @@ if (!function_exists('common_get_webp_src')) {
 			'alt'=>get_bloginfo('name'),
 			'classes'=>array(),
 		);
-		$data = common_parse_args($args, $defaults, true);
+		$data = data::parse_args($args, $defaults, true, false);
 
 		// Sanitize.
 		if ($data['attachment_id'] < 1) {
@@ -203,7 +204,7 @@ if (!function_exists('common_get_webp_srcset')) {
 			'classes'=>array(),
 			'default_size'=>null,
 		);
-		$data = common_parse_args($args, $defaults, true);
+		$data = data::parse_args($args, $defaults, true, false);
 
 		// Sanitize.
 		if ($data['attachment_id'] < 1) {
@@ -403,7 +404,7 @@ if (!function_exists('common_get_webp_picture')) {
 			'classes'=>array(),
 			'default_size'=>'full',
 		);
-		$data = common_parse_args($args, $defaults, true);
+		$data = data::parse_args($args, $defaults, true, false);
 
 		$source_defaults = array(
 			'attachment_id'=>0,
@@ -427,7 +428,7 @@ if (!function_exists('common_get_webp_picture')) {
 
 		// Build and sanitize sources.
 		foreach ($data['sources'] as $k=>$v) {
-			$data['sources'][$k] = common_parse_args($v, $source_defaults, true);
+			$data['sources'][$k] = data::parse_args($v, $source_defaults, true, false);
 
 			if ($data['sources'][$k]['attachment_id'] < 1) {
 				$data['sources'][$k]['attachment_id'] = $data['attachment_id'];
@@ -537,7 +538,7 @@ if (!function_exists('common_get_webp_sister')) {
 		}
 
 		$mode = 'url';
-		if (common_substr($path, 0, common_strlen(ABSPATH)) === ABSPATH) {
+		if (0 === v_mb::strpos($path, ABSPATH)) {
 			$mode = 'path';
 		}
 
@@ -560,5 +561,3 @@ if (!function_exists('common_get_webp_sister')) {
 		}
 	}
 }
-
-

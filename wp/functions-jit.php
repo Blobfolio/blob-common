@@ -71,9 +71,10 @@ function _common_image_downsize($downsize, $attachment_id, $size) {
 	$made = false;
 
 	$src_path = get_attached_file($attachment_id);
+	$src_mime = common_get_mime_type($src_path);
 
 	// Ignore SVGs.
-	if (common_get_mime_type($src_path) === 'image/svg+xml') {
+	if ('image/svg+xml' === $src_mime) {
 		return false;
 	}
 
@@ -84,7 +85,6 @@ function _common_image_downsize($downsize, $attachment_id, $size) {
 
 	$src_root = trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
-	$src_mime = common_get_mime_type($src_path);
 	$src_base = wp_basename($src_path, ".$src_ext");
 	$new_size = image_resize_dimensions(
 		$image_meta['width'],
@@ -159,9 +159,10 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 
 	// Some source file specs we'll use a lot.
 	$src_path = get_attached_file($attachment_id);
+	$src_mime = common_get_mime_type($src_path);
 
 	// Ignore SVGs.
-	if (common_get_mime_type($src_path) === 'image/svg+xml') {
+	if ('image/svg+xml' === $src_mime) {
 		return false;
 	}
 
@@ -172,7 +173,6 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 
 	$src_root = trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
-	$src_mime = common_get_mime_type($src_path);
 	$src_base = wp_basename($src_path, ".$src_ext");
 
 	// Find what's missing.

@@ -122,9 +122,9 @@ if (!function_exists('common_format_phone')) {
 	function common_format_phone($value='') {
 		$value = common_sanitize_phone($value);
 
-		if (common_strlen($value) >= 10) {
-			$first10 = common_substr($value, 0, 10);
-			return preg_replace('/^([0-9]{3})([0-9]{3})([0-9]{4})/i', "(\\1) \\2-\\3", $first10) . (common_strlen($value) > 10 ? ' x' . common_substr($value, 10) : '');
+		if (strlen($value) >= 10) {
+			$first10 = substr($value, 0, 10);
+			return preg_replace('/^([0-9]{3})([0-9]{3})([0-9]{4})/i', "(\\1) \\2-\\3", $first10) . (strlen($value) > 10 ? ' x' . substr($value, 10) : '');
 		}
 
 		return $value;
@@ -333,7 +333,8 @@ if (!function_exists('common_sanitize_utf8')) {
 	 * @param string $str String.
 	 * @return string String.
 	 */
-	function common_sanitize_utf8($str) { return common_utf8($str);
+	function common_sanitize_utf8($str) {
+		return common_utf8($str);
 	}
 }
 
@@ -693,7 +694,7 @@ if (!function_exists('common_sanitize_phone')) {
 		$value = preg_replace('/[^\d]/', '', $value);
 
 		// If this looks like a 10-digit number with the +1 on it, chop it off.
-		if (strlen($value) === 11 && intval(substr($value, 0, 1)) === 1) {
+		if ((strlen($value) === 11) && (intval(substr($value, 0, 1)) === 1)) {
 			$value = substr($value, 1);
 		}
 
@@ -761,7 +762,7 @@ if (!function_exists('common_validate_phone')) {
 	function common_validate_phone($value='') {
 		// Match the first 10.
 		$value = common_sanitize_string($value);
-		$first10 = common_substr($value, 0, 10);
+		$first10 = substr($value, 0, 10);
 		return preg_match('/^[2-9][0-8][0-9][2-9][0-9]{2}[0-9]{4}$/i', $first10);
 	}
 }

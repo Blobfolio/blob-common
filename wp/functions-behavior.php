@@ -83,7 +83,7 @@ if (
 		if ('image/svg+xml' === $checked['type']) {
 			$contents = @file_get_contents($file);
 			r_sanitize::svg($contents);
-			if (strlen($contents)) {
+			if ($contents) {
 				@file_put_contents($file, $contents);
 			}
 			else {
@@ -232,8 +232,8 @@ if (!function_exists('common_svg_media_thumbnail')) {
 		}
 
 		if (
-			'image' === $response['type'] &&
-			'svg+xml' === $response['subtype'] &&
+			('image' === $response['type']) &&
+			('svg+xml' === $response['subtype']) &&
 			class_exists('SimpleXMLElement')
 		) {
 			try {

@@ -20,6 +20,7 @@ use \blobfolio\common\file as v_file;
 use \blobfolio\common\format as v_format;
 use \blobfolio\common\mb as v_mb;
 use \blobfolio\common\mime;
+use \blobfolio\common\ref\file as r_file;
 use \blobfolio\common\ref\sanitize as r_sanitize;
 use \blobfolio\common\sanitize as v_sanitize;
 
@@ -206,21 +207,19 @@ if (!function_exists('common_get_path_by_url')) {
 	 * @return string|bool Path or false.
 	 */
 	function common_get_path_by_url($url) {
-		$from = common_strtolower(trailingslashit(site_url()));
+		$from = v_mb::strtolower(trailingslashit(site_url()));
 		$to = trailingslashit(ABSPATH);
 
 		// Query strings and hashes aren't part of files.
-		if (false !== common_strpos($url, '?')) {
-			$url = explode('?', $url);
-			$url = common_array_pop_top($url);
+		if (false !== ($match = v_mb::strpos($url, '?'))) {
+			$url = v_mb::substr($url, 0, $match);
 		}
-		if (false !== common_strpos($url, '#')) {
-			$url = explode('#', $url);
-			$url = common_array_pop_top($url);
+		if (false !== ($match = v_mb::strpos($url, '#'))) {
+			$url = v_mb::substr($url, 0, $match);
 		}
 
-		if (common_strtolower(common_substr($url, 0, common_strlen($from))) === $from) {
-			return $to . common_substr($url, common_strlen($from));
+		if (0 === v_mb::strpos($url, $from)) {
+			return $to . v_mb::substr($url, v_mb::strlen($from));
 		}
 
 		return false;
@@ -238,12 +237,12 @@ if (!function_exists('common_get_url_by_path')) {
 	 * @return string|bool URL or false.
 	 */
 	function common_get_url_by_path($path) {
-		$path = common_unixslashit($path);
+		r_file::unixslash($path);
 		$from = trailingslashit(ABSPATH);
 		$to = trailingslashit(site_url());
 
-		if (common_strtolower(common_substr($path, 0, common_strlen($from))) === $from) {
-			return $to . common_substr($path, common_strlen($from));
+		if (0 === strpos($path, $from)) {
+			return $to . v_mb::substr($path, v_mb::strlen($from));
 		}
 
 		return false;
@@ -285,7 +284,6 @@ if (!function_exists('common_is_current_page')) {
 	 * @return bool True/false.
 	 */
 	function common_is_current_page($url, $subpages=false) {
-
 		if (!common_is_site_url($url)) {
 			return false;
 		}
@@ -295,7 +293,11 @@ if (!function_exists('common_is_current_page')) {
 		$url2 = v_mb::parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
 
 		// And check for a match.
-		return $subpages ? substr($url2, 0, common_strlen($url)) === $url : $url === $url2;
+		if ($subpages) {
+			return (0 === v_mb::strpos($url2, $url));
+		}
+
+		return $url === $url2;
 	}
 }
 
@@ -315,7 +317,7 @@ if (!function_exists('common_redirect')) {
 			$url = get_permalink($url);
 		}
 
-		if (is_null($url) || (!$offsite && !common_is_site_url($url))) {
+		if (!$url || (!$offsite && !common_is_site_url($url))) {
 			$url = site_url();
 		}
 
@@ -353,7 +355,7 @@ if (!function_exists('common_upload_path')) {
 		$dir = $dir['basedir'];
 		$path = trailingslashit($dir);
 		if (!is_null($subpath)) {
-			$path .= common_unleadingslashit($subpath);
+			$path .= v_file::unleadingslash($subpath);
 		}
 
 		return $url ? common_get_url_by_path($path) : $path;
@@ -376,7 +378,7 @@ if (!function_exists('common_theme_path')) {
 		$dir = trailingslashit(get_stylesheet_directory_uri());
 		$path = trailingslashit($dir);
 		if (!is_null($subpath)) {
-			$path .= common_unleadingslashit($subpath);
+			$path .= v_file::unleadingslash($subpath);
 		}
 
 		return $url ? $path : common_get_path_by_url($path);

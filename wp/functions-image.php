@@ -106,10 +106,7 @@ if (!function_exists('common_shortcode_clean_svg')) {
 		// We need to convert array fields to proper arrays.
 		foreach (array('classes', 'whitelist_attr', 'whitelist_tags', 'whitelist_protocols', 'whitelist_domains') as $field) {
 			if (isset($args[$field])) {
-				$args[$field] = explode(',', $args[$field]);
-				r_sanitize::whitespace($args[$field]);
-				$args[$field] = array_unique($args[$field]);
-				$args[$field] = array_filter($args[$field], 'strlen');
+				r_format::list_to_array($args[$field]);
 			}
 		}
 
@@ -129,7 +126,7 @@ if (!function_exists('common_shortcode_clean_svg')) {
 		}
 
 		$svg = common_get_clean_svg($svg, $svgargs);
-		if (!is_string($svg) || !strlen($svg)) {
+		if (!is_string($svg) || !$svg) {
 			return false;
 		}
 
@@ -139,7 +136,7 @@ if (!function_exists('common_shortcode_clean_svg')) {
 		?>
 		<figure class="wp-caption <?=esc_attr(implode(' ', $classes))?>">
 			<?=$svg?>
-			<?php if (strlen($content)) { ?>
+			<?php if ($content) { ?>
 				<figcaption class="wp-caption-text"><?=$content?></figcaption>
 			<?php } ?>
 		</figure>
@@ -190,7 +187,10 @@ if (!function_exists('common_get_featured_image_src')) {
 		if (!$id) {
 			$id = (int) get_the_ID();
 		}
-		$tmp = (int) get_post_thumbnail_id($id);
+		$tmp = 0;
+		if ($id) {
+			$tmp = (int) get_post_thumbnail_id($id);
+		}
 
 		// Using a fallback?
 		if (!$tmp && $fallback > 0) {
@@ -224,12 +224,12 @@ if (!function_exists('_common_sort_srcset')) {
 		$b1 = explode(' ', v_sanitize::whitespace($b));
 
 		// Can't compute, leave it alone.
-		if (count($a1) !== 2 || count($b1) !== 2) {
+		if ((count($a1) !== 2) || (count($b1) !== 2)) {
 			return 0;
 		}
 
-		$a2 = round(preg_replace('/[^\d]/', '', $a1[1]));
-		$b2 = round(preg_replace('/[^\d]/', '', $b1[1]));
+		$a2 = round(preg_replace('/[^\d\.]/', '', $a1[1]));
+		$b2 = round(preg_replace('/[^\d\.]/', '', $b1[1]));
 
 		if ($a2 === $b2) {
 			return 0;
@@ -253,7 +253,6 @@ if (!function_exists('common_get_image_srcset')) {
 	 */
 	function common_get_image_srcset($attachment_id=0, $size) {
 		r_cast::to_int($attachment_id, true);
-
 		if ($attachment_id < 1) {
 			return false;
 		}
