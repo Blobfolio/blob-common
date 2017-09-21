@@ -86,8 +86,13 @@ class sanitize {
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
 		$str = $ccnum;
 
+		if (!$ccnum) {
+			$ccnum = false;
+			return false;
+		}
+
 		// Different cards have different length requirements.
-		switch (substr($ccnum, 0, 1)) {
+		switch ($ccnum[0]) {
 			// Amex.
 			case 3:
 				if ((strlen($ccnum) !== 15) || !preg_match('/3[47]/', $ccnum)) {
