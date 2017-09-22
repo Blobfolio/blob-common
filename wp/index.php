@@ -86,15 +86,15 @@ try {
 
 
 // The blob-common library.
-@require_once(BLOBCOMMON_ROOT . '/lib/blobcommon.php');
+require(BLOBCOMMON_ROOT . '/lib/blobcommon.php');
 \blobfolio\wp\common\blobcommon::init();
 
 // And everything else.
-@require_once(BLOBCOMMON_ROOT . '/functions-behavior.php');
-@require_once(BLOBCOMMON_ROOT . '/functions-debug.php');
-@require_once(BLOBCOMMON_ROOT . '/functions-email.php');
-@require_once(BLOBCOMMON_ROOT . '/functions-form.php');
-@require_once(BLOBCOMMON_ROOT . '/functions-image.php');
-@require_once(BLOBCOMMON_ROOT . '/functions-spacetime.php');
-@require_once(BLOBCOMMON_ROOT . '/functions-sanitize.php');
-@require_once(BLOBCOMMON_ROOT . '/functions-tool.php');
+require(BLOBCOMMON_ROOT . '/functions-behavior.php');
+require(BLOBCOMMON_ROOT . '/functions-debug.php');
+require(BLOBCOMMON_ROOT . '/functions-email.php');
+require(BLOBCOMMON_ROOT . '/functions-form.php');
+require(BLOBCOMMON_ROOT . '/functions-image.php');
+require(BLOBCOMMON_ROOT . '/functions-spacetime.php');
+require(BLOBCOMMON_ROOT . '/functions-sanitize.php');
+require(BLOBCOMMON_ROOT . '/functions-tool.php');
