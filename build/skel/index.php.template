@@ -17,11 +17,12 @@ define('BLOBCOMMON_AUTOLOADER', true);
 $blobcommon_phar = md5(__FILE__ . '/blob-common.phar') . '.phar';
 phar::mapPhar($blobcommon_phar);
 
+$blobcommon_phar_classmap = array(CLASSMAP);
+
 spl_autoload_register(
-	function($class) use($blobcommon_phar) {
-		$map = array(CLASSMAP);
-		if ($class && isset($map[$class])) {
-			require($map[$class]);
+	function($class) use($blobcommon_phar, $blobcommon_phar_classmap) {
+		if (isset($blobcommon_phar_classmap[$class])) {
+			require($blobcommon_phar_classmap[$class]);
 			return true;
 		}
 
