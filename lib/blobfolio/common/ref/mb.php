@@ -143,16 +143,18 @@ class mb {
 		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
-			if (function_exists('mb_strtolower')) {
-				$str = mb_strtolower($str, 'UTF-8');
+			if ($str) {
+				if (function_exists('mb_strtolower') && !mb_check_encoding($str, 'ASCII')) {
+					$str = mb_strtolower($str, 'UTF-8');
 
-				// Replace some extra characters.
-				$from = array_keys(constants::CASE_CHARS);
-				$to = array_values(constants::CASE_CHARS);
-				$str = str_replace($from, $to, $str);
-			}
-			else {
-				$str = strtolower($str);
+					// Replace some extra characters.
+					$from = array_keys(constants::CASE_CHARS);
+					$to = array_values(constants::CASE_CHARS);
+					$str = str_replace($from, $to, $str);
+				}
+				else {
+					$str = strtolower($str);
+				}
 			}
 		}
 
@@ -178,16 +180,18 @@ class mb {
 		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
-			if (function_exists('mb_strtoupper')) {
-				$str = mb_strtoupper($str, 'UTF-8');
+			if ($str) {
+				if (function_exists('mb_strtoupper') && !mb_check_encoding($str, 'ASCII')) {
+					$str = mb_strtoupper($str, 'UTF-8');
 
-				// Replace some extra characters.
-				$to = array_keys(constants::CASE_CHARS);
-				$from = array_values(constants::CASE_CHARS);
-				$str = str_replace($from, $to, $str);
-			}
-			else {
-				$str = strtoupper($str);
+					// Replace some extra characters.
+					$to = array_keys(constants::CASE_CHARS);
+					$from = array_values(constants::CASE_CHARS);
+					$str = str_replace($from, $to, $str);
+				}
+				else {
+					$str = strtoupper($str);
+				}
 			}
 		}
 
@@ -237,13 +241,15 @@ class mb {
 		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
-			if (function_exists('mb_substr')) {
-				$first = v_mb::substr($str, 0, 1);
-				static::strtoupper($first);
-				$str = $first . v_mb::substr($str, 1, null);
-			}
-			else {
-				$str = ucfirst($str);
+			if ($str) {
+				if (function_exists('mb_substr') && !mb_check_encoding($str, 'ASCII')) {
+					$first = v_mb::substr($str, 0, 1);
+					static::strtoupper($first);
+					$str = $first . v_mb::substr($str, 1, null);
+				}
+				else {
+					$str = ucfirst($str);
+				}
 			}
 		}
 
@@ -269,35 +275,37 @@ class mb {
 		elseif (!$strict || is_string($str)) {
 			cast::to_string($str);
 
-			// Don't use the built-in case functions as those
-			// kinda suck. Instead let's adjust manually.
-			$extra = array();
+			if ($str) {
+				// Don't use the built-in case functions as those
+				// kinda suck. Instead let's adjust manually.
+				$extra = array();
 
-			// The first letter.
-			preg_match_all('/^(\p{L})/u', $str, $matches);
-			if (count($matches[0])) {
-				static::strtoupper($matches[1][0]);
-				if ($matches[0][0] !== $matches[1][0]) {
-					$extra[$matches[0][0]] = $matches[1][0];
-				}
-			}
-
-			// Any letter following a dash, space, or forward slash.
-			preg_match_all('/(\s|\p{Pd}|\/)(.)/u', $str, $matches);
-			if (count($matches[0])) {
-				foreach ($matches[0] as $k=>$v) {
-					static::strtoupper($matches[2][$k]);
-					$new = $matches[1][$k] . $matches[2][$k];
-					if ($v !== $new) {
-						$extra[$v] = $new;
+				// The first letter.
+				preg_match_all('/^(\p{L})/u', $str, $matches);
+				if (count($matches[0])) {
+					static::strtoupper($matches[1][0]);
+					if ($matches[0][0] !== $matches[1][0]) {
+						$extra[$matches[0][0]] = $matches[1][0];
 					}
 				}
-			}
 
-			// Make replacement(s).
-			if (count($extra)) {
-				$extra = array_unique($extra);
-				$str = str_replace(array_keys($extra), array_values($extra), $str);
+				// Any letter following a dash, space, or forward slash.
+				preg_match_all('/(\s|\p{Pd}|\/)(.)/u', $str, $matches);
+				if (count($matches[0])) {
+					foreach ($matches[0] as $k=>$v) {
+						static::strtoupper($matches[2][$k]);
+						$new = $matches[1][$k] . $matches[2][$k];
+						if ($v !== $new) {
+							$extra[$v] = $new;
+						}
+					}
+				}
+
+				// Make replacement(s).
+				if (count($extra)) {
+					$extra = array_unique($extra);
+					$str = str_replace(array_keys($extra), array_values($extra), $str);
+				}
 			}
 		}
 
@@ -421,5 +429,3 @@ class mb {
 		return true;
 	}
 }
-
-

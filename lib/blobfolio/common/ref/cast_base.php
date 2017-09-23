@@ -195,7 +195,9 @@ abstract class cast_base {
 		else {
 			try {
 				$value = (string) $value;
-				sanitize::utf8($value);
+				if ($value && !mb_check_encoding($value, 'ASCII')) {
+					sanitize::utf8($value);
+				}
 			} catch (\Throwable $e) {
 				$value = '';
 			} catch (\Exception $e) {
@@ -250,5 +252,3 @@ abstract class cast_base {
 		return true;
 	}
 }
-
-

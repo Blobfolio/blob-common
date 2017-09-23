@@ -1356,7 +1356,7 @@ class sanitize {
 				$str = '';
 			}
 
-			if ($str) {
+			if ($str && !mb_check_encoding($str, 'ASCII')) {
 				if (
 					function_exists('mb_strlen') &&
 					(intval(ini_get('mbstring.func_overload'))) & 2
@@ -1553,5 +1553,3 @@ class sanitize {
 		return true;
 	}
 }
-
-
