@@ -1167,9 +1167,6 @@ class sanitize {
 		return true;
 	}
 
-	// Hold our modified timezones.
-	protected static $timezones;
-
 	/**
 	 * Timezone
 	 *
@@ -1177,34 +1174,16 @@ class sanitize {
 	 * @return string Timezone or UTC on failure.
 	 */
 	public static function timezone(&$str='') {
-		// This gets expensive if run a lot, so let's
-		// run through the list just once.
-		if (is_null(static::$timezones)) {
-			static::$timezones = array();
-			try {
-				$tmp = \DateTimeZone::listIdentifiers();
-				foreach ($tmp as $t) {
-					static::$timezones[v_mb::strtoupper($t)] = $t;
-				}
-				unset($tmp);
-			} catch (\Throwable $e) {
-				$noop;
-			} catch (\Exception $e) {
-				$noop;
-			}
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::timezone($str[$k]);
 			}
 		}
-		else {
-			mb::strtoupper($str);
-			static::whitespace($str);
+		elseif (!in_array($str, constants::TIMEZONES, true)) {
+			$str = preg_replace('/\s/u', '', strtoupper($str));
 
-			if (isset(static::$timezones[$str])) {
-				$str = static::$timezones[$str];
+			if (array_key_exists($str, constants::TIMEZONES)) {
+				$str = constants::TIMEZONES[$str];
 			}
 			else {
 				$str = 'UTC';
