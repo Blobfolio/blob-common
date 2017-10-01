@@ -43,10 +43,16 @@ function sister_plugins() {
 
 	// We want to know whether a plugin is on the system, not
 	// necessarily whether it is active.
-	$plugin_base = dirname(BLOBCOMMON_ROOT) . '/';
+	$plugin_base = trailingslashit(WP_PLUGIN_DIR);
+	$mu_base = defined('WPMU_PLUGIN_DIR') ? trailingslashit(WPMU_PLUGIN_DIR) : false;
+
 	$plugins = array();
 	foreach ($response->plugins as $p) {
-		if (('blob-common' === $p->slug) || file_exists("{$plugin_base}{$p->slug}")) {
+		if (
+			('blob-common' === $p->slug) ||
+			file_exists("{$plugin_base}{$p->slug}") ||
+			($mu_base && file_exists("{$mu_base}{$p->slug}"))
+		) {
 			continue;
 		}
 
