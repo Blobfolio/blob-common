@@ -15,8 +15,7 @@ class dom {
 	/**
 	 * Load SVG
 	 *
-	 * This creates a DOMDocument object from an SVG
-	 * source.
+	 * This creates a DOMDocument object from an SVG source.
 	 *
 	 * @param string $svg SVG code.
 	 * @return bool|DOMDocument DOM object or false.
@@ -86,8 +85,8 @@ class dom {
 	/**
 	 * Save SVG
 	 *
-	 * Convert a DOMDocument object containing an SVG
-	 * back into a string.
+	 * Convert a DOMDocument object containing an SVG back into a
+	 * string.
 	 *
 	 * @param \DOMDocument $dom DOM object.
 	 * @return string SVG.
@@ -143,9 +142,8 @@ class dom {
 	/**
 	 * Get Nodes By Class
 	 *
-	 * This will return an array of DOMNode objects
-	 * containing the specified class(es). This does
-	 * not use DOMXPath.
+	 * This will return an array of DOMNode objects containing the
+	 * specified class(es). This does not use DOMXPath.
 	 *
 	 * @param mixed $parent DOMDocument, DOMElement, etc.
 	 * @param string|array $class One or more classes.
@@ -198,10 +196,57 @@ class dom {
 	}
 
 	/**
+	 * InnerHTML
+	 *
+	 * Return the "innerHTML" of a DOMNode or DOMElement.
+	 *
+	 * @param mixed $node Node.
+	 * @param bool $xml Use saveXML instead of saveHTML.
+	 * @param int $flags Additional flags (XML only).
+	 * @return string Content.
+	 */
+	public static function innerhtml($node, $xml=false, $flags=null) {
+		if (
+			!is_a($node, 'DOMElement') &&
+			!is_a($node, 'DOMNode')
+		) {
+			return '';
+		}
+
+		$content = '';
+		try {
+			$children = $node->childNodes;
+			if ($children->length) {
+				if ($xml) {
+					foreach ($children as $child) {
+						if ($flags) {
+							$content .= $node->ownerDocument->saveXML($child, $flags);
+						}
+						else {
+							$content .= $node->ownerDocument->saveXML($child);
+						}
+					}
+				}
+				else {
+					foreach ($children as $child) {
+						$content .= $node->ownerDocument->saveHTML($child);
+					}
+				}
+			}
+		} catch (\Throwable $e) {
+			return '';
+		} catch (\Exception $e) {
+			return '';
+		}
+
+		return $content;
+	}
+
+	/**
 	 * Parse Styles
 	 *
-	 * This will convert CSS text (from e.g. a <style> tag)
-	 * into an array broken down by rules and selectors.
+	 * This will convert CSS text (from e.g. a <style> tag) into an
+	 * array broken down by rules and selectors.
 	 *
 	 * @param string $styles Styles.
 	 * @return array Parsed styles.

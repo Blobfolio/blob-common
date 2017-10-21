@@ -1,3 +1,4 @@
 /node_modules/
 /composer.lock
 /blob-common/
+/package-lock.json
