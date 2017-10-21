@@ -58,6 +58,27 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::innerhtml()
+	 *
+	 * @return void Nothing.
+	 */
+	function test_innerhtml() {
+		$str = '<div><span><br/><strong>hello</strong>world</span></div>';
+		$dom = new \DOMDocument('1.0', 'UTF-8');
+		$dom->formatOutput = false;
+		$dom->preserveWhiteSpace = false;
+		$dom->loadHTML($str);
+
+		$div = $dom->getElementsByTagName('div')->item(0);
+		$innerhtml = dom::innerhtml($div);
+
+		$this->assertEquals('<span><br><strong>hello</strong>world</span>', $innerhtml);
+
+		$innerhtml = dom::innerhtml($div, true, LIBXML_NOEMPTYTAG);
+		$this->assertEquals('<span><br></br><strong>hello</strong>world</span>', $innerhtml);
+	}
+
+	/**
 	 * ::parse_css()
 	 *
 	 * @return void Nothing.
