@@ -78,6 +78,7 @@ class image {
 			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
 			if (mb::substr_count($svg, 'data-cleaned="' . $passthrough_key . '"')) {
+				$svg = substr($svg, strpos($svg, '<svg'));
 				if ('DATA_URI' === $output) {
 					return 'data:image/svg+xml;base64,' . base64_encode($svg);
 				}
