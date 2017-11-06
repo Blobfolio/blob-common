@@ -108,6 +108,7 @@ if (
 // Do not include back/next links in meta.
 add_filter('previous_post_rel_link', '__return_false');
 add_filter('next_post_rel_link', '__return_false');
+remove_action('wp_head', 'wlwmanifest_link');
 
 if (!function_exists('common_disable_wp_embed')) {
 	/**
@@ -119,6 +120,7 @@ if (!function_exists('common_disable_wp_embed')) {
 		wp_deregister_script('wp-embed');
 	}
 	add_action('wp', 'common_disable_wp_embed');
+	add_filter('oembed_discovery_links', '__return_false', PHP_INT_MAX);
 }
 
 if (!function_exists('common_disable_checked_to_top')) {
@@ -317,6 +319,7 @@ if (!function_exists('common_disable_wp_emojicons')) {
 
 		// Filter to remove TinyMCE emojis.
 		add_filter('tiny_mce_plugins', 'common_disable_emojicons_tinymce');
+		add_filter('emoji_svg_url', '__return_false', PHP_INT_MAX);
 	}
 	if (defined('WP_DISABLE_EMOJI') && WP_DISABLE_EMOJI) {
 		add_action('init', 'common_disable_wp_emojicons');
