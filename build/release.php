@@ -29,9 +29,11 @@ if (file_exists(RELEASE_BASE)) {
 }
 
 // Rebuild the test phar.
-// @codingStandardsIgnoreStart
-shell_exec('php -d phar.readonly=0 ' . escapeshellarg(BUILD_DIR . 'skel/build-test.php'));
-// @codingStandardsIgnoreEnd
+if (!file_exists(PLUGIN_BASE . 'lib/test.phar')) {
+	// @codingStandardsIgnoreStart
+	shell_exec('php -d phar.readonly=0 ' . escapeshellarg(BUILD_DIR . 'skel/build-test.php'));
+	// @codingStandardsIgnoreEnd
+}
 
 // Copy the latest bin.
 // @codingStandardsIgnoreStart
