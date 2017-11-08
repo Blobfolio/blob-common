@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.3.0",
+  "Version": "7.3.1",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.8",
@@ -15,6 +15,27 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.3.1",
+      "notes": [
+        {
+          "type": "change",
+          "note": "Update test phar construction."
+        },
+        {
+          "type": "change",
+          "note": "Unhook WP-JSON embeds meta."
+        },
+        {
+          "type": "new",
+          "note": "Unhook Windows Media Live manifest."
+        },
+        {
+          "type": "change",
+          "note": "Unhook emoji dns-prefetch when emoji is disabled."
+        }
+      ]
+    },
     {
       "version": "7.3.0",
       "notes": [
