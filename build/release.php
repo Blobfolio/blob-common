@@ -12,6 +12,7 @@
  */
 
 define('BUILD_DIR', dirname(__FILE__) . '/');
+define('BIN_DIR', dirname(BUILD_DIR) . '/bin/');
 define('PLUGIN_BASE', dirname(BUILD_DIR) . '/wp/');
 define('RELEASE_BASE', dirname(BUILD_DIR) . '/blob-common/');
 
@@ -26,6 +27,16 @@ if (file_exists(RELEASE_BASE)) {
 	shell_exec('rm -rf ' . escapeshellarg(RELEASE_BASE));
 	// @codingStandardsIgnoreEnd
 }
+
+// Rebuild the test phar.
+// @codingStandardsIgnoreStart
+shell_exec('php -d phar.readonly=0 ' . escapeshellarg(BUILD_DIR . 'skel/build-test.php'));
+// @codingStandardsIgnoreEnd
+
+// Copy the latest bin.
+// @codingStandardsIgnoreStart
+shell_exec('cp -a ' . escapeshellarg(BIN_DIR . 'blob-common.phar') . ' ' . escapeshellarg(PLUGIN_BASE . 'lib/blob-common.phar'));
+// @codingStandardsIgnoreEnd
 
 // Copy the trunk.
 // @codingStandardsIgnoreStart
@@ -52,6 +63,8 @@ foreach ($tmp as $v) {
 // Directories.
 $tmp = array(
 	'bin',
+	'docs',
+	'img/assets',
 	'node_modules',
 	'tests',
 );
