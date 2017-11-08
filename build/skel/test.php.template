@@ -1,0 +1,18 @@
+<?php
+/**
+ * Test Phar GZ
+ *
+ * This archive can be used to easily test whether or not Phar GZ
+ * support is present.
+ *
+ * @package blobfolio/common
+ * @author	Blobfolio, LLC <hello@blobfolio.com>
+ */
+
+if (!function_exists('blobfolio_phar_test')) {
+	function blobfolio_phar_test() {
+		return true;
+	}
+}
+
+__HALT_COMPILER();
