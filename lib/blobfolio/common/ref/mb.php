@@ -144,7 +144,13 @@ class mb {
 			cast::to_string($str);
 
 			if ($str) {
-				if (function_exists('mb_strtolower') && !mb_check_encoding($str, 'ASCII')) {
+				if (
+					function_exists('mb_strtolower') &&
+					(
+						!function_exists('mb_check_encoding') ||
+						!mb_check_encoding($str, 'ASCII')
+					)
+				) {
 					$str = mb_strtolower($str, 'UTF-8');
 
 					// Replace some extra characters.
@@ -181,7 +187,13 @@ class mb {
 			cast::to_string($str);
 
 			if ($str) {
-				if (function_exists('mb_strtoupper') && !mb_check_encoding($str, 'ASCII')) {
+				if (
+					function_exists('mb_strtoupper') &&
+					(
+						!function_exists('mb_check_encoding') ||
+						!mb_check_encoding($str, 'ASCII')
+					)
+				) {
 					$str = mb_strtoupper($str, 'UTF-8');
 
 					// Replace some extra characters.
@@ -242,7 +254,13 @@ class mb {
 			cast::to_string($str);
 
 			if ($str) {
-				if (function_exists('mb_substr') && !mb_check_encoding($str, 'ASCII')) {
+				if (
+					function_exists('mb_substr') &&
+					(
+						!function_exists('mb_check_encoding') ||
+						!mb_check_encoding($str, 'ASCII')
+					)
+				) {
 					$first = v_mb::substr($str, 0, 1);
 					static::strtoupper($first);
 					$str = $first . v_mb::substr($str, 1, null);

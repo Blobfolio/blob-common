@@ -195,7 +195,13 @@ abstract class cast_base {
 		else {
 			try {
 				$value = (string) $value;
-				if ($value && !mb_check_encoding($value, 'ASCII')) {
+				if (
+					$value &&
+					(
+						!function_exists('mb_check_encoding') ||
+						!mb_check_encoding($value, 'ASCII')
+					)
+				) {
 					sanitize::utf8($value);
 				}
 			} catch (\Throwable $e) {
