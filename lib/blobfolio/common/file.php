@@ -67,6 +67,36 @@ class file {
 	}
 
 	/**
+	 * idn_to_ascii Workaround (PHP 7.2+)
+	 *
+	 * PHP 7.2 deprecates a constant used by the Intl extension, and
+	 * that won't likely change until 7.4. This wrapper will help make
+	 * sure things don't explode in the meantime.
+	 *
+	 * @param string|array $url URL.
+	 * @return string|array URL.
+	 */
+	public static function idn_to_ascii($url) {
+		ref\file::idn_to_ascii($url);
+		return $url;
+	}
+
+	/**
+	 * idn_to_utf8 Workaround (PHP 7.2+)
+	 *
+	 * PHP 7.2 deprecates a constant used by the Intl extension, and
+	 * that won't likely change until 7.4. This wrapper will help make
+	 * sure things don't explode in the meantime.
+	 *
+	 * @param string|array $url URL.
+	 * @return string|array URL.
+	 */
+	public static function idn_to_utf8($url) {
+		ref\file::idn_to_utf8($url);
+		return $url;
+	}
+
+	/**
 	 * Add Leading Slash
 	 *
 	 * @param string $path Path.

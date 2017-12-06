@@ -13,6 +13,74 @@ namespace blobfolio\common\ref;
 class file {
 
 	/**
+	 * idn_to_ascii Workaround (PHP 7.2+)
+	 *
+	 * PHP 7.2 deprecates a constant used by the Intl extension, and
+	 * that won't likely change until 7.4. This wrapper will help make
+	 * sure things don't explode in the meantime.
+	 *
+	 * @param string|array $url URL.
+	 * @return bool True/false.
+	 */
+	public static function idn_to_ascii(&$url) {
+		// The Intl extension has to exist.
+		if (!function_exists('idn_to_ascii')) {
+			return false;
+		}
+
+		// Recurse for arrays.
+		if (is_array($url)) {
+			foreach ($url as $k=>$v) {
+				static::idn_to_ascii($url[$k]);
+			}
+		}
+		else {
+			if (defined('INTL_IDNA_VARIANT_UTS46')) {
+				$url = idn_to_ascii($url, 0, INTL_IDNA_VARIANT_UTS46);
+			}
+			else {
+				$url = idn_to_ascii($url);
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * idn_to_utf8 Workaround (PHP 7.2+)
+	 *
+	 * PHP 7.2 deprecates a constant used by the Intl extension, and
+	 * that won't likely change until 7.4. This wrapper will help make
+	 * sure things don't explode in the meantime.
+	 *
+	 * @param string|array $url URL.
+	 * @return bool True/false.
+	 */
+	public static function idn_to_utf8(&$url) {
+		// The Intl extension has to exist.
+		if (!function_exists('idn_to_utf8')) {
+			return false;
+		}
+
+		// Recurse for arrays.
+		if (is_array($url)) {
+			foreach ($url as $k=>$v) {
+				static::idn_to_utf8($url[$k]);
+			}
+		}
+		else {
+			if (defined('INTL_IDNA_VARIANT_UTS46')) {
+				$url = idn_to_utf8($url, 0, INTL_IDNA_VARIANT_UTS46);
+			}
+			else {
+				$url = idn_to_utf8($url);
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Add Leading Slash
 	 *
 	 * @param string $path Path.

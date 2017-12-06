@@ -68,7 +68,7 @@ class mb {
 				// Fix Unicode.
 				if (function_exists('idn_to_ascii')) {
 					$parts = explode('.', $parts);
-					$parts = array_map('idn_to_ascii', $parts);
+					ref\file::idn_to_ascii($parts);
 					$parts = implode('.', $parts);
 				}
 
@@ -106,7 +106,7 @@ class mb {
 					// Fix Unicode.
 					if (function_exists('idn_to_ascii')) {
 						$parts[$k] = explode('.', $parts[$k]);
-						$parts[$k] = array_map('idn_to_ascii', $parts[$k]);
+						ref\file::idn_to_ascii($parts[$k]);
 						$parts[$k] = implode('.', $parts[$k]);
 					}
 
