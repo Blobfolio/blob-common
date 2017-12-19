@@ -770,6 +770,9 @@ class sanitize {
 			sanitize::quotes($str);
 			sanitize::whitespace($str);
 
+			// Escape slashes, e.g. </script> -> <\/script>.
+			$str = str_replace('/', '\\/', $str);
+
 			if ("'" === $quote) {
 				$str = str_replace("'", "\'", $str);
 			}
