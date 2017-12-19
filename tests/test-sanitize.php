@@ -1127,6 +1127,11 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'"',
 				array('\"Hello\"'),
 			),
+			array(
+				'</script>><script>prompt(1)</script>',
+				"'",
+				'<\/script>><script>prompt(1)<\/script>',
+			),
 		);
 	}
 
