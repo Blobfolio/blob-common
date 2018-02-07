@@ -98,11 +98,11 @@ class SpacetimeTests extends WP_UnitTestCase {
 	 */
 	function test_common_cidr_to_range() {
 		$thing = '50.116.18.174/24';
-		$match = array('min'=>'50.116.18.0', 'max'=>'50.116.19.173');
+		$match = array('min'=>'50.116.18.0', 'max'=>'50.116.18.255');
 		$this->assertEquals($match, common_cidr_to_range($thing));
 
 		$thing = '2600:3c00::f03c:91ff:feae:0ff2/64';
-		$match = array('min'=>'2600:3c00::f03c:91ff:feae:ff2', 'max'=>'2600:3c00::ffff:ffff:ffff:ffff');
+		$match = array('min'=>'2600:3c00::', 'max'=>'2600:3c00::ffff:ffff:ffff:ffff');
 		$this->assertEquals($match, common_cidr_to_range($thing));
 	}
 
