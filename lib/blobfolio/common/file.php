@@ -67,7 +67,7 @@ class file {
 	}
 
 	/**
-	 * idn_to_ascii Workaround (PHP 7.2+)
+	 * Workaround: idn_to_ascii (PHP 7.2+)
 	 *
 	 * PHP 7.2 deprecates a constant used by the Intl extension, and
 	 * that won't likely change until 7.4. This wrapper will help make
@@ -82,7 +82,7 @@ class file {
 	}
 
 	/**
-	 * idn_to_utf8 Workaround (PHP 7.2+)
+	 * Workaround: idn_to_utf8 (PHP 7.2+)
 	 *
 	 * PHP 7.2 deprecates a constant used by the Intl extension, and
 	 * that won't likely change until 7.4. This wrapper will help make
