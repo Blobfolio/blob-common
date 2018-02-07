@@ -1,6 +1,6 @@
 {
   "Name": "Tutan Common",
-  "Version": "7.3.1",
+  "Version": "7.3.2",
   "DownloadURI": "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/release\/blob-common.zip",
   "Requires": "4.7",
   "Tested": "4.8",
@@ -15,6 +15,15 @@
     "https:\/\/raw.githubusercontent.com\/Blobfolio\/blob-common\/master\/wp\/img\/assets\/screenshot-1.png": "Full documentation and examples for all functions."
   },
   "Changelog": [
+    {
+      "version": "7.3.2",
+      "notes": [
+        {
+          "type": "change",
+          "note": "Strip shortcodes from `common_get_excerpt()`."
+        }
+      ]
+    },
     {
       "version": "7.3.1",
       "notes": [
