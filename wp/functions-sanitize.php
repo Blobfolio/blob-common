@@ -163,7 +163,7 @@ if (!function_exists('common_get_excerpt')) {
 		v_mb::strtolower($method);
 
 		return v_format::excerpt(
-			$str,
+			strip_shortcodes($str),
 			array(
 				'unit'=>$method,
 				'suffix'=>$append,
