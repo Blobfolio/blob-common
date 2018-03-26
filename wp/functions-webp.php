@@ -72,7 +72,6 @@ if (!function_exists('common_webp_cleanup')) {
 			return false;
 		}
 		$stub = pathinfo($image);
-		$stub['filename'];
 		$path = $stub['dirname'];
 
 		// Find any matching WebPs.
