@@ -275,26 +275,26 @@ if (!function_exists('common_disable_jquery_migrate')) {
 	 * Enable via wp-config:
 	 * define('WP_DISABLE_JQUERY_MIGRATE', true);
 	 *
-	 * @param array $scripts Enqueued scripts.
 	 * @return void Nothing.
 	 */
-	function common_disable_jquery_migrate(&$scripts) {
-		// Keep migrate for admin and admin-adjacent pages.
-		if (is_admin() || in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'), true)) {
-			return;
-		}
+	function common_disable_jquery_migrate() {
+		// Use the global.
+		global $wp_scripts;
 
-		if (!isset($scripts->registered['jquery'])) {
-			return;
-		}
-
-		if (false !== $index = array_search('jquery-migrate', $scripts->registered['jquery']->deps, true)) {
-			unset($scripts->registered['jquery']->deps[$index]);
-			$scripts->registered['jquery']->deps = array_values($scripts->registered['jquery']->deps);
+		// Only act for non-admin pages, and only if it is actually
+		// enqueued.
+		if (
+			isset($wp_scripts->registered['jquery']->deps) &&
+			!is_admin() &&
+			(false !== ($key = array_search('jquery-migrate', $wp_scripts->registered['jquery']->deps, true)))
+		) {
+			// Compared with other removal methods, this keeps the keys
+			// sequential.
+			array_splice($wp_scripts->registered['jquery']->deps, $key, 1);
 		}
 	}
 	if (defined('WP_DISABLE_JQUERY_MIGRATE') && WP_DISABLE_JQUERY_MIGRATE) {
-		add_action('wp_default_scripts', 'common_disable_jquery_migrate');
+		add_action('wp_print_scripts', 'common_disable_jquery_migrate');
 	}
 }
 
