@@ -241,7 +241,7 @@ if (!function_exists('common_get_url_by_path')) {
 		$from = trailingslashit(ABSPATH);
 		$to = trailingslashit(site_url());
 
-		if (0 === strpos($path, $from)) {
+		if (0 === v_mb::strpos($path, $from)) {
 			return $to . v_mb::substr($path, v_mb::strlen($from));
 		}
 
