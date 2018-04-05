@@ -874,6 +874,11 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Stripe zero-width chars.
+			$str = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $str);
+
+			// Make whitespace consistent.
 			$str = str_replace("\r\n", "\n", $str);
 			$str = str_replace("\r", "\n", $str);
 			$str = preg_replace_callback(
