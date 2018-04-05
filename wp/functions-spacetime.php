@@ -40,10 +40,9 @@ if (!function_exists('common_get_us_states')) {
 		$states = constants::STATES;
 		$other = array('AA', 'AE', 'AP', 'AS', 'FM', 'GU', 'MH', 'MP', 'PW', 'PR', 'VI');
 
-		// Originally all results were returned in uppercase,
-		// but this is a bit limiting. Raw data is now stored
-		// in title case, but can be uppercased as needed for
-		// backward compatibility.
+		// Originally all results were returned in uppercase, but this
+		// is a bit limiting. Raw data is now stored in title case, but
+		// can be uppercased as needed for backward compatibility.
 		if ($uppercase) {
 			$states = array_map('strtoupper', $states);
 		}
@@ -67,10 +66,9 @@ if (!function_exists('common_get_ca_provinces')) {
 	function common_get_ca_provinces($uppercase=true) {
 		$provinces = constants::PROVINCES;
 
-		// Originally all results were returned in uppercase,
-		// but this is a bit limiting. Raw data is now stored
-		// in title case, but can be uppercased as needed for
-		// backward compatibility.
+		// Originally all results were returned in uppercase, but this
+		// is a bit limiting. Raw data is now stored in title case, but
+		// can be uppercased as needed for backward compatibility.
 		if ($uppercase) {
 			$provinces = array_map('strtoupper', $provinces);
 		}
@@ -92,9 +90,9 @@ if (!function_exists('common_get_countries')) {
 			$countries[$k] = $v['name'];
 		}
 
-		// Unlike state/province functions, these have always
-		// been stored in title case. However for the sake of
-		// consistency, an uppercase flag has been added.
+		// Unlike state/province functions, these have always been
+		// stored in title case. However for the sake of consistency,
+		// an uppercase flag has been added.
 		if ($uppercase) {
 			$countries = array_map('strtoupper', $countries);
 		}
@@ -116,8 +114,8 @@ if (!function_exists('common_readfile_chunked')) {
 	/**
 	 * Read File in Chunks
 	 *
-	 * This greatly reduces overhead if serving
-	 * files through a PHP gateway script.
+	 * This greatly reduces overhead if serving files through a PHP
+	 * gateway script.
 	 *
 	 * @param string $file Path.
 	 * @param bool $retbytes Return bytes served like `readfile()`.
@@ -177,8 +175,7 @@ if (!function_exists('common_cidr_to_range')) {
 	/**
 	 * CIDR to IP Range
 	 *
-	 * Find the minimum and maximum IPs in a
-	 * given CIDR range.
+	 * Find the minimum and maximum IPs in a given CIDR range.
 	 *
 	 * @param string $cidr CIDR.
 	 * @return array|bool Range or false.
@@ -196,21 +193,59 @@ if (!function_exists('common_cidr_to_range')) {
 // Paths & URLs
 // ---------------------------------------------------------------------
 
+/**
+ * Get Path/URL Map
+ *
+ * WordPress paths are normally nested in ABSPATH, but can be spread
+ * out. When trying to guess a URL from a path or vice versa, we need to
+ * check all of them.
+ *
+ * @return array Map.
+ */
+function _common_get_path_map() {
+	static $paths;
+
+	if (!is_array($paths)) {
+		$paths = array();
+
+		// Plugin paths.
+		if (defined('WP_PLUGIN_DIR') && defined('WP_PLUGIN_URL')) {
+			$paths[trailingslashit(WP_PLUGIN_DIR)] = trailingslashit(WP_PLUGIN_URL);
+		}
+
+		// Uploads.
+		$upload = wp_upload_dir();
+		$paths[trailingslashit($upload['basedir'])] = trailingslashit($upload['baseurl']);
+
+		// Content paths.
+		if (defined('WP_CONTENT_DIR') && defined('WP_CONTENT_URL')) {
+			$paths[trailingslashit(WP_CONTENT_DIR)] = trailingslashit(WP_CONTENT_URL);
+		}
+
+		// There's always abspath.
+		$paths[trailingslashit(ABSPATH)] = trailingslashit(site_url());
+	}
+
+	return $paths;
+}
+
+
 if (!function_exists('common_get_path_by_url')) {
 	/**
 	 * Get File Path From URL
 	 *
-	 * This will convert a WordPress URL into a
-	 * file path.
+	 * This will convert a WordPress URL into a file path.
 	 *
 	 * @param string $url URL.
 	 * @return string|bool Path or false.
 	 */
 	function common_get_path_by_url($url) {
-		$from = v_mb::strtolower(trailingslashit(site_url()));
-		$to = trailingslashit(ABSPATH);
+		r_sanitize::url($url);
+		if (!$url) {
+			return false;
+		}
 
-		// Query strings and hashes aren't part of files.
+		// Strip query strings and hashes.
 		if (false !== ($match = v_mb::strpos($url, '?'))) {
 			$url = v_mb::substr($url, 0, $match);
 		}
@@ -218,10 +253,18 @@ if (!function_exists('common_get_path_by_url')) {
 			$url = v_mb::substr($url, 0, $match);
 		}
 
-		if (0 === v_mb::strpos($url, $from)) {
-			return $to . v_mb::substr($url, v_mb::strlen($from));
+		// Run through paths and swap if we can.
+		$paths = _common_get_path_map();
+		foreach ($paths as $k=>$v) {
+			// Make the URL RegExable.
+			$v = preg_replace('#^https?://#ui', '//', $v);
+			$v = '(https?:)?' . preg_quote($v, '#');
+			if ($url !== ($result = preg_replace("#^{$v}#ui", $k, $url))) {
+				return $result;
+			}
 		}
 
+		// No match.
 		return false;
 	}
 }
@@ -230,19 +273,21 @@ if (!function_exists('common_get_url_by_path')) {
 	/**
 	 * Get URL File Path
 	 *
-	 * This will convert a WordPress file path
-	 * into a URL.
+	 * This will convert a WordPress file path into a URL.
 	 *
 	 * @param string $path Path.
 	 * @return string|bool URL or false.
 	 */
 	function common_get_url_by_path($path) {
 		r_file::unixslash($path);
-		$from = trailingslashit(ABSPATH);
-		$to = trailingslashit(site_url());
 
-		if (0 === v_mb::strpos($path, $from)) {
-			return $to . v_mb::substr($path, v_mb::strlen($from));
+		// Run through paths and swap if we can.
+		$paths = _common_get_path_map();
+		foreach ($paths as $k=>$v) {
+			$k = preg_quote($k, '#');
+			if ($path !== ($result = preg_replace("#^{$k}#ui", $v, $path))) {
+				return $result;
+			}
 		}
 
 		return false;
@@ -305,8 +350,8 @@ if (!function_exists('common_redirect')) {
 	/**
 	 * Redirect Wrapper
 	 *
-	 * Will issue redirect headers or print Javascript
-	 * if headers have already been sent.
+	 * Will issue redirect headers or print Javascript if headers have
+	 * already been sent.
 	 *
 	 * @param string $url URL.
 	 * @param bool $offsite Allow off-site redirects.
@@ -329,8 +374,8 @@ if (!function_exists('common_get_site_hostname')) {
 	/**
 	 * Get Site Hostname
 	 *
-	 * This returns the hostname portion of site_url(),
-	 * minus any leading www.
+	 * This returns the hostname portion of site_url(), minus any
+	 * leading www.
 	 *
 	 * @return string Hostname.
 	 */
@@ -343,8 +388,7 @@ if (!function_exists('common_upload_path')) {
 	/**
 	 * Upload Path
 	 *
-	 * This works like `site_url()` but for
-	 * the uploads directory.
+	 * This works like `site_url()` but for the uploads directory.
 	 *
 	 * @param string $subpath Subpath.
 	 * @param bool $url Return a URL (instead of a path).
@@ -366,8 +410,7 @@ if (!function_exists('common_theme_path')) {
 	/**
 	 * Theme Path
 	 *
-	 * This works like `site_url()` but for
-	 * the theme directory.
+	 * This works like `site_url()` but for the theme directory.
 	 *
 	 * @param string $subpath Subpath.
 	 * @param bool $url Return a URL (instead of a path).
