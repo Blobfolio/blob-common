@@ -178,4 +178,28 @@ class SpacetimeTests extends WP_UnitTestCase {
 		$transformed = common_to_blogtime($transformed, $othertime);
 		$this->assertEquals($date, $transformed);
 	}
+
+	/**
+	 * Common Get Path By URL
+	 *
+	 * @return void Nothing.
+	 */
+	function test_common_get_path_by_url() {
+		$thing = site_url('tmp.php');
+		$result = common_get_path_by_url($thing);
+		$this->assertNotEquals(false, $result);
+		$this->assertEquals(0, strpos($thing, ABSPATH));
+	}
+
+	/**
+	 * Common Get URL By PATH
+	 *
+	 * @return void Nothing.
+	 */
+	function test_common_get_url_by_path() {
+		$thing = trailingslashit(ABSPATH) . 'tmp.php';
+		$result = common_get_url_by_path($thing);
+		$this->assertNotEquals(false, $result);
+		$this->assertEquals(0, strpos($thing, site_url()));
+	}
 }
