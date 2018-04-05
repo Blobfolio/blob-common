@@ -1216,6 +1216,14 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				array("\t ålén\n  ☺\0"),
 				array("\t ålén\n  ☺"),
 			),
+			array(
+				// This starter text has some zero-width characters
+				// buried in it. Depending on the code viewer, that
+				// might not be obvious.
+				"Confidential Announcement: ‌﻿​﻿‌﻿​﻿​﻿‌﻿​﻿‌﻿‍﻿‌﻿​﻿​﻿‌﻿‌﻿​﻿‌﻿​﻿‍﻿‌﻿​﻿​﻿​﻿‌﻿‌﻿​﻿‌﻿‍﻿‌﻿​﻿​﻿‌﻿​﻿​﻿​﻿​This is some confidential text that you really shouldn't be sharing anywhere else.",
+				// This one is clean.
+				"Confidential Announcement: This is some confidential text that you really shouldn't be sharing anywhere else.",
+			),
 		);
 	}
 
