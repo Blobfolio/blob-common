@@ -259,7 +259,7 @@ if (!function_exists('common_get_path_by_url')) {
 			// Make the URL RegExable.
 			$v = preg_replace('#^https?://#ui', '//', $v);
 			$v = '(https?:)?' . preg_quote($v, '#');
-			if ($url !== ($result = preg_replace("#^{$v}#ui", $k, $url))) {
+			if (($result = preg_replace("#^{$v}#ui", $k, $url)) !== $url) {
 				return $result;
 			}
 		}
@@ -285,7 +285,7 @@ if (!function_exists('common_get_url_by_path')) {
 		$paths = _common_get_path_map();
 		foreach ($paths as $k=>$v) {
 			$k = preg_quote($k, '#');
-			if ($path !== ($result = preg_replace("#^{$k}#ui", $v, $path))) {
+			if (($result = preg_replace("#^{$k}#ui", $v, $path)) !== $path) {
 				return $result;
 			}
 		}
