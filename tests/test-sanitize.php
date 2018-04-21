@@ -575,6 +575,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'L3Y-6B1',
 				'L3Y 6B1',
 			),
+			array(
+				'L3Y6B1R',
+				'',
+			),
 		);
 	}
 
