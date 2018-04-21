@@ -36,6 +36,35 @@ if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
 // SVG
 // ---------------------------------------------------------------------
 
+/**
+ * Fix SVG Dimensions
+ *
+ * WordPress' native SRC and SRCSET functions will dutifully fetch an
+ * SVG image, but they can't figure out the dimensions. This filter
+ * tries to fix that.
+ *
+ * @param mixed $image Image.
+ * @param int $attachment_id Attachment ID.
+ * @return mixed Image.
+ */
+function _wp_get_attachment_image_src_svg($image, $attachment_id=0) {
+	// This looks like an SVG.
+	if (
+		$attachment_id &&
+		isset($image[0]) &&
+		preg_match('/\.svg$/i', $image[0]) &&
+		(false !== ($svg = get_attached_file($attachment_id))) &&
+		(false !== ($dimensions = image::svg_dimensions($svg)))
+	) {
+		r_cast::to_int($dimensions);
+		$image[1] = $dimensions['width'];
+		$image[2] = $dimensions['height'];
+	}
+
+	return $image;
+}
+add_filter('wp_get_attachment_image_src', '_wp_get_attachment_image_src_svg', 500, 2);
+
 if (!function_exists('common_get_clean_svg')) {
 	/**
 	 * Clean SVG for Inline Embedding
