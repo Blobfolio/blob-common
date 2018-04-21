@@ -177,7 +177,7 @@ class data {
 	 * @param bool $strict Strict.
 	 * @return mixed Key or false.
 	 */
-	public static function array_isearch($needle, $haystack, $strict=false) {
+	public static function array_isearch($needle, $haystack, $strict=true) {
 		if (!is_array($haystack) || !count($haystack)) {
 			return false;
 		}
@@ -188,7 +188,9 @@ class data {
 
 		ref\cast::to_bool($strict);
 
+		// phpcs:disable
 		return array_search($needle, $haystack, $strict);
+		// phpcs:enable
 	}
 
 	/**
