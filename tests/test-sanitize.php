@@ -49,6 +49,18 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::ca_postal_code()
+	 *
+	 * @dataProvider data_ca_postal_code
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
+	 */
+	function test_ca_postal_code($value, $expected) {
+		$this->assertEquals($expected, sanitize::ca_postal_code($value));
+	}
+
+	/**
 	 * ::cc()
 	 *
 	 * @dataProvider data_cc
@@ -536,6 +548,32 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				array('&nbsp;Björk"&amp;quot; '),
 				array('Björk""'),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::ca_postal_code()
+	 *
+	 * @return array Data.
+	 */
+	function data_ca_postal_code() {
+		return array(
+			array(
+				'f3f3f3',
+				'',
+			),
+			array(
+				'w2w2w2',
+				'',
+			),
+			array(
+				'e3w3w3',
+				'E3W 3W3',
+			),
+			array(
+				'L3Y-6B1',
+				'L3Y 6B1',
 			),
 		);
 	}
