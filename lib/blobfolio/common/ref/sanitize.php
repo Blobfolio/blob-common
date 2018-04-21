@@ -95,7 +95,7 @@ class sanitize {
 
 			// W and Z are not allowed in the first slot, otherwise it
 			// just alternates between letters and numbers.
-			if (!preg_match('/^[A-VXY][\d][A-Z][\d][A-Z][\d]/', $str)) {
+			if (!preg_match('/^[A-VXY][\d][A-Z][\d][A-Z][\d]$/', $str)) {
 				$str = '';
 			}
 			else {
