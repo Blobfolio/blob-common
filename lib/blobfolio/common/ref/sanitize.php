@@ -241,6 +241,26 @@ class sanitize {
 						break;
 					}
 				}
+
+				// Check for a few variations.
+				if (!$found) {
+					$map = array(
+						'BRITAIN'=>'GB',
+						'GREAT BRITAIN'=>'GB',
+						'U. S. A.'=>'US',
+						'U. S. S. R.'=>'RU',
+						'U.S.A.'=>'US',
+						'U.S.S.R.'=>'RU',
+						'UNITED STATES OF AMERICA'=>'US',
+						'UNITED STATES'=>'US',
+						'USSR'=>'RU',
+					);
+					if (isset($map[$str])) {
+						$str = $map[$str];
+						$found = true;
+					}
+				}
+
 				if (!$found) {
 					$str = '';
 				}
