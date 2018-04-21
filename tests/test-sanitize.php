@@ -345,6 +345,18 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::au_state()
+	 *
+	 * @dataProvider data_au_state
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
+	 */
+	function test_au_state($value, $expected) {
+		$this->assertEquals($expected, sanitize::au_state($value));
+	}
+
+	/**
 	 * ::svg()
 	 *
 	 * @dataProvider data_svg
@@ -1297,6 +1309,28 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				array('puerto RICO'),
 				array('PR'),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::au_state()
+	 *
+	 * @return array Data.
+	 */
+	function data_au_state() {
+		return array(
+			array(
+				'Texas',
+				'',
+			),
+			array(
+				'new soUTH wales',
+				'NSW',
+			),
+			array(
+				'QLD',
+				'QLD',
 			),
 		);
 	}
