@@ -1006,15 +1006,15 @@ class constants {
 	);
 
 	const STATES_AU = array(
-		'ACT'=>'Australian Capital Territory',
-		'JBT'=>'Jervis Bay Territory',
 		'NSW'=>'New South Wales',
 		'QLD'=>'Queensland',
 		'SA'=>'South Australia',
-		'NT'=>'Northern Territory',
 		'TAS'=>'Tasmania',
 		'VIC'=>'Victoria',
 		'WA'=>'Western Australia',
+		'ACT'=>'Australian Capital Territory',
+		'JBT'=>'Jervis Bay Territory',
+		'NT'=>'Northern Territory',
 	);
 
 	// Timezones.
