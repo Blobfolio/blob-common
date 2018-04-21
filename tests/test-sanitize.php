@@ -579,6 +579,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'L3Y6B1R',
 				'',
 			),
+			array(
+				array('L3Y6B1R', 'L3Y6B1'),
+				array('', 'L3Y 6B1'),
+			),
 		);
 	}
 
@@ -1377,6 +1381,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'QLD',
 				'QLD',
+			),
+			array(
+				array('QLD', 'New South Wales'),
+				array('QLD', 'NSW'),
 			),
 		);
 	}
