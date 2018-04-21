@@ -983,6 +983,33 @@ class sanitize {
 	}
 
 	/**
+	 * Australian State/Territory
+	 *
+	 * @param string $str State.
+	 * @return string State.
+	 */
+	public static function au_state(&$str='') {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::state($str[$k]);
+			}
+		}
+		else {
+			cast::to_string($str);
+			static::whitespace($str);
+			$str = strtoupper($str);
+
+			if (!array_key_exists($str, constants::STATES_AU)) {
+				if (false === ($str = data::array_isearch($str, constants::STATES_AU, true))) {
+					$str = '';
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * SVG
 	 *
 	 * @param string $str SVG code.

@@ -328,6 +328,17 @@ class sanitize {
 	}
 
 	/**
+	 * Australian State/Territory
+	 *
+	 * @param string $str State.
+	 * @return string State.
+	 */
+	public static function au_state($str='') {
+		ref\sanitize::au_state($str);
+		return $str;
+	}
+
+	/**
 	 * SVG
 	 *
 	 * @param string $str SVG code.
