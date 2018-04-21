@@ -658,6 +658,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'US',
 			),
 			array(
+				'United States of America',
+				'US',
+			),
+			array(
 				'Nobody',
 				'',
 			),
