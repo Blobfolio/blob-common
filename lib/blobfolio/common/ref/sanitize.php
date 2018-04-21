@@ -1044,7 +1044,7 @@ class sanitize {
 	public static function au_state(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
-				static::state($str[$k]);
+				static::au_state($str[$k]);
 			}
 		}
 		else {
