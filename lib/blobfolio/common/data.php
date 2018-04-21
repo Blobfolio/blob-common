@@ -392,7 +392,7 @@ class data {
 	 * @param bool $strict Strict.
 	 * @return bool True/false.
 	 */
-	public static function iin_array($needle, $haystack, $strict=false) {
+	public static function iin_array($needle, $haystack, $strict=true) {
 		return (false !== static::array_isearch($needle, $haystack, $strict));
 	}
 
