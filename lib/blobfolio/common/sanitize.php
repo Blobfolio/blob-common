@@ -42,6 +42,17 @@ class sanitize {
 	}
 
 	/**
+	 * CA Postal Code
+	 *
+	 * @param string $str Postal Code.
+	 * @return string Postal Code.
+	 */
+	public static function ca_postal_code($str='') {
+		ref\sanitize::ca_postal_code($str);
+		return $str;
+	}
+
+	/**
 	 * Credit Card
 	 *
 	 * @param string $ccnum Card number.

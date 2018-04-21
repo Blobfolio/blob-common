@@ -75,6 +75,39 @@ class sanitize {
 	}
 
 	/**
+	 * CA Postal Code
+	 *
+	 * @param string $str Postal Code.
+	 * @return string Postal Code.
+	 */
+	public static function ca_postal_code(&$str='') {
+		if (is_array($str)) {
+			foreach ($str as $k=>$v) {
+				static::ca_postal_code($str[$k]);
+			}
+		}
+		else {
+			cast::to_string($str);
+			mb::strtoupper($str);
+
+			// Alphanumeric, minus D, F, I, O, Q or U.
+			$str = preg_replace('/[^A-CEGHJ-NPR-TV-Z\d]/', '', $str);
+
+			// W and Z are not allowed in the first slot, otherwise it
+			// just alternates between letters and numbers.
+			if (!preg_match('/^[A-VXY][\d][A-Z][\d][A-Z][\d]/', $str)) {
+				$str = '';
+			}
+			else {
+				// If it looks good, add a space in the middle.
+				$str = substr($str, 0, 3) . ' ' . substr($str, -3);
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Credit Card
 	 *
 	 * @param string $ccnum Card number.
@@ -1576,7 +1609,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($zip5);
+			cast::to_string($str);
 			$str = preg_replace('/[^\d]/', '', $str);
 
 			if (!isset($str[4])) {
