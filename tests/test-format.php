@@ -107,6 +107,19 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::fraction()
+	 *
+	 * @dataProvider data_fraction
+	 *
+	 * @param mixed $num Number.
+	 * @param int $tolerance Tolerance.
+	 * @param mixed $expected Expected.
+	 */
+	function test_fraction($num, $tolerance, $expected) {
+		$this->assertSame($expected, format::fraction($num, $tolerance));
+	}
+
+	/**
 	 * ::inflect()
 	 *
 	 * @dataProvider data_inflect
@@ -509,6 +522,56 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				array(1.234, '4.567'),
 				2,
 				array(1.23, 4.56),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::fraction()
+	 *
+	 * @return array Data.
+	 */
+	function data_fraction() {
+		return array(
+			array(
+				0.5,
+				0.0001,
+				'1/2',
+			),
+			array(
+				1.5,
+				0.0001,
+				'3/2',
+			),
+			array(
+				0.33,
+				0.0001,
+				'33/100',
+			),
+			array(
+				0.33,
+				0.1,
+				'1/3',
+			),
+			array(
+				-0.33,
+				0.1,
+				'-1/3',
+			),
+			array(
+				array(0.33, 0.66),
+				0.1,
+				array('1/3', '2/3'),
+			),
+			array(
+				3,
+				0.1,
+				'3',
+			),
+			array(
+				0.714285714,
+				0.0001,
+				'5/7',
 			),
 		);
 	}
