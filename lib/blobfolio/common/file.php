@@ -13,6 +13,78 @@ namespace blobfolio\common;
 class file {
 
 	/**
+	 * Recursive Copy
+	 *
+	 * @param string $from Source.
+	 * @param string $to Destination.
+	 * @return bool True/false.
+	 */
+	public static function copy($from, $to) {
+		ref\file::path($from, true);
+		if (!$from) {
+			return false;
+		}
+
+		ref\file::path($to, false);
+		if (!$to || ($from === $to)) {
+			return false;
+		}
+
+		// Recurse directories.
+		if (is_dir($from)) {
+			ref\file::trailingslash($from);
+			ref\file::trailingslash($to);
+
+			if (!is_dir($to)) {
+				$dir_chmod = (fileperms($from) & 0777 | 0755);
+				if (!static::mkdir($to, $dir_chmod)) {
+					return false;
+				}
+			}
+
+			// Copy all files and directories within.
+			if($handle = opendir($from)) {
+				while (false !== ($file = readdir($handle))) {
+					// Ignore dots.
+					if (('.' === $file) || ('..' === $file)) {
+						continue;
+					}
+
+					// Recurse.
+					static::copy("{$from}{$file}", "{$to}{$file}");
+				}
+				closedir($handle);
+			}
+
+			return true;
+		}
+		// Let PHP handle it.
+		elseif (is_file($from)) {
+			$dir_from = dirname($from);
+			$dir_to = dirname($to);
+
+			// Make the TO directory if it doesn't exist.
+			if (!is_dir($dir_to)) {
+				$dir_chmod = (fileperms($dir_from) & 0777 | 0755);
+				if (!static::mkdir($dir_to, $dir_chmod)) {
+					return false;
+				}
+			}
+
+			// Copy the file.
+			if (!@copy($from, $to)) {
+				return false;
+			}
+			$file_chmod = (fileperms($from) & 0777 | 0644);
+			@chmod($to, $file_chmod);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get Data-URI From File
 	 *
 	 * @param string $path Path.
@@ -50,12 +122,14 @@ class file {
 			}
 
 			// Scan all files in dir.
-			$handle = opendir($path);
-			while (false !== ($entry = readdir($handle))) {
-				// Anything but a dot === not empty.
-				if ('.' !== $entry && '..' !== $entry) {
-					return false;
+			if ($handle = opendir($path)) {
+				while (false !== ($entry = readdir($handle))) {
+					// Anything but a dot === not empty.
+					if ('.' !== $entry && '..' !== $entry) {
+						return false;
+					}
 				}
+				closedir($handle);
 			}
 		} catch (\Throwable $e) {
 			return false;
@@ -108,6 +182,79 @@ class file {
 	}
 
 	/**
+	 * Resursively Make Directory
+	 *
+	 * PHP's mkdir function can be recursive, but the permissions are
+	 * only set correctly on the innermost folder created.
+	 *
+	 * @param string $path Path.
+	 * @param int $chmod CHMOD.
+	 * @return bool True/false.
+	 */
+	public static function mkdir($path='', $chmod=null) {
+		// Figure out a good default CHMOD.
+		if (!$chmod || !is_numeric($chmod)) {
+			$chmod = (fileperms(dirname(__FILE__)) & 0777 | 0755);
+		}
+
+		// Sanitize the path.
+		ref\file::path($path, false);
+		if (!$path || (false !== mb::strpos($path, '://'))) {
+			return false;
+		}
+
+		// We only need to proceed if the path doesn't exist.
+		if (!is_dir($path)) {
+			ref\file::untrailingslash($path);
+
+			// Figure out where we need to begin.
+			$base = dirname($path);
+			while ($base && ('.' !== $base) && !is_dir($base)) {
+				$base = dirname($base);
+			}
+
+			// Make it.
+			if (!@mkdir($path, 0777, true)) {
+				return false;
+			}
+
+			// Fix permissions.
+			if ($path !== $base) {
+				// If we fell deep enough that base became relative,
+				// let's move it back.
+				if (!$base || ('.' === $base)) {
+					$base = dirname(__FILE__);
+				}
+
+				// Base should be inside path. If not, something weird
+				// has happened.
+				if (0 !== mb::strpos($path, $base)) {
+					return true;
+				}
+
+				$path = mb::substr($path, mb::strlen($base));
+				ref\file::unleadingslash($path);
+				$parts = explode('/', $path);
+				$path = $base;
+
+				// Loop through each subdirectory to set the appropriate
+				// permissions.
+				foreach ($parts as $v) {
+					$path .= ('/' === substr($path, -1)) ? $v : "/$v";
+					if (!@chmod($path, $chmod)) {
+						return true;
+					}
+				}
+			}
+			else {
+				@chmod($path, $chmod);
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Fix Path Formatting
 	 *
 	 * @param string $path Path.
@@ -122,8 +269,8 @@ class file {
 	/**
 	 * Read File in Chunks
 	 *
-	 * This greatly reduces overhead if serving
-	 * files through a PHP gateway script.
+	 * This greatly reduces overhead if serving files through a PHP
+	 * gateway script.
 	 *
 	 * @param string $file Path.
 	 * @param bool $retbytes Return bytes served like `readfile()`.
@@ -164,8 +311,8 @@ class file {
 	/**
 	 * Redirect Wrapper
 	 *
-	 * Will issue redirect headers or print Javascript
-	 * if headers have already been sent.
+	 * Will issue redirect headers or print Javascript if headers have
+	 * already been sent.
 	 *
 	 * @param string $to URL.
 	 * @return void Nothing.
@@ -200,23 +347,25 @@ class file {
 			}
 
 			// Scan all files in dir.
-			$handle = opendir($path);
-			while (false !== ($entry = readdir($handle))) {
-				// Anything but a dot === not empty.
-				if (('.' === $entry) || ('..' === $entry)) {
-					continue;
-				}
+			if ($handle = opendir($path)) {
+				while (false !== ($entry = readdir($handle))) {
+					// Anything but a dot === not empty.
+					if (('.' === $entry) || ('..' === $entry)) {
+						continue;
+					}
 
-				$file = "{$path}{$entry}";
+					$file = "{$path}{$entry}";
 
-				// Delete files.
-				if (@is_file($file)) {
-					@unlink($file);
+					// Delete files.
+					if (@is_file($file)) {
+						@unlink($file);
+					}
+					// Recursively delete directories.
+					else {
+						static::rmdir($file);
+					}
 				}
-				// Recursively delete directories.
-				else {
-					static::rmdir($file);
-				}
+				closedir($handle);
 			}
 		} catch (\Throwable $e) {
 			return false;
