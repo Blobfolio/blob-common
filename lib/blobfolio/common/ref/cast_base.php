@@ -12,6 +12,7 @@
 namespace blobfolio\common\ref;
 
 use \blobfolio\common\cast as v_cast;
+use \blobfolio\common\data;
 use \blobfolio\common\constants;
 use \blobfolio\common\mb as v_mb;
 
@@ -61,6 +62,9 @@ abstract class cast_base {
 				else {
 					$value = (bool) $value;
 				}
+			}
+			elseif (is_array($value)) {
+				$value = !!count($value);
 			}
 			else {
 				try {
@@ -117,6 +121,11 @@ abstract class cast_base {
 			}
 		}
 		else {
+			// Flatten single-entry arrays.
+			if (is_array($value) && (1 === count($value))) {
+				$value = data::array_pop_top($value);
+			}
+
 			// Evaluate special cases.
 			if (is_string($value)) {
 				$value = strtolower($value);
@@ -149,6 +158,11 @@ abstract class cast_base {
 			}
 		}
 		else {
+			// Flatten single-entry arrays.
+			if (is_array($value) && (1 === count($value))) {
+				$value = data::array_pop_top($value);
+			}
+
 			if (is_string($value)) {
 				static::to_string($value);
 
@@ -193,6 +207,11 @@ abstract class cast_base {
 			}
 		}
 		else {
+			// Flatten single-entry arrays.
+			if (is_array($value) && (1 === count($value))) {
+				$value = data::array_pop_top($value);
+			}
+
 			try {
 				$value = (string) $value;
 				if (
@@ -232,26 +251,20 @@ abstract class cast_base {
 			case 'string':
 				static::to_string($value, $flatten);
 				break;
+			case 'int':
 			case 'integer':
 				static::to_int($value, $flatten);
 				break;
 			case 'double':
+			case 'float':
 				static::to_float($value, $flatten);
 				break;
+			case 'bool':
 			case 'boolean':
 				static::to_bool($value, $flatten);
 				break;
 			case 'array':
 				static::to_array($value);
-				break;
-			case 'int':
-				static::to_int($value, $flatten);
-				break;
-			case 'float':
-				static::to_float($value, $flatten);
-				break;
-			case 'bool':
-				static::to_bool($value, $flatten);
 				break;
 		}
 
