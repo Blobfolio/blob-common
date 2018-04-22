@@ -405,6 +405,16 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 				true,
 				0.0,
 			),
+			array(
+				array(500),
+				true,
+				500.0,
+			),
+			array(
+				array(500),
+				false,
+				array(500.0),
+			),
 		);
 	}
 
@@ -445,6 +455,16 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 				true,
 				0,
 			),
+			array(
+				array(500),
+				true,
+				500,
+			),
+			array(
+				array(500),
+				false,
+				array(500),
+			),
 		);
 	}
 
@@ -479,6 +499,16 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 				array(1, '2.5', false),
 				true,
 				'',
+			),
+			array(
+				array('Hi Judy'),
+				true,
+				'Hi Judy',
+			),
+			array(
+				array(500),
+				false,
+				array('500'),
 			),
 		);
 	}
