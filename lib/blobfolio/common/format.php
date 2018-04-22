@@ -240,6 +240,22 @@ class format {
 	}
 
 	/**
+	 * Fraction
+	 *
+	 * Convert a decimal to a fraction, e.g. 0.5 to 1/2.
+	 *
+	 * @see {https://www.designedbyaturtle.co.uk/2015/converting-a-decimal-to-a-fraction-in-php/}
+	 *
+	 * @param float $num Number.
+	 * @param float $tolerance Tolerance.
+	 * @return string Fraction.
+	 */
+	public static function fraction($num, $tolerance=0.0001) {
+		ref\format::fraction($num, $tolerance);
+		return $num;
+	}
+
+	/**
 	 * Inflect
 	 *
 	 * Inflect a phrase given a count. `sprintf` formatting is

@@ -215,6 +215,75 @@ class format {
 	}
 
 	/**
+	 * Fraction
+	 *
+	 * Convert a decimal to a fraction, e.g. 0.5 to 1/2.
+	 *
+	 * @see {https://www.designedbyaturtle.co.uk/2015/converting-a-decimal-to-a-fraction-in-php/}
+	 *
+	 * @param float $num Number.
+	 * @param float $tolerance Tolerance.
+	 * @return string Fraction.
+	 */
+	public static function fraction(&$num, $tolerance=0.0001) {
+		if (is_array($num)) {
+			foreach ($num as $k=>$v) {
+				static::fraction($num[$k], $tolerance);
+			}
+		}
+		else {
+			cast::to_float($num, true);
+			cast::to_float($tolerance, true);
+
+			// We need a tolerable tolerance.
+			if ($tolerance <= 0 || $tolerance >= 1) {
+				return '';
+			}
+
+			// We don't have to work very hard to calculate zero.
+			if (0.0 === $num) {
+				return '0';
+			}
+
+			// We'll have to add the negative sign on at the end.
+			$negative = $num < 0;
+			$num = abs($num);
+
+			$numerator = 1;
+			$h2 = $denominator = 0;
+			$k2 = 1;
+			$b = 1 / $num;
+			do {
+				$b = 1 / $b;
+				$a = floor($b);
+				$aux = $numerator;
+				$numerator = $a * $numerator + $h2;
+				$h2 = $aux;
+				$aux = $denominator;
+				$denominator = $a * $denominator + $k2;
+				$k2 = $aux;
+				$b = $b - $a;
+			} while (abs($num - $numerator / $denominator) > $num * $tolerance);
+
+			// If the denominator is one, just return a whole number.
+			if (1.0 === $denominator) {
+				$num = "$numerator";
+			}
+			// Otherwise fractionize it.
+			else {
+				$num = "{$numerator}/{$denominator}";
+			}
+
+			// Add the negative sign back if needed.
+			if ($negative) {
+				$num = "-{$num}";
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * IP to Number
 	 *
 	 * @param string $ip IP.
