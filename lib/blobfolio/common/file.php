@@ -152,7 +152,7 @@ class file {
 	 * @param string $file_algo File hashing algorithm.
 	 * @return string|bool Hash or false.
 	 */
-	public function hash_dir($path, $dir_algo='md5', $file_algo=null) {
+	public static function hash_dir($path, $dir_algo='md5', $file_algo=null) {
 		// We definitely need a valid directory algorithm.
 		if (!$dir_algo || !in_array($dir_algo, hash_algos(), true)) {
 			return false;
