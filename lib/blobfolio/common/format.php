@@ -15,11 +15,10 @@ class format {
 	/**
 	 * Create Index Array
 	 *
-	 * This will convert a {k:v} associative array
-	 * into an indexed array with {key: k, value: v}
-	 * as the values. Useful when exporting sorted
-	 * data to Javascript, which doesn't preserve
-	 * object key ordering.
+	 * This will convert a {k:v} associative array into an indexed array
+	 * with {key: k, value: v} as the values. Useful when exporting
+	 * sorted data to Javascript, which doesn't preserve object key
+	 * ordering.
 	 *
 	 * @param array $arr Array.
 	 * @return array Array.
@@ -44,8 +43,7 @@ class format {
 	/**
 	 * CIDR to IP Range
 	 *
-	 * Find the minimum and maximum IPs in a
-	 * given CIDR range.
+	 * Find the minimum and maximum IPs in a given CIDR range.
 	 *
 	 * @param string $cidr CIDR.
 	 * @return array|bool Range or false.
@@ -172,9 +170,8 @@ class format {
 	/**
 	 * Decode HTML Entities
 	 *
-	 * Decode all HTML entities back into their char
-	 * counterparts, recursively until every last one
-	 * is captured.
+	 * Decode all HTML entities back into their char counterparts,
+	 * recursively until every last one is captured.
 	 *
 	 * @param string $str String.
 	 * @return string HTML.
@@ -245,9 +242,9 @@ class format {
 	/**
 	 * Inflect
 	 *
-	 * Inflect a phrase given a count. `sprintf` formatting
-	 * is supported. If an array is passed as $count, its
-	 * size will be used for inflection.
+	 * Inflect a phrase given a count. `sprintf` formatting is
+	 * supported. If an array is passed as $count, its size will be used
+	 * for inflection.
 	 *
 	 * @param int|array $count Count.
 	 * @param string $single Singular.
@@ -289,8 +286,7 @@ class format {
 	/**
 	 * IP to Subnet
 	 *
-	 * This assumes the standard ranges
-	 * of 24 for IPv4 and 64 for IPv6.
+	 * This assumes the standard ranges of 24 for IPv4 and 64 for IPv6.
 	 *
 	 * @param string $ip IP.
 	 * @return string|bool Subnet or false.
@@ -317,10 +313,9 @@ class format {
 	/**
 	 * JSON Decode
 	 *
-	 * A more robust version of JSON decode that can
-	 * somewhat handle general Javascript objects.
-	 * This always returns objecty things as associative
-	 * arrays.
+	 * A more robust version of JSON decode that can somewhat handle
+	 * general Javascript objects. This always returns objecty things as
+	 * associative arrays.
 	 *
 	 * @param string $str String.
 	 * @return mixed Value.

@@ -25,11 +25,10 @@ class format {
 	/**
 	 * Create Index Array
 	 *
-	 * This will convert a {k:v} associative array
-	 * into an indexed array with {key: k, value: v}
-	 * as the values. Useful when exporting sorted
-	 * data to Javascript, which doesn't preserve
-	 * object key ordering.
+	 * This will convert a {k:v} associative array into an indexed array
+	 * with {key: k, value: v} as the values. Useful when exporting
+	 * sorted data to Javascript, which doesn't preserve object key
+	 * ordering.
 	 *
 	 * @param array $arr Array.
 	 * @return bool True.
@@ -147,9 +146,8 @@ class format {
 	/**
 	 * Decode HTML Entities
 	 *
-	 * Decode all HTML entities back into their char
-	 * counterparts, recursively until every last one
-	 * is captured.
+	 * Decode all HTML entities back into their char counterparts,
+	 * recursively until every last one is captured.
 	 *
 	 * @param string $str String.
 	 * @return bool True.
@@ -270,8 +268,7 @@ class format {
 	/**
 	 * IP to Subnet
 	 *
-	 * This assumes the standard ranges
-	 * of 24 for IPv4 and 64 for IPv6.
+	 * This assumes the standard ranges of 24 for IPv4 and 64 for IPv6.
 	 *
 	 * @param string $ip IP.
 	 * @return bool True/false.
@@ -336,10 +333,9 @@ class format {
 	/**
 	 * JSON Decode
 	 *
-	 * A more robust version of JSON decode that can
-	 * somewhat handle general Javascript objects.
-	 * This always returns objecty things as associative
-	 * arrays.
+	 * A more robust version of JSON decode that can somewhat handle
+	 * general Javascript objects. This always returns objecty things as
+	 * associative arrays.
 	 *
 	 * @param string $str String.
 	 * @return bool True.
