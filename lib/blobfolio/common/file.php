@@ -43,7 +43,7 @@ class file {
 			}
 
 			// Copy all files and directories within.
-			if($handle = opendir($from)) {
+			if ($handle = opendir($from)) {
 				while (false !== ($file = readdir($handle))) {
 					// Ignore dots.
 					if (('.' === $file) || ('..' === $file)) {
@@ -125,7 +125,7 @@ class file {
 			if ($handle = opendir($path)) {
 				while (false !== ($entry = readdir($handle))) {
 					// Anything but a dot === not empty.
-					if ('.' !== $entry && '..' !== $entry) {
+					if (('.' !== $entry) && ('..' !== $entry)) {
 						return false;
 					}
 				}
@@ -138,6 +138,44 @@ class file {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Hash Directory
+	 *
+	 * Generate a hash of all child files within a directory. Any
+	 * algorithm supported by hash_file() is supported here, but be
+	 * careful not to combine a slow algorithm with a large directory.
+	 *
+	 * @param string $path Directory.
+	 * @param string $dir_algo Result hashing algorithm.
+	 * @param string $file_algo File hashing algorithm.
+	 * @return string|bool Hash or false.
+	 */
+	public function hash_dir($path, $dir_algo='md5', $file_algo=null) {
+		// We definitely need a valid directory algorithm.
+		if (!$dir_algo || !in_array($dir_algo, hash_algos(), true)) {
+			return false;
+		}
+
+		// If the file algorithm is bad or missing, we can just use the
+		// same method as we are for our result.
+		if (!$file_algo || !in_array($file_algo, hash_algos(), true)) {
+			$file_algo = $dir_algo;
+		}
+
+		$files = static::scandir($path, true, false);
+		if (!count($files)) {
+			return hash($dir_algo, 'empty');
+		}
+
+		// Add up the file hashes.
+		$soup = '';
+		foreach ($files as $v) {
+			$soup .= hash_file($file_algo, $v);
+		}
+
+		return hash($dir_algo, $soup);
 	}
 
 	/**
@@ -378,6 +416,49 @@ class file {
 		}
 
 		return !@file_exists($path);
+	}
+
+	/**
+	 * Recursive Scandir
+	 *
+	 * @param string $path Path.
+	 * @param bool $show_files Include files.
+	 * @param bool $show_dirs Include directories.
+	 * @return array Path(s).
+	 */
+	public static function scandir($path, $show_files=true, $show_dirs=true) {
+		ref\file::path($path, true);
+		if (!$path || !@is_dir($path) || (!$show_files && !$show_dirs)) {
+			return array();
+		}
+
+		$out = array();
+		if ($handle = opendir($path)) {
+			ref\file::trailingslash($path);
+			while (false !== ($file = readdir($handle))) {
+				// Always ignore dots.
+				if (('.' === $file) || ('..' === $file)) {
+					continue;
+				}
+
+				// This is a file.
+				if (@is_file("{$path}{$file}")) {
+					if ($show_files) {
+						$out[] = "{$path}{$file}";
+					}
+				}
+				elseif (@is_dir("{$path}{$file}")) {
+					if ($show_dirs) {
+						$out[] = "{$path}{$file}";
+					}
+					$out = array_merge($out, static::scandir("{$path}{$file}", $show_files, $show_dirs));
+				}
+			}
+			closedir($handle);
+		}
+
+		sort($out);
+		return $out;
 	}
 
 	/**
