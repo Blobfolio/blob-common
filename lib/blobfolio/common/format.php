@@ -13,6 +13,20 @@ namespace blobfolio\common;
 class format {
 
 	/**
+	 * Flatten Multi-Dimensional Array
+	 *
+	 * Like array_values(), but move child values into the single (main)
+	 * level.
+	 *
+	 * @param array $arr Array.
+	 * @return array Values.
+	 */
+	public static function array_flatten($arr) {
+		ref\format::array_flatten($arr);
+		return $arr;
+	}
+
+	/**
 	 * Create Index Array
 	 *
 	 * This will convert a {k:v} associative array into an indexed array

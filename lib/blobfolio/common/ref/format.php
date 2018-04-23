@@ -23,6 +23,36 @@ use \blobfolio\phone\phone;
 class format {
 
 	/**
+	 * Flatten Multi-Dimensional Array
+	 *
+	 * Like array_values(), but move child values into the single (main)
+	 * level.
+	 *
+	 * @param array $arr Array.
+	 * @return array Values.
+	 */
+	public static function array_flatten(&$arr) {
+		$out = array();
+
+		cast::to_array($arr);
+		foreach ($arr as $v) {
+			// Recurse arrays.
+			if (is_array($v)) {
+				static::array_flatten($v);
+				foreach ($v as $v2) {
+					$out[] = $v2;
+				}
+			}
+			else {
+				$out[] = $v;
+			}
+		}
+
+		$arr = $out;
+		return true;
+	}
+
+	/**
 	 * Create Index Array
 	 *
 	 * This will convert a {k:v} associative array into an indexed array

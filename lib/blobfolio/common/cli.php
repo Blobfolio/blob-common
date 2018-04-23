@@ -74,8 +74,8 @@ class cli {
 			ref\cast::to_string($str, true);
 
 			// Deal with codes.
-			$codes = data::array_flatten($v);
-			$codes = array_filter($codes, 'is_numeric');
+			ref\format::array_flatten($v);
+			$codes = array_filter($v, 'is_numeric');
 			if (count($codes)) {
 				ref\cast::to_int($codes);
 				$out .= "\033[" . implode(';', $codes) . "m{$str}\033[0m";
