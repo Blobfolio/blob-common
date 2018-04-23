@@ -449,6 +449,10 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				'\\\\u0075\\u0030\\u0030\\u0063\\u0031',
 				'Á',
 			),
+			array(
+				'Hi\\\\bb There',
+				'Hi\\' . chr(0x08) . 'b There',
+			),
 		);
 	}
 
