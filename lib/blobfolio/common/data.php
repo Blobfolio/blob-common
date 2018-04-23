@@ -56,6 +56,35 @@ class data {
 	}
 
 	/**
+	 * Flatten Multi-Dimensional Array
+	 *
+	 * Like array_values(), but move child values into the single (main)
+	 * level.
+	 *
+	 * @param array $arr Array.
+	 * @return array Values.
+	 */
+	public static function array_flatten($arr) {
+		$out = array();
+
+		ref\cast::to_array($arr);
+		foreach ($arr as $v) {
+			// Recurse arrays.
+			if (is_array($v)) {
+				$v = static::array_flatten($v);
+				foreach ($v as $v2) {
+					$out[] = $v2;
+				}
+			}
+			else {
+				$out[] = $v;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Case-insensitive array_diff()
 	 *
 	 * Note: Type matters.
