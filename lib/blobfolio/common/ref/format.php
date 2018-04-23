@@ -129,14 +129,16 @@ class format {
 		cast::to_string($str, true);
 
 		$last = '';
+		$class = get_called_class();
 		while ($str !== $last) {
 			$last = $str;
 
 			$str = preg_replace_callback(
 				'/\\\u([0-9A-Fa-f]{4})/u',
-				array(get_called_class(), 'decode_entities_hex'),
+				array($class, 'decode_entities_hex'),
 				$str
 			);
+
 			cast::to_string($str, true);
 		}
 
