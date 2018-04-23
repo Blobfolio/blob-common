@@ -20,6 +20,18 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	// --------------------------------------------------------------------
 
 	/**
+	 * ::array_flatten()
+	 *
+	 * @dataProvider data_array_flatten
+	 *
+	 * @param array $arr Array.
+	 * @param array $expected Expected.
+	 */
+	function test_array_flatten($arr, $expected) {
+		$this->assertSame($expected, format::array_flatten($arr));
+	}
+
+	/**
 	 * ::array_to_indexed()
 	 *
 	 * @dataProvider data_array_to_indexed
@@ -306,6 +318,30 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	// --------------------------------------------------------------------
 	// Data
 	// --------------------------------------------------------------------
+
+	/**
+	 * Data for ::array_flatten()
+	 *
+	 * @return array Data.
+	 */
+	function data_array_flatten() {
+		return array(
+			array(
+				array(1, 2, 3, 4),
+				array(1, 2, 3, 4),
+			),
+			array(
+				array(
+					1,
+					array(
+						2,
+						array(3, 4),
+					),
+				),
+				array(1, 2, 3, 4),
+			),
+		);
+	}
 
 	/**
 	 * Data for ::array_to_indexed()
