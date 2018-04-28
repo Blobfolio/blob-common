@@ -32,9 +32,6 @@
     "blobfolio\/blob-phone": "*",
     "blobfolio\/blob-domain": "*"
   },
-  "require-dev": {
-    "phpunit\/phpunit": "5.7.*"
-  },
   "config": {
     "vendor-dir": "lib\/vendor",
     "preferred-install": "dist"
