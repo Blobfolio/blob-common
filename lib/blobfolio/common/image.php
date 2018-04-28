@@ -510,9 +510,11 @@ class image {
 
 		try {
 			// $svg might be a string.
-			if (false === mb::strpos(mb::strtolower($svg), '<svg')) {
-				// Or a file path.
-				if (false === $svg = static::clean_svg($svg, array('fix_dimensions'=>true, 'sanitize'=>false))) {
+			if (false === strpos(strtolower($svg), '<svg')) {
+				if (file_exists($svg)) {
+					$svg = file_get_contents($svg);
+				}
+				else {
 					return false;
 				}
 			}
