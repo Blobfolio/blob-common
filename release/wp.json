@@ -21,6 +21,10 @@
         {
           "type": "improvement",
           "note": "More performant SVG dimension calculations."
+        },
+        {
+          "type": "new",
+          "note": "Short circuit WP's pointless srcset checks on SVGs."
         }
       ]
     },
