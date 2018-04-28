@@ -551,15 +551,8 @@ class image {
 						}
 						break;
 					case 'viewbox':
-						$v[3] = str_replace(',', ' ', $v[3]);
-						$v[3] = explode(' ', $v[3]);
-						foreach ($v[3] as $k2=>$v2) {
-							ref\cast::to_float($v[3], 0.0);
-							ref\sanitize::to_range($v[3][$k2], 0.0);
-						}
-						if (count($v[3]) === 4) {
-							$viewbox = $v[3];
-						}
+						// Defer processing for later.
+						$viewbox = $v[3];
 						break;
 				}
 			}
@@ -571,10 +564,18 @@ class image {
 		}
 
 		// Maybe pull from viewbox?
-		if (is_array($viewbox) && $viewbox[2] && $viewbox[3]) {
-			$out['width'] = $viewbox[2];
-			$out['height'] = $viewbox[3];
-			return $out;
+		if (isset($viewbox)) {
+			$viewbox = trim(str_replace(',', ' ', $viewbox));
+			$viewbox = explode(' ', $viewbox);
+			foreach ($viewbox as $k=>$v) {
+				ref\cast::to_float($viewbox[$k]);
+				ref\sanitize::to_range($viewbox[$k], 0.0);
+			}
+			if (count($viewbox) === 4) {
+				$out['width'] = $viewbox[2];
+				$out['height'] = $viewbox[3];
+				return $out;
+			}
 		}
 
 		return false;
