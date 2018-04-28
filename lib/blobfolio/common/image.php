@@ -508,66 +508,76 @@ class image {
 	public static function svg_dimensions($svg) {
 		ref\cast::to_string($svg, true);
 
-		try {
-			// $svg might be a string.
-			if (false === strpos(strtolower($svg), '<svg')) {
-				if (file_exists($svg)) {
-					$svg = file_get_contents($svg);
-				}
-				else {
+		// Make sure this is SVG-looking.
+		if (false === ($start = strpos(strtolower($svg), '<svg'))) {
+			if (is_file($svg)) {
+				$svg = file_get_contents($svg);
+				if (false === ($start = strpos(strtolower($svg), '<svg'))) {
 					return false;
 				}
 			}
-
-			$dom = dom::load_svg($svg);
-			$svgs = $dom->getElementsByTagName('svg');
-			if (!$svgs->length) {
+			else {
 				return false;
 			}
+		}
 
-			$svg = $svgs->item(0);
-
-			$width = $svg->hasAttribute('width') ? $svg->getAttribute('width') : null;
-			$height = $svg->hasAttribute('height') ? $svg->getAttribute('height') : null;
-			$vb = $svg->hasAttribute('viewBox') ? $svg->getAttribute('viewBox') : null;
-
-			// Make sure width and height are numbers.
-			if (!is_numeric($width) && !preg_match('/^[\d\.]+%$/', $width)) {
-				ref\cast::to_float($width);
-				if ($width <= 0) {
-					$width = null;
-				}
-			}
-			if (!is_numeric($height) && !preg_match('/^[\d\.]+%$/', $height)) {
-				ref\cast::to_float($height);
-				if ($height <= 0) {
-					$height = null;
-				}
-			}
-
-			// Pull width and height from viewbox.
-			if ((is_null($width) || is_null($height)) && !is_null($vb)) {
-				$vb = str_replace(',', ' ', $vb);
-				$vb = explode(' ', $vb);
-				$vb = array_map('trim', $vb);
-				$vb = array_filter($vb, 'strlen');
-				$vb = array_filter($vb, 'is_numeric');
-				if (count($vb) === 4) {
-					$width = cast::to_float($vb[2]);
-					$height = cast::to_float($vb[3]);
-				}
-			}
-
-			if (!is_null($width) && !is_null($height)) {
-				return array('width'=>$width, 'height'=>$height);
-			}
-
-			return false;
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
+		// Chop the code to the first tag.
+		$svg = substr($svg, $start);
+		if (false === ($end = strpos($svg, '>'))) {
 			return false;
 		}
+		$svg = strtolower(substr($svg, 0, $end + 1));
+
+		// Hold our values.
+		$out = array(
+			'width'=>null,
+			'height'=>null,
+		);
+		$viewbox = null;
+
+		// Search for width, height, and viewbox.
+		ref\sanitize::whitespace($svg);
+		preg_match_all('/(height|width|viewbox)\s*=\s*(["\'])((?:(?!\2).)*)\2/', $svg, $match, PREG_SET_ORDER);
+
+		if (is_array($match) && count($match)) {
+			foreach ($match as $v) {
+				switch ($v[1]) {
+					case 'width':
+					case 'height':
+						ref\cast::to_float($v[3]);
+						ref\sanitize::to_range($v[3], 0.0);
+						if ($v[3]) {
+							$out[$v[1]] = $v[3];
+						}
+						break;
+					case 'viewbox':
+						$v[3] = str_replace(',', ' ', $v[3]);
+						$v[3] = explode(' ', $v[3]);
+						foreach ($v[3] as $k2=>$v2) {
+							ref\cast::to_float($v[3], 0.0);
+							ref\sanitize::to_range($v[3][$k2], 0.0);
+						}
+						if (count($v[3]) === 4) {
+							$viewbox = $v[3];
+						}
+						break;
+				}
+			}
+		}
+
+		// If we have a width and height, we're done!
+		if ($out['width'] && $out['height']) {
+			return $out;
+		}
+
+		// Maybe pull from viewbox?
+		if (is_array($viewbox) && $viewbox[2] && $viewbox[3]) {
+			$out['width'] = $viewbox[2];
+			$out['height'] = $viewbox[3];
+			return $out;
+		}
+
+		return false;
 	}
 
 	/**
