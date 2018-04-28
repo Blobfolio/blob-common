@@ -48,22 +48,56 @@ if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
  * @return mixed Image.
  */
 function _wp_get_attachment_image_src_svg($image, $attachment_id=0) {
+	static $_cache;
+	if (is_null($_cache)) {
+		$_cache = array();
+	}
+
+	// Pull from cache.
+	if (isset($_cache[$attachment_id])) {
+		if (isset($_cache[$attachment_id]['width'])) {
+			$image[1] = $_cache[$attachment_id]['width'];
+			$image[2] = $_cache[$attachment_id]['height'];
+		}
+	}
 	// This looks like an SVG.
-	if (
+	elseif (
 		$attachment_id &&
 		isset($image[0]) &&
-		preg_match('/\.svg$/i', $image[0]) &&
+		('.svg' === strtolower(substr($image[0], -4))) &&
 		(false !== ($svg = get_attached_file($attachment_id))) &&
 		(false !== ($dimensions = image::svg_dimensions($svg)))
 	) {
 		r_cast::to_int($dimensions);
+		$_cache[$attachment_id] = $dimensions;
 		$image[1] = $dimensions['width'];
 		$image[2] = $dimensions['height'];
+	}
+	else {
+		$_cache[$attachment_id] = false;
 	}
 
 	return $image;
 }
 add_filter('wp_get_attachment_image_src', '_wp_get_attachment_image_src_svg', 500, 2);
+
+/**
+ * Ignore SVG SrcSet
+ *
+ * @param array $image_meta Image Meta.
+ * @param array $sizes Sizes.
+ * @param string $image_src Image Src.
+ * @return array Image meta.
+ */
+function _wp_calculate_image_srcset_meta_svg($image_meta, $sizes, $image_src) {
+	// Short circuit srcset calculations.
+	if ('.svg' === strtolower(substr($image_src, -4))) {
+		return false;
+	}
+
+	return $image_meta;
+}
+add_filter('wp_calculate_image_srcset_meta', '_wp_calculate_image_srcset_meta_svg', 5, 3);
 
 if (!function_exists('common_get_clean_svg')) {
 	/**
