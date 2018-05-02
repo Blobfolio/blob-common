@@ -1655,7 +1655,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace(&$str='', $newlines=0) {
+	public static function whitespace(&$str='', int $newlines=0) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::whitespace($str[$k], $newlines);
@@ -1663,7 +1663,6 @@ class sanitize {
 		}
 		else {
 			cast::string($str);
-			cast::int($newlines, true);
 			static::to_range($newlines, 0);
 
 			// Lock UTF-8 Casting.
@@ -1704,7 +1703,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace_multiline(&$str='', $newlines=1) {
+	public static function whitespace_multiline(&$str='', int $newlines=1) {
 		static::whitespace($str, $newlines);
 		return true;
 	}

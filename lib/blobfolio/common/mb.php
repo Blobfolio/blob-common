@@ -22,7 +22,7 @@ class mb {
 	 * @param int $component Component.
 	 * @return mixed Array, Component, or Null.
 	 */
-	public static function parse_url($url, $component = -1) {
+	public static function parse_url($url, int $component = -1) {
 		ref\cast::string($url, true);
 
 		// Lock UTF-8 Casting.
@@ -123,7 +123,7 @@ class mb {
 					$parts[$k] = rtrim($parts[$k], '.');
 
 					// Standardize IPv6 formatting.
-					if ('[' === static::substr($parts[$k], 0, 1)) {
+					if (0 === strpos($parts[$k], '[')) {
 						$parts[$k] = str_replace(array('[', ']'), '', $parts[$k]);
 						ref\sanitize::ip($parts[$k], true);
 						$parts[$k] = "[{$parts[$k]}]";
@@ -162,7 +162,7 @@ class mb {
 	 * @param int $pad_type Pad type.
 	 * @return string Padded string.
 	 */
-	public static function str_pad($str='', $pad_length, $pad_string=' ', $pad_type=null) {
+	public static function str_pad($str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
 		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
 		return $str;
 	}
@@ -174,7 +174,7 @@ class mb {
 	 * @param int $split_length Split length.
 	 * @return array|bool Split string or false.
 	 */
-	public static function str_split($str, $split_length=1) {
+	public static function str_split($str, int $split_length=1) {
 		ref\mb::str_split($str, $split_length);
 		return $str;
 	}
@@ -204,7 +204,7 @@ class mb {
 	 * @param int $offset Offset.
 	 * @return int|bool First occurrence or false.
 	 */
-	public static function strpos($haystack, $needle, $offset=0) {
+	public static function strpos($haystack, $needle, int $offset=0) {
 		ref\cast::string($haystack, true);
 		ref\cast::string($needle, true);
 
@@ -235,7 +235,7 @@ class mb {
 	 * @param int $offset Offset.
 	 * @return int|bool Last occurrence or false.
 	 */
-	public static function strrpos($haystack, $needle, $offset=0) {
+	public static function strrpos($haystack, $needle, int $offset=0) {
 		ref\cast::string($haystack, true);
 		ref\cast::string($needle, true);
 
@@ -371,7 +371,7 @@ class mb {
 	 * @param bool $cut Cut.
 	 * @return string String.
 	 */
-	public static function wordwrap($str, $width=75, $break="\n", bool $cut=false) {
+	public static function wordwrap($str, int $width=75, $break="\n", bool $cut=false) {
 		ref\mb::wordwrap($str, $width, $break, $cut);
 		return $str;
 	}

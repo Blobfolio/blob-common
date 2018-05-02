@@ -31,20 +31,20 @@ class file {
 		}
 
 		// Recurse directories.
-		if (is_dir($from)) {
+		if (@is_dir($from)) {
 			ref\file::trailingslash($from);
 			ref\file::trailingslash($to);
 
-			if (!is_dir($to)) {
-				$dir_chmod = (fileperms($from) & 0777 | 0755);
+			if (!@is_dir($to)) {
+				$dir_chmod = (@fileperms($from) & 0777 | 0755);
 				if (!static::mkdir($to, $dir_chmod)) {
 					return false;
 				}
 			}
 
 			// Copy all files and directories within.
-			if ($handle = opendir($from)) {
-				while (false !== ($file = readdir($handle))) {
+			if ($handle = @opendir($from)) {
+				while (false !== ($file = @readdir($handle))) {
 					// Ignore dots.
 					if (('.' === $file) || ('..' === $file)) {
 						continue;
@@ -59,13 +59,13 @@ class file {
 			return true;
 		}
 		// Let PHP handle it.
-		elseif (is_file($from)) {
+		elseif (@is_file($from)) {
 			$dir_from = dirname($from);
 			$dir_to = dirname($to);
 
 			// Make the TO directory if it doesn't exist.
-			if (!is_dir($dir_to)) {
-				$dir_chmod = (fileperms($dir_from) & 0777 | 0755);
+			if (!@is_dir($dir_to)) {
+				$dir_chmod = (@fileperms($dir_from) & 0777 | 0755);
 				if (!static::mkdir($dir_to, $dir_chmod)) {
 					return false;
 				}
@@ -75,7 +75,7 @@ class file {
 			if (!@copy($from, $to)) {
 				return false;
 			}
-			$file_chmod = (fileperms($from) & 0777 | 0644);
+			$file_chmod = (@fileperms($from) & 0777 | 0644);
 			@chmod($to, $file_chmod);
 
 			return true;
@@ -124,9 +124,9 @@ class file {
 
 		// Scan all files in dir.
 		if ($handle = @opendir($path)) {
-			while (false !== ($entry = @readdir($handle))) {
+			while (false !== ($file = @readdir($handle))) {
 				// Anything but a dot === not empty.
-				if (('.' !== $entry) && ('..' !== $entry)) {
+				if (('.' !== $file) && ('..' !== $file)) {
 					return false;
 				}
 			}
@@ -149,7 +149,7 @@ class file {
 	 * @param string $file_algo File hashing algorithm.
 	 * @return string|bool Hash or false.
 	 */
-	public static function hash_dir($path, $dir_algo='md5', $file_algo=null) {
+	public static function hash_dir($path, string $dir_algo='md5', string $file_algo=null) {
 		// We definitely need a valid directory algorithm.
 		if (!$dir_algo || !in_array($dir_algo, hash_algos(), true)) {
 			return false;
@@ -229,7 +229,7 @@ class file {
 	public static function mkdir($path='', $chmod=null) {
 		// Figure out a good default CHMOD.
 		if (!$chmod || !is_numeric($chmod)) {
-			$chmod = (fileperms(dirname(__FILE__)) & 0777 | 0755);
+			$chmod = (fileperms(__DIR__) & 0777 | 0755);
 		}
 
 		// Sanitize the path.
@@ -239,7 +239,7 @@ class file {
 		}
 
 		// We only need to proceed if the path doesn't exist.
-		if (!is_dir($path)) {
+		if (!@is_dir($path)) {
 			ref\file::untrailingslash($path);
 
 			// Figure out where we need to begin.
@@ -258,7 +258,7 @@ class file {
 				// If we fell deep enough that base became relative,
 				// let's move it back.
 				if (!$base || ('.' === $base)) {
-					$base = dirname(__FILE__);
+					$base = __DIR__;
 				}
 
 				// Base should be inside path. If not, something weird
@@ -318,12 +318,12 @@ class file {
 		$cnt = 0;
 		$chunk_size = 1024 * 1024;
 
-		if (false === ($handle = fopen($file, 'rb'))) {
+		if (false === ($handle = @fopen($file, 'rb'))) {
 			return false;
 		}
 
-		while (!feof($handle)) {
-			$buffer = fread($handle, $chunk_size);
+		while (!@feof($handle)) {
+			$buffer = @fread($handle, $chunk_size);
 			echo $buffer;
 			ob_flush();
 			flush();
@@ -423,9 +423,9 @@ class file {
 		}
 
 		$out = array();
-		if ($handle = opendir($path)) {
+		if ($handle = @opendir($path)) {
 			ref\file::trailingslash($path);
-			while (false !== ($file = readdir($handle))) {
+			while (false !== ($file = @readdir($handle))) {
 				// Always ignore dots.
 				if (('.' === $file) || ('..' === $file)) {
 					continue;
@@ -495,7 +495,7 @@ class file {
 		$parsed = data::parse_args($parsed, constants::URL_PARTS);
 
 		// To simplify, unset anything without length.
-		$parsed = array_map('trim', $parsed);
+		ref\mb::trim($parsed);
 		$parsed = array_filter($parsed, 'strlen');
 
 		// We don't really care about validating url integrity,
@@ -529,7 +529,7 @@ class file {
 				$url .= ":{$parsed['port']}";
 			}
 
-			if (isset($parsed['path']) && mb::substr($parsed['path'], 0, 1) !== '/') {
+			if (isset($parsed['path']) && (0 !== strpos($parsed['path'], '/'))) {
 				$url .= '/';
 			}
 		}

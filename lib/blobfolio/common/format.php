@@ -49,7 +49,7 @@ class format {
 	 * @param int $precision Precision.
 	 * @return float Number.
 	 */
-	public static function ceil($num, $precision=0) {
+	public static function ceil($num, int $precision=0) {
 		ref\format::ceil($num, $precision);
 		return $num;
 	}
@@ -247,11 +247,17 @@ class format {
 		constants::$str_lock = true;
 
 		// Character limit.
-		if (('character' === $options['unit']) && mb::strlen($str) > $options['length']) {
+		if (
+			('character' === $options['unit']) &&
+			mb::strlen($str) > $options['length']
+		) {
 			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
 		}
 		// Word limit.
-		elseif (('word' === $options['unit']) && mb::substr_count($str, ' ') > $options['length'] - 1) {
+		elseif (
+			('word' === $options['unit']) &&
+			substr_count($str, ' ') > $options['length'] - 1
+		) {
 			$str = explode(' ', $str);
 			$str = array_slice($str, 0, $options['length']);
 			$str = implode(' ', $str) . $options['suffix'];
@@ -269,7 +275,7 @@ class format {
 	 * @param int $precision Precision.
 	 * @return float Number.
 	 */
-	public static function floor($num, $precision=0) {
+	public static function floor($num, int $precision=0) {
 		ref\format::floor($num, $precision);
 		return $num;
 	}
@@ -282,11 +288,11 @@ class format {
 	 * @see {https://www.designedbyaturtle.co.uk/2015/converting-a-decimal-to-a-fraction-in-php/}
 	 *
 	 * @param float $num Number.
-	 * @param float $tolerance Tolerance.
+	 * @param float $precision Precision.
 	 * @return string Fraction.
 	 */
-	public static function fraction($num, $tolerance=0.0001) {
-		ref\format::fraction($num, $tolerance);
+	public static function fraction($num, float $precision=0.0001) {
+		ref\format::fraction($num, $precision);
 		return $num;
 	}
 
@@ -389,7 +395,7 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links($str, $args=null, $pass=1) {
+	public static function links($str, $args=null, int $pass=1) {
 		ref\format::links($str, $args, $pass);
 		return $str;
 	}
@@ -463,7 +469,7 @@ class format {
 	 * @param int $mode Mode.
 	 * @return float Number.
 	 */
-	public static function round($num, $precision=0, $mode=PHP_ROUND_HALF_UP) {
+	public static function round($num, int $precision=0, int $mode=PHP_ROUND_HALF_UP) {
 		ref\format::round($num, $precision, $mode);
 		return $num;
 	}
@@ -487,7 +493,11 @@ class format {
 		$out = array();
 
 		// Grab headers from data?
-		if (!count($headers) && count($data) && cast::array_type($data[0]) === 'associative') {
+		if (
+			!count($headers) &&
+			count($data) &&
+			(cast::array_type($data[0]) === 'associative')
+		) {
 			$headers = array_keys($data[0]);
 		}
 
@@ -588,7 +598,11 @@ class format {
 		// @codingStandardsIgnoreEnd
 
 		// Grab headers from data?
-		if (!count($headers) && count($data) && cast::array_type($data[0]) === 'associative') {
+		if (
+			!count($headers) &&
+			count($data) &&
+			(cast::array_type($data[0]) === 'associative')
+		) {
 			$headers = array_keys($data[0]);
 		}
 

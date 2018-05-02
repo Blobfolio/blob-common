@@ -214,7 +214,7 @@ class data {
 	 * @param string $other Label for others.
 	 * @return array|bool Array or false.
 	 */
-	public static function array_otherize($arr=null, $length=5, $other='Other') {
+	public static function array_otherize($arr=null, int $length=5, $other='Other') {
 		if ('associative' !== cast::array_type($arr)) {
 			return false;
 		}
@@ -228,7 +228,6 @@ class data {
 
 		arsort($arr);
 
-		ref\cast::int($length, true);
 		ref\sanitize::to_range($length, 1);
 
 		// Nothing to do.
@@ -413,7 +412,7 @@ class data {
 	 * @param string $max Max.
 	 * @return bool True/false.
 	 */
-	public static function ip_in_range($ip, $min, $max=null) {
+	public static function ip_in_range(string $ip, $min, $max=null) {
 		ref\sanitize::ip($ip, true);
 		ref\cast::string($min);
 
@@ -625,10 +624,7 @@ class data {
 	 * @param int $max Max.
 	 * @return int Random number.
 	 */
-	public static function random_int($min=0, $max=1) {
-		ref\cast::int($min, true);
-		ref\cast::int($max, true);
-
+	public static function random_int(int $min=0, int $max=1) {
 		if ($min > $max) {
 			static::switcheroo($min, $max);
 		}
@@ -652,9 +648,7 @@ class data {
 	 * @param array $soup Alternate alphabet.
 	 * @return string Random string.
 	 */
-	public static function random_string($length=10, $soup=null) {
-		ref\cast::int($length, true);
-
+	public static function random_string(int $length=10, $soup=null) {
 		if (is_array($soup) && count($soup)) {
 			ref\cast::string($soup);
 

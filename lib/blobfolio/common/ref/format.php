@@ -86,7 +86,7 @@ class format {
 	 * @param int $precision Precision.
 	 * @return bool True.
 	 */
-	public static function ceil(&$num, $precision=0) {
+	public static function ceil(&$num, int $precision=0) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::ceil($num[$k], $precision);
@@ -94,7 +94,6 @@ class format {
 		}
 		else {
 			cast::float($num, true);
-			cast::int($precision, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -249,7 +248,7 @@ class format {
 	 * @param int $precision Precision.
 	 * @return float Number.
 	 */
-	public static function floor(&$num, $precision=0) {
+	public static function floor(&$num, int $precision=0) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::floor($num[$k], $precision);
@@ -257,7 +256,6 @@ class format {
 		}
 		else {
 			cast::float($num, true);
-			cast::int($precision, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -275,21 +273,20 @@ class format {
 	 * @see {https://www.designedbyaturtle.co.uk/2015/converting-a-decimal-to-a-fraction-in-php/}
 	 *
 	 * @param float $num Number.
-	 * @param float $tolerance Tolerance.
+	 * @param float $precision Precision.
 	 * @return string Fraction.
 	 */
-	public static function fraction(&$num, $tolerance=0.0001) {
+	public static function fraction(&$num, float $precision=0.0001) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
-				static::fraction($num[$k], $tolerance);
+				static::fraction($num[$k], $precision);
 			}
 		}
 		else {
 			cast::float($num, true);
-			cast::float($tolerance, true);
 
 			// We need a tolerable tolerance.
-			if ($tolerance <= 0 || $tolerance >= 1) {
+			if ($precision <= 0 || $precision >= 1) {
 				return '';
 			}
 
@@ -316,7 +313,7 @@ class format {
 				$denominator = $a * $denominator + $k2;
 				$k2 = $aux;
 				$b = $b - $a;
-			} while (abs($num - $numerator / $denominator) > $num * $tolerance);
+			} while (abs($num - $numerator / $denominator) > $num * $precision);
 
 			// If the denominator is one, just return a whole number.
 			if (1.0 === $denominator) {
@@ -689,9 +686,8 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links(&$str, $args=null, $pass=1) {
+	public static function links(&$str, $args=null, int $pass=1) {
 		cast::string($str, true);
-		cast::int($pass, true);
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -1102,7 +1098,7 @@ class format {
 	 * @param int $mode Mode.
 	 * @return bool True.
 	 */
-	public static function round(&$num, $precision=0, $mode=PHP_ROUND_HALF_UP) {
+	public static function round(&$num, int $precision=0, int $mode=PHP_ROUND_HALF_UP) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::round($num[$k], $precision, $mode);
@@ -1110,7 +1106,6 @@ class format {
 		}
 		else {
 			cast::float($num, true);
-			cast::int($precision, true);
 			sanitize::to_range($precision, 0);
 
 			$num = round($num, $precision, $mode);

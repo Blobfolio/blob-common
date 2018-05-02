@@ -24,9 +24,8 @@ class mb {
 	 * @param int $pad_type Pad type.
 	 * @return bool True/false.
 	 */
-	public static function str_pad(&$str='', $pad_length, $pad_string=' ', $pad_type=null) {
+	public static function str_pad(&$str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
 		cast::string($string, true);
-		cast::int($pad_length, true);
 		cast::string($pad_string, true);
 
 		// Lock UTF-8 Casting.
@@ -92,8 +91,7 @@ class mb {
 	 * @param int $split_length Split length.
 	 * @return bool True/false.
 	 */
-	public static function str_split(&$str, $split_length=1) {
-		cast::int($split_length, true);
+	public static function str_split(&$str, int $split_length=1) {
 		if ($split_length < 1) {
 			$str = false;
 			return false;
@@ -368,9 +366,8 @@ class mb {
 	 * @param bool $cut Cut.
 	 * @return bool True.
 	 */
-	public static function wordwrap(&$str, $width=75, $break="\n", bool $cut=false) {
+	public static function wordwrap(&$str, int $width=75, $break="\n", bool $cut=false) {
 		cast::string($str, true);
-		cast::int($width, true);
 		cast::string($break, true);
 
 		// Bad data?

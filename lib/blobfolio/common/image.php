@@ -81,7 +81,7 @@ class image {
 
 			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
-			if (mb::substr_count($svg, 'data-cleaned="' . $passthrough_key . '"')) {
+			if (false !== strpos($svg, 'data-cleaned="' . $passthrough_key . '"')) {
 				$svg = substr($svg, strpos($svg, '<svg'));
 				if ('DATA_URI' === $output) {
 					constants::$str_lock = $lock;
@@ -183,7 +183,6 @@ class image {
 							$vb_new = explode(' ', $vb_value);
 						}
 						$vb_new = array_map('trim', $vb_new);
-						$vb_new = array_filter($vb_new, 'strlen');
 						$vb_new = array_filter($vb_new, 'is_numeric');
 
 						// Remove invalid entries entirely.
@@ -221,7 +220,7 @@ class image {
 								$width = null;
 							}
 
-							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
+							if (is_numeric($height) || preg_match('/^[\d\.]+px$/', $height)) {
 								ref\cast::float($height);
 								if ($height <= 0) {
 									$height = null;
@@ -616,7 +615,7 @@ class image {
 			ref\cast::string($gif2webp, true);
 		}
 
-		if (false === $source = file::path($source, true)) {
+		if (false === ($source = file::path($source, true))) {
 			return false;
 		}
 
@@ -638,7 +637,7 @@ class image {
 		}
 
 		// Already exists?
-		if (!$refresh && file_exists($out)) {
+		if (!$refresh && @file_exists($out)) {
 			return true;
 		}
 
@@ -655,7 +654,7 @@ class image {
 
 		// Try to open the process.
 		try {
-			$tmp_dir = sys_get_temp_dir();
+			$tmp_dir = @sys_get_temp_dir();
 			$error_log = file::trailingslash($tmp_dir) . 'cwebp-error_' . microtime(true) . '.txt';
 
 			// Proc setup.

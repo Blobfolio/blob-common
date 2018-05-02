@@ -436,7 +436,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace($str='', $newlines=0) {
+	public static function whitespace($str='', int $newlines=0) {
 		ref\sanitize::whitespace($str, $newlines);
 		return $str;
 	}
@@ -448,7 +448,7 @@ class sanitize {
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @return string String.
 	 */
-	public static function whitespace_multiline($str='', $newlines=1) {
+	public static function whitespace_multiline($str='', int $newlines=1) {
 		ref\sanitize::whitespace_multiline($str, $newlines);
 		return $str;
 	}
