@@ -1061,11 +1061,11 @@ class format {
 			}
 		}
 		else {
-			cast::string($str);
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
 			constants::$str_lock = true;
 
+			cast::string($str);
 			sanitize::whitespace($str);
 
 			constants::$str_lock = $lock;
@@ -1124,12 +1124,13 @@ class format {
 	 */
 	public static function to_timezone(&$date, $from='UTC', $to='UTC') {
 		cast::string($date, true);
-		cast::string($from, true);
-		cast::string($to, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
 		constants::$str_lock = true;
+
+		cast::string($from, true);
+		cast::string($to, true);
 
 		sanitize::datetime($date);
 		if ('UTC' !== $from) {
@@ -1157,5 +1158,3 @@ class format {
 		return true;
 	}
 }
-
-

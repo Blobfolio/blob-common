@@ -93,6 +93,10 @@ class sanitize {
 			}
 		}
 		else {
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			cast::string($str);
 			$str = strtoupper($str);
 
@@ -108,6 +112,8 @@ class sanitize {
 				// If it looks good, add a space in the middle.
 				$str = substr($str, 0, 3) . ' ' . substr($str, -3);
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -120,12 +126,17 @@ class sanitize {
 	 * @return string|bool Card number or false.
 	 */
 	public static function cc(&$ccnum='') {
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
+
 		// Digits only.
 		cast::string($ccnum, true);
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
 		$str = $ccnum;
 
 		if (!$ccnum) {
+			constants::$str_lock = $lock;
 			$ccnum = false;
 			return false;
 		}
@@ -133,38 +144,43 @@ class sanitize {
 		// Different cards have different length requirements.
 		switch ($ccnum[0]) {
 			// Amex.
-			case 3:
+			case '3':
 				if ((strlen($ccnum) !== 15) || !preg_match('/3[47]/', $ccnum)) {
+					constants::$str_lock = $lock;
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Visa.
-			case 4:
+			case '4':
 				if (!in_array(strlen($ccnum), array(13, 16), true)) {
+					constants::$str_lock = $lock;
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// MC.
-			case 5:
+			case '5':
 				if ((strlen($ccnum) !== 16) || !preg_match('/5[1-5]/', $ccnum)) {
+					constants::$str_lock = $lock;
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Disc.
-			case 6:
+			case '6':
 				if (
 					(strlen($ccnum) !== 16) ||
 					(0 !== strpos($ccnum, '6011'))
 				) {
+					constants::$str_lock = $lock;
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// There is nothing else...
 			default:
+				constants::$str_lock = $lock;
 				$ccnum = false;
 				return false;
 		}
@@ -197,6 +213,7 @@ class sanitize {
 			$ccnum = false;
 		}
 
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -348,12 +365,11 @@ class sanitize {
 				$str = date('Y-m-d H:i:s', $str);
 			}
 
-			cast::string($str);
-
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
 			constants::$str_lock = true;
 
+			cast::string($str);
 			mb::trim($str);
 
 			if (
@@ -440,6 +456,10 @@ class sanitize {
 			}
 		}
 		else {
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			cast::string($str);
 			$str = preg_replace('/[^\d]/', '', $str);
 			$str = str_pad($str, 13, '0', STR_PAD_LEFT);
@@ -451,6 +471,7 @@ class sanitize {
 
 			if (strlen($str) !== 13 || ('0000000000000' === $str)) {
 				$str = '';
+				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -460,6 +481,7 @@ class sanitize {
 			}
 			if (!static::gtin($str)) {
 				$str = '';
+				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -467,6 +489,8 @@ class sanitize {
 			if ($formatted) {
 				$str = preg_replace('/^(\d{1})(\d{6})(\d{6})$/', '$1-$2-$3', $str);
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -651,6 +675,10 @@ class sanitize {
 			}
 		}
 		else {
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			cast::string($str);
 			$str = strtolower($str);
 
@@ -690,6 +718,8 @@ class sanitize {
 			) {
 				$str = '';
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -780,7 +810,14 @@ class sanitize {
 			}
 		}
 		else {
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			cast::string($str);
+
+			constants::$str_lock = $lock;
+
 			$str = strtoupper($str);
 			$str = preg_replace('/[^\dX]/', '', $str);
 
@@ -895,9 +932,15 @@ class sanitize {
 			}
 		}
 		else {
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			cast::string($str);
 			$str = strtolower($str);
 			$str = preg_replace('/[^-+*.a-z0-9\/]/', '', $str);
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1028,11 +1071,11 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
-
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
 			constants::$str_lock = true;
+
+			cast::string($str);
 
 			static::whitespace($str);
 			$str = strtoupper($str);
@@ -1087,11 +1130,11 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
-
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
 			constants::$str_lock = true;
+
+			cast::string($str);
 
 			static::whitespace($str);
 			$str = strtoupper($str);
@@ -1121,11 +1164,11 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str);
-
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
 			constants::$str_lock = true;
+
+			cast::string($str);
 
 			static::whitespace($str);
 			$str = strtoupper($str);
@@ -1418,9 +1461,15 @@ class sanitize {
 			}
 		}
 		else {
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			cast::string($str);
 			$str = preg_replace('/[^\d]/', '', $str);
 			$str = str_pad($str, 12, '0', STR_PAD_LEFT);
+
+			constants::$str_lock = $lock;
 
 			// Trim leading zeroes if it is too long.
 			while (isset($str[12]) && (0 === strpos($str, '0'))) {
@@ -1721,7 +1770,13 @@ class sanitize {
 			}
 		}
 		else {
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			cast::string($str);
+
+			constants::$str_lock = $lock;
 
 			$str = preg_replace('/[^\d]/', '', $str);
 
