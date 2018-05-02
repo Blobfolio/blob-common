@@ -425,19 +425,19 @@ class data {
 		ref\cast::to_string($min);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		// Bad IP.
 		if (!$ip) {
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return false;
 		}
 
 		// Is $min a range?
 		if (false !== strpos($min, '/')) {
 			if (false === ($range = format::cidr_to_range($min))) {
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return false;
 			}
 			$min = $range['min'];
@@ -445,7 +445,7 @@ class data {
 		}
 		// Max is required otherwise.
 		elseif (is_null($max)) {
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return false;
 		}
 
@@ -459,11 +459,11 @@ class data {
 			(false !== $min) &&
 			(false !== $max)
 		) {
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return static::in_range($ip, $min, $max);
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return false;
 	}
 
@@ -555,8 +555,8 @@ class data {
 		ref\cast::to_string($str, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		if (!is_null($min) && !is_int($min)) {
 			ref\cast::to_int($min, true);
@@ -571,16 +571,16 @@ class data {
 		}
 
 		if (!is_null($min) && $min > $length) {
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return false;
 		}
 
 		if (!is_null($max) && $max < $length) {
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return false;
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -674,13 +674,13 @@ class data {
 			ref\cast::to_string($soup);
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			$soup = implode('', $soup);
 			ref\sanitize::printable($soup);				// Strip non-printable.
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 
 			$soup = preg_replace('/\s/u', '', $soup);	// Strip whitespace.
 			$soup = array_unique(mb::str_split($soup));

@@ -66,8 +66,8 @@ class format {
 		ref\cast::to_string($cidr, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
@@ -94,7 +94,7 @@ class format {
 				$range['min'] = long2ip($first);
 				$range['max'] = long2ip($bc);
 			}
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return $range;
 		}
 
@@ -105,7 +105,7 @@ class format {
 
 			if (0 === $cidr[1]) {
 				$range['min'] = $range['max'] = sanitize::ip($cidr[0]);
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return $range;
 			}
 
@@ -142,11 +142,11 @@ class format {
 			$range['min'] = static::number_to_ip($first);
 			$range['max'] = static::number_to_ip($bc);
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return $range;
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return false;
 	}
 
@@ -219,13 +219,13 @@ class format {
 		ref\cast::to_string($str, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		ref\sanitize::whitespace($str);
 		$str = strip_tags($str);
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 
 		$options = data::parse_args($args, constants::EXCERPT);
 		if ($options['length'] < 1) {
@@ -243,8 +243,8 @@ class format {
 		}
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		// Character limit.
 		if (('character' === $options['unit']) && mb::strlen($str) > $options['length']) {
@@ -257,7 +257,7 @@ class format {
 			$str = implode(' ', $str) . $options['suffix'];
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 
 		return $str;
 	}
@@ -498,12 +498,12 @@ class format {
 			}
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			ref\sanitize::csv($headers);
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 
 			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
 		}
@@ -516,12 +516,12 @@ class format {
 				}
 
 				// Lock UTF-8 Casting.
-				$lock = constants::$utf8_cast;
-				constants::$utf8_cast = false;
+				$lock = constants::$str_lock;
+				constants::$str_lock = false;
 
 				ref\sanitize::csv($line);
 
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 
 				$out[] = '"' . implode('"' . $delimiter . '"', $line) . '"';
 			}
@@ -599,8 +599,8 @@ class format {
 			}
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			$out[] = '<Row>';
 			foreach ($headers as $cell) {
@@ -609,7 +609,7 @@ class format {
 			}
 			$out[] = '</Row>';
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 		}
 
 		// Output data.
@@ -633,8 +633,8 @@ class format {
 						ref\cast::to_string($cell, true);
 
 						// Lock UTF-8 Casting.
-						$lock = constants::$utf8_cast;
-						constants::$utf8_cast = false;
+						$lock = constants::$str_lock;
+						constants::$str_lock = false;
 
 						ref\sanitize::whitespace($cell, 2);
 						// Date and time.
@@ -676,7 +676,7 @@ class format {
 							$cell = htmlspecialchars(strip_tags(sanitize::quotes($cell)), ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
 						}
 
-						constants::$utf8_cast = $lock;
+						constants::$str_lock = $lock;
 					}
 
 					$out[] = '<Cell' . (!is_null($format) ? ' ss:StyleID="s' . $format . '"' : '') . '><Data ss:Type="' . $type . '">' . $cell . '</Data></Cell>';

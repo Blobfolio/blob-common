@@ -26,8 +26,8 @@ class mb {
 		ref\cast::to_string($url, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		ref\mb::trim($url);
 
@@ -132,7 +132,7 @@ class mb {
 			}
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return $parts;
 	}
 

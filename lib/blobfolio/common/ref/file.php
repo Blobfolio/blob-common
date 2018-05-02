@@ -98,13 +98,13 @@ class file {
 			cast::to_string($path);
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			static::unleadingslash($path);
 			$path = "/$path";
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -127,14 +127,14 @@ class file {
 			cast::to_string($path);
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.
 			if (preg_match('/^(https?|ftps?|sftp)/iu', $path)) {
 				sanitize::url($path);
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return true;
 			}
 
@@ -157,7 +157,7 @@ class file {
 
 			if ($validate && false === $path) {
 				$path = false;
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return false;
 			}
 			elseif (false === $path) {
@@ -189,7 +189,7 @@ class file {
 				$path = $original;
 			}
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -211,13 +211,13 @@ class file {
 			cast::to_string($path);
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			static::untrailingslash($path);
 			$path .= '/';
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -261,13 +261,13 @@ class file {
 			cast::to_string($path);
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			static::unixslash($path);
 			$path = ltrim($path, '/');
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -289,13 +289,13 @@ class file {
 			cast::to_string($path);
 
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			static::unixslash($path);
 			$path = rtrim($path, '/');
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 		}
 
 		return true;

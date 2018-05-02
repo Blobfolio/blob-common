@@ -14,7 +14,7 @@ class constants {
 
 	// This isn't constant so much as global, but here's as good a place
 	// as any.
-	public static $utf8_cast = true;
+	public static $str_lock = true;
 
 	// -------------------------------------------------
 	// Character Sets.

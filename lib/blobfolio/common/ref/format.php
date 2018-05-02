@@ -113,15 +113,15 @@ class format {
 	 */
 	public static function decode_js_entities(&$str='') {
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = true;
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
 
 		cast::to_string($str, true);
 
 		static::decode_unicode_entities($str);
 		static::decode_escape_entities($str);
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -135,8 +135,8 @@ class format {
 	 */
 	public static function decode_escape_entities(&$str='') {
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = true;
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
 
 		cast::to_string($str, true);
 
@@ -153,7 +153,7 @@ class format {
 			$str
 		);
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 
 		return true;
 	}
@@ -168,8 +168,8 @@ class format {
 	 */
 	public static function decode_unicode_entities(&$str='') {
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = true;
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
 
 		cast::to_string($str, true);
 
@@ -187,7 +187,7 @@ class format {
 			cast::to_string($str, true);
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -202,8 +202,8 @@ class format {
 	 */
 	public static function decode_entities(&$str='') {
 		// Force UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = true;
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
 
 		cast::to_string($str, true);
 
@@ -218,7 +218,7 @@ class format {
 			cast::to_string($str, true);
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -466,8 +466,8 @@ class format {
 		cast::to_string($str, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		// Remove comments.
 		$str = preg_replace(
@@ -488,7 +488,7 @@ class format {
 		// Is it empty?
 		if (!$str || ("''" === $str) || ('""' === $str)) {
 			$str = '';
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return true;
 		}
 
@@ -496,7 +496,7 @@ class format {
 		$tmp = json_decode($str, true);
 		if (!is_null($tmp)) {
 			$str = $tmp;
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return true;
 		}
 
@@ -504,13 +504,13 @@ class format {
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
 			cast::to_bool($str);
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return true;
 		}
 		// Null.
 		elseif ('null' === $lower) {
 			$str = null;
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return true;
 		}
 		// Number.
@@ -521,20 +521,20 @@ class format {
 			else {
 				$str = (int) $lower;
 			}
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return true;
 		}
 		// String.
 		elseif (preg_match('/^("|\')(.+)(\1)$/s', $str, $match) && $match[1] === $match[3]) {
 			$str = $match[2];
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			static::decode_js_entities($str);
 			return true;
 		}
 		// Bail if we don't have an object at this point.
 		elseif (!preg_match('/^\[.*\]$/s', $str) && !preg_match('/^\{.*\}$/s', $str)) {
 			$str = null;
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return false;
 		}
 
@@ -673,7 +673,7 @@ class format {
 		}// End each char.
 
 		$str = $out;
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -918,8 +918,8 @@ class format {
 				cast::to_string($list[$k], true);
 
 				// Lock UTF-8 Casting.
-				$lock = constants::$utf8_cast;
-				constants::$utf8_cast = false;
+				$lock = constants::$str_lock;
+				constants::$str_lock = false;
 
 				if ($args['delimiter']) {
 					$list[$k] = explode($args['delimiter'], $list[$k]);
@@ -936,7 +936,7 @@ class format {
 				// Get rid of empties.
 				$list[$k] = array_filter($list[$k], 'strlen');
 
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 
 				// Casting?
 				if ('string' !== $args['cast']) {
@@ -1045,12 +1045,12 @@ class format {
 		}
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		sanitize::ip($ip, true);
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 
 		return true;
 	}
@@ -1072,12 +1072,12 @@ class format {
 		else {
 			cast::to_string($str);
 			// Lock UTF-8 Casting.
-			$lock = constants::$utf8_cast;
-			constants::$utf8_cast = false;
+			$lock = constants::$str_lock;
+			constants::$str_lock = false;
 
 			sanitize::whitespace($str);
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 
 			if (!$str) {
 				$str = '';
@@ -1138,8 +1138,8 @@ class format {
 		cast::to_string($to, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		sanitize::datetime($date);
 		if ('UTC' !== $from) {
@@ -1149,7 +1149,7 @@ class format {
 			sanitize::timezone($to);
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 
 		if ('0000-00-00 00:00:00' === $date || $from === $to) {
 			return true;

@@ -94,12 +94,12 @@ class file {
 		ref\cast::to_string($path, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		ref\file::path($path, true);
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 
 		try {
 			if (false !== $path && is_file($path)) {

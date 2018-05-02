@@ -24,8 +24,8 @@ class dom {
 		ref\cast::to_string($svg, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		try {
 			// First thing first, lowercase all tags.
@@ -37,7 +37,7 @@ class dom {
 				false === ($start = mb::strpos($svg, '<svg')) ||
 				false === ($end = mb::strrpos($svg, '</svg>'))
 			) {
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return false;
 			}
 			$svg = mb::substr($svg, $start, ($end - $start + 6));
@@ -54,7 +54,7 @@ class dom {
 			$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
 
 			if (false !== strpos($svg, '<?') || false !== strpos($svg, '<%')) {
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -63,7 +63,7 @@ class dom {
 			$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
 
 			if (false !== strpos($svg, '<!--') || false !== strpos($svg, '/*')) {
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -78,11 +78,11 @@ class dom {
 			// Make sure there are still SVG tags.
 			$svgs = $dom->getElementsByTagName('svg');
 			if (!$svgs->length) {
-				constants::$utf8_cast = $lock;
+				constants::$str_lock = $lock;
 				return false;
 			}
 
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return $dom;
 		} catch (\Throwable $e) {
 			$noop;
@@ -90,7 +90,7 @@ class dom {
 			$noop;
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return false;
 	}
 
@@ -267,8 +267,8 @@ class dom {
 		ref\cast::to_string($styles, true);
 
 		// Lock UTF-8 Casting.
-		$lock = constants::$utf8_cast;
-		constants::$utf8_cast = false;
+		$lock = constants::$str_lock;
+		constants::$str_lock = false;
 
 		// Remove comments.
 		while (false !== $start = mb::strpos($styles, '/*')) {
@@ -296,7 +296,7 @@ class dom {
 
 		// Early bail.
 		if (!$styles) {
-			constants::$utf8_cast = $lock;
+			constants::$str_lock = $lock;
 			return array();
 		}
 
@@ -451,7 +451,7 @@ class dom {
 			$out[] = $tmp;
 		}
 
-		constants::$utf8_cast = $lock;
+		constants::$str_lock = $lock;
 		return $out;
 	}
 
