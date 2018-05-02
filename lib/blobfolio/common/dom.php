@@ -307,7 +307,8 @@ class dom {
 				}
 
 				$tmp = explode("\n", $styles[$k]);
-				for ($x = 1; $x < count($tmp); ++$x) {
+				$length = count($tmp);
+				for ($x = 1; $x < $length; ++$x) {
 					$tmp[$x] = str_replace('⠈', "⠈\n", $tmp[$x]);
 				}
 				$styles[$k] = implode("\n", $tmp);

@@ -21,18 +21,25 @@ class data {
 	 */
 	public static function array_compare(&$arr1, &$arr2) {
 		// Obviously bad data.
-		if (!is_array($arr1) || !is_array($arr2) || count($arr1) !== count($arr2)) {
+		if (!is_array($arr1) || !is_array($arr2)) {
+			return false;
+		}
+
+		$length = count($arr1);
+
+		// Length mismatch.
+		if ($length !== count($arr2)) {
 			return false;
 		}
 
 		// Different keys, we don't need to check further.
-		if (count(array_intersect_key($arr1, $arr2)) !== count($arr1)) {
+		if (count(array_intersect_key($arr1, $arr2)) !== $length) {
 			return false;
 		}
 
 		// We will ignore keys for non-associative arrays.
 		if (cast::array_type($arr1) !== 'associative' && cast::array_type($arr2) !== 'associative') {
-			return count(array_intersect($arr1, $arr2)) === count($arr1);
+			return count(array_intersect($arr1, $arr2)) === $length;
 		}
 
 		// Check each item.
@@ -68,7 +75,7 @@ class data {
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
-		if (!is_array($arrays) || count($arrays) < 1) {
+		if (!isset($arrays[1])) {
 			return array();
 		}
 		foreach ($arrays as $a) {
@@ -78,7 +85,8 @@ class data {
 		}
 
 		// Compare the first to each.
-		for ($x = 1; $x < count($arrays); ++$x) {
+		$length = count($arrays);
+		for ($x = 1; $x < $length; ++$x) {
 			$common = array();
 
 			// If the arrays are the same, or the second is empty,
@@ -119,7 +127,7 @@ class data {
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
-		if (!is_array($arrays) || count($arrays) < 2) {
+		if (!isset($arrays[1])) {
 			return array();
 		}
 		foreach ($arrays as $a) {
@@ -129,7 +137,8 @@ class data {
 		}
 
 		// Compare the first to each.
-		for ($x = 1; $x < count($arrays); ++$x) {
+		$length = count($arrays);
+		for ($x = 1; $x < $length; ++$x) {
 			$common = array();
 
 			// Lowercase for comparison.
@@ -275,17 +284,19 @@ class data {
 	 * @return mixed Value. False on error.
 	 */
 	public static function array_pop_rand(array &$arr) {
-		if (!count($arr)) {
+		$length = count($arr);
+
+		if (!$length) {
 			return false;
 		}
 
 		// Nothing random about an array with one thing.
-		if (count($arr) === 1) {
+		if (1 === $length) {
 			return static::array_pop_top($arr);
 		}
 
 		$keys = array_keys($arr);
-		$index = static::random_int(0, count($arr) - 1);
+		$index = static::random_int(0, $length - 1);
 
 		return $arr[$keys[$index]];
 	}
