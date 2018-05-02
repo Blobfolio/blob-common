@@ -630,7 +630,7 @@ class image {
 			$out = "{$info['dirname']}/{$info['filename']}.webp";
 		}
 		// Needs to have the right extension.
-		elseif (!preg_match('/\.webp$/i', $out)) {
+		elseif ('.webp' !== substr(strtolower($out), -5)) {
 			return false;
 		}
 		else {

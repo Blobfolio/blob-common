@@ -663,7 +663,7 @@ class sanitize {
 			}
 
 			// Turn IPv6-ized 4s back into IPv4.
-			if (preg_match('/^::/', $str) && (false !== strpos($str, '.'))) {
+			if ((0 === strpos($str, '::')) && (false !== strpos($str, '.'))) {
 				$str = substr($str, 2);
 			}
 
@@ -676,7 +676,7 @@ class sanitize {
 				// Expand.
 				else {
 					$hex = unpack('H*hex', inet_pton($str));
-					$str = substr(preg_replace('/([A-f0-9]{4})/', '$1:', $hex['hex']), 0, -1);
+					$str = substr(preg_replace('/([a-f\d]{4})/', '$1:', $hex['hex']), 0, -1);
 				}
 			}
 			elseif (!filter_var($str, FILTER_VALIDATE_IP)) {
@@ -1247,7 +1247,7 @@ class sanitize {
 				// Bad attribute: not whitelisted.
 				// data-* is implicitly whitelisted.
 				if (
-					!preg_match('/^data\-/', $attribute_name) &&
+					(0 !== strpos($attribute_name, 'data-')) &&
 					!in_array($attribute_name, $allowed_attributes, true)
 				) {
 					$tag->removeAttribute($attribute->nodeName);
@@ -1291,7 +1291,7 @@ class sanitize {
 				$node_name = v_mb::strtolower($node->nodeName);
 
 				// Not xmlns?
-				if (!preg_match('/^xmlns:/', $node_name)) {
+				if (0 !== strpos($node_name, 'xmlns:')) {
 					dom::remove_namespace($dom, $node->localName);
 					continue;
 				}
