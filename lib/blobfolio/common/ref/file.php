@@ -139,7 +139,7 @@ class file {
 			}
 
 			// Strip leading file:// scheme.
-			if ('file://' === substr($path, 0, '7')) {
+			if (0 === strpos($path, 'file://')) {
 				$path = substr($path, 7);
 			}
 

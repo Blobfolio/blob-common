@@ -157,7 +157,7 @@ class sanitize {
 			case 6:
 				if (
 					(strlen($ccnum) !== 16) ||
-					(intval(substr($ccnum, 0, 4)) !== 6011)
+					(0 !== strpos($ccnum, '6011'))
 				) {
 					$ccnum = false;
 					return false;
@@ -190,7 +190,7 @@ class sanitize {
 			$validate += $dig[$i];
 		}
 
-		if (intval(substr($validate, -1, 1)) === 0) {
+		if (intval(substr($validate, -1)) === 0) {
 			$ccnum = $str;
 		}
 		else {
@@ -504,7 +504,7 @@ class sanitize {
 			$str = str_replace(array("'", '"'), '', $str);
 
 			// Sanitize by part.
-			if (v_mb::substr_count($str, '@') === 1) {
+			if (substr_count($str, '@') === 1) {
 				$parts = explode('@', $str);
 
 				// Sanitize local part.

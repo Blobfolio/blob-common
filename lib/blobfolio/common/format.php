@@ -668,7 +668,7 @@ class format {
 							$type = 'DateTime';
 							$format = '3';
 							$cell = "0000-00-00T$cell";
-							if (mb::substr_count($cell, ':') === 2) {
+							if (substr_count($cell, ':') === 2) {
 								$cell .= ':00';
 							}
 						}

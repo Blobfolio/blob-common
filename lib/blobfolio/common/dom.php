@@ -292,9 +292,9 @@ class dom {
 		// Push all rulesets to their own lines (leaving @media-type ones on their own for now).
 		foreach ($styles as $k=>$v) {
 			// @rule.
-			if (mb::substr($styles[$k], 0, 1) === '@') {
+			if (0 === strpos($styles[$k], '@')) {
 				// Nested, like @media.
-				if (mb::substr_count($styles[$k], '⠈⠈')) {
+				if (false !== strpos($styles[$k], '⠈⠈')) {
 					$styles[$k] = preg_replace('/(⠈{2,})/u', "$1\n", $styles[$k]);
 				}
 				// Not nested, but has properties, like @font-face.
@@ -335,7 +335,10 @@ class dom {
 			$styles[$k] = trim($styles[$k]);
 
 			// Nested rule.
-			if (mb::substr($styles[$k], 0, 1) === '@' && mb::substr_count($styles[$k], '⠈⠈')) {
+			if (
+				(0 === strpos($styles[$k], '@')) &&
+				(false !== strpos($styles[$k], '⠈⠈'))
+			) {
 				$tmp = constants::CSS_NESTED;
 
 				// What kind of @ is this?
@@ -362,7 +365,7 @@ class dom {
 			else {
 				$tmp = constants::CSS_FLAT;
 
-				if (mb::substr($styles[$k], 0, 1) === '@') {
+				if (0 === strpos($styles[$k], '@')) {
 					// What kind of @ is this?
 					preg_match_all('/^@([a-z\-]+)/ui', $styles[$k], $matches);
 					$tmp['@'] = mb::strtolower($matches[1][0]);
@@ -413,7 +416,7 @@ class dom {
 				else {
 					$styles[$k] = str_replace(array('⠁', '⠈'), array('{', '}'), $styles[$k]);
 					$styles[$k] = trim(rtrim(trim($styles[$k]), ';'));
-					if (mb::substr($styles[$k], -1) !== '}') {
+					if (substr($styles[$k], -1) !== '}') {
 						$styles[$k] .= ';';
 					}
 					$tmp['rules'][] = $styles[$k];

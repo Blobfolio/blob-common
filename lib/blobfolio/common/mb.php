@@ -85,7 +85,7 @@ class mb {
 				$parts = rtrim($parts, '.');
 
 				// Standardize IPv6 formatting.
-				if ('[' === static::substr($parts, 0, 1)) {
+				if (0 === strpos($parts, '[')) {
 					$parts = str_replace(array('[', ']'), '', $parts);
 					ref\sanitize::ip($parts, true);
 					$parts = "[{$parts}]";
