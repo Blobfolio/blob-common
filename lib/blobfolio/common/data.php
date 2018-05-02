@@ -424,14 +424,20 @@ class data {
 		ref\sanitize::ip($ip, true);
 		ref\cast::to_string($min);
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		// Bad IP.
 		if (!$ip) {
+			constants::$utf8_cast = $lock;
 			return false;
 		}
 
 		// Is $min a range?
 		if (false !== strpos($min, '/')) {
 			if (false === ($range = format::cidr_to_range($min))) {
+				constants::$utf8_cast = $lock;
 				return false;
 			}
 			$min = $range['min'];
@@ -439,6 +445,7 @@ class data {
 		}
 		// Max is required otherwise.
 		elseif (is_null($max)) {
+			constants::$utf8_cast = $lock;
 			return false;
 		}
 
@@ -452,9 +459,11 @@ class data {
 			(false !== $min) &&
 			(false !== $max)
 		) {
+			constants::$utf8_cast = $lock;
 			return static::in_range($ip, $min, $max);
 		}
 
+		constants::$utf8_cast = $lock;
 		return false;
 	}
 
@@ -544,6 +553,11 @@ class data {
 	 */
 	public static function length_in_range($str, $min=null, $max=null) {
 		ref\cast::to_string($str, true);
+
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		if (!is_null($min) && !is_int($min)) {
 			ref\cast::to_int($min, true);
 		}
@@ -557,13 +571,16 @@ class data {
 		}
 
 		if (!is_null($min) && $min > $length) {
+			constants::$utf8_cast = $lock;
 			return false;
 		}
 
 		if (!is_null($max) && $max < $length) {
+			constants::$utf8_cast = $lock;
 			return false;
 		}
 
+		constants::$utf8_cast = $lock;
 		return true;
 	}
 
@@ -655,8 +672,16 @@ class data {
 
 		if (is_array($soup) && count($soup)) {
 			ref\cast::to_string($soup);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			$soup = implode('', $soup);
 			ref\sanitize::printable($soup);				// Strip non-printable.
+
+			constants::$utf8_cast = $lock;
+
 			$soup = preg_replace('/\s/u', '', $soup);	// Strip whitespace.
 			$soup = array_unique(mb::str_split($soup));
 			$soup = array_values($soup);

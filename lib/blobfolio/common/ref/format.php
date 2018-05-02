@@ -112,11 +112,16 @@ class format {
 	 * @return bool True.
 	 */
 	public static function decode_js_entities(&$str='') {
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = true;
+
 		cast::to_string($str, true);
 
 		static::decode_unicode_entities($str);
 		static::decode_escape_entities($str);
 
+		constants::$utf8_cast = $lock;
 		return true;
 	}
 
@@ -129,6 +134,10 @@ class format {
 	 * @return bool True.
 	 */
 	public static function decode_escape_entities(&$str='') {
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = true;
+
 		cast::to_string($str, true);
 
 		$replacements = array(
@@ -144,6 +153,8 @@ class format {
 			$str
 		);
 
+		constants::$utf8_cast = $lock;
+
 		return true;
 	}
 
@@ -156,6 +167,10 @@ class format {
 	 * @return bool True.
 	 */
 	public static function decode_unicode_entities(&$str='') {
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = true;
+
 		cast::to_string($str, true);
 
 		$last = '';
@@ -172,6 +187,7 @@ class format {
 			cast::to_string($str, true);
 		}
 
+		constants::$utf8_cast = $lock;
 		return true;
 	}
 
@@ -185,6 +201,10 @@ class format {
 	 * @return bool True.
 	 */
 	public static function decode_entities(&$str='') {
+		// Force UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = true;
+
 		cast::to_string($str, true);
 
 		$last = '';
@@ -198,6 +218,7 @@ class format {
 			cast::to_string($str, true);
 		}
 
+		constants::$utf8_cast = $lock;
 		return true;
 	}
 
@@ -444,6 +465,10 @@ class format {
 	public static function json_decode(&$str='') {
 		cast::to_string($str, true);
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		// Remove comments.
 		$str = preg_replace(
 			array(
@@ -463,6 +488,7 @@ class format {
 		// Is it empty?
 		if (!$str || ("''" === $str) || ('""' === $str)) {
 			$str = '';
+			constants::$utf8_cast = $lock;
 			return true;
 		}
 
@@ -470,6 +496,7 @@ class format {
 		$tmp = json_decode($str, true);
 		if (!is_null($tmp)) {
 			$str = $tmp;
+			constants::$utf8_cast = $lock;
 			return true;
 		}
 
@@ -477,11 +504,13 @@ class format {
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
 			cast::to_bool($str);
+			constants::$utf8_cast = $lock;
 			return true;
 		}
 		// Null.
 		elseif ('null' === $lower) {
 			$str = null;
+			constants::$utf8_cast = $lock;
 			return true;
 		}
 		// Number.
@@ -492,17 +521,20 @@ class format {
 			else {
 				$str = (int) $lower;
 			}
+			constants::$utf8_cast = $lock;
 			return true;
 		}
 		// String.
 		elseif (preg_match('/^("|\')(.+)(\1)$/s', $str, $match) && $match[1] === $match[3]) {
 			$str = $match[2];
+			constants::$utf8_cast = $lock;
 			static::decode_js_entities($str);
 			return true;
 		}
 		// Bail if we don't have an object at this point.
 		elseif (!preg_match('/^\[.*\]$/s', $str) && !preg_match('/^\{.*\}$/s', $str)) {
 			$str = null;
+			constants::$utf8_cast = $lock;
 			return false;
 		}
 
@@ -641,6 +673,7 @@ class format {
 		}// End each char.
 
 		$str = $out;
+		constants::$utf8_cast = $lock;
 		return true;
 	}
 
@@ -883,6 +916,11 @@ class format {
 			// Otherwise de-list the line.
 			else {
 				cast::to_string($list[$k], true);
+
+				// Lock UTF-8 Casting.
+				$lock = constants::$utf8_cast;
+				constants::$utf8_cast = false;
+
 				if ($args['delimiter']) {
 					$list[$k] = explode($args['delimiter'], $list[$k]);
 				}
@@ -897,6 +935,8 @@ class format {
 
 				// Get rid of empties.
 				$list[$k] = array_filter($list[$k], 'strlen');
+
+				constants::$utf8_cast = $lock;
 
 				// Casting?
 				if ('string' !== $args['cast']) {
@@ -1004,7 +1044,14 @@ class format {
 			$ip = '0.0.0.0';
 		}
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		sanitize::ip($ip, true);
+
+		constants::$utf8_cast = $lock;
+
 		return true;
 	}
 
@@ -1024,7 +1071,13 @@ class format {
 		}
 		else {
 			cast::to_string($str);
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			sanitize::whitespace($str);
+
+			constants::$utf8_cast = $lock;
 
 			if (!$str) {
 				$str = '';
@@ -1084,6 +1137,10 @@ class format {
 		cast::to_string($from, true);
 		cast::to_string($to, true);
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		sanitize::datetime($date);
 		if ('UTC' !== $from) {
 			sanitize::timezone($from);
@@ -1091,6 +1148,8 @@ class format {
 		if ('UTC' !== $to) {
 			sanitize::timezone($to);
 		}
+
+		constants::$utf8_cast = $lock;
 
 		if ('0000-00-00 00:00:00' === $date || $from === $to) {
 			return true;

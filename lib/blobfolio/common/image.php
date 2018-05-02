@@ -75,17 +75,24 @@ class image {
 				$options['clean_styles'] = true;
 			}
 
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
 			if (mb::substr_count($svg, 'data-cleaned="' . $passthrough_key . '"')) {
 				$svg = substr($svg, strpos($svg, '<svg'));
 				if ('DATA_URI' === $output) {
+					constants::$utf8_cast = $lock;
 					return 'data:image/svg+xml;base64,' . base64_encode($svg);
 				}
 				elseif ('HTML' === $output) {
+					constants::$utf8_cast = $lock;
 					return $svg;
 				}
 				else {
+					constants::$utf8_cast = $lock;
 					return false;
 				}
 			}
@@ -94,6 +101,7 @@ class image {
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!$svg) {
+				constants::$utf8_cast = $lock;
 				return false;
 			}
 
@@ -421,8 +429,11 @@ class image {
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!$svg) {
+				constants::$utf8_cast = $lock;
 				return false;
 			}
+
+			constants::$utf8_cast = $lock;
 
 			// Should we save the clean version?
 			if ($options['save']) {
@@ -451,9 +462,8 @@ class image {
 			elseif ('HTML' === $output) {
 				return $svg;
 			}
-			else {
-				return false;
-			}
+
+			return false;
 		} catch (\Throwable $e) {
 			return false;
 		} catch (\Exception $e) {
@@ -535,8 +545,15 @@ class image {
 		);
 		$viewbox = null;
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		// Search for width, height, and viewbox.
 		ref\sanitize::whitespace($svg);
+
+		constants::$utf8_cast = $lock;
+
 		preg_match_all('/(height|width|viewbox)\s*=\s*(["\'])((?:(?!\2).)*)\2/', $svg, $match, PREG_SET_ORDER);
 
 		if (is_array($match) && count($match)) {

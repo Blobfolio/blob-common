@@ -10,6 +10,8 @@
 
 namespace blobfolio\common\ref;
 
+use \blobfolio\common\constants;
+
 class file {
 
 	/**
@@ -94,8 +96,15 @@ class file {
 		}
 		else {
 			cast::to_string($path);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			static::unleadingslash($path);
 			$path = "/$path";
+
+			constants::$utf8_cast = $lock;
 		}
 
 		return true;
@@ -117,10 +126,15 @@ class file {
 		else {
 			cast::to_string($path);
 
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.
 			if (preg_match('/^(https?|ftps?|sftp)/iu', $path)) {
 				sanitize::url($path);
+				constants::$utf8_cast = $lock;
 				return true;
 			}
 
@@ -143,6 +157,7 @@ class file {
 
 			if ($validate && false === $path) {
 				$path = false;
+				constants::$utf8_cast = $lock;
 				return false;
 			}
 			elseif (false === $path) {
@@ -173,6 +188,8 @@ class file {
 			} catch (\Exception $e) {
 				$path = $original;
 			}
+
+			constants::$utf8_cast = $lock;
 		}
 
 		return true;
@@ -192,8 +209,15 @@ class file {
 		}
 		else {
 			cast::to_string($path);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			static::untrailingslash($path);
 			$path .= '/';
+
+			constants::$utf8_cast = $lock;
 		}
 
 		return true;
@@ -235,8 +259,15 @@ class file {
 		}
 		else {
 			cast::to_string($path);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			static::unixslash($path);
 			$path = ltrim($path, '/');
+
+			constants::$utf8_cast = $lock;
 		}
 
 		return true;
@@ -256,8 +287,15 @@ class file {
 		}
 		else {
 			cast::to_string($path);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			static::unixslash($path);
 			$path = rtrim($path, '/');
+
+			constants::$utf8_cast = $lock;
 		}
 
 		return true;

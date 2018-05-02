@@ -216,6 +216,7 @@ abstract class cast_base {
 				$value = (string) $value;
 				if (
 					$value &&
+					constants::$utf8_cast &&
 					(
 						!function_exists('mb_check_encoding') ||
 						!mb_check_encoding($value, 'ASCII')

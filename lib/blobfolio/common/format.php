@@ -65,6 +65,10 @@ class format {
 	public static function cidr_to_range($cidr) {
 		ref\cast::to_string($cidr, true);
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
 		ref\cast::to_int($cidr[1]);
@@ -90,6 +94,7 @@ class format {
 				$range['min'] = long2ip($first);
 				$range['max'] = long2ip($bc);
 			}
+			constants::$utf8_cast = $lock;
 			return $range;
 		}
 
@@ -100,6 +105,7 @@ class format {
 
 			if (0 === $cidr[1]) {
 				$range['min'] = $range['max'] = sanitize::ip($cidr[0]);
+				constants::$utf8_cast = $lock;
 				return $range;
 			}
 
@@ -136,9 +142,11 @@ class format {
 			$range['min'] = static::number_to_ip($first);
 			$range['max'] = static::number_to_ip($bc);
 
+			constants::$utf8_cast = $lock;
 			return $range;
 		}
 
+		constants::$utf8_cast = $lock;
 		return false;
 	}
 
@@ -209,8 +217,15 @@ class format {
 	 */
 	public static function excerpt($str='', $args=null) {
 		ref\cast::to_string($str, true);
+
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		ref\sanitize::whitespace($str);
 		$str = strip_tags($str);
+
+		constants::$utf8_cast = $lock;
 
 		$options = data::parse_args($args, constants::EXCERPT);
 		if ($options['length'] < 1) {
@@ -227,6 +242,10 @@ class format {
 				break;
 		}
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$utf8_cast;
+		constants::$utf8_cast = false;
+
 		// Character limit.
 		if (('character' === $options['unit']) && mb::strlen($str) > $options['length']) {
 			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
@@ -237,6 +256,8 @@ class format {
 			$str = array_slice($str, 0, $options['length']);
 			$str = implode(' ', $str) . $options['suffix'];
 		}
+
+		constants::$utf8_cast = $lock;
 
 		return $str;
 	}
@@ -291,8 +312,6 @@ class format {
 		else {
 			ref\cast::to_number($count);
 		}
-		ref\sanitize::utf8($single);
-		ref\sanitize::utf8($plural);
 
 		if (1.0 === $count) {
 			return sprintf($single, $count);
@@ -477,7 +496,15 @@ class format {
 			foreach ($headers as $k=>$v) {
 				ref\cast::to_string($headers[$k], true);
 			}
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			ref\sanitize::csv($headers);
+
+			constants::$utf8_cast = $lock;
+
 			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
 		}
 
@@ -487,7 +514,15 @@ class format {
 				foreach ($line as $k=>$v) {
 					ref\cast::to_string($line[$k], true);
 				}
+
+				// Lock UTF-8 Casting.
+				$lock = constants::$utf8_cast;
+				constants::$utf8_cast = false;
+
 				ref\sanitize::csv($line);
+
+				constants::$utf8_cast = $lock;
+
 				$out[] = '"' . implode('"' . $delimiter . '"', $line) . '"';
 			}
 		}
@@ -563,12 +598,18 @@ class format {
 				ref\cast::to_string($headers[$k], true);
 			}
 
+			// Lock UTF-8 Casting.
+			$lock = constants::$utf8_cast;
+			constants::$utf8_cast = false;
+
 			$out[] = '<Row>';
 			foreach ($headers as $cell) {
 				$cell = htmlspecialchars(strip_tags(sanitize::quotes(sanitize::whitespace($cell))), ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
 				$out[] = '<Cell><Data ss:Type="String"><b>' . $cell . '</b></Data></Cell>';
 			}
 			$out[] = '</Row>';
+
+			constants::$utf8_cast = $lock;
 		}
 
 		// Output data.
@@ -590,6 +631,11 @@ class format {
 					}
 					else {
 						ref\cast::to_string($cell, true);
+
+						// Lock UTF-8 Casting.
+						$lock = constants::$utf8_cast;
+						constants::$utf8_cast = false;
+
 						ref\sanitize::whitespace($cell, 2);
 						// Date and time.
 						if (preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {
@@ -629,6 +675,8 @@ class format {
 							$type = 'String';
 							$cell = htmlspecialchars(strip_tags(sanitize::quotes($cell)), ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
 						}
+
+						constants::$utf8_cast = $lock;
 					}
 
 					$out[] = '<Cell' . (!is_null($format) ? ' ss:StyleID="s' . $format . '"' : '') . '><Data ss:Type="' . $type . '">' . $cell . '</Data></Cell>';
