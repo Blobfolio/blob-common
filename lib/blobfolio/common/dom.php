@@ -48,7 +48,7 @@ class dom {
 			$svg = preg_replace('/<\?(.*)\?>/Us', '', $svg);
 			$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
 
-			if (false !== mb::strpos($svg, '<?') || false !== mb::strpos($svg, '<%')) {
+			if (false !== strpos($svg, '<?') || false !== strpos($svg, '<%')) {
 				return false;
 			}
 
@@ -56,7 +56,7 @@ class dom {
 			$svg = preg_replace('/<!--(.*)-->/Us', '', $svg);
 			$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
 
-			if (false !== mb::strpos($svg, '<!--') || false !== mb::strpos($svg, '/*')) {
+			if (false !== strpos($svg, '<!--') || false !== strpos($svg, '/*')) {
 				return false;
 			}
 
@@ -110,7 +110,7 @@ class dom {
 			$svg = preg_replace('/<\?(.*)\?>/Us', '', $svg);
 			$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
 
-			if (false !== mb::strpos($svg, '<?') || false !== mb::strpos($svg, '<%')) {
+			if (false !== strpos($svg, '<?') || false !== strpos($svg, '<%')) {
 				return '';
 			}
 
@@ -118,7 +118,7 @@ class dom {
 			$svg = preg_replace('/<!--(.*)-->/Us', '', $svg);
 			$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
 
-			if (false !== mb::strpos($svg, '<!--') || false !== mb::strpos($svg, '/*')) {
+			if (false !== strpos($svg, '<!--') || false !== strpos($svg, '/*')) {
 				return '';
 			}
 
@@ -309,7 +309,7 @@ class dom {
 					$styles[$k] = preg_replace('/(⠈{2,})/u', "$1\n", $styles[$k]);
 				}
 				// Not nested, but has properties, like @font-face.
-				elseif (false !== mb::strpos($styles[$k], '⠈')) {
+				elseif (false !== strpos($styles[$k], '⠈')) {
 					$styles[$k] = str_replace('⠈', "⠈\n", $styles[$k]);
 				}
 				// Just a line, like @import.

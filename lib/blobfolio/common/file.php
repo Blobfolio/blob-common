@@ -237,7 +237,7 @@ class file {
 
 		// Sanitize the path.
 		ref\file::path($path, false);
-		if (!$path || (false !== mb::strpos($path, '://'))) {
+		if (!$path || (false !== strpos($path, '://'))) {
 			return false;
 		}
 
