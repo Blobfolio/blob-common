@@ -221,7 +221,7 @@ class image {
 								$width = null;
 							}
 
-							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
+							if (is_numeric($height) || preg_match('/^[\d\.]+px$/', $height)) {
 								ref\cast::to_float($height);
 								if ($height <= 0) {
 									$height = null;
