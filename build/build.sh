@@ -7,6 +7,8 @@ BIN_DIR="$( dirname "${BUILD_DIR}" )/bin"
 SKEL_DIR="${BUILD_DIR}/skel"
 SRC_DIR="${BUILD_DIR}/src"
 OUT_DIR="${BUILD_DIR}/out"
+LIB_LOCAL_DIR="$( dirname "${BUILD_DIR}" )/lib/blobfolio"
+LIB_SRC_DIR="${SRC_DIR}/vendor/blobfolio/blob-common/lib/blobfolio"
 
 
 
@@ -35,6 +37,12 @@ if [ $? -ne 0 ]; then
 	echo -e "  + ERROR: Composer failed."
 	exit 1
 fi
+
+# Use the local blob-common files.
+echo -e "  + Copying Local"
+rm -rf "${LIB_SRC_DIR}"
+cp -aR "${LIB_LOCAL_DIR}" "${LIB_SRC_DIR}"
+
 
 # Clean up
 echo -e "  + Cleaning Up"
