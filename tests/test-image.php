@@ -8,6 +8,7 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use \blobfolio\common\constants;
 use \blobfolio\common\image;
 
 /**
@@ -16,6 +17,47 @@ use \blobfolio\common\image;
 class image_tests extends \PHPUnit\Framework\TestCase {
 
 	const ASSETS = __DIR__ . '/assets/';
+
+
+
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	// Store some information for us.
+	protected $lock;
+
+	/**
+	 * Before Test
+	 *
+	 * Note the string casting lock state before we start the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->lock = constants::$str_lock;
+	}
+
+	/**
+	 * After Test
+	 *
+	 * Compare the string casting lock state after the test. (It should
+	 * match. Haha.)
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$lock = constants::$str_lock;
+		$this->assertSame($lock, $this->lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
+	// Tests
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::clean_svg()
@@ -75,6 +117,8 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, file_exists($out));
 		@unlink($out);
 	}
+
+	// ----------------------------------------------------------------- end tests
 }
 
 

@@ -9,15 +9,51 @@
  */
 
 use \blobfolio\common\cli;
+use \blobfolio\common\constants;
 
 /**
  * Test Suite
  */
 class cli_tests extends \PHPUnit\Framework\TestCase {
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	// Store some information for us.
+	protected $lock;
+
+	/**
+	 * Before Test
+	 *
+	 * Note the string casting lock state before we start the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->lock = constants::$str_lock;
+	}
+
+	/**
+	 * After Test
+	 *
+	 * Compare the string casting lock state after the test. (It should
+	 * match. Haha.)
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$lock = constants::$str_lock;
+		$this->assertSame($lock, $this->lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
 	// Tests
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::colorize()
@@ -54,13 +90,13 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($root, cli::is_root());
 	}
 
-	// -------------------------------------------------------------------- end tests
+	// ----------------------------------------------------------------- end tests
 
 
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 	// Data
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * Data for ::colorize()
@@ -94,7 +130,7 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	// -------------------------------------------------------------------- end data
+	// ----------------------------------------------------------------- end data
 }
 
 

@@ -8,6 +8,7 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use \blobfolio\common\constants;
 use \blobfolio\common\data;
 
 /**
@@ -15,9 +16,44 @@ use \blobfolio\common\data;
  */
 class data_tests extends \PHPUnit\Framework\TestCase {
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	// Store some information for us.
+	protected $lock;
+
+	/**
+	 * Before Test
+	 *
+	 * Note the string casting lock state before we start the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->lock = constants::$str_lock;
+	}
+
+	/**
+	 * After Test
+	 *
+	 * Compare the string casting lock state after the test. (It should
+	 * match. Haha.)
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$lock = constants::$str_lock;
+		$this->assertSame($lock, $this->lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
 	// Tests
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::array_compare()
@@ -398,13 +434,13 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(10, $var1);
 	}
 
-	// -------------------------------------------------------------------- end tests
+	// ----------------------------------------------------------------- end tests
 
 
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 	// Data
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * Data for ::array_compare()
@@ -1198,7 +1234,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	// -------------------------------------------------------------------- end data
+	// ----------------------------------------------------------------- end data
 }
 
 

@@ -8,6 +8,7 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use \blobfolio\common\constants;
 use \blobfolio\common\cast as v_cast;
 use \blobfolio\common\ref\cast as r_cast;
 
@@ -16,9 +17,44 @@ use \blobfolio\common\ref\cast as r_cast;
  */
 class cast_tests extends \PHPUnit\Framework\TestCase {
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	// Store some information for us.
+	protected $lock;
+
+	/**
+	 * Before Test
+	 *
+	 * Note the string casting lock state before we start the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->lock = constants::$str_lock;
+	}
+
+	/**
+	 * After Test
+	 *
+	 * Compare the string casting lock state after the test. (It should
+	 * match. Haha.)
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$lock = constants::$str_lock;
+		$this->assertSame($lock, $this->lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
 	// Tests
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::array()
@@ -234,13 +270,13 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, v_cast::to_type($value, $type, $flatten));
 	}
 
-	// -------------------------------------------------------------------- end tests
+	// ----------------------------------------------------------------- end tests
 
 
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 	// Data
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * Data for ::array()
@@ -571,7 +607,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	// -------------------------------------------------------------------- end data
+	// ----------------------------------------------------------------- end data
 
 }
 

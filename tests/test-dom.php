@@ -8,6 +8,7 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use \blobfolio\common\constants;
 use \blobfolio\common\dom;
 
 /**
@@ -16,6 +17,47 @@ use \blobfolio\common\dom;
 class dom_tests extends \PHPUnit\Framework\TestCase {
 
 	const ASSETS = __DIR__ . '/assets/';
+
+
+
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	// Store some information for us.
+	protected $lock;
+
+	/**
+	 * Before Test
+	 *
+	 * Note the string casting lock state before we start the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->lock = constants::$str_lock;
+	}
+
+	/**
+	 * After Test
+	 *
+	 * Compare the string casting lock state after the test. (It should
+	 * match. Haha.)
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$lock = constants::$str_lock;
+		$this->assertSame($lock, $this->lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
+	// Tests
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::load_svg()
@@ -113,6 +155,8 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 		dom::remove_nodes($paths);
 		$this->assertEquals(0, $paths->length);
 	}
+
+	// ----------------------------------------------------------------- end tests
 }
 
 
