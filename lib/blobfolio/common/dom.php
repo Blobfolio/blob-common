@@ -434,7 +434,7 @@ class dom {
 	/**
 	 * Remove namespace (and attached nodes) from a DOMDocument
 	 *
-	 * @param DOMDocument $dom Object.
+	 * @param \DOMDocument $dom Object.
 	 * @param string $namespace Namespace.
 	 * @return bool True/False.
 	 */

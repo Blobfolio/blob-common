@@ -28,7 +28,7 @@ class data {
 		$length = count($arr1);
 
 		// Length mismatch.
-		if ($length !== count($arr2)) {
+		if (count($arr2) !== $length) {
 			return false;
 		}
 
