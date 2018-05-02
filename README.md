@@ -19,7 +19,7 @@ For information about the plugin Tutan Common, which repackages and extends thes
 
 ## Requirements
 
-blob-common requires PHP 5.6+ with the following modules:
+blob-common requires PHP 7.0+ with the following modules:
 
  * BCMath or GMP
  * DOM
