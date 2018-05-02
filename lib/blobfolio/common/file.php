@@ -92,7 +92,15 @@ class file {
 	 */
 	public static function data_uri($path='') {
 		ref\cast::to_string($path, true);
+
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
+
 		ref\file::path($path, true);
+
+		constants::$str_lock = $lock;
+
 		try {
 			if (false !== $path && is_file($path)) {
 				$content = base64_encode(@file_get_contents($path));

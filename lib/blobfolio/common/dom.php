@@ -23,6 +23,10 @@ class dom {
 	public static function load_svg($svg='') {
 		ref\cast::to_string($svg, true);
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
+
 		try {
 			// First thing first, lowercase all tags.
 			$svg = preg_replace('/<svg/ui', '<svg', $svg);
@@ -33,6 +37,7 @@ class dom {
 				false === ($start = mb::strpos($svg, '<svg')) ||
 				false === ($end = mb::strrpos($svg, '</svg>'))
 			) {
+				constants::$str_lock = $lock;
 				return false;
 			}
 			$svg = mb::substr($svg, $start, ($end - $start + 6));
@@ -49,6 +54,7 @@ class dom {
 			$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
 
 			if (false !== strpos($svg, '<?') || false !== strpos($svg, '<%')) {
+				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -57,6 +63,7 @@ class dom {
 			$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
 
 			if (false !== strpos($svg, '<!--') || false !== strpos($svg, '/*')) {
+				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -71,15 +78,20 @@ class dom {
 			// Make sure there are still SVG tags.
 			$svgs = $dom->getElementsByTagName('svg');
 			if (!$svgs->length) {
+				constants::$str_lock = $lock;
 				return false;
 			}
 
+			constants::$str_lock = $lock;
 			return $dom;
 		} catch (\Throwable $e) {
-			return false;
+			$noop;
 		} catch (\Exception $e) {
-			return false;
+			$noop;
 		}
+
+		constants::$str_lock = $lock;
+		return false;
 	}
 
 	/**
@@ -254,6 +266,10 @@ class dom {
 	public static function parse_css($styles='') {
 		ref\cast::to_string($styles, true);
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
+
 		// Remove comments.
 		while (false !== $start = mb::strpos($styles, '/*')) {
 			if (false !== $end = mb::strpos($styles, '*/')) {
@@ -280,6 +296,7 @@ class dom {
 
 		// Early bail.
 		if (!$styles) {
+			constants::$str_lock = $lock;
 			return array();
 		}
 
@@ -434,6 +451,7 @@ class dom {
 			$out[] = $tmp;
 		}
 
+		constants::$str_lock = $lock;
 		return $out;
 	}
 

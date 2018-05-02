@@ -8,8 +8,8 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\sanitize;
 use \blobfolio\common\constants;
+use \blobfolio\common\sanitize;
 
 /**
  * Test Suite
@@ -20,9 +20,39 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 
 
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	/**
+	 * Before Test
+	 *
+	 * String cast bypass should be off before the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	/**
+	 * After Test
+	 *
+	 * String cast bypass should still be off after the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
 	// Tests
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::accents()
@@ -504,13 +534,13 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($expected, sanitize::zip5($value));
 	}
 
-	// -------------------------------------------------------------------- end tests
+	// ----------------------------------------------------------------- end tests
 
 
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 	// Data
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * Data for ::accents()
@@ -1624,7 +1654,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	// -------------------------------------------------------------------- end data
+	// ----------------------------------------------------------------- end data
 }
 
 

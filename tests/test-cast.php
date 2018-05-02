@@ -8,6 +8,7 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use \blobfolio\common\constants;
 use \blobfolio\common\cast as v_cast;
 use \blobfolio\common\ref\cast as r_cast;
 
@@ -16,9 +17,39 @@ use \blobfolio\common\ref\cast as r_cast;
  */
 class cast_tests extends \PHPUnit\Framework\TestCase {
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	/**
+	 * Before Test
+	 *
+	 * String cast bypass should be off before the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	/**
+	 * After Test
+	 *
+	 * String cast bypass should still be off after the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
 	// Tests
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::array()
@@ -234,13 +265,13 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, v_cast::to_type($value, $type, $flatten));
 	}
 
-	// -------------------------------------------------------------------- end tests
+	// ----------------------------------------------------------------- end tests
 
 
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 	// Data
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * Data for ::array()
@@ -571,7 +602,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	// -------------------------------------------------------------------- end data
+	// ----------------------------------------------------------------- end data
 
 }
 

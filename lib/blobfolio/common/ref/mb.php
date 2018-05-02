@@ -29,10 +29,15 @@ class mb {
 		cast::to_int($pad_length, true);
 		cast::to_string($pad_string, true);
 
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
+
 		$current_length = v_mb::strlen($str);
 		$pad_string_length = v_mb::strlen($pad_string);
 
 		if ($pad_length <= $current_length || !$pad_string_length) {
+			constants::$str_lock = $lock;
 			return true;
 		}
 
@@ -76,6 +81,7 @@ class mb {
 			}
 		}
 
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -94,6 +100,11 @@ class mb {
 		}
 
 		cast::to_string($str, true);
+
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
+
 		$str_length = v_mb::strlen($str);
 		$out = array();
 
@@ -102,6 +113,8 @@ class mb {
 		}
 
 		$str = $out;
+
+		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -261,9 +274,15 @@ class mb {
 						!mb_check_encoding($str, 'ASCII')
 					)
 				) {
+					// Lock UTF-8 Casting.
+					$lock = constants::$str_lock;
+					constants::$str_lock = true;
+
 					$first = v_mb::substr($str, 0, 1);
 					static::strtoupper($first);
 					$str = $first . v_mb::substr($str, 1, null);
+
+					constants::$str_lock = $lock;
 				}
 				else {
 					$str = ucfirst($str);
@@ -294,6 +313,10 @@ class mb {
 			cast::to_string($str);
 
 			if ($str) {
+				// Lock UTF-8 Casting.
+				$lock = constants::$str_lock;
+				constants::$str_lock = true;
+
 				// Don't use the built-in case functions as those
 				// kinda suck. Instead let's adjust manually.
 				$extra = array();
@@ -324,6 +347,8 @@ class mb {
 					$extra = array_unique($extra);
 					$str = str_replace(array_keys($extra), array_values($extra), $str);
 				}
+
+				constants::$str_lock = $lock;
 			}
 		}
 
@@ -359,6 +384,10 @@ class mb {
 			$str = wordwrap($str, $width, $break, $cut);
 			return true;
 		}
+
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
 
 		// First, split on horizontal whitespace.
 		$chunks = preg_split('/([\s$]+)/uS', trim($str), -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -443,6 +472,8 @@ class mb {
 		// Finally, join our lines by the delimiter.
 		$str = implode($break, $lines);
 		static::trim($str);
+
+		constants::$str_lock = $lock;
 
 		return true;
 	}

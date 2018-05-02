@@ -9,15 +9,46 @@
  */
 
 use \blobfolio\common\cli;
+use \blobfolio\common\constants;
 
 /**
  * Test Suite
  */
 class cli_tests extends \PHPUnit\Framework\TestCase {
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	/**
+	 * Before Test
+	 *
+	 * String cast bypass should be off before the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	/**
+	 * After Test
+	 *
+	 * String cast bypass should still be off after the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
 	// Tests
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::colorize()
@@ -54,13 +85,13 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($root, cli::is_root());
 	}
 
-	// -------------------------------------------------------------------- end tests
+	// ----------------------------------------------------------------- end tests
 
 
 
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 	// Data
-	// --------------------------------------------------------------------
+	// -----------------------------------------------------------------
 
 	/**
 	 * Data for ::colorize()
@@ -94,7 +125,7 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	// -------------------------------------------------------------------- end data
+	// ----------------------------------------------------------------- end data
 }
 
 

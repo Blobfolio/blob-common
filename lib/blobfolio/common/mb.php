@@ -24,6 +24,11 @@ class mb {
 	 */
 	public static function parse_url($url, $component = -1) {
 		ref\cast::to_string($url, true);
+
+		// Lock UTF-8 Casting.
+		$lock = constants::$str_lock;
+		constants::$str_lock = true;
+
 		ref\mb::trim($url);
 
 		// Before we start, let's fix scheme-agnostic URLs.
@@ -127,6 +132,7 @@ class mb {
 			}
 		}
 
+		constants::$str_lock = $lock;
 		return $parts;
 	}
 

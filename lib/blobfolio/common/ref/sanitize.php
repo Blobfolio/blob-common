@@ -67,8 +67,14 @@ class sanitize {
 			static::control_characters($str);
 			format::decode_entities($str);
 
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			// And trim the edges while we're here.
 			mb::trim($str);
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -88,7 +94,7 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
-			mb::strtoupper($str);
+			$str = strtoupper($str);
 
 			// Alphanumeric, minus D, F, I, O, Q or U.
 			$str = preg_replace('/[^A-CEGHJ-NPR-TV-Z\d]/', '', $str);
@@ -229,6 +235,11 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::whitespace($str);
 			mb::strtoupper($str);
 			if (!array_key_exists($str, constants::COUNTRIES)) {
@@ -265,6 +276,8 @@ class sanitize {
 					$str = '';
 				}
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -284,6 +297,11 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::quotes($str);
 			static::whitespace($str);
 
@@ -294,6 +312,8 @@ class sanitize {
 
 			// Double quotes.
 			$str = str_replace('"', '""', $str);
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -329,6 +349,11 @@ class sanitize {
 			}
 
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			mb::trim($str);
 
 			if (
@@ -341,6 +366,8 @@ class sanitize {
 			else {
 				$str = date('Y-m-d H:i:s', $str);
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -464,6 +491,11 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::quotes($str);
 			mb::strtolower($str);
 
@@ -484,6 +516,7 @@ class sanitize {
 
 				if (!$parts[0]) {
 					$str = '';
+					constants::$str_lock = $lock;
 					return true;
 				}
 
@@ -491,6 +524,7 @@ class sanitize {
 				$domain = new domain($parts[1]);
 				if (!$domain->is_valid() || !$domain->is_fqdn() || $domain->is_ip()) {
 					$str = '';
+					constants::$str_lock = $lock;
 					return true;
 				}
 				$parts[1] = (string) $domain;
@@ -499,8 +533,11 @@ class sanitize {
 			}
 			else {
 				$str = '';
+				constants::$str_lock = $lock;
 				return true;
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -520,10 +557,17 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			mb::strtolower($str);
 			static::whitespace($str);
 			$str = ltrim($str, '*. ');
 			$str = preg_replace('/\s/u', '', $str);
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -820,8 +864,15 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			sanitize::quotes($str);
 			sanitize::whitespace($str);
+
+			constants::$str_lock = $lock;
 
 			// Escape slashes, e.g. </script> -> <\/script>.
 			$str = str_replace('/', '\\/', $str);
@@ -876,11 +927,18 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::quotes($str);
 			static::whitespace($str);
 			$str = preg_replace('/[^\p{L}\p{Zs}\p{Pd}\d\'\"\,\.]/u', '', $str);
 			static::whitespace($str);
 			mb::ucwords($str);
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -904,8 +962,15 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::printable($str);
 			static::whitespace($str);
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -970,6 +1035,11 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::whitespace($str);
 			$str = strtoupper($str);
 
@@ -978,6 +1048,8 @@ class sanitize {
 					$str = '';
 				}
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1022,6 +1094,11 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::whitespace($str);
 			$str = strtoupper($str);
 
@@ -1030,6 +1107,8 @@ class sanitize {
 					$str = '';
 				}
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1049,6 +1128,11 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			static::whitespace($str);
 			$str = strtoupper($str);
 
@@ -1057,6 +1141,8 @@ class sanitize {
 					$str = '';
 				}
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1390,6 +1476,10 @@ class sanitize {
 		else {
 			cast::to_string($str);
 
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			$tmp = v_mb::parse_url($str);
 
 			// Schemes can be lowercase.
@@ -1400,10 +1490,12 @@ class sanitize {
 			// Validate the host, and ASCIIfy international bits
 			// to keep PHP happy.
 			if (!isset($tmp['host'])) {
+				constants::$str_lock = $lock;
 				return false;
 			}
 			$tmp['host'] = new domain($tmp['host']);
 			if (!$tmp['host']->is_valid()) {
+				constants::$str_lock = $lock;
 				return false;
 			}
 			$tmp['host'] = (string) $tmp['host'];
@@ -1414,6 +1506,8 @@ class sanitize {
 			if (!filter_var($str, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED)) {
 				$str = '';
 			}
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1580,9 +1674,14 @@ class sanitize {
 			cast::to_int($newlines, true);
 			static::to_range($newlines, 0);
 
+			// Lock UTF-8 Casting.
+			$lock = constants::$str_lock;
+			constants::$str_lock = true;
+
 			if (!$newlines) {
 				$str = preg_replace('/\s+/u', ' ', $str);
 				mb::trim($str);
+				constants::$str_lock = $lock;
 				return true;
 			}
 
@@ -1599,6 +1698,8 @@ class sanitize {
 			$str = preg_replace('/\n{' . ($newlines + 1) . ',}/', str_repeat("\n", $newlines), $str);
 
 			$str = trim($str);
+
+			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1630,13 +1731,14 @@ class sanitize {
 		}
 		else {
 			cast::to_string($str);
+
 			$str = preg_replace('/[^\d]/', '', $str);
 
 			if (!isset($str[4])) {
 				$str = sprintf('%05d', $str);
 			}
 			elseif (isset($str[5])) {
-				$str = v_mb::substr($str, 0, 5);
+				$str = substr($str, 0, 5);
 			}
 
 			if ('00000' === $str) {

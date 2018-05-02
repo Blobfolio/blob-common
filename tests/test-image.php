@@ -8,6 +8,7 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use \blobfolio\common\constants;
 use \blobfolio\common\image;
 
 /**
@@ -16,6 +17,42 @@ use \blobfolio\common\image;
 class image_tests extends \PHPUnit\Framework\TestCase {
 
 	const ASSETS = __DIR__ . '/assets/';
+
+
+
+	// -----------------------------------------------------------------
+	// Set up
+	// -----------------------------------------------------------------
+
+	/**
+	 * Before Test
+	 *
+	 * String cast bypass should be off before the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function setUp() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	/**
+	 * After Test
+	 *
+	 * String cast bypass should still be off after the test.
+	 *
+	 * @return void Nothing.
+	 */
+	protected function tearDown() {
+		$this->assertFalse(constants::$str_lock);
+	}
+
+	// ----------------------------------------------------------------- end setup
+
+
+
+	// -----------------------------------------------------------------
+	// Tests
+	// -----------------------------------------------------------------
 
 	/**
 	 * ::clean_svg()
@@ -75,6 +112,8 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(true, file_exists($out));
 		@unlink($out);
 	}
+
+	// ----------------------------------------------------------------- end tests
 }
 
 

@@ -12,6 +12,10 @@ namespace blobfolio\common;
 
 class constants {
 
+	// This isn't constant so much as global, but here's as good a place
+	// as any.
+	public static $str_lock = false;
+
 	// -------------------------------------------------
 	// Character Sets.
 
