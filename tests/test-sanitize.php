@@ -24,31 +24,26 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	// Set up
 	// -----------------------------------------------------------------
 
-	// Store some information for us.
-	protected $lock;
-
 	/**
 	 * Before Test
 	 *
-	 * Note the string casting lock state before we start the test.
+	 * String cast bypass should be off before the test.
 	 *
 	 * @return void Nothing.
 	 */
 	protected function setUp() {
-		$this->lock = constants::$str_lock;
+		$this->assertFalse(constants::$str_lock);
 	}
 
 	/**
 	 * After Test
 	 *
-	 * Compare the string casting lock state after the test. (It should
-	 * match. Haha.)
+	 * String cast bypass should still be off after the test.
 	 *
 	 * @return void Nothing.
 	 */
 	protected function tearDown() {
-		$lock = constants::$str_lock;
-		$this->assertSame($lock, $this->lock);
+		$this->assertFalse(constants::$str_lock);
 	}
 
 	// ----------------------------------------------------------------- end setup
