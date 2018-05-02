@@ -85,13 +85,9 @@ class dom {
 			constants::$str_lock = $lock;
 			return $dom;
 		} catch (\Throwable $e) {
-			$noop;
-		} catch (\Exception $e) {
-			$noop;
+			constants::$str_lock = $lock;
+			return false;
 		}
-
-		constants::$str_lock = $lock;
-		return false;
 	}
 
 	/**
@@ -146,8 +142,6 @@ class dom {
 			return $svg;
 		} catch (\Throwable $e) {
 			return '';
-		} catch (\Exception $e) {
-			return '';
 		}
 	}
 
@@ -162,9 +156,8 @@ class dom {
 	 * @param bool $all Matches must contain *all* passed classes instead of *any*.
 	 * @return array Nodes.
 	 */
-	public static function get_nodes_by_class($parent, $class=null, $all=false) {
+	public static function get_nodes_by_class($parent, $class=null, bool $all=false) {
 		$nodes = array();
-		ref\cast::bool($all, true);
 
 		try {
 			if (!method_exists($parent, 'getElementsByTagName')) {
@@ -200,8 +193,6 @@ class dom {
 			}
 		} catch (\Throwable $e) {
 			return $nodes;
-		} catch (\Exception $e) {
-			return $nodes;
 		}
 
 		return $nodes;
@@ -217,7 +208,7 @@ class dom {
 	 * @param int $flags Additional flags (XML only).
 	 * @return string Content.
 	 */
-	public static function innerhtml($node, $xml=false, $flags=null) {
+	public static function innerhtml($node, bool $xml=false, $flags=null) {
 		if (
 			!is_a($node, 'DOMElement') &&
 			!is_a($node, 'DOMNode')
@@ -246,8 +237,6 @@ class dom {
 				}
 			}
 		} catch (\Throwable $e) {
-			return '';
-		} catch (\Exception $e) {
 			return '';
 		}
 
@@ -485,8 +474,6 @@ class dom {
 			return true;
 		} catch (\Throwable $e) {
 			return false;
-		} catch (\Exception $e) {
-			return false;
 		}
 
 		return false;
@@ -504,8 +491,6 @@ class dom {
 				static::remove_node($nodes->item(0));
 			}
 		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
 			return false;
 		}
 
@@ -529,8 +514,6 @@ class dom {
 		try {
 			$node->parentNode->removeChild($node);
 		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
 			return false;
 		}
 

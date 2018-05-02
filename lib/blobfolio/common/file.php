@@ -101,16 +101,10 @@ class file {
 
 		constants::$str_lock = $lock;
 
-		try {
-			if (false !== $path && is_file($path)) {
-				$content = base64_encode(@file_get_contents($path));
-				$finfo = mime::finfo($path);
-				return 'data:' . $finfo['mime'] . ';base64,' . $content;
-			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
+		if ((false !== $path) && @is_file($path)) {
+			$content = base64_encode(@file_get_contents($path));
+			$finfo = mime::finfo($path);
+			return 'data:' . $finfo['mime'] . ';base64,' . $content;
 		}
 
 		return false;
@@ -123,29 +117,24 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function empty_dir($path='') {
-		try {
-			ref\cast::string($path);
-			if (!is_readable($path) || !is_dir($path)) {
-				return false;
-			}
-
-			// Scan all files in dir.
-			if ($handle = opendir($path)) {
-				while (false !== ($entry = readdir($handle))) {
-					// Anything but a dot === not empty.
-					if (('.' !== $entry) && ('..' !== $entry)) {
-						return false;
-					}
-				}
-				closedir($handle);
-			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
+		ref\cast::string($path);
+		if (!@is_readable($path) || !@is_dir($path)) {
 			return false;
 		}
 
-		return true;
+		// Scan all files in dir.
+		if ($handle = @opendir($path)) {
+			while (false !== ($entry = @readdir($handle))) {
+				// Anything but a dot === not empty.
+				if (('.' !== $entry) && ('..' !== $entry)) {
+					return false;
+				}
+			}
+			closedir($handle);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -307,7 +296,7 @@ class file {
 	 * @param bool $validate Require valid file.
 	 * @return string Path.
 	 */
-	public static function path($path='', $validate=true) {
+	public static function path($path='', bool $validate=true) {
 		ref\file::path($path, $validate);
 		return $path;
 	}
@@ -322,9 +311,8 @@ class file {
 	 * @param bool $retbytes Return bytes served like `readfile()`.
 	 * @return mixed Bytes served or status.
 	 */
-	public static function readfile_chunked($file, $retbytes=true) {
+	public static function readfile_chunked($file, bool $retbytes=true) {
 		ref\cast::string($file, true);
-		ref\cast::bool($retbytes, true);
 
 		$buffer = '';
 		$cnt = 0;
@@ -386,37 +374,31 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function rmdir($path='') {
-		try {
-			ref\file::path($path, true);
-			if (!@is_readable($path) || !@is_dir($path)) {
-				return false;
-			}
+		ref\file::path($path, true);
+		if (!@is_readable($path) || !@is_dir($path)) {
+			return false;
+		}
 
-			// Scan all files in dir.
-			if ($handle = opendir($path)) {
-				while (false !== ($entry = readdir($handle))) {
-					// Anything but a dot === not empty.
-					if (('.' === $entry) || ('..' === $entry)) {
-						continue;
-					}
-
-					$file = "{$path}{$entry}";
-
-					// Delete files.
-					if (@is_file($file)) {
-						@unlink($file);
-					}
-					// Recursively delete directories.
-					else {
-						static::rmdir($file);
-					}
+		// Scan all files in dir.
+		if ($handle = @opendir($path)) {
+			while (false !== ($entry = @readdir($handle))) {
+				// Anything but a dot === not empty.
+				if (('.' === $entry) || ('..' === $entry)) {
+					continue;
 				}
-				closedir($handle);
+
+				$file = "{$path}{$entry}";
+
+				// Delete files.
+				if (@is_file($file)) {
+					@unlink($file);
+				}
+				// Recursively delete directories.
+				else {
+					static::rmdir($file);
+				}
 			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
+			closedir($handle);
 		}
 
 		if (static::empty_dir($path)) {
@@ -434,7 +416,7 @@ class file {
 	 * @param bool $show_dirs Include directories.
 	 * @return array Path(s).
 	 */
-	public static function scandir($path, $show_files=true, $show_dirs=true) {
+	public static function scandir($path, bool $show_files=true, bool $show_dirs=true) {
 		ref\file::path($path, true);
 		if (!$path || !@is_dir($path) || (!$show_files && !$show_dirs)) {
 			return array();

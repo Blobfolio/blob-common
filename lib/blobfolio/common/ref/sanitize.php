@@ -404,15 +404,13 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain(&$str='', $unicode=false) {
+	public static function domain(&$str='', bool $unicode=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::domain($str[$k], $unicode);
 			}
 		}
 		else {
-			cast::bool($unicode, true);
-
 			$host = new domain($str, true);
 			if ($host->is_fqdn() && !$host->is_ip()) {
 				$str = $host->get_host($unicode);
@@ -435,7 +433,7 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function ean(&$str, $formatted=false) {
+	public static function ean(&$str, bool $formatted=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ean($str[$k], $formatted);
@@ -624,10 +622,8 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname(&$domain, $www=false, $unicode=false) {
+	public static function hostname(&$domain, bool $www=false, bool $unicode=false) {
 		cast::string($domain, true);
-		cast::bool($www, true);
-		cast::bool($unicode, true);
 
 		$host = new domain($domain, !$www);
 		if (!$host->is_valid()) {
@@ -648,7 +644,7 @@ class sanitize {
 	 * @param bool $condense Condense IPv6.
 	 * @return string IP.
 	 */
-	public static function ip(&$str='', $restricted=false, $condense=true) {
+	public static function ip(&$str='', bool $restricted=false, bool $condense=true) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ip($str[$k], $restricted, $condense);
@@ -657,8 +653,6 @@ class sanitize {
 		else {
 			cast::string($str);
 			$str = strtolower($str);
-			cast::bool($restricted, true);
-			cast::bool($condense, true);
 
 			// Start by getting rid of obviously bad data.
 			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
@@ -1404,8 +1398,6 @@ class sanitize {
 				}
 			} catch (\Throwable $e) {
 				$value = $original;
-			} catch (\Exception $e) {
-				$value = $original;
 			}
 		}
 
@@ -1419,7 +1411,7 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function upc(&$str, $formatted=false) {
+	public static function upc(&$str, bool $formatted=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::upc($str[$k], $formatted);
@@ -1530,12 +1522,12 @@ class sanitize {
 			}
 		}
 		elseif ($str && !is_numeric($str) && !is_bool($str)) {
-			try {
-				$str = (string) $str;
-			} catch (\Throwable $e) {
-				$str = '';
-			} catch (\Exception $e) {
-				$str = '';
+			if (!is_string($str)) {
+				try {
+					$str = (string) $str;
+				} catch (\Throwable $e) {
+					$str = '';
+				}
 			}
 
 			if (

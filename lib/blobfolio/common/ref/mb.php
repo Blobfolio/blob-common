@@ -368,11 +368,10 @@ class mb {
 	 * @param bool $cut Cut.
 	 * @return bool True.
 	 */
-	public static function wordwrap(&$str, $width=75, $break="\n", $cut=false) {
+	public static function wordwrap(&$str, $width=75, $break="\n", bool $cut=false) {
 		cast::string($str, true);
 		cast::int($width, true);
 		cast::string($break, true);
-		cast::bool($cut, true);
 
 		// Bad data?
 		if (!$str || $width <= 0) {

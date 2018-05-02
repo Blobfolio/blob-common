@@ -377,9 +377,6 @@ class format {
 			} catch (\Throwable $e) {
 				$ip = false;
 				return false;
-			} catch (\Exception $e) {
-				$ip = false;
-				return false;
 			}
 		}
 
@@ -978,7 +975,7 @@ class format {
 	 * @param bool $no00 Remove trailing cents if none.
 	 * @return bool True.
 	 */
-	public static function money(&$value=0, $cents=false, $separator='', $no00=false) {
+	public static function money(&$value=0, bool $cents=false, $separator='', bool $no00=false) {
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::money($value[$k], $cents, $separator, $no00);
@@ -986,9 +983,7 @@ class format {
 		}
 		else {
 			cast::float($value);
-			cast::bool($cents, true);
 			cast::string($separator, true);
-			cast::bool($no00, true);
 
 			$value = round($value, 2);
 			$negative = $value < 0;
@@ -1151,7 +1146,7 @@ class format {
 
 		constants::$str_lock = $lock;
 
-		if ('0000-00-00 00:00:00' === $date || $from === $to) {
+		if (('0000-00-00 00:00:00' === $date) || ($from === $to)) {
 			return true;
 		}
 
@@ -1161,8 +1156,6 @@ class format {
 			$date_new->setTimezone(new \DateTimeZone($to));
 			$date = $date_new->format('Y-m-d H:i:s');
 		} catch (\Throwable $e) {
-			$date = $original;
-		} catch (\Exception $e) {
 			$date = $original;
 		}
 

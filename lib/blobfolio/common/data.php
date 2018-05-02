@@ -177,7 +177,7 @@ class data {
 	 * @param bool $strict Strict.
 	 * @return mixed Key or false.
 	 */
-	public static function array_isearch($needle, $haystack, $strict=true) {
+	public static function array_isearch($needle, $haystack, bool $strict=true) {
 		if (!is_array($haystack) || !count($haystack)) {
 			return false;
 		}
@@ -185,8 +185,6 @@ class data {
 		// Lowercase for comparison.
 		ref\mb::strtolower($needle, true);
 		ref\mb::strtolower($haystack, true);
-
-		ref\cast::bool($strict);
 
 		// phpcs:disable
 		return array_search($needle, $haystack, $strict);
@@ -314,8 +312,7 @@ class data {
 	 * @param string $format Date format.
 	 * @return array Months.
 	 */
-	public static function cc_exp_months($format='m - M') {
-		ref\cast::string($format, true);
+	public static function cc_exp_months(string $format='m - M') {
 		$months = array();
 		for ($x = 1; $x <= 12; ++$x) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
@@ -329,8 +326,7 @@ class data {
 	 * @param int $length Number of years.
 	 * @return array Years.
 	 */
-	public static function cc_exp_years($length=10) {
-		ref\cast::int($length, true);
+	public static function cc_exp_years(int $length=10) {
 		if ($length < 1) {
 			$length = 10;
 		}
@@ -367,21 +363,18 @@ class data {
 		}
 
 		// Prefer DateTime.
-		try {
+		if (class_exists('DateTime')) {
 			$date1 = new \DateTime($date1);
 			$date2 = new \DateTime($date2);
 			$diff = $date1->diff($date2);
 
 			return abs($diff->days);
-		} catch (\Throwable $e) {
-			$date1 = strtotime($date1);
-			$date2 = strtotime($date2);
-			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
-		} catch (\Exception $e) {
-			$date1 = strtotime($date1);
-			$date2 = strtotime($date2);
-			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
 		}
+
+		// Fallback to counting seconds.
+		$date1 = strtotime($date1);
+		$date2 = strtotime($date2);
+		return ceil(abs($date2 - $date1) / 60 / 60 / 24);
 	}
 
 	/**
@@ -392,7 +385,7 @@ class data {
 	 * @param bool $strict Strict.
 	 * @return bool True/false.
 	 */
-	public static function iin_array($needle, $haystack, $strict=true) {
+	public static function iin_array($needle, $haystack, bool $strict=true) {
 		return (false !== static::array_isearch($needle, $haystack, $strict));
 	}
 
@@ -474,7 +467,7 @@ class data {
 	 * @param bool $empty Allow empty.
 	 * @return bool True/false.
 	 */
-	public static function is_json($str, $empty=false) {
+	public static function is_json($str, bool $empty=false) {
 		if (!is_string($str) || (!$empty && !$str)) {
 			return false;
 		}
@@ -483,14 +476,8 @@ class data {
 			return true;
 		}
 
-		try {
-			$json = json_decode($str);
-			return !is_null($json);
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
-		}
+		$json = json_decode($str);
+		return !is_null($json);
 	}
 
 	/**
@@ -500,14 +487,14 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function is_utf8($str) {
-		try {
-			$str = (string) $str;
+		if (is_string($str)) {
 			return (bool) preg_match('//u', $str);
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
 		}
+		elseif (is_numeric($str) || is_bool($str)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -523,7 +510,7 @@ class data {
 	 * @param bool $recursive Recursive templating.
 	 * @return array Data.
 	 */
-	public static function json_decode_array($json, $defaults=null, $strict=true, $recursive=true) {
+	public static function json_decode_array($json, $defaults=null, bool $strict=true, bool $recursive=true) {
 		ref\format::json_decode($json);
 
 		if (is_null($json) || (is_string($json) && !$json)) {
@@ -597,11 +584,9 @@ class data {
 	 * @param bool $recursive Recursively apply formatting if inner values are also arrays.
 	 * @return array Parsed arguments.
 	 */
-	public static function parse_args($args, $defaults, $strict=true, $recursive=true) {
+	public static function parse_args($args, $defaults, bool $strict=true, bool $recursive=true) {
 		ref\cast::array($args);
 		ref\cast::array($defaults);
-		ref\cast::bool($strict, true);
-		ref\cast::bool($recursive, true);
 
 		if (!count($defaults)) {
 			return array();
@@ -738,25 +723,21 @@ class data {
 	 * @param bool $httponly HTTP only.
 	 * @return bool True/false.
 	 */
-	public static function unsetcookie($name, $path='', $domain='', $secure=false, $httponly=false) {
+	public static function unsetcookie($name, $path='', $domain='', bool $secure=false, bool $httponly=false) {
 		ref\cast::string($name, true);
 		ref\cast::string($path, true);
 		ref\cast::string($domain, true);
-		ref\cast::bool($secure, true);
-		ref\cast::bool($httponly, true);
 
-		try {
+		if (!headers_sent()) {
 			setcookie($name, false, -1, $path, $domain, $secure, $httponly);
 			if (isset($_COOKIE[$name])) {
 				unset($_COOKIE[$name]);
 			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
+
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 }
 

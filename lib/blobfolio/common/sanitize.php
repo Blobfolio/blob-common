@@ -129,7 +129,7 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain($str='', $unicode=false) {
+	public static function domain($str='', bool $unicode=false) {
 		ref\sanitize::domain($str, $unicode);
 		return $str;
 	}
@@ -143,7 +143,7 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function ean($str, $formatted=false) {
+	public static function ean($str, bool $formatted=false) {
 		ref\sanitize::ean($str, $formatted);
 		return $str;
 	}
@@ -192,7 +192,7 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname($domain, $www=false, $unicode=false) {
+	public static function hostname($domain, bool $www=false, bool $unicode=false) {
 		ref\sanitize::hostname($domain, $www, $unicode);
 		return $domain;
 	}
@@ -205,7 +205,7 @@ class sanitize {
 	 * @param bool $condense Condense IPv6.
 	 * @return string IP.
 	 */
-	public static function ip($str='', $restricted=false, $condense=true) {
+	public static function ip($str='', bool $restricted=false, bool $condense=true) {
 		ref\sanitize::ip($str, $restricted, $condense);
 		return $str;
 	}
@@ -395,7 +395,7 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function upc($str, $formatted=false) {
+	public static function upc($str, bool $formatted=false) {
 		ref\sanitize::upc($str, $formatted);
 		return $str;
 	}

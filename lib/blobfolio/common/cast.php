@@ -69,7 +69,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool Bool.
 	 */
-	public static function to_bool($value=false, $flatten=false) {
+	public static function to_bool($value=false, bool $flatten=false) {
 		ref\cast::bool($value, $flatten);
 		return $value;
 	}
@@ -81,7 +81,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool Bool.
 	 */
-	public static function bool($value=false, $flatten=false) {
+	public static function bool($value=false, bool $flatten=false) {
 		ref\cast::bool($value, $flatten);
 		return $value;
 	}
@@ -93,7 +93,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool Bool.
 	 */
-	public static function boolean($value=false, $flatten=false) {
+	public static function boolean($value=false, bool $flatten=false) {
 		ref\cast::bool($value, $flatten);
 		return $value;
 	}
@@ -105,7 +105,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Float.
 	 */
-	public static function to_float($value=0, $flatten=false) {
+	public static function to_float($value=0, bool $flatten=false) {
 		ref\cast::float($value, $flatten);
 		return $value;
 	}
@@ -117,7 +117,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Float.
 	 */
-	public static function double($value=0, $flatten=false) {
+	public static function double($value=0, bool $flatten=false) {
 		ref\cast::float($value, $flatten);
 		return $value;
 	}
@@ -129,7 +129,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Float.
 	 */
-	public static function float($value=0, $flatten=false) {
+	public static function float($value=0, bool $flatten=false) {
 		ref\cast::float($value, $flatten);
 		return $value;
 	}
@@ -141,7 +141,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return int Int.
 	 */
-	public static function to_int($value=0, $flatten=false) {
+	public static function to_int($value=0, bool $flatten=false) {
 		ref\cast::int($value, $flatten);
 		return $value;
 	}
@@ -153,7 +153,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return int Int.
 	 */
-	public static function int($value=0, $flatten=false) {
+	public static function int($value=0, bool $flatten=false) {
 		ref\cast::int($value, $flatten);
 		return $value;
 	}
@@ -165,7 +165,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return int Int.
 	 */
-	public static function integer($value=0, $flatten=false) {
+	public static function integer($value=0, bool $flatten=false) {
 		ref\cast::int($value, $flatten);
 		return $value;
 	}
@@ -177,7 +177,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Number.
 	 */
-	public static function to_number($value=0, $flatten=false) {
+	public static function to_number($value=0, bool $flatten=false) {
 		ref\cast::number($value, $flatten);
 		return $value;
 	}
@@ -189,7 +189,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Number.
 	 */
-	public static function number($value=0, $flatten=false) {
+	public static function number($value=0, bool $flatten=false) {
 		ref\cast::number($value, $flatten);
 		return $value;
 	}
@@ -201,7 +201,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return string String.
 	 */
-	public static function to_string($value='', $flatten=false) {
+	public static function to_string($value='', bool $flatten=false) {
 		ref\cast::string($value, $flatten);
 		return $value;
 	}
@@ -213,7 +213,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return string String.
 	 */
-	public static function string($value='', $flatten=false) {
+	public static function string($value='', bool $flatten=false) {
 		ref\cast::string($value, $flatten);
 		return $value;
 	}
@@ -226,7 +226,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return mixed Cast value.
 	 */
-	public static function to_type($value, $type=null, $flatten=false) {
+	public static function to_type($value, string $type='', bool $flatten=false) {
 		ref\cast::to_type($value, $type, $flatten);
 		return $value;
 	}

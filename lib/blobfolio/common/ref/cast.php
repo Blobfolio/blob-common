@@ -25,11 +25,14 @@ class cast {
 	 * @return bool True.
 	 */
 	public static function array(&$value=null) {
+		// Short circuit.
+		if (is_array($value)) {
+			return true;
+		}
+
 		try {
 			$value = (array) $value;
 		} catch (\Throwable $e) {
-			$value = array();
-		} catch (\Exception $e) {
 			$value = array();
 		}
 
@@ -53,7 +56,12 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function bool(&$value=false, $flatten=false) {
+	public static function bool(&$value=false, bool $flatten=false) {
+		// Short circuit.
+		if (is_bool($value)) {
+			return true;
+		}
+
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::bool($value[$k]);
@@ -81,8 +89,6 @@ class cast {
 					$value = (bool) $value;
 				} catch (\Throwable $e) {
 					$value = false;
-				} catch (\Exception $e) {
-					$value = false;
 				}
 			}
 		}
@@ -97,7 +103,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return bool True/false.
 	 */
-	public static function to_bool(&$value=null, $flatten=false) {
+	public static function to_bool(&$value=null, bool $flatten=false) {
 		return static::bool($value, $flatten);
 	}
 
@@ -108,7 +114,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return bool True/false.
 	 */
-	public static function boolean(&$value=null, $flatten=false) {
+	public static function boolean(&$value=null, bool $flatten=false) {
 		return static::bool($value, $flatten);
 	}
 
@@ -119,7 +125,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function float(&$value=0, $flatten=false) {
+	public static function float(&$value=0, bool $flatten=false) {
 		// Short circuit.
 		if (is_float($value)) {
 			return true;
@@ -136,8 +142,6 @@ class cast {
 				$value = (float) $value;
 			} catch (\Throwable $e) {
 				$value = 0.0;
-			} catch (\Exception $e) {
-				$value = 0.0;
 			}
 		}
 
@@ -151,7 +155,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return float Value.
 	 */
-	public static function double(&$value=null, $flatten=false) {
+	public static function double(&$value=null, bool $flatten=false) {
 		return static::float($value, $flatten);
 	}
 
@@ -162,7 +166,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return float Value.
 	 */
-	public static function to_float(&$value=null, $flatten=false) {
+	public static function to_float(&$value=null, bool $flatten=false) {
 		return static::float($value, $flatten);
 	}
 
@@ -173,7 +177,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function int(&$value=0, $flatten=false) {
+	public static function int(&$value=0, bool $flatten=false) {
 		// Short circuit.
 		if (is_int($value)) {
 			return true;
@@ -215,7 +219,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return int Value.
 	 */
-	public static function to_int(&$value=null, $flatten=false) {
+	public static function to_int(&$value=null, bool $flatten=false) {
 		return static::int($value, $flatten);
 	}
 
@@ -226,7 +230,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return int Value.
 	 */
-	public static function integer(&$value=null, $flatten=false) {
+	public static function integer(&$value=null, bool $flatten=false) {
 		return static::int($value, $flatten);
 	}
 
@@ -237,7 +241,12 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function number(&$value=0, $flatten=false) {
+	public static function number(&$value=0, bool $flatten=false) {
+		// Short circuit.
+		if (is_float($value)) {
+			return true;
+		}
+
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::number($value[$k]);
@@ -271,8 +280,6 @@ class cast {
 				$value = (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 			} catch (\Throwable $e) {
 				$value = 0.0;
-			} catch (\Exception $e) {
-				$value = 0.0;
 			}
 		}
 
@@ -286,7 +293,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return float Value.
 	 */
-	public static function to_number(&$value=null, $flatten=false) {
+	public static function to_number(&$value=null, bool $flatten=false) {
 		return static::number($value, $flatten);
 	}
 
@@ -297,7 +304,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function string(&$value='', $flatten=false) {
+	public static function string(&$value='', bool $flatten=false) {
 		// Short circuit.
 		if (constants::$str_lock && is_string($value)) {
 			return true;
@@ -327,8 +334,6 @@ class cast {
 				}
 			} catch (\Throwable $e) {
 				$value = '';
-			} catch (\Exception $e) {
-				$value = '';
 			}
 		}
 
@@ -342,7 +347,7 @@ class cast {
 	 * @param bool $flatten Flatten.
 	 * @return string String.
 	 */
-	public static function to_string(&$value=null, $flatten=false) {
+	public static function to_string(&$value=null, bool $flatten=false) {
 		return static::string($value, $flatten);
 	}
 
@@ -354,8 +359,7 @@ class cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return bool True.
 	 */
-	public static function to_type(&$value, $type=null, $flatten=false) {
-		static::string($type, true);
+	public static function to_type(&$value, string $type='', bool $flatten=false) {
 		if (!$type) {
 			return true;
 		}

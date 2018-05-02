@@ -257,7 +257,7 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtolower($str='', $strict=false) {
+	public static function strtolower($str='', bool $strict=false) {
 		ref\mb::strtolower($str, $strict);
 		return $str;
 	}
@@ -272,7 +272,7 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtoupper($str='', $strict=false) {
+	public static function strtoupper($str='', bool $strict=false) {
 		ref\mb::strtoupper($str, $strict);
 		return $str;
 	}
@@ -338,7 +338,7 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucfirst($str='', $strict=false) {
+	public static function ucfirst($str='', bool $strict=false) {
 		ref\mb::ucfirst($str, $strict);
 		return $str;
 	}
@@ -353,7 +353,7 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucwords($str='', $strict=false) {
+	public static function ucwords($str='', bool $strict=false) {
 		ref\mb::ucwords($str, $strict);
 		return $str;
 	}
@@ -371,7 +371,7 @@ class mb {
 	 * @param bool $cut Cut.
 	 * @return string String.
 	 */
-	public static function wordwrap($str, $width=75, $break="\n", $cut=false) {
+	public static function wordwrap($str, $width=75, $break="\n", bool $cut=false) {
 		ref\mb::wordwrap($str, $width, $break, $cut);
 		return $str;
 	}

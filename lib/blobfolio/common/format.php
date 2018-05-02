@@ -354,7 +354,7 @@ class format {
 	 * @param bool $pretty Pretty.
 	 * @return string|null JSON or null.
 	 */
-	public static function json($str='', $pretty=true) {
+	public static function json($str='', bool $pretty=true) {
 		ref\format::json($str, $pretty);
 		return $str;
 	}
@@ -426,7 +426,7 @@ class format {
 	 * @param bool $no00 Remove trailing cents if none.
 	 * @return string Value.
 	 */
-	public static function money($value=0, $cents=false, $separator='', $no00=false) {
+	public static function money($value=0, bool $cents=false, $separator='', bool $no00=false) {
 		ref\format::money($value, $cents, $separator, $no00);
 		return $value;
 	}
