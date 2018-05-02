@@ -34,7 +34,7 @@ class format {
 	public static function array_flatten(&$arr) {
 		$out = array();
 
-		cast::to_array($arr);
+		cast::array($arr);
 		foreach ($arr as $v) {
 			// Recurse arrays.
 			if (is_array($v)) {
@@ -64,7 +64,7 @@ class format {
 	 * @return bool True.
 	 */
 	public static function array_to_indexed(&$arr) {
-		cast::to_array($arr);
+		cast::array($arr);
 		if (count($arr)) {
 			$out = array();
 			foreach ($arr as $k=>$v) {
@@ -93,8 +93,8 @@ class format {
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_int($precision, true);
+			cast::float($num, true);
+			cast::int($precision, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -116,7 +116,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		static::decode_unicode_entities($str);
 		static::decode_escape_entities($str);
@@ -138,7 +138,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		$replacements = array(
 			'\b'=>chr(0x08),
@@ -171,7 +171,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		$last = '';
 		$class = get_called_class();
@@ -184,7 +184,7 @@ class format {
 				$str
 			);
 
-			cast::to_string($str, true);
+			cast::string($str, true);
 		}
 
 		constants::$str_lock = $lock;
@@ -205,7 +205,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		$last = '';
 		while ($str !== $last) {
@@ -215,7 +215,7 @@ class format {
 			$str = preg_replace_callback('/&#([0-9]+);/', array(get_called_class(), 'decode_entities_chr'), $str);
 			$str = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', array(get_called_class(), 'decode_entities_hex'), $str);
 
-			cast::to_string($str, true);
+			cast::string($str, true);
 		}
 
 		constants::$str_lock = $lock;
@@ -256,8 +256,8 @@ class format {
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_int($precision, true);
+			cast::float($num, true);
+			cast::int($precision, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -285,8 +285,8 @@ class format {
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_float($tolerance, true);
+			cast::float($num, true);
+			cast::float($tolerance, true);
 
 			// We need a tolerable tolerance.
 			if ($tolerance <= 0 || $tolerance >= 1) {
@@ -343,7 +343,7 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function ip_to_number(&$ip) {
-		cast::to_string($ip, true);
+		cast::string($ip, true);
 
 		if (!filter_var($ip, FILTER_VALIDATE_IP)) {
 			$ip = false;
@@ -463,7 +463,7 @@ class format {
 	 * @return bool True.
 	 */
 	public static function json_decode(&$str='') {
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
@@ -503,7 +503,7 @@ class format {
 		$lower = v_mb::strtolower($str);
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
-			cast::to_bool($str);
+			cast::bool($str);
 			constants::$str_lock = $lock;
 			return true;
 		}
@@ -693,8 +693,8 @@ class format {
 	 * @return bool True.
 	 */
 	public static function links(&$str, $args=null, $pass=1) {
-		cast::to_string($str, true);
-		cast::to_int($pass, true);
+		cast::string($str, true);
+		cast::int($pass, true);
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -897,7 +897,7 @@ class format {
 		$args['cast'] = strtolower($args['cast']);
 		if (
 			('array' === $args['cast']) ||
-			!array_key_exists($args['cast'], constants::CAST_TYPES)
+			!isset(constants::CAST_TYPES[$args['cast']])
 		) {
 			$args['cast'] = 'string';
 		}
@@ -907,7 +907,7 @@ class format {
 			data::switcheroo($args['min'], $args['max']);
 		}
 
-		cast::to_array($list);
+		cast::array($list);
 		foreach ($list as $k=>$v) {
 			// Recurse if the value is an array.
 			if (is_array($list[$k])) {
@@ -915,7 +915,7 @@ class format {
 			}
 			// Otherwise de-list the line.
 			else {
-				cast::to_string($list[$k], true);
+				cast::string($list[$k], true);
 
 				// Lock UTF-8 Casting.
 				$lock = constants::$str_lock;
@@ -985,10 +985,10 @@ class format {
 			}
 		}
 		else {
-			cast::to_float($value);
-			cast::to_bool($cents, true);
-			cast::to_string($separator, true);
-			cast::to_bool($no00, true);
+			cast::float($value);
+			cast::bool($cents, true);
+			cast::string($separator, true);
+			cast::bool($no00, true);
 
 			$value = round($value, 2);
 			$negative = $value < 0;
@@ -1017,7 +1017,7 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function number_to_ip(&$ip) {
-		cast::to_string($ip, true);
+		cast::string($ip, true);
 		if (!$ip || ('0' === $ip)) {
 			$ip = false;
 			return false;
@@ -1070,7 +1070,7 @@ class format {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
 			constants::$str_lock = true;
@@ -1084,8 +1084,8 @@ class format {
 				return false;
 			}
 
-			cast::to_string($country);
-			cast::to_array($types);
+			cast::string($country);
+			cast::array($types);
 
 			$str = new phone($str, $country);
 			if (!$str->is_phone($types)) {
@@ -1114,8 +1114,8 @@ class format {
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_int($precision, true);
+			cast::float($num, true);
+			cast::int($precision, true);
 			sanitize::to_range($precision, 0);
 
 			$num = round($num, $precision, $mode);
@@ -1133,9 +1133,9 @@ class format {
 	 * @return bool True.
 	 */
 	public static function to_timezone(&$date, $from='UTC', $to='UTC') {
-		cast::to_string($date, true);
-		cast::to_string($from, true);
-		cast::to_string($to, true);
+		cast::string($date, true);
+		cast::string($from, true);
+		cast::string($to, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;

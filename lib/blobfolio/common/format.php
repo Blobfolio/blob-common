@@ -63,7 +63,7 @@ class format {
 	 * @return array|bool Range or false.
 	 */
 	public static function cidr_to_range($cidr) {
-		ref\cast::to_string($cidr, true);
+		ref\cast::string($cidr, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
@@ -71,7 +71,7 @@ class format {
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
-		ref\cast::to_int($cidr[1]);
+		ref\cast::int($cidr[1]);
 
 		// IPv4?
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
@@ -216,7 +216,7 @@ class format {
 	 * @return string Excerpt.
 	 */
 	public static function excerpt($str='', $args=null) {
-		ref\cast::to_string($str, true);
+		ref\cast::string($str, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
@@ -303,14 +303,14 @@ class format {
 	 * @return string Inflected string.
 	 */
 	public static function inflect($count, $single, $plural) {
-		ref\cast::to_string($single, true);
-		ref\cast::to_string($plural, true);
+		ref\cast::string($single, true);
+		ref\cast::string($plural, true);
 
 		if (is_array($count)) {
 			$count = (float) count($count);
 		}
 		else {
-			ref\cast::to_number($count);
+			ref\cast::number($count);
 		}
 
 		if (1.0 === $count) {
@@ -478,11 +478,11 @@ class format {
 	 * @return string CSV content.
 	 */
 	public static function to_csv($data=null, $headers=null, $delimiter=',', $eol="\n") {
-		ref\cast::to_array($data);
+		ref\cast::array($data);
 		$data = array_values(array_filter($data, 'is_array'));
-		ref\cast::to_array($headers);
-		ref\cast::to_string($delimiter, true);
-		ref\cast::to_string($eol, true);
+		ref\cast::array($headers);
+		ref\cast::string($delimiter, true);
+		ref\cast::string($eol, true);
 
 		$out = array();
 
@@ -494,7 +494,7 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				ref\cast::to_string($headers[$k], true);
+				ref\cast::string($headers[$k], true);
 			}
 
 			// Lock UTF-8 Casting.
@@ -512,7 +512,7 @@ class format {
 		if (count($data)) {
 			foreach ($data as $line) {
 				foreach ($line as $k=>$v) {
-					ref\cast::to_string($line[$k], true);
+					ref\cast::string($line[$k], true);
 				}
 
 				// Lock UTF-8 Casting.
@@ -553,9 +553,9 @@ class format {
 	 * @return string XLS content.
 	 */
 	public static function to_xls($data=null, $headers=null) {
-		ref\cast::to_array($data);
+		ref\cast::array($data);
 		$data = array_values(array_filter($data, 'is_array'));
-		ref\cast::to_array($headers);
+		ref\cast::array($headers);
 
 		// @codingStandardsIgnoreStart
 		$out = array(
@@ -595,7 +595,7 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				ref\cast::to_string($headers[$k], true);
+				ref\cast::string($headers[$k], true);
 			}
 
 			// Lock UTF-8 Casting.
@@ -627,10 +627,10 @@ class format {
 					}
 					elseif (is_numeric($cell)) {
 						$type = 'Number';
-						ref\cast::to_number($cell);
+						ref\cast::number($cell);
 					}
 					else {
-						ref\cast::to_string($cell, true);
+						ref\cast::string($cell, true);
 
 						// Lock UTF-8 Casting.
 						$lock = constants::$str_lock;
@@ -662,13 +662,13 @@ class format {
 						elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $cell)) {
 							$type = 'Number';
 							$format = '4';
-							ref\cast::to_number($cell);
+							ref\cast::number($cell);
 						}
 						// Currency.
 						elseif (preg_match('/^\-\$?[\d,]*\.?\d+$/', $cell) || preg_match('/^\-?[\d,]*\.?\d+¢$/', $cell)) {
 							$type = 'Number';
 							$format = '5';
-							ref\cast::to_number($cell);
+							ref\cast::number($cell);
 						}
 						// Everything else.
 						else {

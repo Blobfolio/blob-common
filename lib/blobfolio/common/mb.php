@@ -23,7 +23,7 @@ class mb {
 	 * @return mixed Array, Component, or Null.
 	 */
 	public static function parse_url($url, $component = -1) {
-		ref\cast::to_string($url, true);
+		ref\cast::string($url, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
@@ -186,7 +186,7 @@ class mb {
 	 * @return int String length.
 	 */
 	public static function strlen($str) {
-		ref\cast::to_string($str, true);
+		ref\cast::string($str, true);
 
 		if (function_exists('mb_strlen')) {
 			return (int) mb_strlen($str, 'UTF-8');
@@ -205,8 +205,8 @@ class mb {
 	 * @return int|bool First occurrence or false.
 	 */
 	public static function strpos($haystack, $needle, $offset=0) {
-		ref\cast::to_string($haystack, true);
-		ref\cast::to_string($needle, true);
+		ref\cast::string($haystack, true);
+		ref\cast::string($needle, true);
 
 		if (function_exists('mb_strpos')) {
 			return mb_strpos($haystack, $needle, $offset, 'UTF-8');
@@ -236,8 +236,8 @@ class mb {
 	 * @return int|bool Last occurrence or false.
 	 */
 	public static function strrpos($haystack, $needle, $offset=0) {
-		ref\cast::to_string($haystack, true);
-		ref\cast::to_string($needle, true);
+		ref\cast::string($haystack, true);
+		ref\cast::string($needle, true);
 
 		if (function_exists('mb_strrpos')) {
 			return mb_strrpos($haystack, $needle, $offset, 'UTF-8');
@@ -286,7 +286,7 @@ class mb {
 	 * @return string String.
 	 */
 	public static function substr($str, $start=0, $length=null) {
-		ref\cast::to_string($str, true);
+		ref\cast::string($str, true);
 
 		if (function_exists('mb_substr')) {
 			return mb_substr($str, $start, $length, 'UTF-8');
@@ -304,8 +304,8 @@ class mb {
 	 * @return int Count.
 	 */
 	public static function substr_count($haystack, $needle) {
-		ref\cast::to_string($haystack, true);
-		ref\cast::to_string($needle, true);
+		ref\cast::string($haystack, true);
+		ref\cast::string($needle, true);
 
 		if (function_exists('mb_substr_count')) {
 			return mb_substr_count($haystack, $needle, 'UTF-8');

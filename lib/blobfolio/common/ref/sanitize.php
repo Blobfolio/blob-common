@@ -33,7 +33,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			if (preg_match('/[\x80-\xff]/', $str)) {
 				$str = strtr($str, constants::ACCENT_CHARS);
@@ -63,7 +63,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			static::control_characters($str);
 			format::decode_entities($str);
 
@@ -93,7 +93,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = strtoupper($str);
 
 			// Alphanumeric, minus D, F, I, O, Q or U.
@@ -121,7 +121,7 @@ class sanitize {
 	 */
 	public static function cc(&$ccnum='') {
 		// Digits only.
-		cast::to_string($ccnum, true);
+		cast::string($ccnum, true);
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
 		$str = $ccnum;
 
@@ -213,7 +213,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
 			$str = preg_replace('/\\\\+0+/', '', $str);
 		}
@@ -234,7 +234,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -242,7 +242,7 @@ class sanitize {
 
 			static::whitespace($str);
 			mb::strtoupper($str);
-			if (!array_key_exists($str, constants::COUNTRIES)) {
+			if (!isset(constants::COUNTRIES[$str])) {
 				// Maybe a name?
 				$found = false;
 				foreach (constants::COUNTRIES as $k=>$v) {
@@ -296,7 +296,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -348,7 +348,7 @@ class sanitize {
 				$str = date('Y-m-d H:i:s', $str);
 			}
 
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -411,7 +411,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_bool($unicode, true);
+			cast::bool($unicode, true);
 
 			$host = new domain($str, true);
 			if ($host->is_fqdn() && !$host->is_ip()) {
@@ -442,7 +442,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = preg_replace('/[^\d]/', '', $str);
 			$str = str_pad($str, 13, '0', STR_PAD_LEFT);
 
@@ -490,7 +490,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -556,7 +556,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -609,7 +609,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		}
 
@@ -625,9 +625,9 @@ class sanitize {
 	 * @return string|bool Hostname or false.
 	 */
 	public static function hostname(&$domain, $www=false, $unicode=false) {
-		cast::to_string($domain, true);
-		cast::to_bool($www, true);
-		cast::to_bool($unicode, true);
+		cast::string($domain, true);
+		cast::bool($www, true);
+		cast::bool($unicode, true);
 
 		$host = new domain($domain, !$www);
 		if (!$host->is_valid()) {
@@ -655,10 +655,10 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = strtolower($str);
-			cast::to_bool($restricted, true);
-			cast::to_bool($condense, true);
+			cast::bool($restricted, true);
+			cast::bool($condense, true);
 
 			// Start by getting rid of obviously bad data.
 			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
@@ -716,10 +716,10 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			static::attribute_value($str);
 
-			cast::to_array($protocols);
+			cast::array($protocols);
 			$allowed_protocols = array_merge(constants::SVG_WHITELIST_PROTOCOLS, $protocols);
 			mb::strtolower($allowed_protocols);
 			$allowed_protocols = array_map('trim', $allowed_protocols);
@@ -727,7 +727,7 @@ class sanitize {
 			$allowed_protocols = array_unique($allowed_protocols);
 			sort($allowed_protocols);
 
-			cast::to_array($domains);
+			cast::array($domains);
 			$allowed_domains = array_merge(constants::SVG_WHITELIST_DOMAINS, $domains);
 			static::domain($allowed_domains);
 			$allowed_domains = array_filter($allowed_domains, 'strlen');
@@ -786,7 +786,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = strtoupper($str);
 			$str = preg_replace('/[^\dX]/', '', $str);
 
@@ -863,7 +863,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -901,7 +901,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = strtolower($str);
 			$str = preg_replace('/[^-+*.a-z0-9\/]/', '', $str);
 		}
@@ -926,7 +926,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -961,7 +961,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -991,7 +991,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Stripe zero-width chars.
 			$str = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $str);
@@ -1034,7 +1034,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -1043,7 +1043,7 @@ class sanitize {
 			static::whitespace($str);
 			$str = strtoupper($str);
 
-			if (!array_key_exists($str, constants::PROVINCES)) {
+			if (!isset(constants::PROVINCES[$str])) {
 				if (false === ($str = data::array_isearch($str, constants::PROVINCES, true))) {
 					$str = '';
 				}
@@ -1071,7 +1071,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$from = array_keys(constants::QUOTE_CHARS);
 			$to = array_values(constants::QUOTE_CHARS);
 			$str = str_replace($from, $to, $str);
@@ -1093,7 +1093,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -1102,7 +1102,7 @@ class sanitize {
 			static::whitespace($str);
 			$str = strtoupper($str);
 
-			if (!array_key_exists($str, constants::STATES)) {
+			if (!isset(constants::STATES[$str])) {
 				if (false === ($str = data::array_isearch($str, constants::STATES, true))) {
 					$str = '';
 				}
@@ -1127,7 +1127,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -1136,7 +1136,7 @@ class sanitize {
 			static::whitespace($str);
 			$str = strtoupper($str);
 
-			if (!array_key_exists($str, constants::STATES_AU)) {
+			if (!isset(constants::STATES_AU[$str])) {
 				if (false === ($str = data::array_isearch($str, constants::STATES_AU, true))) {
 					$str = '';
 				}
@@ -1160,11 +1160,11 @@ class sanitize {
 	 */
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
 		// First, sanitize and build out function arguments!
-		cast::to_string($str, true);
-		cast::to_array($tags);
-		cast::to_array($attr);
-		cast::to_array($protocols);
-		cast::to_array($domains);
+		cast::string($str, true);
+		cast::array($tags);
+		cast::array($attr);
+		cast::array($protocols);
+		cast::array($domains);
 
 		$allowed_tags = array_merge(constants::SVG_WHITELIST_TAGS, $tags);
 		mb::strtolower($allowed_tags);
@@ -1356,7 +1356,7 @@ class sanitize {
 		elseif (!in_array($str, constants::TIMEZONES, true)) {
 			$str = preg_replace('/\s/u', '', strtoupper($str));
 
-			if (array_key_exists($str, constants::TIMEZONES)) {
+			if (isset(constants::TIMEZONES[$str])) {
 				$str = constants::TIMEZONES[$str];
 			}
 			else {
@@ -1426,7 +1426,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 			$str = preg_replace('/[^\d]/', '', $str);
 			$str = str_pad($str, 12, '0', STR_PAD_LEFT);
 
@@ -1474,7 +1474,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -1631,7 +1631,7 @@ class sanitize {
 						$o1 = ord($c1);
 
 						// Convert from Windows-1252.
-						if (array_key_exists($o1, constants::WIN1252_CHARS)) {
+						if (isset(constants::WIN1252_CHARS[$o1])) {
 							$out .= constants::WIN1252_CHARS[$o1];
 						}
 						else {
@@ -1670,8 +1670,8 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
-			cast::to_int($newlines, true);
+			cast::string($str);
+			cast::int($newlines, true);
 			static::to_range($newlines, 0);
 
 			// Lock UTF-8 Casting.
@@ -1730,7 +1730,7 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			$str = preg_replace('/[^\d]/', '', $str);
 

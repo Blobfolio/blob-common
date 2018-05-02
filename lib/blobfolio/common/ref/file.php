@@ -95,7 +95,7 @@ class file {
 			}
 		}
 		else {
-			cast::to_string($path);
+			cast::string($path);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -124,7 +124,7 @@ class file {
 			}
 		}
 		else {
-			cast::to_string($path);
+			cast::string($path);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -144,7 +144,7 @@ class file {
 			}
 
 			static::unixslash($path);
-			cast::to_bool($validate, true);
+			cast::bool($validate, true);
 
 			$original = $path;
 			try {
@@ -208,7 +208,7 @@ class file {
 			}
 		}
 		else {
-			cast::to_string($path);
+			cast::string($path);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -236,7 +236,7 @@ class file {
 			}
 		}
 		else {
-			cast::to_string($path);
+			cast::string($path);
 			$path = str_replace('\\', '/', $path);
 			$path = str_replace('/./', '//', $path);
 			$path = preg_replace('/\/{2,}/u', '/', $path);
@@ -258,7 +258,7 @@ class file {
 			}
 		}
 		else {
-			cast::to_string($path);
+			cast::string($path);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -286,7 +286,7 @@ class file {
 			}
 		}
 		else {
-			cast::to_string($path);
+			cast::string($path);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;

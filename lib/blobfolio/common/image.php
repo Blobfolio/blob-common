@@ -41,7 +41,7 @@ class image {
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
 	public static function clean_svg($path, $args=null, $output='HTML') {
-		ref\cast::to_string($path, true);
+		ref\cast::string($path, true);
 
 		try {
 			if (!is_file($path)) {
@@ -53,7 +53,7 @@ class image {
 			$svg = file_get_contents($path);
 
 			// Options.
-			ref\cast::to_array($args);
+			ref\cast::array($args);
 
 			// The strip_js option is a deprecated alias of sanitize.
 			if (isset($args['strip_js']) && !isset($args['sanitize'])) {
@@ -212,7 +212,7 @@ class image {
 
 							// Make sure width and height are numbers.
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
-								ref\cast::to_float($width);
+								ref\cast::float($width);
 								if ($width <= 0) {
 									$width = null;
 								}
@@ -222,7 +222,7 @@ class image {
 							}
 
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
-								ref\cast::to_float($height);
+								ref\cast::float($height);
 								if ($height <= 0) {
 									$height = null;
 								}
@@ -487,13 +487,13 @@ class image {
 				$cwebp = constants::CWEBP;
 			}
 			else {
-				ref\cast::to_string($cwebp, true);
+				ref\cast::string($cwebp, true);
 			}
 			if (is_null($gif2webp)) {
 				$gif2webp = constants::GIF2WEBP;
 			}
 			else {
-				ref\cast::to_string($gif2webp, true);
+				ref\cast::string($gif2webp, true);
 			}
 
 			return (
@@ -516,7 +516,7 @@ class image {
 	 * @return array|bool Dimensions or false.
 	 */
 	public static function svg_dimensions($svg) {
-		ref\cast::to_string($svg, true);
+		ref\cast::string($svg, true);
 
 		// Make sure this is SVG-looking.
 		if (false === ($start = strpos(strtolower($svg), '<svg'))) {
@@ -561,7 +561,7 @@ class image {
 				switch ($v[1]) {
 					case 'width':
 					case 'height':
-						ref\cast::to_float($v[3]);
+						ref\cast::float($v[3]);
 						ref\sanitize::to_range($v[3], 0.0);
 						if ($v[3]) {
 							$out[$v[1]] = $v[3];
@@ -585,7 +585,7 @@ class image {
 			$viewbox = trim(str_replace(',', ' ', $viewbox));
 			$viewbox = explode(' ', $viewbox);
 			foreach ($viewbox as $k=>$v) {
-				ref\cast::to_float($viewbox[$k]);
+				ref\cast::float($viewbox[$k]);
 				ref\sanitize::to_range($viewbox[$k], 0.0);
 			}
 			if (count($viewbox) === 4) {
@@ -613,17 +613,17 @@ class image {
 	 * @return bool True/false.
 	 */
 	public static function to_webp($source, $out=null, $cwebp=null, $gif2webp=null, $refresh=false) {
-		ref\cast::to_string($source, true);
+		ref\cast::string($source, true);
 		if (!is_null($out)) {
-			ref\cast::to_string($out, true);
+			ref\cast::string($out, true);
 		}
 		if (!is_null($cwebp)) {
-			ref\cast::to_string($cwebp, true);
+			ref\cast::string($cwebp, true);
 		}
 		if (!is_null($gif2webp)) {
-			ref\cast::to_string($gif2webp, true);
+			ref\cast::string($gif2webp, true);
 		}
-		ref\cast::to_bool($refresh, true);
+		ref\cast::bool($refresh, true);
 
 		if (false === $source = file::path($source, true)) {
 			return false;

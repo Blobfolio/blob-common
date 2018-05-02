@@ -64,20 +64,20 @@ class cli {
 		$out = '';
 
 		foreach ($args as $v) {
-			ref\cast::to_array($v);
+			ref\cast::array($v);
 			if (!count($v)) {
 				continue;
 			}
 
 			// The string comes first.
 			$str = array_shift($v);
-			ref\cast::to_string($str, true);
+			ref\cast::string($str, true);
 
 			// Deal with codes.
 			ref\format::array_flatten($v);
 			$codes = array_filter($v, 'is_numeric');
 			if (count($codes)) {
-				ref\cast::to_int($codes);
+				ref\cast::int($codes);
 				$out .= "\033[" . implode(';', $codes) . "m{$str}\033[0m";
 			}
 			else {

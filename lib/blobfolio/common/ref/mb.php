@@ -25,9 +25,9 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function str_pad(&$str='', $pad_length, $pad_string=' ', $pad_type=null) {
-		cast::to_string($string, true);
-		cast::to_int($pad_length, true);
-		cast::to_string($pad_string, true);
+		cast::string($string, true);
+		cast::int($pad_length, true);
+		cast::string($pad_string, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
@@ -93,13 +93,13 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function str_split(&$str, $split_length=1) {
-		cast::to_int($split_length, true);
+		cast::int($split_length, true);
 		if ($split_length < 1) {
 			$str = false;
 			return false;
 		}
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
@@ -125,7 +125,7 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function strrev(&$str) {
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		if (!$str) {
 			return false;
@@ -154,7 +154,7 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::to_string($str);
+			cast::string($str);
 
 			if ($str) {
 				if (
@@ -197,7 +197,7 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::to_string($str);
+			cast::string($str);
 
 			if ($str) {
 				if (
@@ -238,7 +238,7 @@ class mb {
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::string($str);
 
 			$str = preg_replace('/^\s+/u', '', $str);
 			$str = preg_replace('/\s+$/u', '', $str);
@@ -264,7 +264,7 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::to_string($str);
+			cast::string($str);
 
 			if ($str) {
 				if (
@@ -310,7 +310,7 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::to_string($str);
+			cast::string($str);
 
 			if ($str) {
 				// Lock UTF-8 Casting.
@@ -369,10 +369,10 @@ class mb {
 	 * @return bool True.
 	 */
 	public static function wordwrap(&$str, $width=75, $break="\n", $cut=false) {
-		cast::to_string($str, true);
-		cast::to_int($width, true);
-		cast::to_string($break, true);
-		cast::to_bool($cut, true);
+		cast::string($str, true);
+		cast::int($width, true);
+		cast::string($break, true);
+		cast::bool($cut, true);
 
 		// Bad data?
 		if (!$str || $width <= 0) {

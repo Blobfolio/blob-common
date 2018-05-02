@@ -186,7 +186,7 @@ class data {
 		ref\mb::strtolower($needle, true);
 		ref\mb::strtolower($haystack, true);
 
-		ref\cast::to_bool($strict);
+		ref\cast::bool($strict);
 
 		// phpcs:disable
 		return array_search($needle, $haystack, $strict);
@@ -224,13 +224,13 @@ class data {
 		// Make sure everything is numeric.
 		foreach ($arr as $k=>$v) {
 			if (!is_numeric($arr[$k])) {
-				ref\cast::to_float($arr[$k], true);
+				ref\cast::float($arr[$k], true);
 			}
 		}
 
 		arsort($arr);
 
-		ref\cast::to_int($length, true);
+		ref\cast::int($length, true);
 		ref\sanitize::to_range($length, 1);
 
 		// Nothing to do.
@@ -238,7 +238,7 @@ class data {
 			return $arr;
 		}
 
-		ref\cast::to_string($other, true);
+		ref\cast::string($other, true);
 		if (!$other) {
 			$other = 'Other';
 		}
@@ -315,7 +315,7 @@ class data {
 	 * @return array Months.
 	 */
 	public static function cc_exp_months($format='m - M') {
-		ref\cast::to_string($format, true);
+		ref\cast::string($format, true);
 		$months = array();
 		for ($x = 1; $x <= 12; ++$x) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
@@ -330,7 +330,7 @@ class data {
 	 * @return array Years.
 	 */
 	public static function cc_exp_years($length=10) {
-		ref\cast::to_int($length, true);
+		ref\cast::int($length, true);
 		if ($length < 1) {
 			$length = 10;
 		}
@@ -422,7 +422,7 @@ class data {
 	 */
 	public static function ip_in_range($ip, $min, $max=null) {
 		ref\sanitize::ip($ip, true);
-		ref\cast::to_string($min);
+		ref\cast::string($min);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
@@ -530,7 +530,7 @@ class data {
 			$json = array();
 		}
 		else {
-			ref\cast::to_array($json);
+			ref\cast::array($json);
 		}
 
 		if (is_array($defaults)) {
@@ -552,17 +552,17 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function length_in_range($str, $min=null, $max=null) {
-		ref\cast::to_string($str, true);
+		ref\cast::string($str, true);
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
 		constants::$str_lock = true;
 
 		if (!is_null($min) && !is_int($min)) {
-			ref\cast::to_int($min, true);
+			ref\cast::int($min, true);
 		}
 		if (!is_null($max) && !is_int($max)) {
-			ref\cast::to_int($max, true);
+			ref\cast::int($max, true);
 		}
 
 		$length = mb::strlen($str);
@@ -598,10 +598,10 @@ class data {
 	 * @return array Parsed arguments.
 	 */
 	public static function parse_args($args, $defaults, $strict=true, $recursive=true) {
-		ref\cast::to_array($args);
-		ref\cast::to_array($defaults);
-		ref\cast::to_bool($strict, true);
-		ref\cast::to_bool($recursive, true);
+		ref\cast::array($args);
+		ref\cast::array($defaults);
+		ref\cast::bool($strict, true);
+		ref\cast::bool($recursive, true);
 
 		if (!count($defaults)) {
 			return array();
@@ -641,8 +641,8 @@ class data {
 	 * @return int Random number.
 	 */
 	public static function random_int($min=0, $max=1) {
-		ref\cast::to_int($min, true);
-		ref\cast::to_int($max, true);
+		ref\cast::int($min, true);
+		ref\cast::int($max, true);
 
 		if ($min > $max) {
 			static::switcheroo($min, $max);
@@ -668,10 +668,10 @@ class data {
 	 * @return string Random string.
 	 */
 	public static function random_string($length=10, $soup=null) {
-		ref\cast::to_int($length, true);
+		ref\cast::int($length, true);
 
 		if (is_array($soup) && count($soup)) {
-			ref\cast::to_string($soup);
+			ref\cast::string($soup);
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
@@ -739,11 +739,11 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function unsetcookie($name, $path='', $domain='', $secure=false, $httponly=false) {
-		ref\cast::to_string($name, true);
-		ref\cast::to_string($path, true);
-		ref\cast::to_string($domain, true);
-		ref\cast::to_bool($secure, true);
-		ref\cast::to_bool($httponly, true);
+		ref\cast::string($name, true);
+		ref\cast::string($path, true);
+		ref\cast::string($domain, true);
+		ref\cast::bool($secure, true);
+		ref\cast::bool($httponly, true);
 
 		try {
 			setcookie($name, false, -1, $path, $domain, $secure, $httponly);
