@@ -79,19 +79,19 @@ class bc {
 
 		// Bitwise and.
 		if ('AND' === $method) {
-			for ($x = 0; $x < $length; $x++) {
+			for ($x = 0; $x < $length; ++$x) {
 				$out .= (($left[$x] + 0) & ($right[$x] + 0)) ? '1' : '0';
 			}
 		}
 		// Bitwise or.
 		elseif ('OR' === $method) {
-			for ($x = 0; $x < $length; $x++) {
+			for ($x = 0; $x < $length; ++$x) {
 				$out .= (($left[$x] + 0) | ($right[$x] + 0)) ? '1' : '0';
 			}
 		}
 		// Bitwise exclusive or.
 		elseif ('XOR' === $method) {
-			for ($x = 0; $x < $length; $x++) {
+			for ($x = 0; $x < $length; ++$x) {
 				$out .= (($left[$x] + 0) ^ ($right[$x] + 0)) ? '1' : '0';
 			}
 		}
@@ -141,7 +141,7 @@ class bc {
 
 		$dec = '0';
 		$length = strlen($bin);
-		for ($x = 0; $x < $length; $x++) {
+		for ($x = 0; $x < $length; ++$x) {
 			$dec = bcmul($dec, '2', 0);
 			$dec = bcadd($dec, $bin[$x], 0);
 		}

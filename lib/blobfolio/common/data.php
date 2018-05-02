@@ -78,7 +78,7 @@ class data {
 		}
 
 		// Compare the first to each.
-		for ($x = 1; $x < count($arrays); $x++) {
+		for ($x = 1; $x < count($arrays); ++$x) {
 			$common = array();
 
 			// If the arrays are the same, or the second is empty,
@@ -129,7 +129,7 @@ class data {
 		}
 
 		// Compare the first to each.
-		for ($x = 1; $x < count($arrays); $x++) {
+		for ($x = 1; $x < count($arrays); ++$x) {
 			$common = array();
 
 			// Lowercase for comparison.
@@ -317,7 +317,7 @@ class data {
 	public static function cc_exp_months($format='m - M') {
 		ref\cast::to_string($format, true);
 		$months = array();
-		for ($x = 1; $x <= 12; $x++) {
+		for ($x = 1; $x <= 12; ++$x) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
 		}
 		return $months;
@@ -336,7 +336,7 @@ class data {
 		}
 
 		$years = array();
-		for ($x = 0; $x < $length; $x++) {
+		for ($x = 0; $x < $length; ++$x) {
 			$year = (int) (date('Y') + $x);
 			$years[$year] = $year;
 		}
@@ -677,7 +677,7 @@ class data {
 		// Pick nine entries at random.
 		$salt = '';
 		$max = count($soup) - 1;
-		for ($x = 0; $x < $length; $x++) {
+		for ($x = 0; $x < $length; ++$x) {
 			$salt .= $soup[static::random_int(0, $max)];
 		}
 

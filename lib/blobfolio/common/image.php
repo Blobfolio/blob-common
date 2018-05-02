@@ -435,7 +435,7 @@ class image {
 				$path_old = $path . '.dirty.' . microtime(true);
 				$num = 0;
 				while (file_exists($path_old)) {
-					$num++;
+					++$num;
 					$tmp = $path_old . "-$num";
 					if (!file_exists($tmp)) {
 						$path_old = $tmp;

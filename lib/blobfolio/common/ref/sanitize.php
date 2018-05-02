@@ -169,13 +169,13 @@ class sanitize {
 		$j = 0;
 		for ($i = ($numdig - 2); $i >= 0; $i -= 2) {
 			$dbl[$j] = $dig[$i] * 2;
-			$j++;
+			++$j;
 		}
 		$dblsz = count($dbl);
 		$validate = 0;
-		for ($i = 0; $i < $dblsz; $i++) {
+		for ($i = 0; $i < $dblsz; ++$i) {
 			$add = str_split($dbl[$i]);
-			for ($j = 0; $j < count($add); $j++) {
+			for ($j = 0; $j < count($add); ++$j) {
 				$validate += $add[$j];
 			}
 			$add = '';
@@ -767,7 +767,7 @@ class sanitize {
 			// Validate a 10.
 			if (strlen($str) === 10) {
 				$checksum = 0;
-				for ($x = 0; $x < 9; $x++) {
+				for ($x = 0; $x < 9; ++$x) {
 					if ('X' === $str[$x]) {
 						$checksum += 10 * (10 - $x);
 					}
@@ -1202,10 +1202,10 @@ class sanitize {
 
 		// Once more through the tags to find namespaces.
 		$tags = $dom->getElementsByTagName('*');
-		for ($x = 0; $x < $tags->length; $x++) {
+		for ($x = 0; $x < $tags->length; ++$x) {
 			$tag = $tags->item($x);
 			$nodes = $xpath->query('namespace::*', $tag);
-			for ($y = 0; $y < $nodes->length; $y++) {
+			for ($y = 0; $y < $nodes->length; ++$y) {
 				$node = $nodes->item($y);
 
 				$node_name = v_mb::strtolower($node->nodeName);
@@ -1462,7 +1462,7 @@ class sanitize {
 				}
 
 				$out = '';
-				for ($x = 0; $x < $length; $x++) {
+				for ($x = 0; $x < $length; ++$x) {
 					$c1 = $str[$x];
 
 					// Should be converted to UTF-8 if not already.
@@ -1476,7 +1476,7 @@ class sanitize {
 							// Looks good.
 							if ($c2 >= "\x80" && $c2 <= "\xbf") {
 								$out .= $c1 . $c2;
-								$x++;
+								++$x;
 							}
 							// Invalid; convert it.
 							else {

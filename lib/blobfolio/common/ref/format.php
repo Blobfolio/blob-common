@@ -393,7 +393,7 @@ class format {
 		else {
 			// Find the minimum IP (last 64 bytes to 0).
 			$bits = explode(':', $ip);
-			for ($x = 4; $x <= 7; $x++) {
+			for ($x = 4; $x <= 7; ++$x) {
 				$bits[$x] = 0;
 			}
 			$ip = v_sanitize::ip(implode(':', $bits), true) . '/64';
@@ -523,7 +523,7 @@ class format {
 		}
 		$chunk = v_mb::substr($str, 1, -1);
 		$length = v_mb::strlen($chunk);
-		for ($x = 0; $x <= $length; $x++) {
+		for ($x = 0; $x <= $length; ++$x) {
 			$last = end($slices);
 			$subchunk = v_mb::substr($chunk, $x, 2);
 
@@ -625,7 +625,7 @@ class format {
 					'from'=>$x,
 					'delimiter'=>false,
 				);
-				$x++;
+				++$x;
 			}
 			// Closing comment.
 			elseif (
@@ -633,7 +633,7 @@ class format {
 				('comment' === $last['type'])
 			) {
 				array_pop($slices);
-				$x++;
+				++$x;
 				for ($y = $last['from']; $y <= $x; $y++) {
 					$chunk{$y} = ' ';
 				}
@@ -992,7 +992,7 @@ class format {
 		}
 
 		$chunk = array();
-		for ($bit = 0; $bit <= 7; $bit++) {
+		for ($bit = 0; $bit <= 7; ++$bit) {
 			$bin_part = substr($bin, $bit * 16, 16);
 			$chunk[] = dechex(bindec($bin_part));
 		}

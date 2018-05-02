@@ -318,7 +318,7 @@ class dom {
 				}
 
 				$tmp = explode("\n", $styles[$k]);
-				for ($x = 1; $x < count($tmp); $x++) {
+				for ($x = 1; $x < count($tmp); ++$x) {
 					$tmp[$x] = str_replace('⠈', "⠈\n", $tmp[$x]);
 				}
 				$styles[$k] = implode("\n", $tmp);
@@ -456,7 +456,7 @@ class dom {
 		try {
 			$xpath = new \DOMXPath($dom);
 			$nodes = $xpath->query("//*[namespace::{$namespace} and not(../namespace::{$namespace})]");
-			for ($x = 0; $x < $nodes->length; $x++) {
+			for ($x = 0; $x < $nodes->length; ++$x) {
 				$node = $nodes->item($x);
 				$node->removeAttributeNS(
 					$node->lookupNamespaceURI($namespace),
