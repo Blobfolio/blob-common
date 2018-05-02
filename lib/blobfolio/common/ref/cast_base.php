@@ -201,6 +201,11 @@ abstract class cast_base {
 	 * @return bool True.
 	 */
 	public static function to_string(&$value='', $flatten=false) {
+		// Short circuit.
+		if (!constants::$str_lock && is_string($value)) {
+			return true;
+		}
+
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::to_string($value[$k]);
@@ -216,7 +221,6 @@ abstract class cast_base {
 				$value = (string) $value;
 				if (
 					$value &&
-					constants::$utf8_cast &&
 					(
 						!function_exists('mb_check_encoding') ||
 						!mb_check_encoding($value, 'ASCII')
