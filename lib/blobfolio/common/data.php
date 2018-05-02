@@ -426,7 +426,7 @@ class data {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		// Bad IP.
 		if (!$ip) {
@@ -556,7 +556,7 @@ class data {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		if (!is_null($min) && !is_int($min)) {
 			ref\cast::to_int($min, true);
@@ -675,7 +675,7 @@ class data {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			$soup = implode('', $soup);
 			ref\sanitize::printable($soup);				// Strip non-printable.

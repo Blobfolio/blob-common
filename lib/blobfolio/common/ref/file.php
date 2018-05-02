@@ -99,7 +99,7 @@ class file {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::unleadingslash($path);
 			$path = "/$path";
@@ -128,7 +128,7 @@ class file {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.
@@ -212,7 +212,7 @@ class file {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::untrailingslash($path);
 			$path .= '/';
@@ -262,7 +262,7 @@ class file {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::unixslash($path);
 			$path = ltrim($path, '/');
@@ -290,7 +290,7 @@ class file {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::unixslash($path);
 			$path = rtrim($path, '/');

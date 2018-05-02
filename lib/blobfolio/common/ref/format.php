@@ -114,7 +114,7 @@ class format {
 	public static function decode_js_entities(&$str='') {
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = true;
+		constants::$str_lock = false;
 
 		cast::to_string($str, true);
 
@@ -136,7 +136,7 @@ class format {
 	public static function decode_escape_entities(&$str='') {
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = true;
+		constants::$str_lock = false;
 
 		cast::to_string($str, true);
 
@@ -169,7 +169,7 @@ class format {
 	public static function decode_unicode_entities(&$str='') {
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = true;
+		constants::$str_lock = false;
 
 		cast::to_string($str, true);
 
@@ -203,7 +203,7 @@ class format {
 	public static function decode_entities(&$str='') {
 		// Force UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = true;
+		constants::$str_lock = false;
 
 		cast::to_string($str, true);
 
@@ -467,7 +467,7 @@ class format {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		// Remove comments.
 		$str = preg_replace(
@@ -919,7 +919,7 @@ class format {
 
 				// Lock UTF-8 Casting.
 				$lock = constants::$str_lock;
-				constants::$str_lock = false;
+				constants::$str_lock = true;
 
 				if ($args['delimiter']) {
 					$list[$k] = explode($args['delimiter'], $list[$k]);
@@ -1046,7 +1046,7 @@ class format {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		sanitize::ip($ip, true);
 
@@ -1073,7 +1073,7 @@ class format {
 			cast::to_string($str);
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			sanitize::whitespace($str);
 
@@ -1139,7 +1139,7 @@ class format {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		sanitize::datetime($date);
 		if ('UTC' !== $from) {

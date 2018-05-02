@@ -31,7 +31,7 @@ class mb {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		$current_length = v_mb::strlen($str);
 		$pad_string_length = v_mb::strlen($pad_string);
@@ -103,7 +103,7 @@ class mb {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		$str_length = v_mb::strlen($str);
 		$out = array();
@@ -276,7 +276,7 @@ class mb {
 				) {
 					// Lock UTF-8 Casting.
 					$lock = constants::$str_lock;
-					constants::$str_lock = false;
+					constants::$str_lock = true;
 
 					$first = v_mb::substr($str, 0, 1);
 					static::strtoupper($first);
@@ -315,7 +315,7 @@ class mb {
 			if ($str) {
 				// Lock UTF-8 Casting.
 				$lock = constants::$str_lock;
-				constants::$str_lock = false;
+				constants::$str_lock = true;
 
 				// Don't use the built-in case functions as those
 				// kinda suck. Instead let's adjust manually.
@@ -387,7 +387,7 @@ class mb {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		// First, split on horizontal whitespace.
 		$chunks = preg_split('/([\s$]+)/uS', trim($str), -1, PREG_SPLIT_DELIM_CAPTURE);

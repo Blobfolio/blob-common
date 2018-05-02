@@ -67,7 +67,7 @@ class format {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
@@ -220,7 +220,7 @@ class format {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		ref\sanitize::whitespace($str);
 		$str = strip_tags($str);
@@ -244,7 +244,7 @@ class format {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		// Character limit.
 		if (('character' === $options['unit']) && mb::strlen($str) > $options['length']) {
@@ -499,7 +499,7 @@ class format {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			ref\sanitize::csv($headers);
 
@@ -517,7 +517,7 @@ class format {
 
 				// Lock UTF-8 Casting.
 				$lock = constants::$str_lock;
-				constants::$str_lock = false;
+				constants::$str_lock = true;
 
 				ref\sanitize::csv($line);
 
@@ -600,7 +600,7 @@ class format {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			$out[] = '<Row>';
 			foreach ($headers as $cell) {
@@ -634,7 +634,7 @@ class format {
 
 						// Lock UTF-8 Casting.
 						$lock = constants::$str_lock;
-						constants::$str_lock = false;
+						constants::$str_lock = true;
 
 						ref\sanitize::whitespace($cell, 2);
 						// Date and time.

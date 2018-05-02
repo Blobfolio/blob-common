@@ -77,7 +77,7 @@ class image {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
@@ -547,7 +547,7 @@ class image {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		// Search for width, height, and viewbox.
 		ref\sanitize::whitespace($svg);

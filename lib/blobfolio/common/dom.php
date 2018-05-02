@@ -25,7 +25,7 @@ class dom {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		try {
 			// First thing first, lowercase all tags.
@@ -268,7 +268,7 @@ class dom {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		// Remove comments.
 		while (false !== $start = mb::strpos($styles, '/*')) {

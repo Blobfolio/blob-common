@@ -95,7 +95,7 @@ class file {
 
 		// Lock UTF-8 Casting.
 		$lock = constants::$str_lock;
-		constants::$str_lock = false;
+		constants::$str_lock = true;
 
 		ref\file::path($path, true);
 

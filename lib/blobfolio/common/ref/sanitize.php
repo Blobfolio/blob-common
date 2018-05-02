@@ -69,7 +69,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			// And trim the edges while we're here.
 			mb::trim($str);
@@ -238,7 +238,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::whitespace($str);
 			mb::strtoupper($str);
@@ -300,7 +300,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::quotes($str);
 			static::whitespace($str);
@@ -352,7 +352,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			mb::trim($str);
 
@@ -494,7 +494,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::quotes($str);
 			mb::strtolower($str);
@@ -560,7 +560,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			mb::strtolower($str);
 			static::whitespace($str);
@@ -867,7 +867,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			sanitize::quotes($str);
 			sanitize::whitespace($str);
@@ -930,7 +930,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::quotes($str);
 			static::whitespace($str);
@@ -965,7 +965,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::printable($str);
 			static::whitespace($str);
@@ -1038,7 +1038,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::whitespace($str);
 			$str = strtoupper($str);
@@ -1097,7 +1097,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::whitespace($str);
 			$str = strtoupper($str);
@@ -1131,7 +1131,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			static::whitespace($str);
 			$str = strtoupper($str);
@@ -1478,7 +1478,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			$tmp = v_mb::parse_url($str);
 
@@ -1676,7 +1676,7 @@ class sanitize {
 
 			// Lock UTF-8 Casting.
 			$lock = constants::$str_lock;
-			constants::$str_lock = false;
+			constants::$str_lock = true;
 
 			if (!$newlines) {
 				$str = preg_replace('/\s+/u', ' ', $str);

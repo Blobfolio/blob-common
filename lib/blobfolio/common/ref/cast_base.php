@@ -202,7 +202,7 @@ abstract class cast_base {
 	 */
 	public static function to_string(&$value='', $flatten=false) {
 		// Short circuit.
-		if (!constants::$str_lock && is_string($value)) {
+		if (constants::$str_lock && is_string($value)) {
 			return true;
 		}
 
