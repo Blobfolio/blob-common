@@ -8,7 +8,7 @@
     "data",
     "parsing"
   ],
-  "version": "7.3.1",
+  "version": "dev-7.0_Next",
   "type": "library",
   "homepage": "https:\/\/github.com\/Blobfolio\/blob-common",
   "license": "WTFPL",
@@ -30,7 +30,7 @@
 
     "blobfolio\/blob-mimes": "*",
     "blobfolio\/blob-phone": "*",
-    "blobfolio\/blob-domain": "*"
+    "blobfolio\/blob-domain": "dev-7.0_Next"
   },
   "require-dev": {
     "phpunit\/phpunit": "5.7.*"
