@@ -29,7 +29,7 @@
     "ext-hash": "*",
 
     "blobfolio\/blob-mimes": "*",
-    "blobfolio\/blob-phone": "*",
+    "blobfolio\/blob-phone": "dev-7.0_Next",
     "blobfolio\/blob-domain": "dev-7.0_Next"
   },
   "require-dev": {
