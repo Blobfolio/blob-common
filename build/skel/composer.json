@@ -1,10 +1,10 @@
 {
   "name": "blob-common-phar",
   "require": {
-    "blobfolio\/blob-common": "*",
+    "blobfolio\/blob-common": "dev-7.0_Next",
     "blobfolio\/blob-mimes": "*",
     "blobfolio\/blob-phone": "*",
-    "blobfolio\/blob-domain": "*",
+    "blobfolio\/blob-domain": "dev-7.0_Next",
     "neitanod\/forceutf8": "*"
   },
   "config": {
