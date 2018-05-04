@@ -104,7 +104,7 @@ class file {
 		if ((false !== $path) && @is_file($path)) {
 			$content = base64_encode(@file_get_contents($path));
 			$finfo = mime::finfo($path);
-			return 'data:' . $finfo['mime'] . ';base64,' . $content;
+			return "data:{$finfo['mime']};base64,{$content}";
 		}
 
 		return false;
