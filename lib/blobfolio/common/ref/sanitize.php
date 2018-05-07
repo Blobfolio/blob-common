@@ -1711,6 +1711,11 @@ class sanitize {
 			}
 		}
 		else {
+			// If there are no spaces, we're done.
+			if (is_string($str) && !preg_match('/\s/u', $str)) {
+				return true;
+			}
+
 			cast::string($str);
 			static::to_range($newlines, 0);
 
