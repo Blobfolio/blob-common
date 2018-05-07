@@ -19,7 +19,7 @@ class file {
 	 * @param string $to Destination.
 	 * @return bool True/false.
 	 */
-	public static function copy($from, $to) {
+	public static function copy(string $from, string $to) {
 		ref\file::path($from, true);
 		if (!$from) {
 			return false;
@@ -90,7 +90,7 @@ class file {
 	 * @param string $path Path.
 	 * @return string|bool Data-URI or false.
 	 */
-	public static function data_uri($path='') {
+	public static function data_uri(string $path='') {
 		ref\cast::string($path, true);
 
 		// Lock UTF-8 Casting.
