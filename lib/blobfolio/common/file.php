@@ -311,7 +311,9 @@ class file {
 
 		$lines = 0;
 
-		// Open it and count the lines!
+		// Unfortunately we still need to read the file line by line,
+		// but at least we're only loading one line into memory at a
+		// time. For large files, this makes a big difference.
 		if ($handle = @fopen($file, 'r')) {
 			while (false !== ($line = @fgets($handle))) {
 				if ($trim) {
