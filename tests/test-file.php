@@ -81,6 +81,22 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::csv_headers()
+	 *
+	 * @dataProvider data_csv_headers
+	 *
+	 * @param string $file File.
+	 * @param mixed $cols Columns.
+	 * @param string $delimiter Delimiter.
+	 * @param mixed $expected Expected.
+	 * @return void Nothing.
+	 */
+	function test_csv_headers(string $file, $cols, string $delimiter, $expected) {
+		$this->assertSame($expected, file::csv_headers($file, $cols, $delimiter));
+	}
+
+
+	/**
 	 * ::data_uri()
 	 *
 	 * @return void Nothing.
@@ -298,6 +314,75 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	// -----------------------------------------------------------------
 	// Data
 	// -----------------------------------------------------------------
+
+	/**
+	 * Data for ::csv_headers()
+	 *
+	 * @return array Data.
+	 */
+	function data_csv_headers() {
+		return array(
+			// Regular CSV.
+			array(
+				static::ASSETS . 'roles.csv',
+				null,
+				',',
+				array(
+					'Type'=>0,
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+			// Filter columns.
+			array(
+				static::ASSETS . 'roles.csv',
+				array(
+					'Name',
+					'Age',
+				),
+				',',
+				array(
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+			// Filter w/ alternate names.
+			array(
+				static::ASSETS . 'roles.csv',
+				array(
+					'name'=>'Name',
+					'age'=>'Age',
+				),
+				',',
+				array(
+					'name'=>1,
+					'age'=>2,
+				),
+			),
+			// One with leading whitespace.
+			array(
+				static::ASSETS . 'roles2.csv',
+				null,
+				',',
+				array(
+					'Type'=>0,
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+			// Tab-delimited.
+			array(
+				static::ASSETS . 'roles3.csv',
+				null,
+				"\t",
+				array(
+					'Type'=>0,
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+		);
+	}
 
 	/**
 	 * Data for ::leadingslash()

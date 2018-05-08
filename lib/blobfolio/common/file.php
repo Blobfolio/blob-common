@@ -85,12 +85,89 @@ class file {
 	}
 
 	/**
+	 * CSV Headers
+	 *
+	 * Read the first line of a CSV and locate the indexes of each
+	 * column.
+	 *
+	 * If an array of columns is passed, only the indexes of those
+	 * columns will be returned.
+	 *
+	 * If said argument is an associative array, the return value will
+	 * use the argument keys rather than the CSV headers. This can be
+	 * useful in cases where, e.g., a CSV has a stupid long header
+	 * label.
+	 *
+	 * @param string $csv CSV file path.
+	 * @param mixed $cols Filter columns.
+	 * @param string $delimiter Delimiter.
+	 * @return bool|array Headers.
+	 */
+	public static function csv_headers(string $csv, $cols=false, string $delimiter=',') {
+		// We definitely need a file.
+		ref\file::path($csv, true);
+		if (!$csv || !is_file($csv)) {
+			return false;
+		}
+
+		// Are we looking for particular columns?
+		$assoc = false;
+		if (is_array($cols) && count($cols)) {
+			if ('associative' === cast::array_type($cols)) {
+				$assoc = true;
+			}
+			// Flip the array for faster searching.
+			$cols = array_flip($cols);
+		}
+		else {
+			$cols = false;
+		}
+
+		// Open the CSV and look for the first line with stuff.
+		if ($handle = fopen($csv, 'r')) {
+			while (false !== ($line = fgetcsv($handle, 0, $delimiter))) {
+				// Skip empty, useless lines.
+				if (!isset($line[0])) {
+					continue;
+				}
+
+				// Flip this too.
+				$line = array_flip($line);
+
+				// If we aren't filtering columns, we can just cast and
+				// return.
+				if (!$cols) {
+					foreach ($line as $k=>$v) {
+						$line[$k] = (int) $v;
+					}
+					return $line;
+				}
+
+				// Loop through all requested columns and find the
+				// index, if any.
+				$out = array();
+				foreach ($cols as $k=>$v) {
+					$key = $assoc ? $v : $k;
+					$value = isset($line[$k]) ? (int) $line[$k] : false;
+					$out[$key] = $value;
+				}
+
+				return $out;
+			}
+
+			fclose($handle);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get Data-URI From File
 	 *
 	 * @param string $path Path.
 	 * @return string|bool Data-URI or false.
 	 */
-	public static function data_uri(string $path='') {
+	public static function data_uri(string $path) {
 		ref\cast::string($path, true);
 
 		// Lock UTF-8 Casting.
