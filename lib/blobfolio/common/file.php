@@ -188,12 +188,27 @@ class file {
 	}
 
 	/**
+	 * Directory Size
+	 *
+	 * @param string $path Path.
+	 * @return int Size.
+	 */
+	public static function dirsize(string $path) {
+		$size = 0;
+		$files = static::scandir($path, true, false);
+		foreach ($files as $v) {
+			$size += @filesize($v);
+		}
+		return $size;
+	}
+
+	/**
 	 * Is Directory Empty?
 	 *
 	 * @param string $path Path.
 	 * @return bool True/false.
 	 */
-	public static function empty_dir($path='') {
+	public static function empty_dir(string $path) {
 		ref\cast::string($path);
 		if (!@is_readable($path) || !@is_dir($path)) {
 			return false;
@@ -288,7 +303,7 @@ class file {
 	 * @param string $path Path.
 	 * @return string Path.
 	 */
-	public static function leadingslash($path='') {
+	public static function leadingslash($path) {
 		ref\file::leadingslash($path);
 		return $path;
 	}
@@ -342,7 +357,7 @@ class file {
 	 * @param int $chmod CHMOD.
 	 * @return bool True/false.
 	 */
-	public static function mkdir($path='', $chmod=null) {
+	public static function mkdir(string $path, $chmod=null) {
 		// Figure out a good default CHMOD.
 		if (!$chmod || !is_numeric($chmod)) {
 			$chmod = (fileperms(__DIR__) & 0777 | 0755);
@@ -412,7 +427,7 @@ class file {
 	 * @param bool $validate Require valid file.
 	 * @return string Path.
 	 */
-	public static function path($path='', bool $validate=true) {
+	public static function path($path, bool $validate=true) {
 		ref\file::path($path, $validate);
 		return $path;
 	}
@@ -489,7 +504,7 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True/false.
 	 */
-	public static function rmdir($path='') {
+	public static function rmdir(string $path) {
 		ref\file::path($path, true);
 		if (!@is_readable($path) || !@is_dir($path)) {
 			return false;
@@ -573,7 +588,7 @@ class file {
 	 * @param string $path Path.
 	 * @return string Path.
 	 */
-	public static function trailingslash($path='') {
+	public static function trailingslash($path) {
 		ref\file::trailingslash($path);
 		return $path;
 	}
@@ -584,7 +599,7 @@ class file {
 	 * @param string $path Path.
 	 * @return string Path.
 	 */
-	public static function unixslash($path='') {
+	public static function unixslash($path) {
 		ref\file::unixslash($path);
 		return $path;
 	}
@@ -595,7 +610,7 @@ class file {
 	 * @param string $path Path.
 	 * @return string Path.
 	 */
-	public static function unleadingslash($path='') {
+	public static function unleadingslash($path) {
 		ref\file::unleadingslash($path);
 		return $path;
 	}
@@ -671,7 +686,7 @@ class file {
 	 * @param string $path Path.
 	 * @return string Path.
 	 */
-	public static function untrailingslash($path='') {
+	public static function untrailingslash($path) {
 		ref\file::untrailingslash($path);
 		return $path;
 	}

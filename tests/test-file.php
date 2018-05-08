@@ -110,6 +110,19 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::dirsize()
+	 *
+	 * @dataProvider data_dirsize
+	 *
+	 * @param string $dir Directory.
+	 * @param int $expected Expected.
+	 * @return void Nothing.
+	 */
+	function test_dirsize(string $dir, int $expected) {
+		$this->assertSame($expected, file::dirsize($dir));
+	}
+
+	/**
 	 * ::empty_dir()
 	 *
 	 * @return void Nothing.
@@ -394,6 +407,28 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 					'Name'=>1,
 					'Age'=>2,
 				),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::dirsize()
+	 *
+	 * @return array Data.
+	 */
+	function data_dirsize() {
+		return array(
+			array(
+				static::ASSETS . 'size',
+				30720,
+			),
+			array(
+				static::ASSETS . 'size/subdir',
+				10240,
+			),
+			array(
+				static::ASSETS . 'invalid',
+				0,
 			),
 		);
 	}

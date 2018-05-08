@@ -88,7 +88,7 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True.
 	 */
-	public static function leadingslash(&$path='') {
+	public static function leadingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::leadingslash($path[$k]);
@@ -117,7 +117,7 @@ class file {
 	 * @param bool $validate Require valid file.
 	 * @return bool True.
 	 */
-	public static function path(&$path='', bool $validate=true) {
+	public static function path(&$path, bool $validate=true) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::path($path[$k], $validate);
@@ -194,7 +194,7 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True.
 	 */
-	public static function trailingslash(&$path='') {
+	public static function trailingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::trailingslash($path[$k]);
@@ -222,7 +222,7 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True.
 	 */
-	public static function unixslash(&$path='') {
+	public static function unixslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unixslash($path[$k]);
@@ -244,7 +244,7 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True.
 	 */
-	public static function unleadingslash(&$path='') {
+	public static function unleadingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unleadingslash($path[$k]);
@@ -272,7 +272,7 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True.
 	 */
-	public static function untrailingslash(&$path='') {
+	public static function untrailingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::untrailingslash($path[$k]);
