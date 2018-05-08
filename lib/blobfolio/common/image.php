@@ -444,10 +444,10 @@ class image {
 
 				$path_old = $path . '.dirty.' . microtime(true);
 				$num = 0;
-				while (file_exists($path_old)) {
+				while (@file_exists($path_old)) {
 					++$num;
 					$tmp = $path_old . "-$num";
-					if (!file_exists($tmp)) {
+					if (!@file_exists($tmp)) {
 						$path_old = $tmp;
 					}
 				}
@@ -511,7 +511,7 @@ class image {
 
 		// Make sure this is SVG-looking.
 		if (false === ($start = strpos(strtolower($svg), '<svg'))) {
-			if (is_file($svg)) {
+			if (@is_file($svg)) {
 				$svg = file_get_contents($svg);
 				if (false === ($start = strpos(strtolower($svg), '<svg'))) {
 					return false;
@@ -680,16 +680,16 @@ class image {
 				$cwd
 			);
 
-			if (is_resource($process)) {
-				$life = stream_get_contents($pipes[0]);
-				fclose($pipes[0]);
-				$return_value = proc_close($process);
+			if (@is_resource($process)) {
+				$life = @stream_get_contents($pipes[0]);
+				@fclose($pipes[0]);
+				$return_value = @proc_close($process);
 
-				if (file_exists($error_log)) {
+				if (@file_exists($error_log)) {
 					@unlink($error_log);
 				}
 
-				return file_exists($out);
+				return @file_exists($out);
 			}
 		} catch (\Throwable $e) {
 			return false;

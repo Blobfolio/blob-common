@@ -106,7 +106,7 @@ class file {
 	public static function csv_headers(string $csv, $cols=false, string $delimiter=',') {
 		// We definitely need a file.
 		ref\file::path($csv, true);
-		if (!$csv || !is_file($csv)) {
+		if (!$csv || !@is_file($csv)) {
 			return false;
 		}
 
@@ -124,8 +124,8 @@ class file {
 		}
 
 		// Open the CSV and look for the first line with stuff.
-		if ($handle = fopen($csv, 'r')) {
-			while (false !== ($line = fgetcsv($handle, 0, $delimiter))) {
+		if ($handle = @fopen($csv, 'r')) {
+			while (false !== ($line = @fgetcsv($handle, 0, $delimiter))) {
 				// Skip empty, useless lines.
 				if (!isset($line[0])) {
 					continue;
@@ -155,7 +155,7 @@ class file {
 				return $out;
 			}
 
-			fclose($handle);
+			@fclose($handle);
 		}
 
 		return false;
@@ -321,7 +321,7 @@ class file {
 
 			// Figure out where we need to begin.
 			$base = dirname($path);
-			while ($base && ('.' !== $base) && !is_dir($base)) {
+			while ($base && ('.' !== $base) && !@is_dir($base)) {
 				$base = dirname($base);
 			}
 
@@ -409,7 +409,7 @@ class file {
 			}
 		}
 
-		$status = fclose($handle);
+		$status = @fclose($handle);
 
 		// Return number of bytes delivered like readfile() does.
 		if ($retbytes && $status) {

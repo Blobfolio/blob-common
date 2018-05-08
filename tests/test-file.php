@@ -193,7 +193,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 
 		// Make the directory.
 		file::mkdir($path, 0755);
-		$this->assertSame(true, is_dir($path));
+		$this->assertSame(true, @is_dir($path));
 		clearstatcache();
 		$this->assertSame(decoct(0755), decoct(@fileperms($path) & 0777));
 
