@@ -294,6 +294,43 @@ class file {
 	}
 
 	/**
+	 * Line Count
+	 *
+	 * Count the number of lines in a file as efficiently as possible.
+	 *
+	 * @param string $file File path.
+	 * @param bool $trim Ignore whitespace-only lines.
+	 * @return int Lines.
+	 */
+	public static function line_count(string $file, bool $trim=true) {
+		// We definitely need a file.
+		ref\file::path($file, true);
+		if (!$file || !@is_file($file)) {
+			return false;
+		}
+
+		$lines = 0;
+
+		// Open it and count the lines!
+		if ($handle = @fopen($file, 'r')) {
+			while (false !== ($line = @fgets($handle))) {
+				if ($trim) {
+					if (trim($line)) {
+						++$lines;
+					}
+				}
+				else {
+					++$lines;
+				}
+			}
+
+			@fclose($handle);
+		}
+
+		return $lines;
+	}
+
+	/**
 	 * Resursively Make Directory
 	 *
 	 * PHP's mkdir function can be recursive, but the permissions are

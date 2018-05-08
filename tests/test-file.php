@@ -177,6 +177,20 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::line_count()
+	 *
+	 * @dataProvider data_line_count
+	 *
+	 * @param string $file File.
+	 * @param bool $trim Only count printable lines.
+	 * @param int $expected Expected.
+	 * @return void Nothing.
+	 */
+	function test_line_count(string $file, bool $trim, int $expected) {
+		$this->assertSame($expected, file::line_count($file, $trim));
+	}
+
+	/**
 	 * ::mkdir() and ::rmdir()
 	 */
 	function test_mkdir_rmdir() {
@@ -402,6 +416,36 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				array('file/here'),
 				array('/file/here'),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::line_count()
+	 *
+	 * @return array Data.
+	 */
+	function data_line_count() {
+		return array(
+			array(
+				static::ASSETS . 'roles.csv',
+				true,
+				4,
+			),
+			array(
+				static::ASSETS . 'roles.csv',
+				false,
+				4,
+			),
+			array(
+				static::ASSETS . 'roles2.csv',
+				true,
+				4,
+			),
+			array(
+				static::ASSETS . 'roles2.csv',
+				false,
+				5,
 			),
 		);
 	}
