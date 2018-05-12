@@ -67,7 +67,7 @@ class mb {
 		// also take a moment to translate Unicode hosts
 		// to ASCII.
 		if (is_string($parts) && PHP_URL_SCHEME !== $component) {
-			$parts = urldecode($parts);
+			$parts = str_replace(' ', '+', urldecode($parts));
 
 			if (PHP_URL_HOST === $component) {
 				// Fix Unicode.
@@ -99,7 +99,7 @@ class mb {
 				}
 
 				if ('scheme' !== $k) {
-					$parts[$k] = urldecode($v);
+					$parts[$k] = str_replace(' ', '+', urldecode($v));
 				}
 				// Remove our pretend scheme.
 				elseif ('blobfolio' === $v) {
