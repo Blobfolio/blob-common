@@ -1437,7 +1437,7 @@ class constants {
 			'region'=>'South America',
 			'currency'=>'VEF',
 		),
-		'VU'=>array(
+		'VN'=>array(
 			'name'=>'Vietnam',
 			'region'=>'Asia',
 			'currency'=>'VND',
