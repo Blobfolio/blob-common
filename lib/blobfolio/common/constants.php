@@ -302,6 +302,16 @@ class constants {
 			'region'=>'Asia',
 			'currency'=>'AFN',
 		),
+		'AG'=>array(
+			'name'=>'Antigua and Barbuda',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
+		'AI'=>array(
+			'name'=>'Anguilla',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
 		'AL'=>array(
 			'name'=>'Albania',
 			'region'=>'Europe',
@@ -391,6 +401,11 @@ class constants {
 			'name'=>'Denmark',
 			'region'=>'Europe',
 			'currency'=>'DKK',
+		),
+		'DM'=>array(
+			'name'=>'Dominica',
+			'region'=>'North America',
+			'currency'=>'XCD',
 		),
 		'DO'=>array(
 			'name'=>'Dominican Republic',
