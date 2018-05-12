@@ -317,6 +317,11 @@ class constants {
 			'region'=>'Africa',
 			'currency'=>'DZD',
 		),
+		'AS'=>array(
+			'name'=>'American Samoa',
+			'region'=>'Australia',
+			'currency'=>'USD',
+		),
 		'AD'=>array(
 			'name'=>'Andorra',
 			'region'=>'Europe',
@@ -957,6 +962,11 @@ class constants {
 			'region'=>'Europe',
 			'currency'=>'EUR',
 		),
+		'MH'=>array(
+			'name'=>'Marshall Islands',
+			'region'=>'Australia',
+			'currency'=>'USD',
+		),
 		'MQ'=>array(
 			'name'=>'Martinique',
 			'region'=>'South America',
@@ -1082,6 +1092,11 @@ class constants {
 			'region'=>'Asia',
 			'currency'=>'KPW',
 		),
+		'MP'=>array(
+			'name'=>'Northern Mariana Islands',
+			'region'=>'Australia',
+			'currency'=>'USD',
+		),
 		'NO'=>array(
 			'name'=>'Norway',
 			'region'=>'Europe',
@@ -1096,6 +1111,11 @@ class constants {
 			'name'=>'Pakistan',
 			'region'=>'Asia',
 			'currency'=>'PKR',
+		),
+		'PW'=>array(
+			'name'=>'Palau',
+			'region'=>'Australia',
+			'currency'=>'USD',
 		),
 		'PS'=>array(
 			'name'=>'Palestine',
