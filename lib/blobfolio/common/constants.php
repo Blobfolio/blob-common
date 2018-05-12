@@ -302,15 +302,55 @@ class constants {
 			'region'=>'Asia',
 			'currency'=>'AFN',
 		),
+		'AX'=>array(
+			'name'=>'Åland Islands',
+			'region'=>'Europe',
+			'currency'=>'EUR',
+		),
 		'AL'=>array(
 			'name'=>'Albania',
 			'region'=>'Europe',
 			'currency'=>'ALL',
 		),
+		'DZ'=>array(
+			'name'=>'Algeria',
+			'region'=>'Africa',
+			'currency'=>'DZD',
+		),
+		'AD'=>array(
+			'name'=>'Andorra',
+			'region'=>'Europe',
+			'currency'=>'EUR',
+		),
+		'AO'=>array(
+			'name'=>'Angola',
+			'region'=>'Africa',
+			'currency'=>'AOA',
+		),
+		'AI'=>array(
+			'name'=>'Anguilla',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
+		'AG'=>array(
+			'name'=>'Antigua and Barbuda',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
 		'AR'=>array(
 			'name'=>'Argentina',
 			'region'=>'South America',
 			'currency'=>'ARS',
+		),
+		'AM'=>array(
+			'name'=>'Armenia',
+			'region'=>'Europe',
+			'currency'=>'AMD',
+		),
+		'AW'=>array(
+			'name'=>'Aruba',
+			'region'=>'South America',
+			'currency'=>'AWG',
 		),
 		'AU'=>array(
 			'name'=>'Australia',
@@ -322,40 +362,145 @@ class constants {
 			'region'=>'Europe',
 			'currency'=>'EUR',
 		),
+		'AZ'=>array(
+			'name'=>'Azerbaijan',
+			'region'=>'Asia',
+			'currency'=>'AZN',
+		),
+		'BS'=>array(
+			'name'=>'The Bahamas',
+			'region'=>'North America',
+			'currency'=>'BSD',
+		),
+		'BH'=>array(
+			'name'=>'Bahrain',
+			'region'=>'Asia',
+			'currency'=>'BHD',
+		),
 		'BD'=>array(
 			'name'=>'Bangladesh',
 			'region'=>'Asia',
 			'currency'=>'BDT',
+		),
+		'BB'=>array(
+			'name'=>'Barbados',
+			'region'=>'North America',
+			'currency'=>'BBD',
+		),
+		'BY'=>array(
+			'name'=>'Belarus',
+			'region'=>'Europe',
+			'currency'=>'BYN',
 		),
 		'BE'=>array(
 			'name'=>'Belgium',
 			'region'=>'Europe',
 			'currency'=>'EUR',
 		),
+		'BZ'=>array(
+			'name'=>'Belize',
+			'region'=>'North America',
+			'currency'=>'BZD',
+		),
+		'BJ'=>array(
+			'name'=>'Benin',
+			'region'=>'Africa',
+			'currency'=>'XOF',
+		),
+		'BM'=>array(
+			'name'=>'Bermuda',
+			'region'=>'North America',
+			'currency'=>'BMD',
+		),
+		'BT'=>array(
+			'name'=>'Bhutan',
+			'region'=>'Asia',
+			'currency'=>'BTN',
+		),
 		'BO'=>array(
 			'name'=>'Bolivia',
 			'region'=>'South America',
 			'currency'=>'BOB',
+		),
+		'BQ'=>array(
+			'name'=>'Bonaire, Sint Eustatius and Saba',
+			'region'=>'South America',
+			'currency'=>'USD',
 		),
 		'BA'=>array(
 			'name'=>'Bosnia and Herzegovina',
 			'region'=>'Europe',
 			'currency'=>'BAM',
 		),
+		'BW'=>array(
+			'name'=>'Botswana',
+			'region'=>'Africa',
+			'currency'=>'BWP',
+		),
 		'BR'=>array(
 			'name'=>'Brazil',
 			'region'=>'South America',
 			'currency'=>'BRL',
+		),
+		'IO'=>array(
+			'name'=>'British Indian Ocean Territory',
+			'region'=>'Africa',
+			'currency'=>'USD',
+		),
+		'VG'=>array(
+			'name'=>'British Virgin Islands',
+			'region'=>'North America',
+			'currency'=>'USD',
+		),
+		'BN'=>array(
+			'name'=>'Brunei',
+			'region'=>'Asia',
+			'currency'=>'BND',
 		),
 		'BG'=>array(
 			'name'=>'Bulgaria',
 			'region'=>'Europe',
 			'currency'=>'BGN',
 		),
+		'BF'=>array(
+			'name'=>'Burkina Faso',
+			'region'=>'Africa',
+			'currency'=>'XOF',
+		),
+		'BI'=>array(
+			'name'=>'Burundi',
+			'region'=>'Africa',
+			'currency'=>'BIF',
+		),
 		'KH'=>array(
 			'name'=>'Cambodia',
 			'region'=>'Asia',
 			'currency'=>'KHR',
+		),
+		'CM'=>array(
+			'name'=>'Cameroon',
+			'region'=>'Africa',
+			'currency'=>'XAF',
+		),
+		'CV'=>array(
+			'name'=>'Cape Verde',
+			'region'=>'Africa',
+			'currency'=>'CVE',
+		),
+		'KY'=>array(
+			'name'=>'Cayman Islands',
+			'region'=>'North America',
+			'currency'=>'KYD',
+		),
+		'CF'=>array(
+			'name'=>'Central African Republic',
+			'region'=>'Africa',
+			'currency'=>'XAF',
+		),
+		'TD'=>array(
+			'name'=>'Chad',
+			'region'=>'Africa',
+			'currency'=>'XAF',
 		),
 		'CL'=>array(
 			'name'=>'Chile',
@@ -367,35 +512,100 @@ class constants {
 			'region'=>'Asia',
 			'currency'=>'CNY',
 		),
+		'CX'=>array(
+			'name'=>'Christmas Island',
+			'region'=>'Australia',
+			'currency'=>'AUD',
+		),
+		'CC'=>array(
+			'name'=>'Cocos (Keeling) Islands',
+			'region'=>'Australia',
+			'currency'=>'AUD',
+		),
 		'CO'=>array(
 			'name'=>'Colombia',
 			'region'=>'South America',
 			'currency'=>'COU',
+		),
+		'KM'=>array(
+			'name'=>'Comoros',
+			'region'=>'Africa',
+			'currency'=>'KMF',
+		),
+		'CG'=>array(
+			'name'=>'Congo',
+			'region'=>'Africa',
+			'currency'=>'XAF',
+		),
+		'CK'=>array(
+			'name'=>'Cook Islands',
+			'region'=>'Australia',
+			'currency'=>'NZD',
 		),
 		'CR'=>array(
 			'name'=>'Costa Rica',
 			'region'=>'South America',
 			'currency'=>'CRC',
 		),
+		'CI'=>array(
+			'name'=>"Côte d'Ivoire",
+			'region'=>'Africa',
+			'currency'=>'XOF',
+		),
 		'HR'=>array(
 			'name'=>'Croatia',
 			'region'=>'Europe',
 			'currency'=>'HRK',
+		),
+		'CU'=>array(
+			'name'=>'Cuba',
+			'region'=>'North America',
+			'currency'=>'CUP',
+		),
+		'CW'=>array(
+			'name'=>'Curaçao',
+			'region'=>'South America',
+			'currency'=>'ANG',
+		),
+		'CY'=>array(
+			'name'=>'Cyprus',
+			'region'=>'Europe',
+			'currency'=>'EUR',
 		),
 		'CZ'=>array(
 			'name'=>'Czech Republic',
 			'region'=>'Europe',
 			'currency'=>'CZK',
 		),
+		'CD'=>array(
+			'name'=>'Democratic Republic of the Congo',
+			'region'=>'Africa',
+			'currency'=>'CDF',
+		),
 		'DK'=>array(
 			'name'=>'Denmark',
 			'region'=>'Europe',
 			'currency'=>'DKK',
 		),
+		'DJ'=>array(
+			'name'=>'Djibouti',
+			'region'=>'Africa',
+			'currency'=>'DJF',
+		),
+		'DM'=>array(
+			'name'=>'Dominica',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
 		'DO'=>array(
 			'name'=>'Dominican Republic',
 			'region'=>'North America',
 			'currency'=>'DOP',
+		),
+		'TL'=>array(
+			'name'=>'East Timor',
+			'region'=>'Asia',
+			'currency'=>'USD',
 		),
 		'EC'=>array(
 			'name'=>'Ecuador',
@@ -412,6 +622,16 @@ class constants {
 			'region'=>'North America',
 			'currency'=>'SVC',
 		),
+		'GQ'=>array(
+			'name'=>'Equatorial Guinea',
+			'region'=>'Africa',
+			'currency'=>'XAF',
+		),
+		'ER'=>array(
+			'name'=>'Eritrea',
+			'region'=>'Africa',
+			'currency'=>'ERN',
+		),
 		'EE'=>array(
 			'name'=>'Estonia',
 			'region'=>'Europe',
@@ -421,6 +641,21 @@ class constants {
 			'name'=>'Ethiopia',
 			'region'=>'Africa',
 			'currency'=>'ETB',
+		),
+		'FK'=>array(
+			'name'=>'Falkland Islands',
+			'region'=>'South America',
+			'currency'=>'FKP',
+		),
+		'FO'=>array(
+			'name'=>'Faroe Islands',
+			'region'=>'Europe',
+			'currency'=>'DKK',
+		),
+		'FM'=>array(
+			'name'=>'Federated States of Micronesia',
+			'region'=>'Australia',
+			'currency'=>'USD',
 		),
 		'FJ'=>array(
 			'name'=>'Fiji',
@@ -437,10 +672,40 @@ class constants {
 			'region'=>'Europe',
 			'currency'=>'EUR',
 		),
+		'GF'=>array(
+			'name'=>'French Guiana',
+			'region'=>'South America',
+			'currency'=>'EUR',
+		),
+		'PF'=>array(
+			'name'=>'French Polynesia',
+			'region'=>'Australia',
+			'currency'=>'XPF',
+		),
+		'GA'=>array(
+			'name'=>'Gabon',
+			'region'=>'Africa',
+			'currency'=>'XAF',
+		),
+		'GM'=>array(
+			'name'=>'Gambia',
+			'region'=>'Africa',
+			'currency'=>'GMD',
+		),
+		'GE'=>array(
+			'name'=>'Georgia',
+			'region'=>'Asia',
+			'currency'=>'GEL',
+		),
 		'DE'=>array(
 			'name'=>'Germany',
 			'region'=>'Europe',
 			'currency'=>'EUR',
+		),
+		'GH'=>array(
+			'name'=>'Ghana',
+			'region'=>'Africa',
+			'currency'=>'GHS',
 		),
 		'GI'=>array(
 			'name'=>'Gibraltar',
@@ -457,6 +722,16 @@ class constants {
 			'region'=>'North America',
 			'currency'=>'DKK',
 		),
+		'GD'=>array(
+			'name'=>'Grenada',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
+		'GP'=>array(
+			'name'=>'Guadeloupe',
+			'region'=>'North America',
+			'currency'=>'EUR',
+		),
 		'GU'=>array(
 			'name'=>'Guam',
 			'region'=>'Australia',
@@ -471,6 +746,21 @@ class constants {
 			'name'=>'Guernsey',
 			'region'=>'Europe',
 			'currency'=>'GBP',
+		),
+		'GN'=>array(
+			'name'=>'Guinea',
+			'region'=>'Africa',
+			'currency'=>'GNF',
+		),
+		'GW'=>array(
+			'name'=>'Guinea-Bissau',
+			'region'=>'Africa',
+			'currency'=>'XOF',
+		),
+		'GY'=>array(
+			'name'=>'Guyana',
+			'region'=>'South America',
+			'currency'=>'GYD',
 		),
 		'HT'=>array(
 			'name'=>'Haiti',
@@ -506,6 +796,11 @@ class constants {
 			'name'=>'Indonesia',
 			'region'=>'Asia',
 			'currency'=>'IDR',
+		),
+		'IR'=>array(
+			'name'=>'Iran',
+			'region'=>'Asia',
+			'currency'=>'IRR',
 		),
 		'IQ'=>array(
 			'name'=>'Iraq',
@@ -562,10 +857,10 @@ class constants {
 			'region'=>'Africa',
 			'currency'=>'KES',
 		),
-		'KR'=>array(
-			'name'=>'Korea, South',
-			'region'=>'Asia',
-			'currency'=>'KRW',
+		'KI'=>array(
+			'name'=>'Kiribati',
+			'region'=>'Australia',
+			'currency'=>'AUD',
 		),
 		'KW'=>array(
 			'name'=>'Kuwait',
@@ -591,6 +886,21 @@ class constants {
 			'name'=>'Lebanon',
 			'region'=>'Asia',
 			'currency'=>'LBP',
+		),
+		'LS'=>array(
+			'name'=>'Lesotho',
+			'region'=>'Africa',
+			'currency'=>'LSL',
+		),
+		'LR'=>array(
+			'name'=>'Liberia',
+			'region'=>'Africa',
+			'currency'=>'LRD',
+		),
+		'LY'=>array(
+			'name'=>'Libya',
+			'region'=>'Africa',
+			'currency'=>'LYD',
 		),
 		'LI'=>array(
 			'name'=>'Liechtenstein',
@@ -632,9 +942,39 @@ class constants {
 			'region'=>'Asia',
 			'currency'=>'MYR',
 		),
+		'MV'=>array(
+			'name'=>'Maldives',
+			'region'=>'Asia',
+			'currency'=>'MVR',
+		),
+		'ML'=>array(
+			'name'=>'Mali',
+			'region'=>'Africa',
+			'currency'=>'XOF',
+		),
 		'MT'=>array(
 			'name'=>'Malta',
 			'region'=>'Europe',
+			'currency'=>'EUR',
+		),
+		'MQ'=>array(
+			'name'=>'Martinique',
+			'region'=>'South America',
+			'currency'=>'EUR',
+		),
+		'MR'=>array(
+			'name'=>'Mauritania',
+			'region'=>'Africa',
+			'currency'=>'MRO',
+		),
+		'MU'=>array(
+			'name'=>'Mauritius',
+			'region'=>'Africa',
+			'currency'=>'MUR',
+		),
+		'YT'=>array(
+			'name'=>'Mayotte',
+			'region'=>'Africa',
 			'currency'=>'EUR',
 		),
 		'MX'=>array(
@@ -662,6 +1002,11 @@ class constants {
 			'region'=>'Europe',
 			'currency'=>'EUR',
 		),
+		'MS'=>array(
+			'name'=>'Montserrat',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
 		'MA'=>array(
 			'name'=>'Morocco',
 			'region'=>'Africa',
@@ -682,6 +1027,11 @@ class constants {
 			'region'=>'Africa',
 			'currency'=>'NAD',
 		),
+		'NR'=>array(
+			'name'=>'Nauru',
+			'region'=>'Australia',
+			'currency'=>'AUD',
+		),
 		'NP'=>array(
 			'name'=>'Nepal',
 			'region'=>'Asia',
@@ -691,6 +1041,11 @@ class constants {
 			'name'=>'Netherlands',
 			'region'=>'Europe',
 			'currency'=>'EUR',
+		),
+		'NC'=>array(
+			'name'=>'New Caledonia',
+			'region'=>'Australia',
+			'currency'=>'XPF',
 		),
 		'NZ'=>array(
 			'name'=>'New Zealand',
@@ -702,15 +1057,50 @@ class constants {
 			'region'=>'North America',
 			'currency'=>'NIO',
 		),
+		'NE'=>array(
+			'name'=>'Niger',
+			'region'=>'Africa',
+			'currency'=>'XOF',
+		),
+		'NG'=>array(
+			'name'=>'Nigeria',
+			'region'=>'Africa',
+			'currency'=>'NGN',
+		),
+		'NU'=>array(
+			'name'=>'Niue',
+			'region'=>'Australia',
+			'currency'=>'NZD',
+		),
+		'NF'=>array(
+			'name'=>'Norfolk Island',
+			'region'=>'Australia',
+			'currency'=>'AUD',
+		),
+		'KP'=>array(
+			'name'=>'North Korea',
+			'region'=>'Asia',
+			'currency'=>'KPW',
+		),
 		'NO'=>array(
 			'name'=>'Norway',
 			'region'=>'Europe',
 			'currency'=>'NOK',
 		),
+		'OM'=>array(
+			'name'=>'Oman',
+			'region'=>'Asia',
+			'currency'=>'OMR',
+		),
 		'PK'=>array(
 			'name'=>'Pakistan',
 			'region'=>'Asia',
 			'currency'=>'PKR',
+		),
+		'PS'=>array(
+			'name'=>'Palestine',
+			'region'=>'Asia',
+			'currency'=>'EGP',
 		),
 		'PA'=>array(
 			'name'=>'Panama',
@@ -757,6 +1147,11 @@ class constants {
 			'region'=>'Asia',
 			'currency'=>'QAR',
 		),
+		'RE'=>array(
+			'name'=>'Réunion',
+			'region'=>'Africa',
+			'currency'=>'EUR',
+		),
 		'RO'=>array(
 			'name'=>'Romania',
 			'region'=>'Europe',
@@ -772,10 +1167,55 @@ class constants {
 			'region'=>'Africa',
 			'currency'=>'RWF',
 		),
+		'BL'=>array(
+			'name'=>'Saint Barthélemy',
+			'region'=>'North America',
+			'currency'=>'EUR',
+		),
+		'SH'=>array(
+			'name'=>'Saint Helena, Ascension, and Tristan da Cunha',
+			'region'=>'Africa',
+			'currency'=>'SHP',
+		),
+		'KN'=>array(
+			'name'=>'Saint Kitts and Nevis',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
+		'LC'=>array(
+			'name'=>'Saint Lucia',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
+		'MF'=>array(
+			'name'=>'Saint Martin',
+			'region'=>'North America',
+			'currency'=>'EUR',
+		),
+		'PM'=>array(
+			'name'=>'Saint Pierre and Miquelon',
+			'region'=>'North America',
+			'currency'=>'EUR',
+		),
+		'VC'=>array(
+			'name'=>'Saint Vincent and the Grenadines',
+			'region'=>'North America',
+			'currency'=>'XCD',
+		),
+		'WS'=>array(
+			'name'=>'Samoa',
+			'region'=>'Australia',
+			'currency'=>'WST',
+		),
 		'SM'=>array(
 			'name'=>'San Marino',
 			'region'=>'Europe',
 			'currency'=>'EUR',
+		),
+		'ST'=>array(
+			'name'=>'Sao Tomé and Príncipe',
+			'region'=>'Africa',
+			'currency'=>'STD',
 		),
 		'SA'=>array(
 			'name'=>'Saudi Arabia',
@@ -792,6 +1232,11 @@ class constants {
 			'region'=>'Europe',
 			'currency'=>'RSD',
 		),
+		'SC'=>array(
+			'name'=>'Seychelles',
+			'region'=>'Africa',
+			'currency'=>'SCR',
+		),
 		'SL'=>array(
 			'name'=>'Sierra Leone',
 			'region'=>'Africa',
@@ -801,6 +1246,11 @@ class constants {
 			'name'=>'Singapore',
 			'region'=>'Asia',
 			'currency'=>'SGD',
+		),
+		'SX'=>array(
+			'name'=>'Sint Maarten',
+			'region'=>'North America',
+			'currency'=>'ANG',
 		),
 		'SK'=>array(
 			'name'=>'Slovakia',
@@ -812,10 +1262,30 @@ class constants {
 			'region'=>'Europe',
 			'currency'=>'EUR',
 		),
+		'SB'=>array(
+			'name'=>'Solomon Islands',
+			'region'=>'Australia',
+			'currency'=>'SBD',
+		),
+		'SO'=>array(
+			'name'=>'Somalia',
+			'region'=>'Africa',
+			'currency'=>'SOS',
+		),
 		'ZA'=>array(
 			'name'=>'South Africa',
 			'region'=>'Africa',
 			'currency'=>'ZAR',
+		),
+		'KR'=>array(
+			'name'=>'South Korea',
+			'region'=>'Asia',
+			'currency'=>'KRW',
+		),
+		'SS'=>array(
+			'name'=>'South Sudan',
+			'region'=>'Africa',
+			'currency'=>'SSP',
 		),
 		'ES'=>array(
 			'name'=>'Spain',
@@ -826,6 +1296,21 @@ class constants {
 			'name'=>'Sri Lanka',
 			'region'=>'Asia',
 			'currency'=>'LKR',
+		),
+		'SD'=>array(
+			'name'=>'Sudan',
+			'region'=>'Africa',
+			'currency'=>'SDG',
+		),
+		'SR'=>array(
+			'name'=>'Suriname',
+			'region'=>'South America',
+			'currency'=>'SRD',
+		),
+		'SJ'=>array(
+			'name'=>'Svalbard and Jan Mayen',
+			'region'=>'Europe',
+			'currency'=>'NOK',
 		),
 		'SZ'=>array(
 			'name'=>'Swaziland',
@@ -867,6 +1352,26 @@ class constants {
 			'region'=>'Asia',
 			'currency'=>'THB',
 		),
+		'TK'=>array(
+			'name'=>'Tokelau',
+			'region'=>'Australia',
+			'currency'=>'NZD',
+		),
+		'TO'=>array(
+			'name'=>'Tonga',
+			'region'=>'Australia',
+			'currency'=>'TOP',
+		),
+		'TG'=>array(
+			'name'=>'Togo',
+			'region'=>'Africa',
+			'currency'=>'XOF',
+		),
+		'TT'=>array(
+			'name'=>'Trinidad and Tobago',
+			'region'=>'North America',
+			'currency'=>'TTD',
+		),
 		'TN'=>array(
 			'name'=>'Tunisia',
 			'region'=>'Africa',
@@ -877,10 +1382,25 @@ class constants {
 			'region'=>'Europe',
 			'currency'=>'TRY',
 		),
-		'VI'=>array(
-			'name'=>'U.S. Virgin Islands',
+		'TM'=>array(
+			'name'=>'Turkmenistan',
+			'region'=>'Asia',
+			'currency'=>'TMT',
+		),
+		'TC'=>array(
+			'name'=>'Turks and Caicos Islands',
 			'region'=>'North America',
 			'currency'=>'USD',
+		),
+		'TV'=>array(
+			'name'=>'Tuvalu',
+			'region'=>'Australia',
+			'currency'=>'AUD',
+		),
+		'UG'=>array(
+			'name'=>'Uganda',
+			'region'=>'Africa',
+			'currency'=>'UGX',
 		),
 		'UA'=>array(
 			'name'=>'Ukraine',
@@ -896,6 +1416,11 @@ class constants {
 			'name'=>'Uruguay',
 			'region'=>'South America',
 			'currency'=>'UYU',
+		),
+		'VI'=>array(
+			'name'=>'U.S. Virgin Islands',
+			'region'=>'North America',
+			'currency'=>'USD',
 		),
 		'UZ'=>array(
 			'name'=>'Uzbekistan',
@@ -916,6 +1441,31 @@ class constants {
 			'name'=>'Vietnam',
 			'region'=>'Asia',
 			'currency'=>'VND',
+		),
+		'WF'=>array(
+			'name'=>'Wallis and Futuna',
+			'region'=>'Australia',
+			'currency'=>'XPF',
+		),
+		'EH'=>array(
+			'name'=>'Western Sahara',
+			'region'=>'Africa',
+			'currency'=>'MAD',
+		),
+		'YE'=>array(
+			'name'=>'Yemen',
+			'region'=>'Asia',
+			'currency'=>'YER',
+		),
+		'ZM'=>array(
+			'name'=>'Zambia',
+			'region'=>'Africa',
+			'currency'=>'ZMW',
+		),
+		'ZW'=>array(
+			'name'=>'Zimbabwe',
+			'region'=>'Africa',
+			'currency'=>'USD',
 		),
 	);
 
