@@ -2,10 +2,9 @@
   "name": "blob-common-phar",
   "require": {
     "blobfolio\/blob-common": "dev-7.0_Next",
-    "blobfolio\/blob-mimes": "*",
+    "blobfolio\/blob-mimes": "dev-7.0_Next",
     "blobfolio\/blob-phone": "dev-7.0_Next",
-    "blobfolio\/blob-domain": "dev-7.0_Next",
-    "neitanod\/forceutf8": "*"
+    "blobfolio\/blob-domain": "dev-7.0_Next"
   },
   "config": {
     "vendor-dir": "vendor",
