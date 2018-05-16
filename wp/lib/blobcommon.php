@@ -94,7 +94,20 @@ class blobcommon {
 	 */
 	public static function upgrade() {
 		$current = get_option(static::OPTION_NAME, '');
-		$response = wp_remote_get(static::REMOTE . 'version.json');
+
+		// PHP 5.6 support is deprecated. During the transition, two
+		// different release files are used. Sites supporting PHP 7+
+		// should shift to the new one as the old will eventually
+		// disappear.
+		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+			$remote_info = static::REMOTE . 'version.json';
+		}
+		// This is the new source.
+		else {
+			$remote_info = static::REMOTE . 'blob-common.json';
+		}
+
+		$response = wp_remote_get($remote_info);
 		if (200 === wp_remote_retrieve_response_code($response)) {
 			try {
 				$data = json_decode(wp_remote_retrieve_body($response), true);
