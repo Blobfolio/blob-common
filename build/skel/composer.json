@@ -4,8 +4,7 @@
     "blobfolio\/blob-common": "*",
     "blobfolio\/blob-mimes": "*",
     "blobfolio\/blob-phone": "*",
-    "blobfolio\/blob-domain": "*",
-    "neitanod\/forceutf8": "*"
+    "blobfolio\/blob-domain": "*"
   },
   "config": {
     "vendor-dir": "vendor",
