@@ -2,3 +2,5 @@
 /composer.lock
 /blob-common/
 /package-lock.json
+/build/lib/vendor/
+/build/composer.lock
