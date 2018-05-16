@@ -1,3 +1,4 @@
+**/.gitattributes export-ignore
 **/.gitignore export-ignore
 /.travis.yml export-ignore
 /bin export-ignore
@@ -5,8 +6,8 @@
 /docs export-ignore
 /Gruntfile.js export-ignore
 /package.json export-ignore
-/phpunit.xml.dist export-ignore
 /phpunit-phar.xml.dist export-ignore
+/phpunit.xml.dist export-ignore
 /README.md export-ignore
 /release export-ignore
 /tests export-ignore
