@@ -77,14 +77,12 @@ class cast {
 				elseif (in_array($value, constants::FALSE_BOOLS, true)) {
 					$value = false;
 				}
-				else {
-					$value = (bool) $value;
-				}
 			}
 			elseif (is_array($value)) {
 				$value = !!count($value);
 			}
-			else {
+
+			if (!is_bool($value)) {
 				try {
 					$value = (bool) $value;
 				} catch (\Throwable $e) {
@@ -205,8 +203,10 @@ class cast {
 				}
 			}
 
-			static::number($value, true);
-			$value = (int) $value;
+			if (!is_int($value)) {
+				static::number($value, true);
+				$value = (int) $value;
+			}
 		}
 
 		return true;
@@ -276,10 +276,12 @@ class cast {
 				}
 			}
 
-			try {
-				$value = (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-			} catch (\Throwable $e) {
-				$value = 0.0;
+			if (!is_float($value)) {
+				try {
+					$value = (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+				} catch (\Throwable $e) {
+					$value = 0.0;
+				}
 			}
 		}
 
@@ -374,6 +376,7 @@ class cast {
 				break;
 			case 'double':
 			case 'float':
+			case 'number':
 				static::float($value, $flatten);
 				break;
 			case 'bool':
