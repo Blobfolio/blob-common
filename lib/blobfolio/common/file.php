@@ -543,12 +543,24 @@ class file {
 	 * @param string $path Path.
 	 * @param bool $show_files Include files.
 	 * @param bool $show_dirs Include directories.
+	 * @param int $depth Depth.
 	 * @return array Path(s).
 	 */
-	public static function scandir($path, bool $show_files=true, bool $show_dirs=true) {
+	public static function scandir($path, bool $show_files=true, bool $show_dirs=true, int $depth=-1) {
 		ref\file::path($path, true);
 		if (!$path || !@is_dir($path) || (!$show_files && !$show_dirs)) {
 			return array();
+		}
+
+		// Set the depth for recursion.
+		if ($depth < 0) {
+			$inner_depth = -1;
+		}
+		elseif ($depth > 0) {
+			$inner_depth = $depth - 1;
+		}
+		else {
+			$inner_depth = 0;
 		}
 
 		$out = array();
@@ -570,7 +582,10 @@ class file {
 					if ($show_dirs) {
 						$out[] = "{$path}{$file}";
 					}
-					$out = array_merge($out, static::scandir("{$path}{$file}", $show_files, $show_dirs));
+
+					if (($inner_depth === -1) || $inner_depth > 0) {
+						$out = array_merge($out, static::scandir("{$path}{$file}", $show_files, $show_dirs, $inner_depth));
+					}
 				}
 			}
 			closedir($handle);
