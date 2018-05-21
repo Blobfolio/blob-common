@@ -32,8 +32,8 @@ class file {
 
 		// Recurse directories.
 		if (@is_dir($from)) {
-			ref\file::trailingslash($from);
-			ref\file::trailingslash($to);
+			ref\file::trailingslash($from, true);
+			ref\file::trailingslash($to, true);
 
 			if (!@is_dir($to)) {
 				$dir_chmod = (@fileperms($from) & 0777 | 0755);
@@ -165,18 +165,13 @@ class file {
 	 * Get Data-URI From File
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string|bool Data-URI or false.
 	 */
-	public static function data_uri(string $path) {
-		ref\cast::string($path, true);
+	public static function data_uri(string $path, bool $constringent=false) {
+		ref\cast::constringent($path, $constringent);
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
-		ref\file::path($path, true);
-
-		constants::$str_lock = $lock;
+		ref\file::path($path, true, true);
 
 		if ((false !== $path) && @is_file($path)) {
 			$content = base64_encode(@file_get_contents($path));
@@ -301,10 +296,11 @@ class file {
 	 * Add Leading Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function leadingslash($path) {
-		ref\file::leadingslash($path);
+	public static function leadingslash($path, bool $constringent=false) {
+		ref\file::leadingslash($path, $constringent);
 		return $path;
 	}
 
@@ -319,7 +315,6 @@ class file {
 	 */
 	public static function line_count(string $file, bool $trim=true) {
 		// We definitely need a file.
-		ref\file::path($file, true);
 		if (!$file || !@is_file($file)) {
 			return false;
 		}
@@ -371,7 +366,7 @@ class file {
 
 		// We only need to proceed if the path doesn't exist.
 		if (!@is_dir($path)) {
-			ref\file::untrailingslash($path);
+			ref\file::untrailingslash($path, true);
 
 			// Figure out where we need to begin.
 			$base = dirname($path);
@@ -398,8 +393,8 @@ class file {
 					return true;
 				}
 
-				$path = mb::substr($path, mb::strlen($base));
-				ref\file::unleadingslash($path);
+				$path = mb::substr($path, mb::strlen($base), null, true);
+				ref\file::unleadingslash($path, true);
 				$parts = explode('/', $path);
 				$path = $base;
 
@@ -425,10 +420,11 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $validate Require valid file.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function path($path, bool $validate=true) {
-		ref\file::path($path, $validate);
+	public static function path($path, bool $validate=true, bool $constringent=false) {
+		ref\file::path($path, $validate, $constringent);
 		return $path;
 	}
 
@@ -442,8 +438,10 @@ class file {
 	 * @param bool $retbytes Return bytes served like `readfile()`.
 	 * @return mixed Bytes served or status.
 	 */
-	public static function readfile_chunked($file, bool $retbytes=true) {
-		ref\cast::string($file, true);
+	public static function readfile_chunked(string $file, bool $retbytes=true) {
+		if (!$file || !@is_file($file)) {
+			return false;
+		}
 
 		$buffer = '';
 		$cnt = 0;
@@ -506,7 +504,7 @@ class file {
 	 */
 	public static function rmdir(string $path) {
 		ref\file::path($path, true);
-		if (!@is_readable($path) || !@is_dir($path)) {
+		if (!$path || !@is_readable($path) || !@is_dir($path)) {
 			return false;
 		}
 
@@ -555,7 +553,7 @@ class file {
 
 		$out = array();
 		if ($handle = @opendir($path)) {
-			ref\file::trailingslash($path);
+			ref\file::trailingslash($path, true);
 			while (false !== ($file = @readdir($handle))) {
 				// Always ignore dots.
 				if (('.' === $file) || ('..' === $file)) {
@@ -586,10 +584,11 @@ class file {
 	 * Add Trailing Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function trailingslash($path) {
-		ref\file::trailingslash($path);
+	public static function trailingslash($path, bool $constringent=false) {
+		ref\file::trailingslash($path, $constringent);
 		return $path;
 	}
 
@@ -597,10 +596,11 @@ class file {
 	 * Fix Path Slashes
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function unixslash($path) {
-		ref\file::unixslash($path);
+	public static function unixslash($path, bool $constringent=false) {
+		ref\file::unixslash($path, $constringent);
 		return $path;
 	}
 
@@ -608,10 +608,11 @@ class file {
 	 * Strip Leading Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function unleadingslash($path) {
-		ref\file::unleadingslash($path);
+	public static function unleadingslash($path, bool $constringent=false) {
+		ref\file::unleadingslash($path, $constringent);
 		return $path;
 	}
 
@@ -626,7 +627,7 @@ class file {
 		$parsed = data::parse_args($parsed, constants::URL_PARTS);
 
 		// To simplify, unset anything without length.
-		ref\mb::trim($parsed);
+		ref\mb::trim($parsed, true);
 		$parsed = array_filter($parsed, 'strlen');
 
 		// We don't really care about validating url integrity,
@@ -684,10 +685,11 @@ class file {
 	 * Strip Trailing Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function untrailingslash($path) {
-		ref\file::untrailingslash($path);
+	public static function untrailingslash($path, bool $constringent=false) {
+		ref\file::untrailingslash($path, $constringent);
 		return $path;
 	}
 

@@ -77,10 +77,10 @@ class plugin extends \blobfolio\bob\base\mike_wp {
 	 */
 	protected static function get_shitlist() {
 		$shitlist = io::SHITLIST;
-		$shitlist [] = '#/bin$#';
-		$shitlist [] = '#/docs$#';
-		$shitlist [] = '#/img/assets$#';
-		$shitlist [] = '#/tests$#';
+		$shitlist[] = '#/bin$#';
+		$shitlist[] = '#/docs$#';
+		$shitlist[] = '#/img/assets$#';
+		$shitlist[] = '#/tests$#';
 		return $shitlist;
 	}
 

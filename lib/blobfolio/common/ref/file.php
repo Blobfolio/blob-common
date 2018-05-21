@@ -86,25 +86,20 @@ class file {
 	 * Add Leading Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function leadingslash(&$path) {
+	public static function leadingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::leadingslash($path[$k]);
 			}
 		}
 		else {
-			cast::string($path);
+			cast::constringent($path, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::unleadingslash($path);
+			static::unleadingslash($path, true);
 			$path = "/$path";
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -115,26 +110,22 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $validate Require valid file.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function path(&$path, bool $validate=true) {
+	public static function path(&$path, bool $validate=true, bool $constringent=false) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::path($path[$k], $validate);
 			}
 		}
 		else {
-			cast::string($path);
-
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
+			cast::constringent($path, $constringent);
 
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.
 			if (preg_match('/^(https?|ftps?|sftp)/iu', $path)) {
-				sanitize::url($path);
-				constants::$str_lock = $lock;
+				sanitize::url($path, true);
 				return true;
 			}
 
@@ -143,7 +134,7 @@ class file {
 				$path = substr($path, 7);
 			}
 
-			static::unixslash($path);
+			static::unixslash($path, true);
 
 			$original = $path;
 			try {
@@ -154,15 +145,14 @@ class file {
 
 			if ($validate && false === $path) {
 				$path = false;
-				constants::$str_lock = $lock;
 				return false;
 			}
 			elseif (false === $path) {
 				// Try just the directory.
 				try {
 					$path = $original;
-					if (false !== $dir = realpath(dirname($path))) {
-						static::trailingslash($dir);
+					if (false !== $dir = @realpath(dirname($path))) {
+						static::trailingslash($dir, true);
 						$path = $dir . basename($path);
 					}
 					else {
@@ -175,14 +165,12 @@ class file {
 
 			$original = $path;
 			try {
-				if (is_dir($path)) {
-					static::trailingslash($path);
+				if (@is_dir($path)) {
+					static::trailingslash($path, true);
 				}
 			} catch (\Throwable $e) {
 				$path = $original;
 			}
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -192,25 +180,20 @@ class file {
 	 * Add Trailing Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function trailingslash(&$path) {
+	public static function trailingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::trailingslash($path[$k]);
 			}
 		}
 		else {
-			cast::string($path);
+			cast::constringent($path, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::untrailingslash($path);
+			static::untrailingslash($path, true);
 			$path .= '/';
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -220,16 +203,17 @@ class file {
 	 * Fix Path Slashes
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function unixslash(&$path) {
+	public static function unixslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unixslash($path[$k]);
 			}
 		}
 		else {
-			cast::string($path);
+			cast::constringent($path, $constringent);
 			$path = str_replace('\\', '/', $path);
 			$path = str_replace('/./', '//', $path);
 			$path = preg_replace('/\/{2,}/u', '/', $path);
@@ -242,25 +226,20 @@ class file {
 	 * Strip Leading Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function unleadingslash(&$path) {
+	public static function unleadingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unleadingslash($path[$k]);
 			}
 		}
 		else {
-			cast::string($path);
+			cast::constringent($path, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::unixslash($path);
+			static::unixslash($path, true);
 			$path = ltrim($path, '/');
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -270,25 +249,20 @@ class file {
 	 * Strip Trailing Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function untrailingslash(&$path) {
+	public static function untrailingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::untrailingslash($path[$k]);
 			}
 		}
 		else {
-			cast::string($path);
+			cast::constringent($path, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::unixslash($path);
+			static::unixslash($path, true);
 			$path = rtrim($path, '/');
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;

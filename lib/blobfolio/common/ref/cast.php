@@ -390,4 +390,54 @@ class cast {
 
 		return true;
 	}
+
+	/**
+	 * Light String Cast
+	 *
+	 * We kinda fucked ourselves with heavy string typecasting
+	 * dependencies — namely fixing UTF-8 — so we want to offer up a
+	 * way to conditionally bypass the extra bits.
+	 *
+	 * Functions requiring strings have been altered to include a
+	 * $constringent argument that will allow light checks.
+	 *
+	 * @param mixed $value String.
+	 * @param bool $light Actually check.
+	 * @return bool True/false.
+	 */
+	public static function constringent(&$value=null, bool $light=false) {
+		// Don't need to do anything!
+		if ($light && is_string($value)) {
+			return true;
+		}
+
+		// Flatten single-entry arrays.
+		if (is_array($value) && (1 === count($value))) {
+			$value = data::array_pop_top($value);
+			if ($light && is_string($value)) {
+				return true;
+			}
+		}
+
+		// Cast it.
+		try {
+			$value = (string) $value;
+
+			// Do heavy stuff if needed.
+			if (
+				$value &&
+				!$light &&
+				(
+					!function_exists('mb_check_encoding') ||
+					!mb_check_encoding($value, 'ASCII')
+				)
+			) {
+				sanitize::utf8($value);
+			}
+		} catch (\Throwable $e) {
+			$value = '';
+		}
+
+		return true;
+	}
 }

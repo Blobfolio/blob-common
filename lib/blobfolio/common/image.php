@@ -40,9 +40,7 @@ class image {
 	 *
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
-	public static function clean_svg($path, $args=null, string $output='HTML') {
-		ref\cast::string($path, true);
-
+	public static function clean_svg(string $path, $args=null, string $output='HTML') {
 		try {
 			if (!@is_file($path)) {
 				return false;
@@ -75,24 +73,17 @@ class image {
 				$options['clean_styles'] = true;
 			}
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
 			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
 			if (false !== strpos($svg, 'data-cleaned="' . $passthrough_key . '"')) {
 				$svg = substr($svg, strpos($svg, '<svg'));
 				if ('DATA_URI' === $output) {
-					constants::$str_lock = $lock;
 					return 'data:image/svg+xml;base64,' . base64_encode($svg);
 				}
 				elseif ('HTML' === $output) {
-					constants::$str_lock = $lock;
 					return $svg;
 				}
 				else {
-					constants::$str_lock = $lock;
 					return false;
 				}
 			}
@@ -101,7 +92,6 @@ class image {
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!$svg) {
-				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -155,9 +145,9 @@ class image {
 					foreach ($matches[0] as $k=>$v) {
 						$id_string = $v;
 						$id_value = $matches[1][$k];
-						$id_new = 's' . mb::strtolower(data::random_string(4));
+						$id_new = 's' . mb::strtolower(data::random_string(4), false, true);
 						while (in_array($id_new, static::$svg_ids, true)) {
-							$id_new = 's' . mb::strtolower(data::random_string(4));
+							$id_new = 's' . mb::strtolower(data::random_string(4), false, true);
 						}
 						static::$svg_ids[] = $id_new;
 
@@ -351,9 +341,9 @@ class image {
 											}
 
 											if (count($classes)) {
-												$class_new = mb::strtolower('c' . data::random_string(4));
+												$class_new = mb::strtolower('c' . data::random_string(4), false, true);
 												while (in_array($class_new, static::$svg_classes, true)) {
-													$class_new = mb::strtolower('c' . data::random_string(4));
+													$class_new = mb::strtolower('c' . data::random_string(4), false, true);
 												}
 												$selectors[] = '.' . $class_new;
 
@@ -412,7 +402,7 @@ class image {
 							$nodes = dom::get_nodes_by_class($s, $classes_old);
 							foreach ($nodes as $node) {
 								$classes = $node->getAttribute('class');
-								ref\sanitize::whitespace($classes);
+								ref\sanitize::whitespace($classes, 0, true);
 								$classes = explode(' ', $classes);
 								$classes = array_unique($classes);
 								$classes = array_diff($classes, $classes_old);
@@ -428,11 +418,8 @@ class image {
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!$svg) {
-				constants::$str_lock = $lock;
 				return false;
 			}
-
-			constants::$str_lock = $lock;
 
 			// Should we save the clean version?
 			if ($options['save']) {
@@ -495,8 +482,8 @@ class image {
 		return (
 			@file_exists($cwebp) &&
 			@file_exists($gif2webp) &&
-			@is_readable($cwebp) &&
-			@is_readable($gif2webp)
+			@is_executable($cwebp) &&
+			@is_executable($gif2webp)
 		);
 	}
 
@@ -504,10 +491,11 @@ class image {
 	 * Determine SVG Dimensions
 	 *
 	 * @param string $svg SVG content or file path.
+	 * @param bool $constringent Light cast.
 	 * @return array|bool Dimensions or false.
 	 */
-	public static function svg_dimensions($svg) {
-		ref\cast::string($svg, true);
+	public static function svg_dimensions($svg, bool $constringent=false) {
+		ref\cast::constringent($svg, $constringent);
 
 		// Make sure this is SVG-looking.
 		if (false === ($start = strpos(strtolower($svg), '<svg'))) {
@@ -536,16 +524,15 @@ class image {
 		);
 		$viewbox = null;
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
 		// Search for width, height, and viewbox.
-		ref\sanitize::whitespace($svg);
+		ref\sanitize::whitespace($svg, 0, true);
 
-		constants::$str_lock = $lock;
-
-		preg_match_all('/(height|width|viewbox)\s*=\s*(["\'])((?:(?!\2).)*)\2/', $svg, $match, PREG_SET_ORDER);
+		preg_match_all(
+			'/(height|width|viewbox)\s*=\s*(["\'])((?:(?!\2).)*)\2/',
+			$svg,
+			$match,
+			PREG_SET_ORDER
+		);
 
 		if (is_array($match) && count($match)) {
 			foreach ($match as $v) {
@@ -615,7 +602,7 @@ class image {
 			ref\cast::string($gif2webp, true);
 		}
 
-		if (false === ($source = file::path($source, true))) {
+		if (false === ($source = file::path($source, true, true))) {
 			return false;
 		}
 
@@ -633,7 +620,7 @@ class image {
 			return false;
 		}
 		else {
-			$out = file::path($out, false);
+			$out = file::path($out, false, true);
 		}
 
 		// Already exists?
@@ -655,7 +642,7 @@ class image {
 		// Try to open the process.
 		try {
 			$tmp_dir = @sys_get_temp_dir();
-			$error_log = file::trailingslash($tmp_dir) . 'cwebp-error_' . microtime(true) . '.txt';
+			$error_log = file::trailingslash($tmp_dir, true) . 'cwebp-error_' . microtime(true) . '.txt';
 
 			// Proc setup.
 			$descriptors = array(
@@ -674,7 +661,7 @@ class image {
 			}
 
 			$process = proc_open(
-				escapeshellcmd($cmd),
+				$cmd,
 				$descriptors,
 				$pipes,
 				$cwd

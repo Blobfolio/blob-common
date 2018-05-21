@@ -65,13 +65,9 @@ class format {
 	public static function cidr_to_range($cidr) {
 		ref\cast::string($cidr, true);
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
-		ref\cast::int($cidr[1]);
+		ref\cast::int($cidr[1], true);
 
 		// IPv4?
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
@@ -94,7 +90,6 @@ class format {
 				$range['min'] = long2ip($first);
 				$range['max'] = long2ip($bc);
 			}
-			constants::$str_lock = $lock;
 			return $range;
 		}
 
@@ -105,7 +100,6 @@ class format {
 
 			if (0 === $cidr[1]) {
 				$range['min'] = $range['max'] = sanitize::ip($cidr[0]);
-				constants::$str_lock = $lock;
 				return $range;
 			}
 
@@ -133,6 +127,10 @@ class format {
 				$not = gmp_strval(gmp_init($bin, 2), 10);
 
 				$bc = gmp_or($first, $not);
+
+				// Make sure they're strings.
+				$first = gmp_strval($first);
+				$bc = gmp_strval($bc);
 			}
 			else {
 				$first = bc::bitwise('&', $ip, $netmask);
@@ -142,11 +140,9 @@ class format {
 			$range['min'] = static::number_to_ip($first);
 			$range['max'] = static::number_to_ip($bc);
 
-			constants::$str_lock = $lock;
 			return $range;
 		}
 
-		constants::$str_lock = $lock;
 		return false;
 	}
 
@@ -218,14 +214,8 @@ class format {
 	public static function excerpt($str='', $args=null) {
 		ref\cast::string($str, true);
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
-		ref\sanitize::whitespace($str);
+		ref\sanitize::whitespace($str, 0, true);
 		$str = strip_tags($str);
-
-		constants::$str_lock = $lock;
 
 		$options = data::parse_args($args, constants::EXCERPT);
 		if ($options['length'] < 1) {
@@ -242,16 +232,12 @@ class format {
 				break;
 		}
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
 		// Character limit.
 		if (
 			('character' === $options['unit']) &&
-			mb::strlen($str) > $options['length']
+			mb::strlen($str, true) > $options['length']
 		) {
-			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
+			$str = trim(mb::substr($str, 0, $options['length'], true)) . $options['suffix'];
 		}
 		// Word limit.
 		elseif (
@@ -262,8 +248,6 @@ class format {
 			$str = array_slice($str, 0, $options['length']);
 			$str = implode(' ', $str) . $options['suffix'];
 		}
-
-		constants::$str_lock = $lock;
 
 		return $str;
 	}
@@ -309,9 +293,6 @@ class format {
 	 * @return string Inflected string.
 	 */
 	public static function inflect($count, $single, $plural) {
-		ref\cast::string($single, true);
-		ref\cast::string($plural, true);
-
 		if (is_array($count)) {
 			$count = (float) count($count);
 		}
@@ -320,9 +301,11 @@ class format {
 		}
 
 		if (1.0 === $count) {
+			ref\cast::string($single, true);
 			return sprintf($single, $count);
 		}
 		else {
+			ref\cast::string($plural, true);
 			return sprintf($plural, $count);
 		}
 	}
@@ -388,6 +371,7 @@ class format {
 	 * @param string $str String.
 	 * @param array $args Arguments.
 	 * @param int $pass Pass (1=URL, 2=EMAIL).
+	 * @param bool $constringent Light cast.
 	 *
 	 * @arg array $class Class(es).
 	 * @arg string $rel Rel.
@@ -395,8 +379,8 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links($str, $args=null, int $pass=1) {
-		ref\format::links($str, $args, $pass);
+	public static function links($str, $args=null, int $pass=1, bool $constringent=false) {
+		ref\format::links($str, $args, $pass, $constringent);
 		return $str;
 	}
 
@@ -407,6 +391,7 @@ class format {
 	 *
 	 * @param mixed $list List.
 	 * @param mixed $args Arguments or delimiter.
+	 * @param bool $constringent Light cast.
 	 *
 	 * @args string $delimiter Delimiter.
 	 * @args bool $trim Trim.
@@ -418,8 +403,8 @@ class format {
 	 *
 	 * @return array List.
 	 */
-	public static function list_to_array($list, $args=null) {
-		ref\format::list_to_array($list, $args);
+	public static function list_to_array($list, $args=null, bool $constringent=false) {
+		ref\format::list_to_array($list, $args, $constringent);
 		return $list;
 	}
 
@@ -483,12 +468,10 @@ class format {
 	 * @param string $eol Line ending type.
 	 * @return string CSV content.
 	 */
-	public static function to_csv($data=null, $headers=null, $delimiter=',', $eol="\n") {
+	public static function to_csv($data=null, $headers=null, string $delimiter=',', string $eol="\n") {
 		ref\cast::array($data);
 		$data = array_values(array_filter($data, 'is_array'));
 		ref\cast::array($headers);
-		ref\cast::string($delimiter, true);
-		ref\cast::string($eol, true);
 
 		$out = array();
 
@@ -507,13 +490,7 @@ class format {
 				ref\cast::string($headers[$k], true);
 			}
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			ref\sanitize::csv($headers);
-
-			constants::$str_lock = $lock;
+			ref\sanitize::csv($headers, true);
 
 			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
 		}
@@ -525,13 +502,7 @@ class format {
 					ref\cast::string($line[$k], true);
 				}
 
-				// Lock UTF-8 Casting.
-				$lock = constants::$str_lock;
-				constants::$str_lock = true;
-
-				ref\sanitize::csv($line);
-
-				constants::$str_lock = $lock;
+				ref\sanitize::csv($line, true);
 
 				$out[] = '"' . implode('"' . $delimiter . '"', $line) . '"';
 			}
@@ -548,7 +519,7 @@ class format {
 	 * @param string $to New Timezone.
 	 * @return string Date.
 	 */
-	public static function to_timezone($date, $from='UTC', $to='UTC') {
+	public static function to_timezone(string $date, $from='UTC', $to='UTC') {
 		ref\format::to_timezone($date, $from, $to);
 		return $date;
 	}
@@ -612,18 +583,21 @@ class format {
 				ref\cast::string($headers[$k], true);
 			}
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
 			$out[] = '<Row>';
 			foreach ($headers as $cell) {
-				$cell = htmlspecialchars(strip_tags(sanitize::quotes(sanitize::whitespace($cell))), ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
+				$cell = htmlspecialchars(
+					strip_tags(
+						sanitize::quotes(
+							sanitize::whitespace($cell, 0, true),
+							true
+						)
+					),
+					ENT_XML1 | ENT_NOQUOTES,
+					'UTF-8'
+				);
 				$out[] = '<Cell><Data ss:Type="String"><b>' . $cell . '</b></Data></Cell>';
 			}
 			$out[] = '</Row>';
-
-			constants::$str_lock = $lock;
 		}
 
 		// Output data.
@@ -645,12 +619,8 @@ class format {
 					}
 					else {
 						ref\cast::string($cell, true);
+						ref\sanitize::whitespace($cell, 2, true);
 
-						// Lock UTF-8 Casting.
-						$lock = constants::$str_lock;
-						constants::$str_lock = true;
-
-						ref\sanitize::whitespace($cell, 2);
 						// Date and time.
 						if (preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {
 							$type = 'DateTime';
@@ -687,10 +657,14 @@ class format {
 						// Everything else.
 						else {
 							$type = 'String';
-							$cell = htmlspecialchars(strip_tags(sanitize::quotes($cell)), ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
+							$cell = htmlspecialchars(
+								strip_tags(
+									sanitize::quotes($cell, true)
+								),
+								ENT_XML1 | ENT_NOQUOTES,
+								'UTF-8'
+							);
 						}
-
-						constants::$str_lock = $lock;
 					}
 
 					$out[] = '<Cell' . (!is_null($format) ? ' ss:StyleID="s' . $format . '"' : '') . '><Data ss:Type="' . $type . '">' . $cell . '</Data></Cell>';

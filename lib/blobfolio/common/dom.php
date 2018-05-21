@@ -23,23 +23,18 @@ class dom {
 	public static function load_svg($svg='') {
 		ref\cast::string($svg, true);
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
 		// First thing first, lowercase all tags.
 		$svg = preg_replace('/<svg/ui', '<svg', $svg);
 		$svg = preg_replace('/<\/svg>/ui', '</svg>', $svg);
 
 		// Find the start and end tags so we can cut out miscellaneous garbage.
 		if (
-			false === ($start = mb::strpos($svg, '<svg')) ||
-			false === ($end = mb::strrpos($svg, '</svg>'))
+			(false === ($start = mb::strpos($svg, '<svg'))) ||
+			(false === ($end = mb::strrpos($svg, '</svg>')))
 		) {
-			constants::$str_lock = $lock;
 			return false;
 		}
-		$svg = mb::substr($svg, $start, ($end - $start + 6));
+		$svg = mb::substr($svg, $start, ($end - $start + 6), true);
 
 		// Bugs from old versions of Illustrator.
 		$svg = str_replace(
@@ -52,8 +47,7 @@ class dom {
 		$svg = preg_replace('/<\?(.*)\?>/Us', '', $svg);
 		$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
 
-		if (false !== strpos($svg, '<?') || false !== strpos($svg, '<%')) {
-			constants::$str_lock = $lock;
+		if ((false !== strpos($svg, '<?')) || (false !== strpos($svg, '<%'))) {
 			return false;
 		}
 
@@ -61,8 +55,7 @@ class dom {
 		$svg = preg_replace('/<!--(.*)-->/Us', '', $svg);
 		$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
 
-		if (false !== strpos($svg, '<!--') || false !== strpos($svg, '/*')) {
-			constants::$str_lock = $lock;
+		if ((false !== strpos($svg, '<!--')) || (false !== strpos($svg, '/*'))) {
 			return false;
 		}
 
@@ -77,11 +70,9 @@ class dom {
 		// Make sure there are still SVG tags.
 		$svgs = $dom->getElementsByTagName('svg');
 		if (!$svgs->length) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
-		constants::$str_lock = $lock;
 		return $dom;
 	}
 
@@ -106,13 +97,17 @@ class dom {
 
 		// Make sure if xmlns="" exists, it is correct. Can't alter
 		// that with DOMDocument, and there is only one proper value.
-		$svg = preg_replace('/xmlns\s*=\s*"[^"]*"/', 'xmlns="' . constants::SVG_NAMESPACE . '"', $svg);
+		$svg = preg_replace(
+			'/xmlns\s*=\s*"[^"]*"/',
+			'xmlns="' . constants::SVG_NAMESPACE . '"',
+			$svg
+		);
 
 		// Remove XML, PHP, ASP, etc.
 		$svg = preg_replace('/<\?(.*)\?>/Us', '', $svg);
 		$svg = preg_replace('/<\%(.*)\%>/Us', '', $svg);
 
-		if (false !== strpos($svg, '<?') || false !== strpos($svg, '<%')) {
+		if ((false !== strpos($svg, '<?')) || (false !== strpos($svg, '<%'))) {
 			return '';
 		}
 
@@ -120,14 +115,14 @@ class dom {
 		$svg = preg_replace('/<!--(.*)-->/Us', '', $svg);
 		$svg = preg_replace('/\/\*(.*)\*\//Us', '', $svg);
 
-		if (false !== strpos($svg, '<!--') || false !== strpos($svg, '/*')) {
+		if ((false !== strpos($svg, '<!--')) || (false !== strpos($svg, '/*'))) {
 			return '';
 		}
 
 		// Find the start and end tags so we can cut out miscellaneous garbage.
 		if (
-			false === ($start = mb::strpos($svg, '<svg')) ||
-			false === ($end = mb::strrpos($svg, '</svg>'))
+			(false === ($start = mb::strpos($svg, '<svg'))) ||
+			(false === ($end = mb::strrpos($svg, '</svg>')))
 		) {
 			return false;
 		}
@@ -238,17 +233,17 @@ class dom {
 	public static function parse_css($styles='') {
 		ref\cast::string($styles, true);
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
 		// Remove comments.
-		while (false !== $start = mb::strpos($styles, '/*')) {
-			if (false !== $end = mb::strpos($styles, '*/')) {
-				$styles = str_replace(mb::substr($styles, $start, ($end - $start + 2)), '', $styles);
+		while (false !== ($start = mb::strpos($styles, '/*'))) {
+			if (false !== ($end = mb::strpos($styles, '*/'))) {
+				$styles = str_replace(
+					mb::substr($styles, $start, ($end - $start + 2), true),
+					'',
+					$styles
+				);
 			}
 			else {
-				$styles = mb::substr($styles, 0, $start);
+				$styles = mb::substr($styles, 0, $start, true);
 			}
 		}
 
@@ -260,15 +255,14 @@ class dom {
 		);
 
 		// Standardize quoting.
-		ref\sanitize::quotes($styles);
+		ref\sanitize::quotes($styles, true);
 		$styles = str_replace("'", '"', $styles);
 
 		// Whitespace.
-		ref\sanitize::whitespace($styles);
+		ref\sanitize::whitespace($styles, 0, true);
 
 		// Early bail.
 		if (!$styles) {
-			constants::$str_lock = $lock;
 			return array();
 		}
 
@@ -278,8 +272,16 @@ class dom {
 		$styles = preg_replace('/\}(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', '⠈', $styles);
 
 		// Put spaces behind and after parentheses.
-		$styles = preg_replace('/\s*(\()\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ' (', $styles);
-		$styles = preg_replace('/\s*(\))\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ') ', $styles);
+		$styles = preg_replace(
+			'/\s*(\()\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+			' (',
+			$styles
+		);
+		$styles = preg_replace(
+			'/\s*(\))\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+			') ',
+			$styles
+		);
 
 		// Make sure {} have no whitespace on either end.
 		$styles = preg_replace('/\s*(⠁|⠈|@)\s*/u', '$1', $styles);
@@ -303,7 +305,12 @@ class dom {
 				}
 				// Just a line, like @import.
 				elseif (preg_match('/;(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/', $styles[$k])) {
-					$styles[$k] = preg_replace('/;(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ";\n", $styles[$k], 1);
+					$styles[$k] = preg_replace(
+						'/;(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+						";\n",
+						$styles[$k],
+						1
+					);
 				}
 
 				$tmp = explode("\n", $styles[$k]);
@@ -319,8 +326,13 @@ class dom {
 		}
 		$styles = implode("\n", $styles);
 
-		// One more quick formatting thing, we can get rid of spaces between closing) and punctuation.
-		$styles = preg_replace('/\)\s(,|;)(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', ')$1', $styles);
+		// One more quick formatting thing, we can get rid of spaces
+		// between closing) and punctuation.
+		$styles = preg_replace(
+			'/\)\s(,|;)(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+			')$1',
+			$styles
+		);
 
 		// And between RGB/URL stuff.
 		$styles = preg_replace('/(url|rgba?)\s+\(/', '$1(', $styles);
@@ -346,12 +358,18 @@ class dom {
 				$tmp['@'] = mb::strtolower($matches[1][0]);
 
 				// Find the outermost bit.
-				if (false === $start = mb::strpos($styles[$k], '⠁')) {
+				if (false === ($start = mb::strpos($styles[$k], '⠁'))) {
 					continue;
 				}
 
-				$tmp['selector'] = mb::strtolower(trim(mb::substr($styles[$k], 0, $start)));
-				$chunk = mb::substr($styles[$k], $start + 1, -1);
+				$tmp['selector'] = mb::strtolower(
+					trim(
+						mb::substr($styles[$k], 0, $start, true)
+					),
+					false,
+					true
+				);
+				$chunk = mb::substr($styles[$k], $start + 1, -1, true);
 				$chunk = str_replace(array('⠁', '⠈'), array('{', '}'), $chunk);
 				$tmp['nest'] = static::parse_css($chunk);
 
@@ -368,7 +386,7 @@ class dom {
 				if (0 === strpos($styles[$k], '@')) {
 					// What kind of @ is this?
 					preg_match_all('/^@([a-z\-]+)/ui', $styles[$k], $matches);
-					$tmp['@'] = mb::strtolower($matches[1][0]);
+					$tmp['@'] = mb::strtolower($matches[1][0], false, true);
 				}
 
 				// A normal {k:v, k:v}.
@@ -388,10 +406,18 @@ class dom {
 
 					foreach ($rules as $k2=>$v2) {
 						$rules[$k2] = rtrim($rules[$k2], ';') . ';';
-						if (preg_match('/:(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/', $rules[$k2])) {
-							$rules[$k2] = preg_replace('/:(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', "\n", $rules[$k2], 1);
+						if (preg_match(
+							'/:(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/',
+							$rules[$k2]
+						)) {
+							$rules[$k2] = preg_replace(
+								'/:(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+								"\n",
+								$rules[$k2],
+								1
+							);
 							list($key, $value) = explode("\n", $rules[$k2]);
-							$key = mb::strtolower(trim($key));
+							$key = mb::strtolower(trim($key), false, true);
 							$value = trim($value);
 							$tmp['rules'][$key] = $value;
 						}
@@ -427,7 +453,6 @@ class dom {
 			$out[] = $tmp;
 		}
 
-		constants::$str_lock = $lock;
 		return $out;
 	}
 

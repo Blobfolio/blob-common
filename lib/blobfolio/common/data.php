@@ -38,7 +38,10 @@ class data {
 		}
 
 		// We will ignore keys for non-associative arrays.
-		if (cast::array_type($arr1) !== 'associative' && cast::array_type($arr2) !== 'associative') {
+		if (
+			(cast::array_type($arr1) !== 'associative') &&
+			(cast::array_type($arr2) !== 'associative')
+		) {
 			return count(array_intersect($arr1, $arr2)) === $length;
 		}
 
@@ -230,7 +233,7 @@ class data {
 
 		// Make sure everything is numeric.
 		foreach ($arr as $k=>$v) {
-			if (!is_numeric($arr[$k])) {
+			if (!is_int($arr[$k]) && !is_float($arr[$k])) {
 				ref\cast::float($arr[$k], true);
 			}
 		}
@@ -365,9 +368,9 @@ class data {
 		if (
 			!is_string($date1) ||
 			!is_string($date2) ||
-			$date1 === $date2 ||
-			'0000-00-00' === $date1 ||
-			'0000-00-00' === $date2
+			($date1 === $date2) ||
+			('0000-00-00' === $date1) ||
+			('0000-00-00' === $date2)
 		) {
 			return 0;
 		}
@@ -425,22 +428,18 @@ class data {
 	 */
 	public static function ip_in_range(string $ip, $min, $max=null) {
 		ref\sanitize::ip($ip, true);
-		ref\cast::string($min);
-
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
+		if (!is_string($min)) {
+			return false;
+		}
 
 		// Bad IP.
 		if (!$ip) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
 		// Is $min a range?
 		if (false !== strpos($min, '/')) {
 			if (false === ($range = format::cidr_to_range($min))) {
-				constants::$str_lock = $lock;
 				return false;
 			}
 			$min = $range['min'];
@@ -448,7 +447,6 @@ class data {
 		}
 		// Max is required otherwise.
 		elseif (is_null($max)) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
@@ -462,11 +460,9 @@ class data {
 			(false !== $min) &&
 			(false !== $max)
 		) {
-			constants::$str_lock = $lock;
 			return static::in_range($ip, $min, $max);
 		}
 
-		constants::$str_lock = $lock;
 		return false;
 	}
 
@@ -497,11 +493,11 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function is_utf8($str) {
-		if (is_string($str)) {
-			return (bool) preg_match('//u', $str);
-		}
-		elseif (is_numeric($str) || is_bool($str)) {
+		if (is_numeric($str) || is_bool($str)) {
 			return true;
+		}
+		elseif (is_string($str)) {
+			return (bool) preg_match('//u', $str);
 		}
 
 		return false;
@@ -548,13 +544,7 @@ class data {
 	 * @param int $max Max length.
 	 * @return bool True/false.
 	 */
-	public static function length_in_range($str, $min=null, $max=null) {
-		ref\cast::string($str, true);
-
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
+	public static function length_in_range(string $str, $min=null, $max=null) {
 		if (!is_null($min) && !is_int($min)) {
 			ref\cast::int($min, true);
 		}
@@ -562,22 +552,19 @@ class data {
 			ref\cast::int($max, true);
 		}
 
-		$length = mb::strlen($str);
+		$length = mb::strlen($str, true);
 		if (!is_null($min) && !is_null($max) && $min > $max) {
 			static::switcheroo($min, $max);
 		}
 
 		if (!is_null($min) && $min > $length) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
 		if (!is_null($max) && $max < $length) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
-		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -660,20 +647,18 @@ class data {
 	 * @return string Random string.
 	 */
 	public static function random_string(int $length=10, $soup=null) {
+		if ($length < 1) {
+			return '';
+		}
+
 		if (is_array($soup) && count($soup)) {
 			ref\cast::string($soup);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
 			$soup = implode('', $soup);
-			ref\sanitize::printable($soup);				// Strip non-printable.
+			ref\sanitize::printable($soup, true);
 
-			constants::$str_lock = $lock;
-
-			$soup = preg_replace('/\s/u', '', $soup);	// Strip whitespace.
-			$soup = array_unique(mb::str_split($soup));
+			$soup = preg_replace('/\s/u', '', $soup);
+			$soup = array_unique(mb::str_split($soup, 1, true));
 			$soup = array_values($soup);
 			if (!count($soup)) {
 				return '';
@@ -683,10 +668,6 @@ class data {
 		// Use default soup.
 		if (!is_array($soup) || !count($soup)) {
 			$soup = constants::RANDOM_CHARS;
-		}
-
-		if ($length < 1) {
-			return '';
 		}
 
 		// Pick nine entries at random.
@@ -728,10 +709,7 @@ class data {
 	 * @param bool $httponly HTTP only.
 	 * @return bool True/false.
 	 */
-	public static function unsetcookie($name, $path='', $domain='', bool $secure=false, bool $httponly=false) {
-		ref\cast::string($name, true);
-		ref\cast::string($path, true);
-		ref\cast::string($domain, true);
+	public static function unsetcookie(string $name, string $path='', string $domain='', bool $secure=false, bool $httponly=false) {
 
 		if (!headers_sent()) {
 			setcookie($name, false, -1, $path, $domain, $secure, $httponly);
