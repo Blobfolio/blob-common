@@ -22,12 +22,12 @@ use \blobfolio\common\sanitize as v_sanitize;
 
 // JIT images is split off into its own file.
 if (defined('WP_JIT_IMAGES') && WP_JIT_IMAGES) {
-	require(BLOBCOMMON_ROOT . '/functions-jit.php');
+	require(BLOBCOMMON_PLUGIN_DIR . '/functions-jit.php');
 }
 
 // WebP is likewise in its own file.
 if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
-	require(BLOBCOMMON_ROOT . '/functions-webp.php');
+	require(BLOBCOMMON_PLUGIN_DIR . '/functions-webp.php');
 }
 
 
