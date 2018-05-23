@@ -556,7 +556,7 @@ class file {
 		if ($depth < 0) {
 			$inner_depth = -1;
 		}
-		elseif ($depth > 0) {
+		elseif ($depth >= 1) {
 			$inner_depth = $depth - 1;
 		}
 		else {
@@ -583,7 +583,7 @@ class file {
 						$out[] = "{$path}{$file}";
 					}
 
-					if (($inner_depth === -1) || $inner_depth > 0) {
+					if ((-1 === $inner_depth) || $inner_depth > 0) {
 						$out = array_merge($out, static::scandir("{$path}{$file}", $show_files, $show_dirs, $inner_depth));
 					}
 				}
