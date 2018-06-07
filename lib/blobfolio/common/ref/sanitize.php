@@ -20,6 +20,8 @@ use \blobfolio\domain\domain;
 
 class sanitize {
 
+	protected static $_mb;
+
 	/**
 	 * Strip Accents
 	 *
@@ -1523,17 +1525,20 @@ class sanitize {
 				}
 			}
 
-			if (
-				$str &&
-				(
-					!function_exists('mb_check_encoding') ||
-					!mb_check_encoding($str, 'ASCII')
-				)
-			) {
-				if (
+			// Let's run our library checks just once.
+			if (null === static::$_mb) {
+				static::$_mb = (
+					function_exists('mb_check_encoding') &&
 					function_exists('mb_strlen') &&
 					(intval(ini_get('mbstring.func_overload'))) & 2
-				) {
+				);
+			}
+
+			if (
+				$str &&
+				(!static::$_mb || !mb_check_encoding($str, 'ASCII'))
+			) {
+				if (static::$_mb) {
 					$length = mb_strlen($str, '8bit');
 				}
 				else {
