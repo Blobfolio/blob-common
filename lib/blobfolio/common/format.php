@@ -364,6 +364,22 @@ class format {
 	}
 
 	/**
+	 * JSON Encode
+	 *
+	 * This is a wrapper for json_encode, but will try to fix common
+	 * issues.
+	 *
+	 * @param mixed $value Value.
+	 * @param int $options Options.
+	 * @param int $depth Depth.
+	 * @return string JSON.
+	 */
+	public static function json_encode($value, $options=0, $depth=512) {
+		ref\format::json_encode($value, $options, $depth);
+		return $value;
+	}
+
+	/**
 	 * Linkify Text
 	 *
 	 * Make link-like text things clickable HTML links.

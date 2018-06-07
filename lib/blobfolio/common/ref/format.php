@@ -432,8 +432,7 @@ class format {
 	 */
 	public static function json(&$str='', $pretty=true) {
 		if (!is_string($str)) {
-			sanitize::utf8($str);
-			$str = json_encode($str);
+			static::json_encode($str);
 		}
 
 		if (false === ($decode = v_format::json_decode($str))) {
@@ -663,6 +662,36 @@ class format {
 		}// End each char.
 
 		$str = $out;
+		return true;
+	}
+
+	/**
+	 * JSON Encode
+	 *
+	 * This is a wrapper for json_encode, but will try to fix common
+	 * issues.
+	 *
+	 * @param mixed $value Value.
+	 * @param int $options Options.
+	 * @param int $depth Depth.
+	 * @return bool True/false.
+	 */
+	public static function json_encode(&$value, $options=0, $depth=512) {
+		// Simple values don't require a lot of thought.
+		if (!$value || is_numeric($value) || is_bool($value)) {
+			$value = json_encode($value, $options, $depth);
+			return true;
+		}
+
+		$original = $value;
+		$value = json_encode($value, $options, $depth);
+
+		// Try again with UTF-8 sanitizing if this failed.
+		if (is_null($value)) {
+			sanitize::utf8($original);
+			$value = json_encode($original, $options, $depth);
+		}
+
 		return true;
 	}
 
