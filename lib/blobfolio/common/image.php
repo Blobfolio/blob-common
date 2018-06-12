@@ -10,8 +10,20 @@
 
 namespace blobfolio\common;
 
+// PHP introduced WebP capabilities in batches; oddly this constant was
+// a late arrival.
+if (!defined('IMAGETYPE_WEBP')) {
+	define('IMAGETYPE_WEBP', 18);
+}
+
+if (!defined('IMG_WEBP')) {
+	define('IMG_WEBP', 32);
+}
+
 class image {
 
+	protected static $_webp_gd;
+	protected static $_webp_binary;
 	protected static $svg_ids = array();
 	protected static $svg_classes = array();
 
@@ -458,33 +470,74 @@ class image {
 	/**
 	 * Check Probable WebP Support
 	 *
-	 * This attempts to check whether the required
-	 * WebP binaries exist and are accessible to PHP.
+	 * This attempts to check whether PHP natively supports WebP, or
+	 * if maybe third-party binaries are installed on the system.
 	 *
 	 * @param string $cwebp Path to cwebp.
 	 * @param string $gif2webp Path to gif2webp.
 	 * @return bool True/false.
 	 */
 	public static function has_webp($cwebp=null, $gif2webp=null) {
-		if (is_null($cwebp)) {
-			$cwebp = constants::CWEBP;
-		}
-		else {
-			ref\cast::string($cwebp, true);
-		}
-		if (is_null($gif2webp)) {
-			$gif2webp = constants::GIF2WEBP;
-		}
-		else {
-			ref\cast::string($gif2webp, true);
+		// Gotta set it first?
+		if (is_null(static::$_webp_gd)) {
+			$image_types = imagetypes();
+			static::$_webp_gd = (
+				(0 !== ($image_types & IMG_WEBP)) &&
+				function_exists('imagewebp') &&
+				function_exists('imagecreatefromwebp')
+			);
 		}
 
-		return (
-			@file_exists($cwebp) &&
-			@file_exists($gif2webp) &&
-			@is_executable($cwebp) &&
-			@is_executable($gif2webp)
-		);
+		// See if this system supports the binary method. In general
+		// we'll just check this once, but if a previous check failed
+		// and binary paths are supplied, we'll check again.
+		if (
+			is_null(static::$_webp_binary) ||
+			(
+				(false === static::$_webp_binary) &&
+				$cwebp &&
+				$gif2webp
+			)
+		) {
+			static::$_webp_binary = false;
+
+			// We're using proc_open() to handle execution; if this is
+			// missing or disabled, we're done.
+			if (function_exists('proc_open') && is_callable('proc_open')) {
+				// Resolve the binary paths.
+				if (is_null($cwebp)) {
+					$cwebp = constants::CWEBP;
+				}
+				else {
+					ref\cast::string($cwebp, true);
+				}
+				if (is_null($gif2webp)) {
+					$gif2webp = constants::GIF2WEBP;
+				}
+				else {
+					ref\cast::string($gif2webp, true);
+				}
+
+				ref\file::path($cwebp, true, true);
+				ref\file::path($gif2webp, true, true);
+
+				if (
+					$cwebp &&
+					$gif2webp &&
+					@is_file($cwebp) &&
+					@is_executable($cwebp) &&
+					@is_file($gif2webp) &&
+					@is_executable($gif2webp)
+				) {
+					static::$_webp_binary = array(
+						'cwebp'=>$cwebp,
+						'gif2webp'=>$gif2webp,
+					);
+				}
+			}
+		}
+
+		return (static::$_webp_gd || (false !== static::$_webp_binary));
 	}
 
 	/**
@@ -577,114 +630,227 @@ class image {
 	}
 
 	/**
+	 * Validate WebP From/To
+	 *
+	 * Our three WebP functions need to independently handle input and
+	 * output source files. This private method helps prevent
+	 * unnecessary code duplication.
+	 *
+	 * @param string $from From.
+	 * @param mixed $to To.
+	 * @return bool True/false.
+	 */
+	protected static function to_webp_sources(string &$from, &$to) {
+		// Validate the source.
+		ref\cast::string($from, true);
+		ref\file::path($from, true, true);
+		if (!$from) {
+			$from = '';
+			return false;
+		}
+
+		// We can only convert JPEG, PNG, and GIF sources.
+		$info = mime::finfo($from);
+		if (!in_array($info['mime'], array('image/jpeg', 'image/gif', 'image/png'), true)) {
+			$from = '';
+			return false;
+		}
+
+		// Build a destination if we need to.
+		if (!is_null($to)) {
+			ref\cast::string($to, true);
+			// If this is just a file name, throw it in from's dir.
+			if (false === strpos($to, '/')) {
+				$to = "{$info['dirname']}/$to";
+			}
+			ref\file::path($to, false, true);
+			if ('.webp' !== substr(strtolower($to), -5)) {
+				$to = '';
+				return false;
+			}
+		}
+		// Just swap extensions with the source.
+		else {
+			$to = "{$info['dirname']}/{$info['filename']}.webp";
+		}
+
+		return true;
+	}
+
+	/**
 	 * Generate WebP From Source
 	 *
-	 * This uses system WebP binaries to generate
-	 * a copy of a source file. It uses `proc()`
-	 * instead of `exec()`.
+	 * This is a wrapper for the more specific GD and Binary methods
+	 * to generate a WebP sister file.
 	 *
-	 * @param string $source Source file.
-	 * @param string $out Output file.
+	 * PHP isn't known for its performance, so the binaries are
+	 * preferred when available.
+	 *
+	 * @param string $from Source file.
+	 * @param string $to Output file.
 	 * @param string $cwebp Path to cwebp.
 	 * @param string $gif2webp Path to gif2webp.
 	 * @param bool $refresh Recreate it.
 	 * @return bool True/false.
 	 */
-	public static function to_webp($source, $out=null, $cwebp=null, $gif2webp=null, bool $refresh=false) {
-		ref\cast::string($source, true);
-		if (!is_null($out)) {
-			ref\cast::string($out, true);
-		}
-		if (!is_null($cwebp)) {
-			ref\cast::string($cwebp, true);
-		}
-		if (!is_null($gif2webp)) {
-			ref\cast::string($gif2webp, true);
-		}
+	public static function to_webp(string $from, $to=null, $cwebp=null, $gif2webp=null, bool $refresh=false) {
+		// Try binaries first, fallback to GD.
+		return (
+			static::to_webp_binary($from, $to, $cwebp, $gif2webp, $refresh) ||
+			static::to_webp_gd($from, $to, $refresh)
+		);
+	}
 
-		if (false === ($source = file::path($source, true, true))) {
+	/**
+	 * Generate WebP (GD)
+	 *
+	 * Use GD to generate a WebP sister file.
+	 *
+	 * @param string $from Source.
+	 * @param string $to Out.
+	 * @param bool $refresh Refresh.
+	 * @return bool True/false.
+	 */
+	public static function to_webp_gd(string $from, $to=null, bool $refresh=false) {
+		if (!static::to_webp_sources($from, $to)) {
 			return false;
 		}
 
-		$info = mime::finfo($source);
-		if (!preg_match('/^(jpe?g|png|gif)$/', $info['extension'])) {
-			return false;
-		}
-
-		// Do we need to build an out file?
-		if (is_null($out)) {
-			$out = "{$info['dirname']}/{$info['filename']}.webp";
-		}
-		// Needs to have the right extension.
-		elseif ('.webp' !== substr(strtolower($out), -5)) {
-			return false;
-		}
-		else {
-			$out = file::path($out, false, true);
-		}
-
-		// Already exists?
-		if (!$refresh && @file_exists($out)) {
+		// If it exists and we aren't refreshing, let's abort.
+		if (!$refresh && @is_file($to)) {
 			return true;
 		}
 
-		// Can't do it?
-		if (is_null($cwebp)) {
-			$cwebp = constants::CWEBP;
-		}
-		if (is_null($gif2webp)) {
-			$gif2webp = constants::GIF2WEBP;
-		}
-		if (!static::has_webp($cwebp, $gif2webp)) {
+		// If this system can't do WebP, we're done.
+		if (!static::has_webp() || !static::$_webp_gd) {
 			return false;
 		}
 
-		// Try to open the process.
+		$image = @imagecreatefromstring(file_get_contents($from));
+		if (!$image || !@is_resource($image)) {
+			return false;
+		}
+
+		// Try to save it.
+		@imagewebp($image, $to, 90);
+		if (!@is_file($to)) {
+			return false;
+		}
+
+		// Free up some memory.
+		@imagedestroy($image);
+
+		// Try to give it the same permissions as the original.
+		if (false !== ($from_chmod = @fileperms($from))) {
+			@chmod($to, $from_chmod);
+		}
+		if (false !== ($from_owner = @fileowner($from))) {
+			@chown($to, $from_owner);
+		}
+		if (false !== ($from_group = @filegroup($from))) {
+			@chgrp($to, $from_group);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Generate WebP (Binary)
+	 *
+	 * Use system binaries to generate WebP sister file.
+	 *
+	 * @param string $from Source.
+	 * @param string $to Out.
+	 * @param string $cwebp Path to cwebp.
+	 * @param string $gif2webp Path to gif2webp.
+	 * @param bool $refresh Recreate it.
+	 * @return bool True/false.
+	 */
+	public static function to_webp_binary(string $from, $to=null, $cwebp=null, $gif2webp=null, bool $refresh=false) {
+		if (!static::to_webp_sources($from, $to)) {
+			return false;
+		}
+
+		// If it exists and we aren't refreshing, let's abort.
+		if (!$refresh && @is_file($to)) {
+			return true;
+		}
+
+		// If this system can't do WebP, we're done.
+		if (!static::has_webp($cwebp, $gif2webp) || (false === static::$_webp_binary)) {
+			return false;
+		}
+
+		// We'll need a temporary directory for logging.
+		$tmp_dir = @sys_get_temp_dir();
+		if (!is_dir($tmp_dir)) {
+			return false;
+		}
+		$error_log = file::trailingslash($tmp_dir) . 'cwebp-error_' . microtime(true) . '.txt';
+
+		// Pull the MIME info again.
+		$info = mime::finfo($from);
+
+		// Set up the command.
+		if ('image/gif' === $info['mime']) {
+			$cmd = escapeshellcmd(static::$_webp_binary['gif2webp']) . ' -m 6 -quiet ' . escapeshellarg($from) . ' -o ' . escapeshellarg($to);
+		}
+		else {
+			$cmd = escapeshellcmd(static::$_webp_binary['cwebp']) . ' -mt -quiet -jpeg_like ' . escapeshellarg($from) . ' -o ' . escapeshellarg($to);
+		}
+
+		// Some process setup.
+		$descriptors = array(
+			0=>array('pipe', 'w'),				// STDOUT.
+			1=>array('file', $error_log, 'a'),	// STDERR.
+		);
+		$cwd = $tmp_dir;
+		$pipes = array();
+
 		try {
-			$tmp_dir = @sys_get_temp_dir();
-			$error_log = file::trailingslash($tmp_dir, true) . 'cwebp-error_' . microtime(true) . '.txt';
-
-			// Proc setup.
-			$descriptors = array(
-				0=>array('pipe', 'w'), // STDOUT.
-				1=>array('file', $error_log, 'a'), // STDERR.
-			);
-			$cwd = $tmp_dir;
-			$pipes = array();
-
-			$type = $info['mime'];
-			if ('image/gif' === $type) {
-				$cmd = escapeshellcmd($gif2webp) . ' -m 6 -quiet ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
-			}
-			else {
-				$cmd = escapeshellcmd($cwebp) . ' -mt -quiet -jpeg_like ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
-			}
-
-			$process = proc_open(
+			// Try to open the process.
+			$process = @proc_open(
 				$cmd,
 				$descriptors,
 				$pipes,
 				$cwd
 			);
 
-			if (@is_resource($process)) {
-				$life = @stream_get_contents($pipes[0]);
-				@fclose($pipes[0]);
-				$return_value = @proc_close($process);
-
-				if (@file_exists($error_log)) {
-					@unlink($error_log);
-				}
-
-				return @file_exists($out);
+			// If we didn't end up with a resource, something is wrong.
+			if (!@is_resource($process)) {
+				return false;
 			}
+
+			// Pull the stream contents.
+			$life = @stream_get_contents($pipes[0]);
+			@fclose($pipes[0]);
+			$return_value = @proc_close($process);
+
+			// We don't actually want the error log; it is just supplied
+			// to prevent interruptions to PHP.
+			if (@file_exists($error_log)) {
+				@unlink($error_log);
+			}
+
+			// If this isn't a file, we're done.
+			if (!@file_exists($to)) {
+				return false;
+			}
+
+			// Try to give it the same permissions as the original.
+			if (false !== ($from_chmod = @fileperms($from))) {
+				@chmod($to, $from_chmod);
+			}
+			if (false !== ($from_owner = @fileowner($from))) {
+				@chown($to, $from_owner);
+			}
+			if (false !== ($from_group = @filegroup($from))) {
+				@chgrp($to, $from_group);
+			}
+
+			return true;
 		} catch (\Throwable $e) {
 			return false;
 		}
-
-		return false;
 	}
-
 }
-
-
