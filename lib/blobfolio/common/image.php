@@ -468,6 +468,113 @@ class image {
 	}
 
 	/**
+	 * Image Dimensions
+	 *
+	 * The native PHP getimagesize() function is kind of shit. This will
+	 * help parse out SVG and WebP dimensions too.
+	 *
+	 * @param string $file File.
+	 * @return array|bool Info or false.
+	 */
+	public static function getimagesize(string $file) {
+		if (!$file || !is_file($file)) {
+			return false;
+		}
+
+		// Do a quick MIME check to make sure this is something image-
+		// like.
+		$finfo = mime::finfo($file);
+		if (0 !== strpos($finfo['mime'], 'image/')) {
+			return false;
+		}
+
+		// If this is an SVG, let's use our own function.
+		if ('image/svg+xml' === $finfo['mime']) {
+			if (false === ($tmp = static::svg_dimensions($file))) {
+				return false;
+			}
+
+			// Fake it till you make it.
+			return array(
+				$tmp['width'],
+				$tmp['height'],
+				-1,
+				sprintf(
+					'width="%d" height="%d"',
+					$tmp['width'],
+					$tmp['height']
+				),
+				'mime'=>'image/svg+xml',
+			);
+		}
+
+		// Try getimagesize() first, just in case.
+		if (false !== ($info = @getimagesize($file))) {
+			return $info;
+		}
+
+		// Manually parse WebP.
+		if (
+			('image/webp' === $finfo['mime']) &&
+			($handle = @fopen($file, 'rb'))
+		) {
+			// The magic (and dimensions) are in the first 40 bytes.
+			$magic = @fread($handle, 40);
+			fclose($handle);
+
+			// We should have the number of bytes we asked for.
+			if (strlen($magic) < 40) {
+				return false;
+			}
+
+			$width = $height = false;
+
+			// There are three types of WebP. Haha.
+			switch (substr($magic, 12, 4)) {
+				// Lossy WebP.
+				case 'VP8 ':
+					$parts = unpack('v2', substr($magic, 26, 4));
+					$width = (int) ($parts[1] & 0x3FFF);
+					$height = (int) ($parts[2] & 0x3FFF);
+					break;
+				// Lossless WebP.
+				case 'VP8L':
+					$parts = unpack('C4', substr($magic, 21, 4));
+					$width = (int) ($parts[1] | (($parts[2] & 0x3F) << 8)) + 1;
+					$height = (int) ((($parts[2] & 0xC0) >> 6) | ($parts[3] << 2) | (($parts[4] & 0x03) << 10)) + 1;
+					break;
+				// Animated/Alpha WebP.
+				case 'VP8X':
+					// Padd 24-bit int.
+					$width = unpack('V', substr($magic, 24, 3) . "\x00");
+					$width = (int) ($width[1] & 0xFFFFFF) + 1;
+
+					// Pad 24-bit int.
+					$height = unpack('V', substr($magic, 27, 3) . "\x00");
+					$height = (int) ($height[1] & 0xFFFFFF) + 1;
+					break;
+			}
+
+			if ($width && $height) {
+				return array(
+					$width,
+					$height,
+					IMAGETYPE_WEBP,
+					sprintf(
+						'width="%d" height="%d"',
+						$width,
+						$height
+					),
+					'mime'=>'image/webp',
+				);
+			}
+		}
+
+		// No dice.
+		return false;
+	}
+
+	/**
 	 * Check Probable WebP Support
 	 *
 	 * This attempts to check whether PHP natively supports WebP, or
