@@ -147,7 +147,7 @@ class common extends \blobfolio\bob\base\mike {
 		static::$stub_common = file_get_contents("{$skel_dir}common_index.template");
 		static::$stub_common = str_replace(
 			'CLASSMAP',
-			"\n\t\t\t" . implode(",\n\t\t\t", $out) . "\n\t\t",
+			"\n\t" . implode(",\n\t", $out) . "\n",
 			static::$stub_common
 		);
 
