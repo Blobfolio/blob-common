@@ -14,8 +14,10 @@
 
 namespace blobfolio\wp\common;
 
-use \stdClass;
+use \blobfolio\common\data;
+use \blobfolio\common\ref\sanitize as r_sanitize;
 use \Exception;
+use \stdClass;
 use \Throwable;
 
 class blobcommon {
@@ -204,14 +206,14 @@ class blobcommon {
 			'plugin'
 		);
 		$uri = $uri['json'];
-		ref\sanitize::uri($uri);
+		r_sanitize::url($uri);
 		if (!$uri) {
 			static::$_release[$key] = false;
 			return static::$_release[$key];
 		}
 
 		// Cache this to the transient table for a little bit.
-		$transient_key = 'blob-common_remote_' . md5($uri);
+		$transient_key = 'blob-common_remote_' . md5($uri . $key);
 		if (false !== (static::$_release[$key] = get_transient($transient_key))) {
 			return static::$_release[$key];
 		}
@@ -225,7 +227,7 @@ class blobcommon {
 
 		// Decode the JSON.
 		static::$_release[$key] = data::json_decode_array(
-			remote_retrieve_body($response),
+			wp_remote_retrieve_body($response),
 			$template
 		);
 
@@ -346,7 +348,7 @@ class blobcommon {
 			static::$_plugin = get_plugin_data(BLOBCOMMON_INDEX, false, false);
 
 			// And add in what we pulled remotely.
-			static::$_plugin['InfoURI'] = $remote['InfoURI'];
+			static::$_plugin['InfoURI'] = $remote['json_uri'];
 			static::$_plugin['DownloadVersion'] = $remote['Version'];
 			static::$_plugin['DownloadURI'] = $remote['DownloadURI'];
 		}
