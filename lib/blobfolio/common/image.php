@@ -723,7 +723,7 @@ class image {
 			$viewbox = trim(str_replace(',', ' ', $viewbox));
 			$viewbox = explode(' ', $viewbox);
 			foreach ($viewbox as $k=>$v) {
-				ref\cast::float($viewbox[$k]);
+				ref\cast::float($viewbox[$k], true);
 				ref\sanitize::to_range($viewbox[$k], 0.0);
 			}
 			if (count($viewbox) === 4) {
