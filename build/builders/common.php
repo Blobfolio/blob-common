@@ -26,7 +26,7 @@ class common extends \blobfolio\bob\base\mike {
 	// Automatic setup.
 	const CLEAN_ON_SUCCESS = false;			// Delete tmp/bob when done.
 
-	const COMMON_REMOTE = 'https://github.com/Blobfolio/blob-common/raw/7.0_Next/bin/blob-common.phar';
+	const COMMON_REMOTE = 'https://github.com/Blobfolio/blob-common/raw/master/bin/blob-common.phar';
 	const TEST_REMOTE = 'https://github.com/Blobfolio/blob-common/raw/master/bin/test.phar';
 
 	// Functions to run to complete the build, in order, grouped by
@@ -181,20 +181,13 @@ class common extends \blobfolio\bob\base\mike {
 		$phar->compressFiles(Phar::GZ);
 		$phar->stopBuffering();
 
-		// The "version.json" file is deprecated, but for now we will
-		// keep building it.
+		// Compile a version release file.
 		$out = array(
-			'date'=>date('c'),
 			'checksum'=>md5_file("{$bin_dir}blob-common.phar"),
+			'date_created'=>date('c'),
+			'size'=>intval(filesize("{$bin_dir}blob-common.phar")),
+			'url'=>static::COMMON_REMOTE,
 		);
-		file_put_contents("{$bin_dir}version.json", json_encode($out));
-
-		// Going forward, we'll switch to "blob-common.json".
-		$out['date_created'] = $out['date'];
-		unset($out['date']);
-		$out['size'] = (int) filesize("{$bin_dir}blob-common.phar");
-		$out['url'] = static::COMMON_REMOTE;
-		ksort($out);
 		file_put_contents("{$bin_dir}blob-common.json", json_encode($out, JSON_PRETTY_PRINT));
 
 		log::print('Building test.phar…');

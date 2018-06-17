@@ -5,6 +5,7 @@
 /build export-ignore
 /docs export-ignore
 /Gruntfile.js export-ignore
+/npm_scripts export-ignore
 /package.json export-ignore
 /phpunit-phar.xml.dist export-ignore
 /phpunit.xml.dist export-ignore
