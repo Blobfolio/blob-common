@@ -16,7 +16,7 @@ php:
   - 7.1
   - 7.2
 
-install: travis_retry composer install --no-interaction && composer install blobfolio\blob-phone --no-interaction
+install: travis_retry composer install --no-interaction && composer require blobfolio/blob-phone --no-interaction
 
 script:
   - lib/vendor/bin/phpunit --configuration phpunit.xml.dist
