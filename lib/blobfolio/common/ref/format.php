@@ -1104,10 +1104,16 @@ class format {
 			}
 			cast::array($types);
 
-			$str = new phone($str, $country);
-			if (!$str->is_phone($types)) {
-				$str = '';
-				return false;
+			// We can only go further if blob-phone is installed.
+			if (class_exists('\\blobfolio\\phone\\phone')) {
+				$str = new phone($str, $country);
+				if (!$str->is_phone($types)) {
+					$str = '';
+					return false;
+				}
+			}
+			else {
+				$str = preg_replace('/[^\d]/', '', $str);
 			}
 
 			$str = (string) $str;

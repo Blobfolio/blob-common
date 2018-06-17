@@ -42,31 +42,14 @@ class plugin extends \blobfolio\bob\base\mike_wp {
 
 		log::print('Copying Phar archives…');
 
-		foreach (array('blob-common.phar', 'test.phar') as $file) {
+		// TODO: add 'blob-common.phar' to the list below.
+		foreach (array('test.phar') as $file) {
 			if (is_file("{$out_dir}{$file}")) {
 				unlink("{$out_dir}{$file}");
 			}
 
 			copy("{$bin_dir}{$file}", "{$out_dir}{$file}");
 			chmod("{$out_dir}{$file}", 0644);
-		}
-	}
-
-	/**
-	 * Overload: Patch Version
-	 *
-	 * @return void Nothing.
-	 */
-	protected static function patch_version() {
-		// Until PHP 5.6 support is fully dropped, we are keeping a
-		// redundant release file at "wp.json".
-		$file = dirname(BOB_ROOT_DIR) . '/release/wp.json';
-		$content = trim(file_get_contents($file));
-		$content = json_decode($content, true);
-
-		if (isset($content['Version'])) {
-			$content['Version'] = static::$_version;
-			file_put_contents($file, json_encode($content, JSON_PRETTY_PRINT));
 		}
 	}
 
