@@ -81,6 +81,22 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::csv_headers()
+	 *
+	 * @dataProvider data_csv_headers
+	 *
+	 * @param string $file File.
+	 * @param mixed $cols Columns.
+	 * @param string $delimiter Delimiter.
+	 * @param mixed $expected Expected.
+	 * @return void Nothing.
+	 */
+	function test_csv_headers(string $file, $cols, string $delimiter, $expected) {
+		$this->assertSame($expected, file::csv_headers($file, $cols, $delimiter));
+	}
+
+
+	/**
 	 * ::data_uri()
 	 *
 	 * @return void Nothing.
@@ -91,6 +107,19 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 
 		$this->assertEquals(true, false !== strpos($data, 'image/svg+xml'));
 		$this->assertEquals(false, file::data_uri('does_not_exist.txt'));
+	}
+
+	/**
+	 * ::dirsize()
+	 *
+	 * @dataProvider data_dirsize
+	 *
+	 * @param string $dir Directory.
+	 * @param int $expected Expected.
+	 * @return void Nothing.
+	 */
+	function test_dirsize(string $dir, int $expected) {
+		$this->assertSame($expected, file::dirsize($dir));
 	}
 
 	/**
@@ -161,6 +190,20 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::line_count()
+	 *
+	 * @dataProvider data_line_count
+	 *
+	 * @param string $file File.
+	 * @param bool $trim Only count printable lines.
+	 * @param int $expected Expected.
+	 * @return void Nothing.
+	 */
+	function test_line_count(string $file, bool $trim, int $expected) {
+		$this->assertSame($expected, file::line_count($file, $trim));
+	}
+
+	/**
 	 * ::mkdir() and ::rmdir()
 	 */
 	function test_mkdir_rmdir() {
@@ -177,7 +220,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 
 		// Make the directory.
 		file::mkdir($path, 0755);
-		$this->assertSame(true, is_dir($path));
+		$this->assertSame(true, @is_dir($path));
 		clearstatcache();
 		$this->assertSame(decoct(0755), decoct(@fileperms($path) & 0777));
 
@@ -300,6 +343,97 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	// -----------------------------------------------------------------
 
 	/**
+	 * Data for ::csv_headers()
+	 *
+	 * @return array Data.
+	 */
+	function data_csv_headers() {
+		return array(
+			// Regular CSV.
+			array(
+				static::ASSETS . 'roles.csv',
+				null,
+				',',
+				array(
+					'Type'=>0,
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+			// Filter columns.
+			array(
+				static::ASSETS . 'roles.csv',
+				array(
+					'Name',
+					'Age',
+				),
+				',',
+				array(
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+			// Filter w/ alternate names.
+			array(
+				static::ASSETS . 'roles.csv',
+				array(
+					'name'=>'Name',
+					'age'=>'Age',
+				),
+				',',
+				array(
+					'name'=>1,
+					'age'=>2,
+				),
+			),
+			// One with leading whitespace.
+			array(
+				static::ASSETS . 'roles2.csv',
+				null,
+				',',
+				array(
+					'Type'=>0,
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+			// Tab-delimited.
+			array(
+				static::ASSETS . 'roles3.csv',
+				null,
+				"\t",
+				array(
+					'Type'=>0,
+					'Name'=>1,
+					'Age'=>2,
+				),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::dirsize()
+	 *
+	 * @return array Data.
+	 */
+	function data_dirsize() {
+		return array(
+			array(
+				static::ASSETS . 'size',
+				30720,
+			),
+			array(
+				static::ASSETS . 'size/subdir',
+				10240,
+			),
+			array(
+				static::ASSETS . 'invalid',
+				0,
+			),
+		);
+	}
+
+	/**
 	 * Data for ::leadingslash()
 	 *
 	 * @return array Data.
@@ -317,6 +451,36 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				array('file/here'),
 				array('/file/here'),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::line_count()
+	 *
+	 * @return array Data.
+	 */
+	function data_line_count() {
+		return array(
+			array(
+				static::ASSETS . 'roles.csv',
+				true,
+				4,
+			),
+			array(
+				static::ASSETS . 'roles.csv',
+				false,
+				4,
+			),
+			array(
+				static::ASSETS . 'roles2.csv',
+				true,
+				4,
+			),
+			array(
+				static::ASSETS . 'roles2.csv',
+				false,
+				5,
 			),
 		);
 	}

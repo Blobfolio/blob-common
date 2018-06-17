@@ -20,20 +20,23 @@ use \blobfolio\domain\domain;
 
 class sanitize {
 
+	protected static $_mb;
+
 	/**
 	 * Strip Accents
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function accents(&$str) {
+	public static function accents(&$str, bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::accents($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
 			if (preg_match('/[\x80-\xff]/', $str)) {
 				$str = strtr($str, constants::ACCENT_CHARS);
@@ -46,35 +49,29 @@ class sanitize {
 	/**
 	 * Attribute Value
 	 *
-	 * This will decode entities, strip control
-	 * characters, and trim outside whitespace.
+	 * This will decode entities, strip control characters, and trim
+	 * outside whitespace.
 	 *
-	 * Note: this should not be used for safe
-	 * insertion into HTML. For that, use the
-	 * html() function.
+	 * Note: this should not be used for safe insertion into HTML. For
+	 * that, use the html() function.
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function attribute_value(&$str='') {
+	public static function attribute_value(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::attribute_value($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
-			static::control_characters($str);
+			cast::constringent($str, $constringent);
+			static::control_characters($str, true);
 			format::decode_entities($str);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
 			// And trim the edges while we're here.
-			mb::trim($str);
-
-			constants::$str_lock = $lock;
+			mb::trim($str, true);
 		}
 
 		return true;
@@ -93,7 +90,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			// There's no point in checking if this is not a string.
+			if (!is_string($str)) {
+				$str = '';
+				return false;
+			}
+
 			$str = strtoupper($str);
 
 			// Alphanumeric, minus D, F, I, O, Q or U.
@@ -120,8 +122,17 @@ class sanitize {
 	 * @return string|bool Card number or false.
 	 */
 	public static function cc(&$ccnum='') {
+		if (!is_string($ccnum)) {
+			if (is_numeric($ccnum)) {
+				$ccnum = (string) $ccnum;
+			}
+			else {
+				$ccnum = false;
+				return false;
+			}
+		}
+
 		// Digits only.
-		cast::to_string($ccnum, true);
 		$ccnum = preg_replace('/[^\d]/', '', $ccnum);
 		$str = $ccnum;
 
@@ -133,31 +144,31 @@ class sanitize {
 		// Different cards have different length requirements.
 		switch ($ccnum[0]) {
 			// Amex.
-			case 3:
+			case '3':
 				if ((strlen($ccnum) !== 15) || !preg_match('/3[47]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Visa.
-			case 4:
+			case '4':
 				if (!in_array(strlen($ccnum), array(13, 16), true)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// MC.
-			case 5:
+			case '5':
 				if ((strlen($ccnum) !== 16) || !preg_match('/5[1-5]/', $ccnum)) {
 					$ccnum = false;
 					return false;
 				}
 				break;
 			// Disc.
-			case 6:
+			case '6':
 				if (
 					(strlen($ccnum) !== 16) ||
-					(intval(substr($ccnum, 0, 4)) !== 6011)
+					(0 !== strpos($ccnum, '6011'))
 				) {
 					$ccnum = false;
 					return false;
@@ -190,7 +201,7 @@ class sanitize {
 			$validate += $dig[$i];
 		}
 
-		if (intval(substr($validate, -1, 1)) === 0) {
+		if (intval(substr($validate, -1)) === 0) {
 			$ccnum = $str;
 		}
 		else {
@@ -204,16 +215,17 @@ class sanitize {
 	 * Control Characters
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function control_characters(&$str='') {
+	public static function control_characters(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::control_characters($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 			$str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
 			$str = preg_replace('/\\\\+0+/', '', $str);
 		}
@@ -225,24 +237,21 @@ class sanitize {
 	 * Country
 	 *
 	 * @param string $str Country.
+	 * @param bool $constringent Light cast.
 	 * @return string ISO country code.
 	 */
-	public static function country(&$str='') {
+	public static function country(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::country($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::whitespace($str);
-			mb::strtoupper($str);
-			if (!array_key_exists($str, constants::COUNTRIES)) {
+			static::whitespace($str, 0, true);
+			mb::strtoupper($str, false, true);
+			if (!isset(constants::COUNTRIES[$str])) {
 				// Maybe a name?
 				$found = false;
 				foreach (constants::COUNTRIES as $k=>$v) {
@@ -276,8 +285,6 @@ class sanitize {
 					$str = '';
 				}
 			}
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -287,33 +294,28 @@ class sanitize {
 	 * CSV Cell Data
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function csv(&$str='') {
+	public static function csv(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::csv($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::quotes($str);
-			static::whitespace($str);
+			static::quotes($str, true);
+			static::whitespace($str, 0, true);
 
 			// Strip existing double quotes.
-			while (false !== v_mb::strpos($str, '""')) {
+			while (false !== strpos($str, '""')) {
 				$str = str_replace('""', '"', $str);
 			}
 
 			// Double quotes.
 			$str = str_replace('"', '""', $str);
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -332,42 +334,35 @@ class sanitize {
 			}
 		}
 		else {
-			// An obviously bad string.
+			// We don't need fancy casting.
+			if (!is_string($str)) {
+				if (is_numeric($str)) {
+					$str = (string) $str;
+				}
+				else {
+					$str = '0000-00-00 00:00:00';
+					return true;
+				}
+			}
+
+			// Could be a timestamp.
+			if (preg_match('/^\d{9,}$/', $str)) {
+				$str = date('Y-m-d H:i:s', intval($str));
+				return true;
+			}
+
+			$str = trim($str);
 			if (
-				is_string($str) &&
-				(!v_mb::trim($str) || (0 === v_mb::strpos($str, '0000-00-00')))
+				!$str ||
+				(0 === strpos($str, '0000-00-00')) ||
+				(false === ($str = strtotime($str)))
 			) {
 				$str = '0000-00-00 00:00:00';
 				return true;
 			}
 
-			if (
-				(is_int($str) && (strlen($str) !== 8)) ||
-				preg_match('/^\d{9,}$/', $str)
-			) {
-				$str = date('Y-m-d H:i:s', $str);
-			}
-
-			cast::to_string($str);
-
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			mb::trim($str);
-
-			if (
-				!$str ||
-				(v_mb::substr($str, 0, 10) === '0000-00-00') ||
-				(false === ($str = strtotime($str)))
-			) {
-				$str = '0000-00-00 00:00:00';
-			}
-			else {
-				$str = date('Y-m-d H:i:s', $str);
-			}
-
-			constants::$str_lock = $lock;
+			// Make it!
+			$str = date('Y-m-d H:i:s', $str);
 		}
 
 		return true;
@@ -404,15 +399,13 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain(&$str='', $unicode=false) {
+	public static function domain(&$str='', bool $unicode=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::domain($str[$k], $unicode);
 			}
 		}
 		else {
-			cast::to_bool($unicode, true);
-
 			$host = new domain($str, true);
 			if ($host->is_fqdn() && !$host->is_ip()) {
 				$str = $host->get_host($unicode);
@@ -435,14 +428,22 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function ean(&$str, $formatted=false) {
+	public static function ean(&$str, bool $formatted=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ean($str[$k], $formatted);
 			}
 		}
 		else {
-			cast::to_string($str);
+			if (!is_string($str)) {
+				if (!is_numeric($str)) {
+					$str = '';
+					return false;
+				}
+				$str = (string) $str;
+			}
+
+			// Numbers only.
 			$str = preg_replace('/[^\d]/', '', $str);
 			$str = str_pad($str, 13, '0', STR_PAD_LEFT);
 
@@ -481,23 +482,20 @@ class sanitize {
 	 * invalid characters, quotes, and apostrophes.
 	 *
 	 * @param string $str Email.
+	 * @param bool $constringent Light cast.
 	 * @return string Email.
 	 */
-	public static function email(&$str=null) {
+	public static function email(&$str=null, bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::email($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::quotes($str);
-			mb::strtolower($str);
+			static::quotes($str, true);
+			mb::strtolower($str, false, true);
 
 			// Strip comments.
 			$str = preg_replace('/\([^)]*\)/u', '', $str);
@@ -506,7 +504,7 @@ class sanitize {
 			$str = str_replace(array("'", '"'), '', $str);
 
 			// Sanitize by part.
-			if (v_mb::substr_count($str, '@') === 1) {
+			if (substr_count($str, '@') === 1) {
 				$parts = explode('@', $str);
 
 				// Sanitize local part.
@@ -516,7 +514,6 @@ class sanitize {
 
 				if (!$parts[0]) {
 					$str = '';
-					constants::$str_lock = $lock;
 					return true;
 				}
 
@@ -524,7 +521,6 @@ class sanitize {
 				$domain = new domain($parts[1]);
 				if (!$domain->is_valid() || !$domain->is_fqdn() || $domain->is_ip()) {
 					$str = '';
-					constants::$str_lock = $lock;
 					return true;
 				}
 				$parts[1] = (string) $domain;
@@ -533,11 +529,8 @@ class sanitize {
 			}
 			else {
 				$str = '';
-				constants::$str_lock = $lock;
 				return true;
 			}
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -547,27 +540,21 @@ class sanitize {
 	 * File Extension
 	 *
 	 * @param string $str Extension.
+	 * @param bool $constringent Light cast.
 	 * @return string Extension.
 	 */
-	public static function file_extension(&$str='') {
+	public static function file_extension(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::file_extension($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			mb::strtolower($str);
-			static::whitespace($str);
-			$str = ltrim($str, '*. ');
+			mb::strtolower($str, false, true);
 			$str = preg_replace('/\s/u', '', $str);
-
-			constants::$str_lock = $lock;
+			$str = ltrim($str, '*.');
 		}
 
 		return true;
@@ -582,13 +569,13 @@ class sanitize {
 	 * @param string $str String.
 	 * @return bool True/false.
 	 */
-	protected static function gtin($str) {
+	protected static function gtin(string $str) {
 		$str = preg_replace('/[^\d]/', '', $str);
 		$code = str_split(substr($str, 0, -1));
 		$check = (int) substr($str, -1);
 
 		$total = 0;
-		for ($x = count($code) - 1; $x >= 0; $x--) {
+		for ($x = count($code) - 1; $x >= 0; --$x) {
 			$total += (($x % 2) * 2 + 1 ) * $code[$x];
 		}
 		$checksum = (10 - ($total % 10));
@@ -600,16 +587,17 @@ class sanitize {
 	 * HTML
 	 *
 	 * @param string $str HTML.
+	 * @param bool $constringent Light cast.
 	 * @return string HTML.
 	 */
-	public static function html(&$str=null) {
+	public static function html(&$str=null, bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::html($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 			$str = htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		}
 
@@ -622,12 +610,11 @@ class sanitize {
 	 * @param string $domain Hostname.
 	 * @param bool $www Keep leading www.
 	 * @param bool $unicode Unicode.
+	 * @param bool $constringent Light cast.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname(&$domain, $www=false, $unicode=false) {
-		cast::to_string($domain, true);
-		cast::to_bool($www, true);
-		cast::to_bool($unicode, true);
+	public static function hostname(&$domain, bool $www=false, bool $unicode=false, bool $constringent=false) {
+		cast::constringent($domain, true, $constringent);
 
 		$host = new domain($domain, !$www);
 		if (!$host->is_valid()) {
@@ -648,20 +635,21 @@ class sanitize {
 	 * @param bool $condense Condense IPv6.
 	 * @return string IP.
 	 */
-	public static function ip(&$str='', $restricted=false, $condense=true) {
+	public static function ip(&$str='', bool $restricted=false, bool $condense=true) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ip($str[$k], $restricted, $condense);
 			}
 		}
 		else {
-			cast::to_string($str);
-			$str = strtolower($str);
-			cast::to_bool($restricted, true);
-			cast::to_bool($condense, true);
+			// Don't need to fancy cast.
+			if (!is_string($str)) {
+				$str = '';
+				return false;
+			}
 
 			// Start by getting rid of obviously bad data.
-			$str = preg_replace('/[^\d\.\:a-f]/', '', $str);
+			$str = preg_replace('/[^\d\.\:a-f]/', '', strtolower($str));
 
 			// IPv6 might be encased in brackets.
 			if (preg_match('/^\[[\d\.\:a-f]+\]$/', $str)) {
@@ -669,7 +657,7 @@ class sanitize {
 			}
 
 			// Turn IPv6-ized 4s back into IPv4.
-			if (preg_match('/^::/', $str) && (false !== strpos($str, '.'))) {
+			if ((0 === strpos($str, '::')) && (false !== strpos($str, '.'))) {
 				$str = substr($str, 2);
 			}
 
@@ -682,7 +670,7 @@ class sanitize {
 				// Expand.
 				else {
 					$hex = unpack('H*hex', inet_pton($str));
-					$str = substr(preg_replace('/([A-f0-9]{4})/', '$1:', $hex['hex']), 0, -1);
+					$str = substr(preg_replace('/([a-f\d]{4})/', '$1:', $hex['hex']), 0, -1);
 				}
 			}
 			elseif (!filter_var($str, FILTER_VALIDATE_IP)) {
@@ -707,27 +695,28 @@ class sanitize {
 	 * @param string $str IRI value.
 	 * @param array $protocols Allowed protocols.
 	 * @param array $domains Allowed domains.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function iri_value(&$str='', $protocols=null, $domains=null) {
+	public static function iri_value(&$str='', $protocols=null, $domains=null, bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::iri_value($str[$k], $protocols, $domains);
 			}
 		}
 		else {
-			cast::to_string($str);
-			static::attribute_value($str);
+			cast::constringent($str, $constringent);
+			static::attribute_value($str, true);
 
-			cast::to_array($protocols);
+			cast::array($protocols);
 			$allowed_protocols = array_merge(constants::SVG_WHITELIST_PROTOCOLS, $protocols);
-			mb::strtolower($allowed_protocols);
+			mb::strtolower($allowed_protocols, false, true);
 			$allowed_protocols = array_map('trim', $allowed_protocols);
 			$allowed_protocols = array_filter($allowed_protocols, 'strlen');
 			$allowed_protocols = array_unique($allowed_protocols);
 			sort($allowed_protocols);
 
-			cast::to_array($domains);
+			cast::array($domains);
 			$allowed_domains = array_merge(constants::SVG_WHITELIST_DOMAINS, $domains);
 			static::domain($allowed_domains);
 			$allowed_domains = array_filter($allowed_domains, 'strlen');
@@ -742,8 +731,8 @@ class sanitize {
 
 			// Check protocols.
 			$test = preg_replace('/\s/', '', $str);
-			mb::strtolower($test);
-			if (false !== v_mb::strpos($test, ':')) {
+			mb::strtolower($test, true);
+			if (false !== strpos($test, ':')) {
 				$test = explode(':', $test);
 				if (!in_array($test[0], $allowed_protocols, true)) {
 					$str = '';
@@ -786,7 +775,17 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			// No fancy casting needed.
+			if (!is_string($str)) {
+				if (is_numeric($str)) {
+					$str = (string) $str;
+				}
+				else {
+					$str = '';
+					return false;
+				}
+			}
+
 			$str = strtoupper($str);
 			$str = preg_replace('/[^\dX]/', '', $str);
 
@@ -854,25 +853,20 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param string $quote Quote type.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function js(&$str='', $quote="'") {
+	public static function js(&$str='', $quote="'", bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::js($str[$k], $quote);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			sanitize::quotes($str);
-			sanitize::whitespace($str);
-
-			constants::$str_lock = $lock;
+			sanitize::quotes($str, true);
+			sanitize::whitespace($str, 0, true);
 
 			// Escape slashes, e.g. </script> -> <\/script>.
 			$str = str_replace('/', '\\/', $str);
@@ -901,7 +895,17 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			// Don't need to be fancy.
+			if (!is_string($str)) {
+				if (is_numeric($str)) {
+					$str = (string) $str;
+				}
+				else {
+					$str = '';
+					return false;
+				}
+			}
+
 			$str = strtolower($str);
 			$str = preg_replace('/[^-+*.a-z0-9\/]/', '', $str);
 		}
@@ -917,28 +921,23 @@ class sanitize {
 	 * casing.
 	 *
 	 * @param string $str Name.
+	 * @param bool $constringent Light cast.
 	 * @return string Name.
 	 */
-	public static function name(&$str='') {
+	public static function name(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::name($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::quotes($str);
-			static::whitespace($str);
+			static::quotes($str, true);
+			static::whitespace($str, 0, true);
 			$str = preg_replace('/[^\p{L}\p{Zs}\p{Pd}\d\'\"\,\.]/u', '', $str);
-			static::whitespace($str);
-			mb::ucwords($str);
-
-			constants::$str_lock = $lock;
+			static::whitespace($str, 0, true);
+			mb::ucwords($str, false, true);
 		}
 
 		return true;
@@ -952,25 +951,20 @@ class sanitize {
 	 * only present because of user error.
 	 *
 	 * @param string $str Password.
+	 * @param bool $constringent Light cast.
 	 * @return string Password.
 	 */
-	public static function password(&$str='') {
+	public static function password(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::password($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::printable($str);
-			static::whitespace($str);
-
-			constants::$str_lock = $lock;
+			static::printable($str, true);
+			static::whitespace($str, 0, true);
 		}
 
 		return true;
@@ -982,16 +976,17 @@ class sanitize {
 	 * Remove non-printable characters (except spaces).
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function printable(&$str='') {
+	public static function printable(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::printable($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
 			// Stripe zero-width chars.
 			$str = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $str);
@@ -1025,31 +1020,26 @@ class sanitize {
 	 * Canadian Province
 	 *
 	 * @param string $str Province.
+	 * @param bool $constringent Light cast.
 	 * @return string Province.
 	 */
-	public static function province(&$str='') {
+	public static function province(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::province($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::whitespace($str);
+			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
 
-			if (!array_key_exists($str, constants::PROVINCES)) {
+			if (!isset(constants::PROVINCES[$str])) {
 				if (false === ($str = data::array_isearch($str, constants::PROVINCES, true))) {
 					$str = '';
 				}
 			}
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1062,16 +1052,17 @@ class sanitize {
 	 * ones Athena intended!
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function quotes(&$str='') {
+	public static function quotes(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::quotes($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 			$from = array_keys(constants::QUOTE_CHARS);
 			$to = array_values(constants::QUOTE_CHARS);
 			$str = str_replace($from, $to, $str);
@@ -1084,31 +1075,26 @@ class sanitize {
 	 * US State/Territory
 	 *
 	 * @param string $str State.
+	 * @param bool $constringent Light cast.
 	 * @return string State.
 	 */
-	public static function state(&$str='') {
+	public static function state(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::state($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::whitespace($str);
+			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
 
-			if (!array_key_exists($str, constants::STATES)) {
+			if (!isset(constants::STATES[$str])) {
 				if (false === ($str = data::array_isearch($str, constants::STATES, true))) {
 					$str = '';
 				}
 			}
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1118,31 +1104,26 @@ class sanitize {
 	 * Australian State/Territory
 	 *
 	 * @param string $str State.
+	 * @param bool $constringent Light cast.
 	 * @return string State.
 	 */
-	public static function au_state(&$str='') {
+	public static function au_state(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::au_state($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
+			cast::constringent($str, $constringent);
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			static::whitespace($str);
+			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
 
-			if (!array_key_exists($str, constants::STATES_AU)) {
+			if (!isset(constants::STATES_AU[$str])) {
 				if (false === ($str = data::array_isearch($str, constants::STATES_AU, true))) {
 					$str = '';
 				}
 			}
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1160,11 +1141,11 @@ class sanitize {
 	 */
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
 		// First, sanitize and build out function arguments!
-		cast::to_string($str, true);
-		cast::to_array($tags);
-		cast::to_array($attr);
-		cast::to_array($protocols);
-		cast::to_array($domains);
+		cast::string($str, true);
+		cast::array($tags);
+		cast::array($attr);
+		cast::array($protocols);
+		cast::array($domains);
 
 		$allowed_tags = array_merge(constants::SVG_WHITELIST_TAGS, $tags);
 		mb::strtolower($allowed_tags);
@@ -1208,12 +1189,12 @@ class sanitize {
 		$tags = $dom->getElementsByTagName('*');
 		for ($x = $tags->length - 1; $x >= 0; $x--) {
 			$tag = $tags->item($x);
-			$tag_name = v_mb::strtolower($tag->tagName);
+			$tag_name = v_mb::strtolower($tag->tagName, false, true);
 
 			// The tag might be namespaced (ns:tag). We'll allow it if
 			// the tag is allowed.
 			if (
-				false !== v_mb::strpos($tag_name, ':') &&
+				(false !== strpos($tag_name, ':')) &&
 				!in_array($tag_name, $allowed_tags, true)
 			) {
 				$tag_name = explode(':', $tag_name);
@@ -1229,31 +1210,31 @@ class sanitize {
 			// If this is a <style> tag, we need to make sure all
 			// entities are decoded. Thanks a lot, XML!
 			if ('style' === $tag_name) {
-				$style = strip_tags(v_sanitize::attribute_value($tag->textContent));
+				$style = strip_tags(v_sanitize::attribute_value($tag->textContent, true));
 				$tag->textContent = $style;
 			}
 
 			// Use XPath for attributes, as $tag->attributes will skip
-			// anything namespaced. Note: We aren't focusing on
-			// actual Namespaces here, that comes later.
+			// anything namespaced. Note: We aren't focusing on actual
+			// Namespaces here, that comes later.
 			$attributes = $xpath->query('.//@*', $tag);
 			for ($y = $attributes->length - 1; $y >= 0; $y--) {
 				$attribute = $attributes->item($y);
 
-				$attribute_name = v_mb::strtolower($attribute->nodeName);
+				$attribute_name = v_mb::strtolower($attribute->nodeName, false, true);
 
 				// Could be namespaced.
 				if (
 					!in_array($attribute_name, $allowed_attributes, true) &&
-					false !== ($start = v_mb::strpos($attribute_name, ':'))
+					(false !== ($start = v_mb::strpos($attribute_name, ':')))
 				) {
-					$attribute_name = v_mb::substr($attribute_name, $start + 1);
+					$attribute_name = v_mb::substr($attribute_name, $start + 1, null, true);
 				}
 
-				// Bad attribute: not whitelisted.
-				// data-* is implicitly whitelisted.
+				// Bad attribute: not whitelisted. data-* is implicitly
+				// whitelisted.
 				if (
-					!preg_match('/^data\-/', $attribute_name) &&
+					(0 !== strpos($attribute_name, 'data-')) &&
 					!in_array($attribute_name, $allowed_attributes, true)
 				) {
 					$tag->removeAttribute($attribute->nodeName);
@@ -1261,14 +1242,14 @@ class sanitize {
 				}
 
 				// Validate values.
-				$attribute_value = v_sanitize::attribute_value($attribute->value);
+				$attribute_value = v_sanitize::attribute_value($attribute->value, true);
 
 				// Validate protocols.
 				// IRI attributes get the full treatment.
 				$iri = false;
 				if (in_array($attribute_name, $iri_attributes, true)) {
 					$iri = true;
-					static::iri_value($attribute_value, $allowed_protocols, $allowed_domains);
+					static::iri_value($attribute_value, $allowed_protocols, $allowed_domains, true);
 				}
 				// For others, we are specifically interested in removing scripty bits.
 				elseif (preg_match('/(?:\w+script):/xi', $attribute_value)) {
@@ -1294,16 +1275,16 @@ class sanitize {
 			for ($y = 0; $y < $nodes->length; ++$y) {
 				$node = $nodes->item($y);
 
-				$node_name = v_mb::strtolower($node->nodeName);
+				$node_name = v_mb::strtolower($node->nodeName, false, true);
 
 				// Not xmlns?
-				if (!preg_match('/^xmlns:/', $node_name)) {
+				if (0 !== strpos($node_name, 'xmlns:')) {
 					dom::remove_namespace($dom, $node->localName);
 					continue;
 				}
 
 				// Validate values.
-				$node_value = v_sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains);
+				$node_value = v_sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains, true);
 
 				// Remove invalid.
 				if (!$node_value) {
@@ -1319,13 +1300,13 @@ class sanitize {
 		$svg = preg_replace_callback(
 			'/url\s*\((.*)\s*\)/Ui',
 			function($match) use($allowed_protocols, $allowed_domains) {
-				$str = v_sanitize::attribute_value($match[1]);
+				$str = v_sanitize::attribute_value($match[1], true);
 
 				// Strip quotes.
 				$str = ltrim($str, "'\"");
 				$str = rtrim($str, "'\"");
 
-				static::iri_value($str, $allowed_protocols, $allowed_domains);
+				static::iri_value($str, $allowed_protocols, $allowed_domains, true);
 
 				if ($str) {
 					return "url('$str')";
@@ -1354,9 +1335,14 @@ class sanitize {
 			}
 		}
 		elseif (!in_array($str, constants::TIMEZONES, true)) {
+			if (!is_string($str)) {
+				$str = 'UTC';
+				return false;
+			}
+
 			$str = preg_replace('/\s/u', '', strtoupper($str));
 
-			if (array_key_exists($str, constants::TIMEZONES)) {
+			if (isset(constants::TIMEZONES[$str])) {
 				$str = constants::TIMEZONES[$str];
 			}
 			else {
@@ -1404,8 +1390,6 @@ class sanitize {
 				}
 			} catch (\Throwable $e) {
 				$value = $original;
-			} catch (\Exception $e) {
-				$value = $original;
 			}
 		}
 
@@ -1419,14 +1403,24 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function upc(&$str, $formatted=false) {
+	public static function upc(&$str, bool $formatted=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::upc($str[$k], $formatted);
 			}
 		}
 		else {
-			cast::to_string($str);
+			// No fancy casting needed.
+			if (!is_string($str)) {
+				if (is_numeric($str)) {
+					$str = (string) $str;
+				}
+				else {
+					$str = '';
+					return false;
+				}
+			}
+
 			$str = preg_replace('/[^\d]/', '', $str);
 			$str = str_pad($str, 12, '0', STR_PAD_LEFT);
 
@@ -1465,37 +1459,32 @@ class sanitize {
 	 * Validate URLishness and convert // schemas.
 	 *
 	 * @param string $str URL.
+	 * @param bool $constringent Light cast.
 	 * @return string URL.
 	 */
-	public static function url(&$str='') {
+	public static function url(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::url($str[$k]);
 			}
 		}
 		else {
-			cast::to_string($str);
-
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
+			cast::constringent($str, true);
 
 			$tmp = v_mb::parse_url($str);
 
 			// Schemes can be lowercase.
 			if (isset($tmp['scheme'])) {
-				mb::strtolower($tmp['scheme']);
+				mb::strtolower($tmp['scheme'], false, true);
 			}
 
 			// Validate the host, and ASCIIfy international bits
 			// to keep PHP happy.
 			if (!isset($tmp['host'])) {
-				constants::$str_lock = $lock;
 				return false;
 			}
 			$tmp['host'] = new domain($tmp['host']);
 			if (!$tmp['host']->is_valid()) {
-				constants::$str_lock = $lock;
 				return false;
 			}
 			$tmp['host'] = (string) $tmp['host'];
@@ -1506,8 +1495,6 @@ class sanitize {
 			if (!filter_var($str, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED)) {
 				$str = '';
 			}
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1530,25 +1517,28 @@ class sanitize {
 			}
 		}
 		elseif ($str && !is_numeric($str) && !is_bool($str)) {
-			try {
-				$str = (string) $str;
-			} catch (\Throwable $e) {
-				$str = '';
-			} catch (\Exception $e) {
-				$str = '';
+			if (!is_string($str)) {
+				try {
+					$str = (string) $str;
+				} catch (\Throwable $e) {
+					$str = '';
+				}
+			}
+
+			// Let's run our library checks just once.
+			if (null === static::$_mb) {
+				static::$_mb = (
+					function_exists('mb_check_encoding') &&
+					function_exists('mb_strlen') &&
+					(intval(ini_get('mbstring.func_overload'))) & 2
+				);
 			}
 
 			if (
 				$str &&
-				(
-					!function_exists('mb_check_encoding') ||
-					!mb_check_encoding($str, 'ASCII')
-				)
+				(!static::$_mb || !mb_check_encoding($str, 'ASCII'))
 			) {
-				if (
-					function_exists('mb_strlen') &&
-					(intval(ini_get('mbstring.func_overload'))) & 2
-				) {
+				if (static::$_mb) {
 					$length = mb_strlen($str, '8bit');
 				}
 				else {
@@ -1631,7 +1621,7 @@ class sanitize {
 						$o1 = ord($c1);
 
 						// Convert from Windows-1252.
-						if (array_key_exists($o1, constants::WIN1252_CHARS)) {
+						if (isset(constants::WIN1252_CHARS[$o1])) {
 							$out .= constants::WIN1252_CHARS[$o1];
 						}
 						else {
@@ -1661,45 +1651,43 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param int $newlines Consecutive newlines allowed.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function whitespace(&$str='', $newlines=0) {
+	public static function whitespace(&$str='', int $newlines=0, bool $constringent=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::whitespace($str[$k], $newlines);
 			}
 		}
 		else {
-			cast::to_string($str);
-			cast::to_int($newlines, true);
-			static::to_range($newlines, 0);
+			// If there are no spaces, we're done.
+			if (is_string($str) && !preg_match('/\s/u', $str)) {
+				return true;
+			}
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
+			cast::constringent($str, $constringent);
+			static::to_range($newlines, 0);
 
 			if (!$newlines) {
 				$str = preg_replace('/\s+/u', ' ', $str);
-				mb::trim($str);
-				constants::$str_lock = $lock;
+				mb::trim($str, true);
 				return true;
 			}
 
 			// Sanitize newlines.
-			mb::trim($str);
+			mb::trim($str, true);
 			$str = str_replace("\r\n", "\n", $str);
 			$str = preg_replace('/\v/u', "\n", $str);
 
 			// Now go through line by line.
 			$str = explode("\n", $str);
-			static::whitespace($str);
+			static::whitespace($str, 0, true);
 			$str = implode("\n", $str);
 
 			$str = preg_replace('/\n{' . ($newlines + 1) . ',}/', str_repeat("\n", $newlines), $str);
 
 			$str = trim($str);
-
-			constants::$str_lock = $lock;
 		}
 
 		return true;
@@ -1710,10 +1698,11 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param int $newlines Consecutive newlines allowed.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function whitespace_multiline(&$str='', $newlines=1) {
-		static::whitespace($str, $newlines);
+	public static function whitespace_multiline(&$str='', int $newlines=1, bool $constringent=false) {
+		static::whitespace($str, $newlines, $constringent);
 		return true;
 	}
 
@@ -1730,7 +1719,16 @@ class sanitize {
 			}
 		}
 		else {
-			cast::to_string($str);
+			// No need for fancy casting.
+			if (!is_string($str)) {
+				if (is_numeric($str)) {
+					$str = (string) $str;
+				}
+				else {
+					$str = '';
+					return false;
+				}
+			}
 
 			$str = preg_replace('/[^\d]/', '', $str);
 

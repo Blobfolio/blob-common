@@ -10,8 +10,20 @@
 
 namespace blobfolio\common;
 
+// PHP introduced WebP capabilities in batches; oddly this constant was
+// a late arrival.
+if (!defined('IMAGETYPE_WEBP')) {
+	define('IMAGETYPE_WEBP', 18);
+}
+
+if (!defined('IMG_WEBP')) {
+	define('IMG_WEBP', 32);
+}
+
 class image {
 
+	protected static $_webp_gd;
+	protected static $_webp_binary;
 	protected static $svg_ids = array();
 	protected static $svg_classes = array();
 
@@ -40,20 +52,18 @@ class image {
 	 *
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
-	public static function clean_svg($path, $args=null, $output='HTML') {
-		ref\cast::to_string($path, true);
-
+	public static function clean_svg(string $path, $args=null, string $output='HTML') {
 		try {
-			if (!is_file($path)) {
+			if (!@is_file($path)) {
 				return false;
 			}
 
-			ref\mb::strtoupper($output);
+			$output = strtoupper($output);
 
-			$svg = file_get_contents($path);
+			$svg = @file_get_contents($path);
 
 			// Options.
-			ref\cast::to_array($args);
+			ref\cast::array($args);
 
 			// The strip_js option is a deprecated alias of sanitize.
 			if (isset($args['strip_js']) && !isset($args['sanitize'])) {
@@ -75,24 +85,17 @@ class image {
 				$options['clean_styles'] = true;
 			}
 
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
 			// If this SVG is marked "passthrough", don't process it.
 			$passthrough_key = hash('crc32', json_encode($options));
-			if (mb::substr_count($svg, 'data-cleaned="' . $passthrough_key . '"')) {
+			if (false !== strpos($svg, 'data-cleaned="' . $passthrough_key . '"')) {
 				$svg = substr($svg, strpos($svg, '<svg'));
 				if ('DATA_URI' === $output) {
-					constants::$str_lock = $lock;
 					return 'data:image/svg+xml;base64,' . base64_encode($svg);
 				}
 				elseif ('HTML' === $output) {
-					constants::$str_lock = $lock;
 					return $svg;
 				}
 				else {
-					constants::$str_lock = $lock;
 					return false;
 				}
 			}
@@ -101,7 +104,6 @@ class image {
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!$svg) {
-				constants::$str_lock = $lock;
 				return false;
 			}
 
@@ -155,9 +157,9 @@ class image {
 					foreach ($matches[0] as $k=>$v) {
 						$id_string = $v;
 						$id_value = $matches[1][$k];
-						$id_new = 's' . mb::strtolower(data::random_string(4));
+						$id_new = 's' . mb::strtolower(data::random_string(4), false, true);
 						while (in_array($id_new, static::$svg_ids, true)) {
-							$id_new = 's' . mb::strtolower(data::random_string(4));
+							$id_new = 's' . mb::strtolower(data::random_string(4), false, true);
 						}
 						static::$svg_ids[] = $id_new;
 
@@ -183,7 +185,6 @@ class image {
 							$vb_new = explode(' ', $vb_value);
 						}
 						$vb_new = array_map('trim', $vb_new);
-						$vb_new = array_filter($vb_new, 'strlen');
 						$vb_new = array_filter($vb_new, 'is_numeric');
 
 						// Remove invalid entries entirely.
@@ -212,7 +213,7 @@ class image {
 
 							// Make sure width and height are numbers.
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
-								ref\cast::to_float($width);
+								ref\cast::float($width);
 								if ($width <= 0) {
 									$width = null;
 								}
@@ -222,7 +223,7 @@ class image {
 							}
 
 							if (is_numeric($height) || preg_match('/^[\d\.]+px$/', $height)) {
-								ref\cast::to_float($height);
+								ref\cast::float($height);
 								if ($height <= 0) {
 									$height = null;
 								}
@@ -352,9 +353,9 @@ class image {
 											}
 
 											if (count($classes)) {
-												$class_new = mb::strtolower('c' . data::random_string(4));
+												$class_new = mb::strtolower('c' . data::random_string(4), false, true);
 												while (in_array($class_new, static::$svg_classes, true)) {
-													$class_new = mb::strtolower('c' . data::random_string(4));
+													$class_new = mb::strtolower('c' . data::random_string(4), false, true);
 												}
 												$selectors[] = '.' . $class_new;
 
@@ -413,7 +414,7 @@ class image {
 							$nodes = dom::get_nodes_by_class($s, $classes_old);
 							foreach ($nodes as $node) {
 								$classes = $node->getAttribute('class');
-								ref\sanitize::whitespace($classes);
+								ref\sanitize::whitespace($classes, 0, true);
 								$classes = explode(' ', $classes);
 								$classes = array_unique($classes);
 								$classes = array_diff($classes, $classes_old);
@@ -429,11 +430,8 @@ class image {
 			$dom = dom::load_svg($svg);
 			$svg = dom::save_svg($dom);
 			if (!$svg) {
-				constants::$str_lock = $lock;
 				return false;
 			}
-
-			constants::$str_lock = $lock;
 
 			// Should we save the clean version?
 			if ($options['save']) {
@@ -445,10 +443,10 @@ class image {
 
 				$path_old = $path . '.dirty.' . microtime(true);
 				$num = 0;
-				while (file_exists($path_old)) {
+				while (@file_exists($path_old)) {
 					++$num;
 					$tmp = $path_old . "-$num";
-					if (!file_exists($tmp)) {
+					if (!@file_exists($tmp)) {
 						$path_old = $tmp;
 					}
 				}
@@ -466,61 +464,202 @@ class image {
 			return false;
 		} catch (\Throwable $e) {
 			return false;
-		} catch (\Exception $e) {
+		}
+	}
+
+	/**
+	 * Image Dimensions
+	 *
+	 * The native PHP getimagesize() function is kind of shit. This will
+	 * help parse out SVG and WebP dimensions too.
+	 *
+	 * @param string $file File.
+	 * @return array|bool Info or false.
+	 */
+	public static function getimagesize(string $file) {
+		if (!$file || !is_file($file)) {
 			return false;
 		}
+
+		// Do a quick MIME check to make sure this is something image-
+		// like.
+		$finfo = mime::finfo($file);
+		if (0 !== strpos($finfo['mime'], 'image/')) {
+			return false;
+		}
+
+		// If this is an SVG, let's use our own function.
+		if ('image/svg+xml' === $finfo['mime']) {
+			if (false === ($tmp = static::svg_dimensions($file))) {
+				return false;
+			}
+
+			// Fake it till you make it.
+			return array(
+				$tmp['width'],
+				$tmp['height'],
+				-1,
+				sprintf(
+					'width="%d" height="%d"',
+					$tmp['width'],
+					$tmp['height']
+				),
+				'mime'=>'image/svg+xml',
+			);
+		}
+
+		// Try getimagesize() first, just in case.
+		if (false !== ($info = @getimagesize($file))) {
+			return $info;
+		}
+
+		// Manually parse WebP.
+		if (
+			('image/webp' === $finfo['mime']) &&
+			($handle = @fopen($file, 'rb'))
+		) {
+			// The magic (and dimensions) are in the first 40 bytes.
+			$magic = @fread($handle, 40);
+			fclose($handle);
+
+			// We should have the number of bytes we asked for.
+			if (strlen($magic) < 40) {
+				return false;
+			}
+
+			$width = $height = false;
+
+			// There are three types of WebP. Haha.
+			switch (substr($magic, 12, 4)) {
+				// Lossy WebP.
+				case 'VP8 ':
+					$parts = unpack('v2', substr($magic, 26, 4));
+					$width = (int) ($parts[1] & 0x3FFF);
+					$height = (int) ($parts[2] & 0x3FFF);
+					break;
+				// Lossless WebP.
+				case 'VP8L':
+					$parts = unpack('C4', substr($magic, 21, 4));
+					$width = (int) ($parts[1] | (($parts[2] & 0x3F) << 8)) + 1;
+					$height = (int) ((($parts[2] & 0xC0) >> 6) | ($parts[3] << 2) | (($parts[4] & 0x03) << 10)) + 1;
+					break;
+				// Animated/Alpha WebP.
+				case 'VP8X':
+					// Padd 24-bit int.
+					$width = unpack('V', substr($magic, 24, 3) . "\x00");
+					$width = (int) ($width[1] & 0xFFFFFF) + 1;
+
+					// Pad 24-bit int.
+					$height = unpack('V', substr($magic, 27, 3) . "\x00");
+					$height = (int) ($height[1] & 0xFFFFFF) + 1;
+					break;
+			}
+
+			if ($width && $height) {
+				return array(
+					$width,
+					$height,
+					IMAGETYPE_WEBP,
+					sprintf(
+						'width="%d" height="%d"',
+						$width,
+						$height
+					),
+					'mime'=>'image/webp',
+				);
+			}
+		}
+
+		// No dice.
+		return false;
 	}
 
 	/**
 	 * Check Probable WebP Support
 	 *
-	 * This attempts to check whether the required
-	 * WebP binaries exist and are accessible to PHP.
+	 * This attempts to check whether PHP natively supports WebP, or
+	 * if maybe third-party binaries are installed on the system.
 	 *
 	 * @param string $cwebp Path to cwebp.
 	 * @param string $gif2webp Path to gif2webp.
 	 * @return bool True/false.
 	 */
 	public static function has_webp($cwebp=null, $gif2webp=null) {
-		try {
-			if (is_null($cwebp)) {
-				$cwebp = constants::CWEBP;
-			}
-			else {
-				ref\cast::to_string($cwebp, true);
-			}
-			if (is_null($gif2webp)) {
-				$gif2webp = constants::GIF2WEBP;
-			}
-			else {
-				ref\cast::to_string($gif2webp, true);
-			}
-
-			return (
-				@file_exists($cwebp) &&
-				@file_exists($gif2webp) &&
-				@is_readable($cwebp) &&
-				@is_readable($gif2webp)
+		// Gotta set it first?
+		if (is_null(static::$_webp_gd)) {
+			$image_types = imagetypes();
+			static::$_webp_gd = (
+				(0 !== ($image_types & IMG_WEBP)) &&
+				function_exists('imagewebp') &&
+				function_exists('imagecreatefromwebp')
 			);
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
 		}
+
+		// See if this system supports the binary method. In general
+		// we'll just check this once, but if a previous check failed
+		// and binary paths are supplied, we'll check again.
+		if (
+			is_null(static::$_webp_binary) ||
+			(
+				(false === static::$_webp_binary) &&
+				$cwebp &&
+				$gif2webp
+			)
+		) {
+			static::$_webp_binary = false;
+
+			// We're using proc_open() to handle execution; if this is
+			// missing or disabled, we're done.
+			if (function_exists('proc_open') && is_callable('proc_open')) {
+				// Resolve the binary paths.
+				if (is_null($cwebp)) {
+					$cwebp = constants::CWEBP;
+				}
+				else {
+					ref\cast::string($cwebp, true);
+				}
+				if (is_null($gif2webp)) {
+					$gif2webp = constants::GIF2WEBP;
+				}
+				else {
+					ref\cast::string($gif2webp, true);
+				}
+
+				ref\file::path($cwebp, true, true);
+				ref\file::path($gif2webp, true, true);
+
+				if (
+					$cwebp &&
+					$gif2webp &&
+					@is_file($cwebp) &&
+					@is_executable($cwebp) &&
+					@is_file($gif2webp) &&
+					@is_executable($gif2webp)
+				) {
+					static::$_webp_binary = array(
+						'cwebp'=>$cwebp,
+						'gif2webp'=>$gif2webp,
+					);
+				}
+			}
+		}
+
+		return (static::$_webp_gd || (false !== static::$_webp_binary));
 	}
 
 	/**
 	 * Determine SVG Dimensions
 	 *
 	 * @param string $svg SVG content or file path.
+	 * @param bool $constringent Light cast.
 	 * @return array|bool Dimensions or false.
 	 */
-	public static function svg_dimensions($svg) {
-		ref\cast::to_string($svg, true);
+	public static function svg_dimensions($svg, bool $constringent=false) {
+		ref\cast::constringent($svg, $constringent);
 
 		// Make sure this is SVG-looking.
 		if (false === ($start = strpos(strtolower($svg), '<svg'))) {
-			if (is_file($svg)) {
+			if (@is_file($svg)) {
 				$svg = file_get_contents($svg);
 				if (false === ($start = strpos(strtolower($svg), '<svg'))) {
 					return false;
@@ -545,23 +684,22 @@ class image {
 		);
 		$viewbox = null;
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
 		// Search for width, height, and viewbox.
-		ref\sanitize::whitespace($svg);
+		ref\sanitize::whitespace($svg, 0, true);
 
-		constants::$str_lock = $lock;
-
-		preg_match_all('/(height|width|viewbox)\s*=\s*(["\'])((?:(?!\2).)*)\2/', $svg, $match, PREG_SET_ORDER);
+		preg_match_all(
+			'/(height|width|viewbox)\s*=\s*(["\'])((?:(?!\2).)*)\2/',
+			$svg,
+			$match,
+			PREG_SET_ORDER
+		);
 
 		if (is_array($match) && count($match)) {
 			foreach ($match as $v) {
 				switch ($v[1]) {
 					case 'width':
 					case 'height':
-						ref\cast::to_float($v[3]);
+						ref\cast::float($v[3]);
 						ref\sanitize::to_range($v[3], 0.0);
 						if ($v[3]) {
 							$out[$v[1]] = $v[3];
@@ -585,7 +723,7 @@ class image {
 			$viewbox = trim(str_replace(',', ' ', $viewbox));
 			$viewbox = explode(' ', $viewbox);
 			foreach ($viewbox as $k=>$v) {
-				ref\cast::to_float($viewbox[$k]);
+				ref\cast::float($viewbox[$k]);
 				ref\sanitize::to_range($viewbox[$k], 0.0);
 			}
 			if (count($viewbox) === 4) {
@@ -599,117 +737,227 @@ class image {
 	}
 
 	/**
+	 * Validate WebP From/To
+	 *
+	 * Our three WebP functions need to independently handle input and
+	 * output source files. This private method helps prevent
+	 * unnecessary code duplication.
+	 *
+	 * @param string $from From.
+	 * @param mixed $to To.
+	 * @return bool True/false.
+	 */
+	protected static function to_webp_sources(string &$from, &$to) {
+		// Validate the source.
+		ref\cast::string($from, true);
+		ref\file::path($from, true, true);
+		if (!$from) {
+			$from = '';
+			return false;
+		}
+
+		// We can only convert JPEG, PNG, and GIF sources.
+		$info = mime::finfo($from);
+		if (!in_array($info['mime'], array('image/jpeg', 'image/gif', 'image/png'), true)) {
+			$from = '';
+			return false;
+		}
+
+		// Build a destination if we need to.
+		if (!is_null($to)) {
+			ref\cast::string($to, true);
+			// If this is just a file name, throw it in from's dir.
+			if (false === strpos($to, '/')) {
+				$to = "{$info['dirname']}/$to";
+			}
+			ref\file::path($to, false, true);
+			if ('.webp' !== substr(strtolower($to), -5)) {
+				$to = '';
+				return false;
+			}
+		}
+		// Just swap extensions with the source.
+		else {
+			$to = "{$info['dirname']}/{$info['filename']}.webp";
+		}
+
+		return true;
+	}
+
+	/**
 	 * Generate WebP From Source
 	 *
-	 * This uses system WebP binaries to generate
-	 * a copy of a source file. It uses `proc()`
-	 * instead of `exec()`.
+	 * This is a wrapper for the more specific GD and Binary methods
+	 * to generate a WebP sister file.
 	 *
-	 * @param string $source Source file.
-	 * @param string $out Output file.
+	 * PHP isn't known for its performance, so the binaries are
+	 * preferred when available.
+	 *
+	 * @param string $from Source file.
+	 * @param string $to Output file.
 	 * @param string $cwebp Path to cwebp.
 	 * @param string $gif2webp Path to gif2webp.
 	 * @param bool $refresh Recreate it.
 	 * @return bool True/false.
 	 */
-	public static function to_webp($source, $out=null, $cwebp=null, $gif2webp=null, $refresh=false) {
-		ref\cast::to_string($source, true);
-		if (!is_null($out)) {
-			ref\cast::to_string($out, true);
-		}
-		if (!is_null($cwebp)) {
-			ref\cast::to_string($cwebp, true);
-		}
-		if (!is_null($gif2webp)) {
-			ref\cast::to_string($gif2webp, true);
-		}
-		ref\cast::to_bool($refresh, true);
+	public static function to_webp(string $from, $to=null, $cwebp=null, $gif2webp=null, bool $refresh=false) {
+		// Try binaries first, fallback to GD.
+		return (
+			static::to_webp_binary($from, $to, $cwebp, $gif2webp, $refresh) ||
+			static::to_webp_gd($from, $to, $refresh)
+		);
+	}
 
-		if (false === $source = file::path($source, true)) {
+	/**
+	 * Generate WebP (GD)
+	 *
+	 * Use GD to generate a WebP sister file.
+	 *
+	 * @param string $from Source.
+	 * @param string $to Out.
+	 * @param bool $refresh Refresh.
+	 * @return bool True/false.
+	 */
+	public static function to_webp_gd(string $from, $to=null, bool $refresh=false) {
+		if (!static::to_webp_sources($from, $to)) {
 			return false;
 		}
 
-		$info = mime::finfo($source);
-		if (!preg_match('/^(jpe?g|png|gif)$/', $info['extension'])) {
-			return false;
-		}
-
-		// Do we need to build an out file?
-		if (is_null($out)) {
-			$out = "{$info['dirname']}/{$info['filename']}.webp";
-		}
-		// Needs to have the right extension.
-		elseif (!preg_match('/\.webp$/i', $out)) {
-			return false;
-		}
-		else {
-			$out = file::path($out, false);
-		}
-
-		// Already exists?
-		if (!$refresh && file_exists($out)) {
+		// If it exists and we aren't refreshing, let's abort.
+		if (!$refresh && @is_file($to)) {
 			return true;
 		}
 
-		// Can't do it?
-		if (is_null($cwebp)) {
-			$cwebp = constants::CWEBP;
-		}
-		if (is_null($gif2webp)) {
-			$gif2webp = constants::GIF2WEBP;
-		}
-		if (!static::has_webp($cwebp, $gif2webp)) {
+		// If this system can't do WebP, we're done.
+		if (!static::has_webp() || !static::$_webp_gd) {
 			return false;
 		}
 
-		// Try to open the process.
+		$image = @imagecreatefromstring(file_get_contents($from));
+		if (!$image || !@is_resource($image)) {
+			return false;
+		}
+
+		// Try to save it.
+		@imagewebp($image, $to, 90);
+		if (!@is_file($to)) {
+			return false;
+		}
+
+		// Free up some memory.
+		@imagedestroy($image);
+
+		// Try to give it the same permissions as the original.
+		if (false !== ($from_chmod = @fileperms($from))) {
+			@chmod($to, $from_chmod);
+		}
+		if (false !== ($from_owner = @fileowner($from))) {
+			@chown($to, $from_owner);
+		}
+		if (false !== ($from_group = @filegroup($from))) {
+			@chgrp($to, $from_group);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Generate WebP (Binary)
+	 *
+	 * Use system binaries to generate WebP sister file.
+	 *
+	 * @param string $from Source.
+	 * @param string $to Out.
+	 * @param string $cwebp Path to cwebp.
+	 * @param string $gif2webp Path to gif2webp.
+	 * @param bool $refresh Recreate it.
+	 * @return bool True/false.
+	 */
+	public static function to_webp_binary(string $from, $to=null, $cwebp=null, $gif2webp=null, bool $refresh=false) {
+		if (!static::to_webp_sources($from, $to)) {
+			return false;
+		}
+
+		// If it exists and we aren't refreshing, let's abort.
+		if (!$refresh && @is_file($to)) {
+			return true;
+		}
+
+		// If this system can't do WebP, we're done.
+		if (!static::has_webp($cwebp, $gif2webp) || (false === static::$_webp_binary)) {
+			return false;
+		}
+
+		// We'll need a temporary directory for logging.
+		$tmp_dir = @sys_get_temp_dir();
+		if (!is_dir($tmp_dir)) {
+			return false;
+		}
+		$error_log = file::trailingslash($tmp_dir) . 'cwebp-error_' . microtime(true) . '.txt';
+
+		// Pull the MIME info again.
+		$info = mime::finfo($from);
+
+		// Set up the command.
+		if ('image/gif' === $info['mime']) {
+			$cmd = escapeshellcmd(static::$_webp_binary['gif2webp']) . ' -m 6 -quiet ' . escapeshellarg($from) . ' -o ' . escapeshellarg($to);
+		}
+		else {
+			$cmd = escapeshellcmd(static::$_webp_binary['cwebp']) . ' -mt -quiet -jpeg_like ' . escapeshellarg($from) . ' -o ' . escapeshellarg($to);
+		}
+
+		// Some process setup.
+		$descriptors = array(
+			0=>array('pipe', 'w'),				// STDOUT.
+			1=>array('file', $error_log, 'a'),	// STDERR.
+		);
+		$cwd = $tmp_dir;
+		$pipes = array();
+
 		try {
-			$tmp_dir = sys_get_temp_dir();
-			$error_log = file::trailingslash($tmp_dir) . 'cwebp-error_' . microtime(true) . '.txt';
-
-			// Proc setup.
-			$descriptors = array(
-				0=>array('pipe', 'w'), // STDOUT.
-				1=>array('file', $error_log, 'a'), // STDERR.
-			);
-			$cwd = $tmp_dir;
-			$pipes = array();
-
-			$type = $info['mime'];
-			if ('image/gif' === $type) {
-				$cmd = escapeshellcmd($gif2webp) . ' -m 6 -quiet ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
-			}
-			else {
-				$cmd = escapeshellcmd($cwebp) . ' -mt -quiet -jpeg_like ' . escapeshellarg($source) . ' -o ' . escapeshellarg($out);
-			}
-
-			$process = proc_open(
-				escapeshellcmd($cmd),
+			// Try to open the process.
+			$process = @proc_open(
+				$cmd,
 				$descriptors,
 				$pipes,
 				$cwd
 			);
 
-			if (is_resource($process)) {
-				$life = stream_get_contents($pipes[0]);
-				fclose($pipes[0]);
-				$return_value = proc_close($process);
-
-				if (file_exists($error_log)) {
-					@unlink($error_log);
-				}
-
-				return file_exists($out);
+			// If we didn't end up with a resource, something is wrong.
+			if (!@is_resource($process)) {
+				return false;
 			}
+
+			// Pull the stream contents.
+			$life = @stream_get_contents($pipes[0]);
+			@fclose($pipes[0]);
+			$return_value = @proc_close($process);
+
+			// We don't actually want the error log; it is just supplied
+			// to prevent interruptions to PHP.
+			if (@file_exists($error_log)) {
+				@unlink($error_log);
+			}
+
+			// If this isn't a file, we're done.
+			if (!@file_exists($to)) {
+				return false;
+			}
+
+			// Try to give it the same permissions as the original.
+			if (false !== ($from_chmod = @fileperms($from))) {
+				@chmod($to, $from_chmod);
+			}
+			if (false !== ($from_owner = @fileowner($from))) {
+				@chown($to, $from_owner);
+			}
+			if (false !== ($from_group = @filegroup($from))) {
+				@chgrp($to, $from_group);
+			}
+
+			return true;
 		} catch (\Throwable $e) {
 			return false;
-		} catch (\Exception $e) {
-			return false;
 		}
-
-		return false;
 	}
-
 }
-
-

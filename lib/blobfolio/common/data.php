@@ -21,18 +21,28 @@ class data {
 	 */
 	public static function array_compare(&$arr1, &$arr2) {
 		// Obviously bad data.
-		if (!is_array($arr1) || !is_array($arr2) || count($arr1) !== count($arr2)) {
+		if (!is_array($arr1) || !is_array($arr2)) {
+			return false;
+		}
+
+		$length = count($arr1);
+
+		// Length mismatch.
+		if (count($arr2) !== $length) {
 			return false;
 		}
 
 		// Different keys, we don't need to check further.
-		if (count(array_intersect_key($arr1, $arr2)) !== count($arr1)) {
+		if (count(array_intersect_key($arr1, $arr2)) !== $length) {
 			return false;
 		}
 
 		// We will ignore keys for non-associative arrays.
-		if (cast::array_type($arr1) !== 'associative' && cast::array_type($arr2) !== 'associative') {
-			return count(array_intersect($arr1, $arr2)) === count($arr1);
+		if (
+			(cast::array_type($arr1) !== 'associative') &&
+			(cast::array_type($arr2) !== 'associative')
+		) {
+			return count(array_intersect($arr1, $arr2)) === $length;
 		}
 
 		// Check each item.
@@ -68,7 +78,7 @@ class data {
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
-		if (!is_array($arrays) || count($arrays) < 1) {
+		if (!isset($arrays[1])) {
 			return array();
 		}
 		foreach ($arrays as $a) {
@@ -78,7 +88,8 @@ class data {
 		}
 
 		// Compare the first to each.
-		for ($x = 1; $x < count($arrays); ++$x) {
+		$length = count($arrays);
+		for ($x = 1; $x < $length; ++$x) {
 			$common = array();
 
 			// If the arrays are the same, or the second is empty,
@@ -119,7 +130,7 @@ class data {
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
-		if (!is_array($arrays) || count($arrays) < 2) {
+		if (!isset($arrays[1])) {
 			return array();
 		}
 		foreach ($arrays as $a) {
@@ -129,7 +140,8 @@ class data {
 		}
 
 		// Compare the first to each.
-		for ($x = 1; $x < count($arrays); ++$x) {
+		$length = count($arrays);
+		for ($x = 1; $x < $length; ++$x) {
 			$common = array();
 
 			// Lowercase for comparison.
@@ -177,7 +189,7 @@ class data {
 	 * @param bool $strict Strict.
 	 * @return mixed Key or false.
 	 */
-	public static function array_isearch($needle, $haystack, $strict=true) {
+	public static function array_isearch($needle, $haystack, bool $strict=true) {
 		if (!is_array($haystack) || !count($haystack)) {
 			return false;
 		}
@@ -185,8 +197,6 @@ class data {
 		// Lowercase for comparison.
 		ref\mb::strtolower($needle, true);
 		ref\mb::strtolower($haystack, true);
-
-		ref\cast::to_bool($strict);
 
 		// phpcs:disable
 		return array_search($needle, $haystack, $strict);
@@ -216,21 +226,20 @@ class data {
 	 * @param string $other Label for others.
 	 * @return array|bool Array or false.
 	 */
-	public static function array_otherize($arr=null, $length=5, $other='Other') {
+	public static function array_otherize($arr=null, int $length=5, $other='Other') {
 		if ('associative' !== cast::array_type($arr)) {
 			return false;
 		}
 
 		// Make sure everything is numeric.
 		foreach ($arr as $k=>$v) {
-			if (!is_numeric($arr[$k])) {
-				ref\cast::to_float($arr[$k], true);
+			if (!is_int($arr[$k]) && !is_float($arr[$k])) {
+				ref\cast::float($arr[$k], true);
 			}
 		}
 
 		arsort($arr);
 
-		ref\cast::to_int($length, true);
 		ref\sanitize::to_range($length, 1);
 
 		// Nothing to do.
@@ -238,7 +247,7 @@ class data {
 			return $arr;
 		}
 
-		ref\cast::to_string($other, true);
+		ref\cast::string($other, true);
 		if (!$other) {
 			$other = 'Other';
 		}
@@ -278,17 +287,19 @@ class data {
 	 * @return mixed Value. False on error.
 	 */
 	public static function array_pop_rand(array &$arr) {
-		if (!count($arr)) {
+		$length = count($arr);
+
+		if (!$length) {
 			return false;
 		}
 
 		// Nothing random about an array with one thing.
-		if (count($arr) === 1) {
+		if (1 === $length) {
 			return static::array_pop_top($arr);
 		}
 
 		$keys = array_keys($arr);
-		$index = static::random_int(0, count($arr) - 1);
+		$index = static::random_int(0, $length - 1);
 
 		return $arr[$keys[$index]];
 	}
@@ -314,8 +325,7 @@ class data {
 	 * @param string $format Date format.
 	 * @return array Months.
 	 */
-	public static function cc_exp_months($format='m - M') {
-		ref\cast::to_string($format, true);
+	public static function cc_exp_months(string $format='m - M') {
 		$months = array();
 		for ($x = 1; $x <= 12; ++$x) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
@@ -329,8 +339,7 @@ class data {
 	 * @param int $length Number of years.
 	 * @return array Years.
 	 */
-	public static function cc_exp_years($length=10) {
-		ref\cast::to_int($length, true);
+	public static function cc_exp_years(int $length=10) {
 		if ($length < 1) {
 			$length = 10;
 		}
@@ -359,29 +368,26 @@ class data {
 		if (
 			!is_string($date1) ||
 			!is_string($date2) ||
-			$date1 === $date2 ||
-			'0000-00-00' === $date1 ||
-			'0000-00-00' === $date2
+			($date1 === $date2) ||
+			('0000-00-00' === $date1) ||
+			('0000-00-00' === $date2)
 		) {
 			return 0;
 		}
 
 		// Prefer DateTime.
-		try {
+		if (class_exists('DateTime')) {
 			$date1 = new \DateTime($date1);
 			$date2 = new \DateTime($date2);
 			$diff = $date1->diff($date2);
 
 			return abs($diff->days);
-		} catch (\Throwable $e) {
-			$date1 = strtotime($date1);
-			$date2 = strtotime($date2);
-			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
-		} catch (\Exception $e) {
-			$date1 = strtotime($date1);
-			$date2 = strtotime($date2);
-			return ceil(abs($date2 - $date1) / 60 / 60 / 24);
 		}
+
+		// Fallback to counting seconds.
+		$date1 = strtotime($date1);
+		$date2 = strtotime($date2);
+		return ceil(abs($date2 - $date1) / 60 / 60 / 24);
 	}
 
 	/**
@@ -392,7 +398,7 @@ class data {
 	 * @param bool $strict Strict.
 	 * @return bool True/false.
 	 */
-	public static function iin_array($needle, $haystack, $strict=true) {
+	public static function iin_array($needle, $haystack, bool $strict=true) {
 		return (false !== static::array_isearch($needle, $haystack, $strict));
 	}
 
@@ -420,24 +426,20 @@ class data {
 	 * @param string $max Max.
 	 * @return bool True/false.
 	 */
-	public static function ip_in_range($ip, $min, $max=null) {
+	public static function ip_in_range(string $ip, $min, $max=null) {
 		ref\sanitize::ip($ip, true);
-		ref\cast::to_string($min);
-
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
+		if (!is_string($min)) {
+			return false;
+		}
 
 		// Bad IP.
 		if (!$ip) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
 		// Is $min a range?
 		if (false !== strpos($min, '/')) {
 			if (false === ($range = format::cidr_to_range($min))) {
-				constants::$str_lock = $lock;
 				return false;
 			}
 			$min = $range['min'];
@@ -445,7 +447,6 @@ class data {
 		}
 		// Max is required otherwise.
 		elseif (is_null($max)) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
@@ -459,11 +460,9 @@ class data {
 			(false !== $min) &&
 			(false !== $max)
 		) {
-			constants::$str_lock = $lock;
 			return static::in_range($ip, $min, $max);
 		}
 
-		constants::$str_lock = $lock;
 		return false;
 	}
 
@@ -474,7 +473,7 @@ class data {
 	 * @param bool $empty Allow empty.
 	 * @return bool True/false.
 	 */
-	public static function is_json($str, $empty=false) {
+	public static function is_json($str, bool $empty=false) {
 		if (!is_string($str) || (!$empty && !$str)) {
 			return false;
 		}
@@ -483,14 +482,8 @@ class data {
 			return true;
 		}
 
-		try {
-			$json = json_decode($str);
-			return !is_null($json);
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
-		}
+		$json = json_decode($str);
+		return !is_null($json);
 	}
 
 	/**
@@ -500,14 +493,14 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function is_utf8($str) {
-		try {
-			$str = (string) $str;
-			return (bool) preg_match('//u', $str);
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
+		if (is_numeric($str) || is_bool($str)) {
+			return true;
 		}
+		elseif (is_string($str)) {
+			return (bool) preg_match('//u', $str);
+		}
+
+		return false;
 	}
 
 	/**
@@ -523,14 +516,14 @@ class data {
 	 * @param bool $recursive Recursive templating.
 	 * @return array Data.
 	 */
-	public static function json_decode_array($json, $defaults=null, $strict=true, $recursive=true) {
+	public static function json_decode_array($json, $defaults=null, bool $strict=true, bool $recursive=true) {
 		ref\format::json_decode($json);
 
 		if (is_null($json) || (is_string($json) && !$json)) {
 			$json = array();
 		}
 		else {
-			ref\cast::to_array($json);
+			ref\cast::array($json);
 		}
 
 		if (is_array($defaults)) {
@@ -551,36 +544,27 @@ class data {
 	 * @param int $max Max length.
 	 * @return bool True/false.
 	 */
-	public static function length_in_range($str, $min=null, $max=null) {
-		ref\cast::to_string($str, true);
-
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
+	public static function length_in_range(string $str, $min=null, $max=null) {
 		if (!is_null($min) && !is_int($min)) {
-			ref\cast::to_int($min, true);
+			ref\cast::int($min, true);
 		}
 		if (!is_null($max) && !is_int($max)) {
-			ref\cast::to_int($max, true);
+			ref\cast::int($max, true);
 		}
 
-		$length = mb::strlen($str);
+		$length = mb::strlen($str, true);
 		if (!is_null($min) && !is_null($max) && $min > $max) {
 			static::switcheroo($min, $max);
 		}
 
 		if (!is_null($min) && $min > $length) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
 		if (!is_null($max) && $max < $length) {
-			constants::$str_lock = $lock;
 			return false;
 		}
 
-		constants::$str_lock = $lock;
 		return true;
 	}
 
@@ -597,11 +581,9 @@ class data {
 	 * @param bool $recursive Recursively apply formatting if inner values are also arrays.
 	 * @return array Parsed arguments.
 	 */
-	public static function parse_args($args, $defaults, $strict=true, $recursive=true) {
-		ref\cast::to_array($args);
-		ref\cast::to_array($defaults);
-		ref\cast::to_bool($strict, true);
-		ref\cast::to_bool($recursive, true);
+	public static function parse_args($args, $defaults, bool $strict=true, bool $recursive=true) {
+		ref\cast::array($args);
+		ref\cast::array($defaults);
 
 		if (!count($defaults)) {
 			return array();
@@ -640,10 +622,7 @@ class data {
 	 * @param int $max Max.
 	 * @return int Random number.
 	 */
-	public static function random_int($min=0, $max=1) {
-		ref\cast::to_int($min, true);
-		ref\cast::to_int($max, true);
-
+	public static function random_int(int $min=0, int $max=1) {
 		if ($min > $max) {
 			static::switcheroo($min, $max);
 		}
@@ -667,23 +646,19 @@ class data {
 	 * @param array $soup Alternate alphabet.
 	 * @return string Random string.
 	 */
-	public static function random_string($length=10, $soup=null) {
-		ref\cast::to_int($length, true);
+	public static function random_string(int $length=10, $soup=null) {
+		if ($length < 1) {
+			return '';
+		}
 
 		if (is_array($soup) && count($soup)) {
-			ref\cast::to_string($soup);
-
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
+			ref\cast::string($soup);
 
 			$soup = implode('', $soup);
-			ref\sanitize::printable($soup);				// Strip non-printable.
+			ref\sanitize::printable($soup, true);
 
-			constants::$str_lock = $lock;
-
-			$soup = preg_replace('/\s/u', '', $soup);	// Strip whitespace.
-			$soup = array_unique(mb::str_split($soup));
+			$soup = preg_replace('/\s/u', '', $soup);
+			$soup = array_unique(mb::str_split($soup, 1, true));
 			$soup = array_values($soup);
 			if (!count($soup)) {
 				return '';
@@ -693,10 +668,6 @@ class data {
 		// Use default soup.
 		if (!is_array($soup) || !count($soup)) {
 			$soup = constants::RANDOM_CHARS;
-		}
-
-		if ($length < 1) {
-			return '';
 		}
 
 		// Pick nine entries at random.
@@ -738,25 +709,18 @@ class data {
 	 * @param bool $httponly HTTP only.
 	 * @return bool True/false.
 	 */
-	public static function unsetcookie($name, $path='', $domain='', $secure=false, $httponly=false) {
-		ref\cast::to_string($name, true);
-		ref\cast::to_string($path, true);
-		ref\cast::to_string($domain, true);
-		ref\cast::to_bool($secure, true);
-		ref\cast::to_bool($httponly, true);
+	public static function unsetcookie(string $name, string $path='', string $domain='', bool $secure=false, bool $httponly=false) {
 
-		try {
+		if (!headers_sent()) {
 			setcookie($name, false, -1, $path, $domain, $secure, $httponly);
 			if (isset($_COOKIE[$name])) {
 				unset($_COOKIE[$name]);
 			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
+
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 }
 

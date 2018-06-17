@@ -19,7 +19,7 @@ class file {
 	 * @param string $to Destination.
 	 * @return bool True/false.
 	 */
-	public static function copy($from, $to) {
+	public static function copy(string $from, string $to) {
 		ref\file::path($from, true);
 		if (!$from) {
 			return false;
@@ -31,20 +31,20 @@ class file {
 		}
 
 		// Recurse directories.
-		if (is_dir($from)) {
-			ref\file::trailingslash($from);
-			ref\file::trailingslash($to);
+		if (@is_dir($from)) {
+			ref\file::trailingslash($from, true);
+			ref\file::trailingslash($to, true);
 
-			if (!is_dir($to)) {
-				$dir_chmod = (fileperms($from) & 0777 | 0755);
+			if (!@is_dir($to)) {
+				$dir_chmod = (@fileperms($from) & 0777 | 0755);
 				if (!static::mkdir($to, $dir_chmod)) {
 					return false;
 				}
 			}
 
 			// Copy all files and directories within.
-			if ($handle = opendir($from)) {
-				while (false !== ($file = readdir($handle))) {
+			if ($handle = @opendir($from)) {
+				while (false !== ($file = @readdir($handle))) {
 					// Ignore dots.
 					if (('.' === $file) || ('..' === $file)) {
 						continue;
@@ -59,13 +59,13 @@ class file {
 			return true;
 		}
 		// Let PHP handle it.
-		elseif (is_file($from)) {
+		elseif (@is_file($from)) {
 			$dir_from = dirname($from);
 			$dir_to = dirname($to);
 
 			// Make the TO directory if it doesn't exist.
-			if (!is_dir($dir_to)) {
-				$dir_chmod = (fileperms($dir_from) & 0777 | 0755);
+			if (!@is_dir($dir_to)) {
+				$dir_chmod = (@fileperms($dir_from) & 0777 | 0755);
 				if (!static::mkdir($dir_to, $dir_chmod)) {
 					return false;
 				}
@@ -75,7 +75,7 @@ class file {
 			if (!@copy($from, $to)) {
 				return false;
 			}
-			$file_chmod = (fileperms($from) & 0777 | 0644);
+			$file_chmod = (@fileperms($from) & 0777 | 0644);
 			@chmod($to, $file_chmod);
 
 			return true;
@@ -85,35 +85,116 @@ class file {
 	}
 
 	/**
-	 * Get Data-URI From File
+	 * CSV Headers
 	 *
-	 * @param string $path Path.
-	 * @return string|bool Data-URI or false.
+	 * Read the first line of a CSV and locate the indexes of each
+	 * column.
+	 *
+	 * If an array of columns is passed, only the indexes of those
+	 * columns will be returned.
+	 *
+	 * If said argument is an associative array, the return value will
+	 * use the argument keys rather than the CSV headers. This can be
+	 * useful in cases where, e.g., a CSV has a stupid long header
+	 * label.
+	 *
+	 * @param string $csv CSV file path.
+	 * @param mixed $cols Filter columns.
+	 * @param string $delimiter Delimiter.
+	 * @return bool|array Headers.
 	 */
-	public static function data_uri($path='') {
-		ref\cast::to_string($path, true);
-
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
-		ref\file::path($path, true);
-
-		constants::$str_lock = $lock;
-
-		try {
-			if (false !== $path && is_file($path)) {
-				$content = base64_encode(@file_get_contents($path));
-				$finfo = mime::finfo($path);
-				return 'data:' . $finfo['mime'] . ';base64,' . $content;
-			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
+	public static function csv_headers(string $csv, $cols=false, string $delimiter=',') {
+		// We definitely need a file.
+		ref\file::path($csv, true);
+		if (!$csv || !@is_file($csv)) {
 			return false;
 		}
 
+		// Are we looking for particular columns?
+		$assoc = false;
+		if (is_array($cols) && count($cols)) {
+			if ('associative' === cast::array_type($cols)) {
+				$assoc = true;
+			}
+			// Flip the array for faster searching.
+			$cols = array_flip($cols);
+		}
+		else {
+			$cols = false;
+		}
+
+		// Open the CSV and look for the first line with stuff.
+		if ($handle = @fopen($csv, 'r')) {
+			while (false !== ($line = @fgetcsv($handle, 0, $delimiter))) {
+				// Skip empty, useless lines.
+				if (!isset($line[0])) {
+					continue;
+				}
+
+				// Flip this too.
+				$line = array_flip($line);
+
+				// If we aren't filtering columns, we can just cast and
+				// return.
+				if (!$cols) {
+					foreach ($line as $k=>$v) {
+						$line[$k] = (int) $v;
+					}
+					return $line;
+				}
+
+				// Loop through all requested columns and find the
+				// index, if any.
+				$out = array();
+				foreach ($cols as $k=>$v) {
+					$key = $assoc ? $v : $k;
+					$value = isset($line[$k]) ? (int) $line[$k] : false;
+					$out[$key] = $value;
+				}
+
+				return $out;
+			}
+
+			@fclose($handle);
+		}
+
 		return false;
+	}
+
+	/**
+	 * Get Data-URI From File
+	 *
+	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
+	 * @return string|bool Data-URI or false.
+	 */
+	public static function data_uri(string $path, bool $constringent=false) {
+		ref\cast::constringent($path, $constringent);
+
+		ref\file::path($path, true, true);
+
+		if ((false !== $path) && @is_file($path)) {
+			$content = base64_encode(@file_get_contents($path));
+			$finfo = mime::finfo($path);
+			return "data:{$finfo['mime']};base64,{$content}";
+		}
+
+		return false;
+	}
+
+	/**
+	 * Directory Size
+	 *
+	 * @param string $path Path.
+	 * @return int Size.
+	 */
+	public static function dirsize(string $path) {
+		$size = 0;
+		$files = static::scandir($path, true, false);
+		foreach ($files as $v) {
+			$size += @filesize($v);
+		}
+		return $size;
 	}
 
 	/**
@@ -122,30 +203,25 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True/false.
 	 */
-	public static function empty_dir($path='') {
-		try {
-			ref\cast::to_string($path);
-			if (!is_readable($path) || !is_dir($path)) {
-				return false;
-			}
-
-			// Scan all files in dir.
-			if ($handle = opendir($path)) {
-				while (false !== ($entry = readdir($handle))) {
-					// Anything but a dot === not empty.
-					if (('.' !== $entry) && ('..' !== $entry)) {
-						return false;
-					}
-				}
-				closedir($handle);
-			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
+	public static function empty_dir(string $path) {
+		ref\cast::string($path);
+		if (!@is_readable($path) || !@is_dir($path)) {
 			return false;
 		}
 
-		return true;
+		// Scan all files in dir.
+		if ($handle = @opendir($path)) {
+			while (false !== ($file = @readdir($handle))) {
+				// Anything but a dot === not empty.
+				if (('.' !== $file) && ('..' !== $file)) {
+					return false;
+				}
+			}
+			closedir($handle);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -160,7 +236,7 @@ class file {
 	 * @param string $file_algo File hashing algorithm.
 	 * @return string|bool Hash or false.
 	 */
-	public static function hash_dir($path, $dir_algo='md5', $file_algo=null) {
+	public static function hash_dir($path, string $dir_algo='md5', string $file_algo=null) {
 		// We definitely need a valid directory algorithm.
 		if (!$dir_algo || !in_array($dir_algo, hash_algos(), true)) {
 			return false;
@@ -220,11 +296,50 @@ class file {
 	 * Add Leading Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function leadingslash($path='') {
-		ref\file::leadingslash($path);
+	public static function leadingslash($path, bool $constringent=false) {
+		ref\file::leadingslash($path, $constringent);
 		return $path;
+	}
+
+	/**
+	 * Line Count
+	 *
+	 * Count the number of lines in a file as efficiently as possible.
+	 *
+	 * @param string $file File path.
+	 * @param bool $trim Ignore whitespace-only lines.
+	 * @return int Lines.
+	 */
+	public static function line_count(string $file, bool $trim=true) {
+		// We definitely need a file.
+		if (!$file || !@is_file($file)) {
+			return false;
+		}
+
+		$lines = 0;
+
+		// Unfortunately we still need to read the file line by line,
+		// but at least we're only loading one line into memory at a
+		// time. For large files, this makes a big difference.
+		if ($handle = @fopen($file, 'r')) {
+			while (false !== ($line = @fgets($handle))) {
+				if ($trim) {
+					if (trim($line)) {
+						++$lines;
+					}
+				}
+				else {
+					++$lines;
+				}
+			}
+
+			@fclose($handle);
+		}
+
+		return $lines;
 	}
 
 	/**
@@ -237,10 +352,10 @@ class file {
 	 * @param int $chmod CHMOD.
 	 * @return bool True/false.
 	 */
-	public static function mkdir($path='', $chmod=null) {
+	public static function mkdir(string $path, $chmod=null) {
 		// Figure out a good default CHMOD.
 		if (!$chmod || !is_numeric($chmod)) {
-			$chmod = (fileperms(dirname(__FILE__)) & 0777 | 0755);
+			$chmod = (fileperms(__DIR__) & 0777 | 0755);
 		}
 
 		// Sanitize the path.
@@ -250,12 +365,12 @@ class file {
 		}
 
 		// We only need to proceed if the path doesn't exist.
-		if (!is_dir($path)) {
-			ref\file::untrailingslash($path);
+		if (!@is_dir($path)) {
+			ref\file::untrailingslash($path, true);
 
 			// Figure out where we need to begin.
 			$base = dirname($path);
-			while ($base && ('.' !== $base) && !is_dir($base)) {
+			while ($base && ('.' !== $base) && !@is_dir($base)) {
 				$base = dirname($base);
 			}
 
@@ -269,7 +384,7 @@ class file {
 				// If we fell deep enough that base became relative,
 				// let's move it back.
 				if (!$base || ('.' === $base)) {
-					$base = dirname(__FILE__);
+					$base = __DIR__;
 				}
 
 				// Base should be inside path. If not, something weird
@@ -278,8 +393,8 @@ class file {
 					return true;
 				}
 
-				$path = mb::substr($path, mb::strlen($base));
-				ref\file::unleadingslash($path);
+				$path = mb::substr($path, mb::strlen($base), null, true);
+				ref\file::unleadingslash($path, true);
 				$parts = explode('/', $path);
 				$path = $base;
 
@@ -305,10 +420,11 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $validate Require valid file.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function path($path='', $validate=true) {
-		ref\file::path($path, $validate);
+	public static function path($path, bool $validate=true, bool $constringent=false) {
+		ref\file::path($path, $validate, $constringent);
 		return $path;
 	}
 
@@ -322,20 +438,21 @@ class file {
 	 * @param bool $retbytes Return bytes served like `readfile()`.
 	 * @return mixed Bytes served or status.
 	 */
-	public static function readfile_chunked($file, $retbytes=true) {
-		ref\cast::to_string($file, true);
-		ref\cast::to_bool($retbytes, true);
+	public static function readfile_chunked(string $file, bool $retbytes=true) {
+		if (!$file || !@is_file($file)) {
+			return false;
+		}
 
 		$buffer = '';
 		$cnt = 0;
 		$chunk_size = 1024 * 1024;
 
-		if (false === ($handle = fopen($file, 'rb'))) {
+		if (false === ($handle = @fopen($file, 'rb'))) {
 			return false;
 		}
 
-		while (!feof($handle)) {
-			$buffer = fread($handle, $chunk_size);
+		while (!@feof($handle)) {
+			$buffer = @fread($handle, $chunk_size);
 			echo $buffer;
 			ob_flush();
 			flush();
@@ -344,7 +461,7 @@ class file {
 			}
 		}
 
-		$status = fclose($handle);
+		$status = @fclose($handle);
 
 		// Return number of bytes delivered like readfile() does.
 		if ($retbytes && $status) {
@@ -385,38 +502,32 @@ class file {
 	 * @param string $path Path.
 	 * @return bool True/false.
 	 */
-	public static function rmdir($path='') {
-		try {
-			ref\file::path($path, true);
-			if (!@is_readable($path) || !@is_dir($path)) {
-				return false;
-			}
+	public static function rmdir(string $path) {
+		ref\file::path($path, true);
+		if (!$path || !@is_readable($path) || !@is_dir($path)) {
+			return false;
+		}
 
-			// Scan all files in dir.
-			if ($handle = opendir($path)) {
-				while (false !== ($entry = readdir($handle))) {
-					// Anything but a dot === not empty.
-					if (('.' === $entry) || ('..' === $entry)) {
-						continue;
-					}
-
-					$file = "{$path}{$entry}";
-
-					// Delete files.
-					if (@is_file($file)) {
-						@unlink($file);
-					}
-					// Recursively delete directories.
-					else {
-						static::rmdir($file);
-					}
+		// Scan all files in dir.
+		if ($handle = @opendir($path)) {
+			while (false !== ($entry = @readdir($handle))) {
+				// Anything but a dot === not empty.
+				if (('.' === $entry) || ('..' === $entry)) {
+					continue;
 				}
-				closedir($handle);
+
+				$file = "{$path}{$entry}";
+
+				// Delete files.
+				if (@is_file($file)) {
+					@unlink($file);
+				}
+				// Recursively delete directories.
+				else {
+					static::rmdir($file);
+				}
 			}
-		} catch (\Throwable $e) {
-			return false;
-		} catch (\Exception $e) {
-			return false;
+			closedir($handle);
 		}
 
 		if (static::empty_dir($path)) {
@@ -432,18 +543,30 @@ class file {
 	 * @param string $path Path.
 	 * @param bool $show_files Include files.
 	 * @param bool $show_dirs Include directories.
+	 * @param int $depth Depth.
 	 * @return array Path(s).
 	 */
-	public static function scandir($path, $show_files=true, $show_dirs=true) {
+	public static function scandir($path, bool $show_files=true, bool $show_dirs=true, int $depth=-1) {
 		ref\file::path($path, true);
 		if (!$path || !@is_dir($path) || (!$show_files && !$show_dirs)) {
 			return array();
 		}
 
+		// Set the depth for recursion.
+		if ($depth < 0) {
+			$inner_depth = -1;
+		}
+		elseif ($depth >= 1) {
+			$inner_depth = $depth - 1;
+		}
+		else {
+			$inner_depth = 0;
+		}
+
 		$out = array();
-		if ($handle = opendir($path)) {
-			ref\file::trailingslash($path);
-			while (false !== ($file = readdir($handle))) {
+		if ($handle = @opendir($path)) {
+			ref\file::trailingslash($path, true);
+			while (false !== ($file = @readdir($handle))) {
 				// Always ignore dots.
 				if (('.' === $file) || ('..' === $file)) {
 					continue;
@@ -459,7 +582,10 @@ class file {
 					if ($show_dirs) {
 						$out[] = "{$path}{$file}";
 					}
-					$out = array_merge($out, static::scandir("{$path}{$file}", $show_files, $show_dirs));
+
+					if ((-1 === $inner_depth) || $inner_depth > 0) {
+						$out = array_merge($out, static::scandir("{$path}{$file}", $show_files, $show_dirs, $inner_depth));
+					}
 				}
 			}
 			closedir($handle);
@@ -473,10 +599,11 @@ class file {
 	 * Add Trailing Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function trailingslash($path='') {
-		ref\file::trailingslash($path);
+	public static function trailingslash($path, bool $constringent=false) {
+		ref\file::trailingslash($path, $constringent);
 		return $path;
 	}
 
@@ -484,10 +611,11 @@ class file {
 	 * Fix Path Slashes
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function unixslash($path='') {
-		ref\file::unixslash($path);
+	public static function unixslash($path, bool $constringent=false) {
+		ref\file::unixslash($path, $constringent);
 		return $path;
 	}
 
@@ -495,10 +623,11 @@ class file {
 	 * Strip Leading Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function unleadingslash($path='') {
-		ref\file::unleadingslash($path);
+	public static function unleadingslash($path, bool $constringent=false) {
+		ref\file::unleadingslash($path, $constringent);
 		return $path;
 	}
 
@@ -513,7 +642,7 @@ class file {
 		$parsed = data::parse_args($parsed, constants::URL_PARTS);
 
 		// To simplify, unset anything without length.
-		$parsed = array_map('trim', $parsed);
+		ref\mb::trim($parsed, true);
 		$parsed = array_filter($parsed, 'strlen');
 
 		// We don't really care about validating url integrity,
@@ -547,7 +676,7 @@ class file {
 				$url .= ":{$parsed['port']}";
 			}
 
-			if (isset($parsed['path']) && mb::substr($parsed['path'], 0, 1) !== '/') {
+			if (isset($parsed['path']) && (0 !== strpos($parsed['path'], '/'))) {
 				$url .= '/';
 			}
 		}
@@ -571,10 +700,11 @@ class file {
 	 * Strip Trailing Slash
 	 *
 	 * @param string $path Path.
+	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function untrailingslash($path='') {
-		ref\file::untrailingslash($path);
+	public static function untrailingslash($path, bool $constringent=false) {
+		ref\file::untrailingslash($path, $constringent);
 		return $path;
 	}
 

@@ -1041,15 +1041,15 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'',
 				null,
-				null,
-				null,
+				true,
+				true,
 				array(),
 			),
 			array(
 				'{"animal":"dog"}',
 				null,
-				null,
-				null,
+				true,
+				true,
 				array('animal'=>'dog'),
 			),
 			array(
@@ -1058,8 +1058,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				null,
-				null,
+				true,
+				true,
 				array(
 					'animal'=>'dog',
 					'fruit'=>'banana',
@@ -1072,7 +1072,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'fruit'=>'banana',
 				),
 				false,
-				null,
+				true,
 				array(
 					'animal'=>array('dog'=>'wolf'),
 					'fruit'=>'banana',
@@ -1085,7 +1085,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'fruit'=>'banana',
 				),
 				true,
-				null,
+				true,
 				array(
 					'animal'=>array('dog'),
 					'fruit'=>'banana',
@@ -1155,15 +1155,15 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'',
 				array(''),
-				null,
-				null,
+				false,
+				false,
 				array(''),
 			),
 			array(
 				null,
 				array('dog'=>'wolf'),
-				null,
-				null,
+				false,
+				false,
 				array('dog'=>'wolf'),
 			),
 			array(
@@ -1172,8 +1172,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				null,
-				null,
+				false,
+				false,
 				array(
 					'animal'=>'dog',
 					'fruit'=>'banana',
@@ -1188,7 +1188,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'fruit'=>'banana',
 				),
 				false,
-				null,
+				false,
 				array(
 					'animal'=>array('dog'=>'wolf'),
 					'fruit'=>'banana',
@@ -1201,7 +1201,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 					'fruit'=>'banana',
 				),
 				true,
-				null,
+				false,
 				array(
 					'animal'=>array('dog'),
 					'fruit'=>'banana',

@@ -33,9 +33,9 @@ class bc {
 	 */
 	public static function bitwise($method, $left, $right='0', $bits=null) {
 		// Sanitize the operation.
-		ref\cast::to_string($method, true);
+		ref\cast::string($method, true);
 		$method = strtoupper($method);
-		if (array_key_exists($method, constants::BITWISE_OPERATORS)) {
+		if (isset(constants::BITWISE_OPERATORS[$method])) {
 			$method = constants::BITWISE_OPERATORS[$method];
 		}
 
@@ -47,7 +47,7 @@ class bc {
 		if (is_null($bits)) {
 			$bits = max(static::bit_size($left), static::bit_size($right));
 		}
-		ref\cast::to_int($bits, true);
+		ref\cast::int($bits, true);
 		ref\sanitize::to_range($bits, 0);
 
 		// LEFT and RIGHT operations can be done here and now.
@@ -119,7 +119,7 @@ class bc {
 	 * @return int Bits.
 	 */
 	protected static function bit_size($num) {
-		ref\cast::to_string($num, true);
+		ref\cast::string($num, true);
 
 		$bits = 0;
 		while ($num > 0) {
@@ -137,7 +137,7 @@ class bc {
 	 * @return string Decimal.
 	 */
 	public static function bindec($bin) {
-		ref\cast::to_string($bin, true);
+		ref\cast::string($bin, true);
 
 		$dec = '0';
 		$length = strlen($bin);
@@ -167,8 +167,8 @@ class bc {
 	 * @return string Binary.
 	 */
 	public static function decbin($dec, $length=null) {
-		ref\cast::to_string($dec, true);
-		ref\cast::to_int($length, true);
+		ref\cast::string($dec, true);
+		ref\cast::int($length, true);
 		ref\sanitize::to_range($length, 0);
 
 		$bin = '';
@@ -210,7 +210,7 @@ class bc {
 	 * @return string Decimal.
 	 */
 	public static function hexdec($hex) {
-		ref\cast::to_string($hex, true);
+		ref\cast::string($hex, true);
 
 		// Do it the easy way.
 		if (1 === strlen($hex)) {

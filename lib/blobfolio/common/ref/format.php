@@ -34,7 +34,7 @@ class format {
 	public static function array_flatten(&$arr) {
 		$out = array();
 
-		cast::to_array($arr);
+		cast::array($arr);
 		foreach ($arr as $v) {
 			// Recurse arrays.
 			if (is_array($v)) {
@@ -64,7 +64,7 @@ class format {
 	 * @return bool True.
 	 */
 	public static function array_to_indexed(&$arr) {
-		cast::to_array($arr);
+		cast::array($arr);
 		if (count($arr)) {
 			$out = array();
 			foreach ($arr as $k=>$v) {
@@ -86,15 +86,14 @@ class format {
 	 * @param int $precision Precision.
 	 * @return bool True.
 	 */
-	public static function ceil(&$num, $precision=0) {
+	public static function ceil(&$num, int $precision=0) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::ceil($num[$k], $precision);
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_int($precision, true);
+			cast::float($num, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -116,7 +115,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		static::decode_unicode_entities($str);
 		static::decode_escape_entities($str);
@@ -138,7 +137,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		$replacements = array(
 			'\b'=>chr(0x08),
@@ -171,7 +170,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		$last = '';
 		$class = get_called_class();
@@ -184,7 +183,7 @@ class format {
 				$str
 			);
 
-			cast::to_string($str, true);
+			cast::string($str, true);
 		}
 
 		constants::$str_lock = $lock;
@@ -205,7 +204,7 @@ class format {
 		$lock = constants::$str_lock;
 		constants::$str_lock = false;
 
-		cast::to_string($str, true);
+		cast::string($str, true);
 
 		$last = '';
 		while ($str !== $last) {
@@ -215,7 +214,7 @@ class format {
 			$str = preg_replace_callback('/&#([0-9]+);/', array(get_called_class(), 'decode_entities_chr'), $str);
 			$str = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', array(get_called_class(), 'decode_entities_hex'), $str);
 
-			cast::to_string($str, true);
+			cast::string($str, true);
 		}
 
 		constants::$str_lock = $lock;
@@ -249,15 +248,14 @@ class format {
 	 * @param int $precision Precision.
 	 * @return float Number.
 	 */
-	public static function floor(&$num, $precision=0) {
+	public static function floor(&$num, int $precision=0) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::floor($num[$k], $precision);
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_int($precision, true);
+			cast::float($num, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -275,21 +273,20 @@ class format {
 	 * @see {https://www.designedbyaturtle.co.uk/2015/converting-a-decimal-to-a-fraction-in-php/}
 	 *
 	 * @param float $num Number.
-	 * @param float $tolerance Tolerance.
+	 * @param float $precision Precision.
 	 * @return string Fraction.
 	 */
-	public static function fraction(&$num, $tolerance=0.0001) {
+	public static function fraction(&$num, float $precision=0.0001) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
-				static::fraction($num[$k], $tolerance);
+				static::fraction($num[$k], $precision);
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_float($tolerance, true);
+			cast::float($num, true);
 
 			// We need a tolerable tolerance.
-			if ($tolerance <= 0 || $tolerance >= 1) {
+			if ($precision <= 0 || $precision >= 1) {
 				return '';
 			}
 
@@ -316,7 +313,7 @@ class format {
 				$denominator = $a * $denominator + $k2;
 				$k2 = $aux;
 				$b = $b - $a;
-			} while (abs($num - $numerator / $denominator) > $num * $tolerance);
+			} while (abs($num - $numerator / $denominator) > $num * $precision);
 
 			// If the denominator is one, just return a whole number.
 			if (1.0 === $denominator) {
@@ -343,7 +340,11 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function ip_to_number(&$ip) {
-		cast::to_string($ip, true);
+		// Don't need to fancy cast.
+		if (!is_string($ip)) {
+			$ip = false;
+			return false;
+		}
 
 		if (!filter_var($ip, FILTER_VALIDATE_IP)) {
 			$ip = false;
@@ -375,9 +376,6 @@ class format {
 				$ip = bc::bindec($bin);
 				return true;
 			} catch (\Throwable $e) {
-				$ip = false;
-				return false;
-			} catch (\Exception $e) {
 				$ip = false;
 				return false;
 			}
@@ -434,8 +432,7 @@ class format {
 	 */
 	public static function json(&$str='', $pretty=true) {
 		if (!is_string($str)) {
-			sanitize::utf8($str);
-			$str = json_encode($str);
+			static::json_encode($str);
 		}
 
 		if (false === ($decode = v_format::json_decode($str))) {
@@ -463,11 +460,7 @@ class format {
 	 * @return bool True.
 	 */
 	public static function json_decode(&$str='') {
-		cast::to_string($str, true);
-
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
+		cast::string($str, true);
 
 		// Remove comments.
 		$str = preg_replace(
@@ -483,12 +476,11 @@ class format {
 		);
 
 		// Trim it.
-		mb::trim($str);
+		mb::trim($str, true);
 
 		// Is it empty?
 		if (!$str || ("''" === $str) || ('""' === $str)) {
 			$str = '';
-			constants::$str_lock = $lock;
 			return true;
 		}
 
@@ -496,21 +488,18 @@ class format {
 		$tmp = json_decode($str, true);
 		if (!is_null($tmp)) {
 			$str = $tmp;
-			constants::$str_lock = $lock;
 			return true;
 		}
 
-		$lower = v_mb::strtolower($str);
+		$lower = v_mb::strtolower($str, false, true);
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
-			cast::to_bool($str);
-			constants::$str_lock = $lock;
+			cast::bool($str);
 			return true;
 		}
 		// Null.
 		elseif ('null' === $lower) {
 			$str = null;
-			constants::$str_lock = $lock;
 			return true;
 		}
 		// Number.
@@ -521,20 +510,17 @@ class format {
 			else {
 				$str = (int) $lower;
 			}
-			constants::$str_lock = $lock;
 			return true;
 		}
 		// String.
-		elseif (preg_match('/^("|\')(.+)(\1)$/s', $str, $match) && $match[1] === $match[3]) {
+		elseif (preg_match('/^("|\')(.+)(\1)$/s', $str, $match) && ($match[1] === $match[3])) {
 			$str = $match[2];
-			constants::$str_lock = $lock;
 			static::decode_js_entities($str);
 			return true;
 		}
 		// Bail if we don't have an object at this point.
 		elseif (!preg_match('/^\[.*\]$/s', $str) && !preg_match('/^\{.*\}$/s', $str)) {
 			$str = null;
-			constants::$str_lock = $lock;
 			return false;
 		}
 
@@ -547,24 +533,24 @@ class format {
 			),
 		);
 		$out = array();
-		if (0 === v_mb::strpos($str, '[')) {
+		if (0 === strpos($str, '[')) {
 			$type = 'array';
 		}
 		else {
 			$type = 'object';
 		}
-		$chunk = v_mb::substr($str, 1, -1);
-		$length = v_mb::strlen($chunk);
+		$chunk = v_mb::substr($str, 1, -1, true);
+		$length = v_mb::strlen($chunk, true);
 		for ($x = 0; $x <= $length; ++$x) {
 			$last = end($slices);
-			$subchunk = v_mb::substr($chunk, $x, 2);
+			$subchunk = v_mb::substr($chunk, $x, 2, true);
 
 			// A comma or the end.
 			if (
 				($x === $length) ||
 				((',' === $chunk{$x}) && 'slice' === $last['type'])
 			) {
-				$slice = v_mb::substr($chunk, $last['from'], ($x - $last['from']));
+				$slice = v_mb::substr($chunk, $last['from'], ($x - $last['from']), true);
 				$slices[] = array(
 					'type'=>'slice',
 					'from'=>$x + 1,
@@ -607,7 +593,10 @@ class format {
 			elseif (
 				($chunk{$x} === $last['delimiter']) &&
 				('string' === $last['type']) &&
-				('\\' !== $chunk{$x - 1} || (('\\' === $chrs{$c - 1}) && '\\' === $chunk{$x - 2}))
+				(
+					('\\' !== $chunk{$x - 1}) ||
+					(('\\' === $chrs{$c - 1}) && ('\\' === $chunk{$x - 2}))
+				)
 			) {
 				array_pop($slices);
 			}
@@ -666,14 +655,43 @@ class format {
 			) {
 				array_pop($slices);
 				++$x;
-				for ($y = $last['from']; $y <= $x; $y++) {
+				for ($y = $last['from']; $y <= $x; ++$y) {
 					$chunk{$y} = ' ';
 				}
 			}
 		}// End each char.
 
 		$str = $out;
-		constants::$str_lock = $lock;
+		return true;
+	}
+
+	/**
+	 * JSON Encode
+	 *
+	 * This is a wrapper for json_encode, but will try to fix common
+	 * issues.
+	 *
+	 * @param mixed $value Value.
+	 * @param int $options Options.
+	 * @param int $depth Depth.
+	 * @return bool True/false.
+	 */
+	public static function json_encode(&$value, $options=0, $depth=512) {
+		// Simple values don't require a lot of thought.
+		if (!$value || is_numeric($value) || is_bool($value)) {
+			$value = json_encode($value, $options, $depth);
+			return true;
+		}
+
+		$original = $value;
+		$value = json_encode($value, $options, $depth);
+
+		// Try again with UTF-8 sanitizing if this failed.
+		if (is_null($value)) {
+			sanitize::utf8($original);
+			$value = json_encode($original, $options, $depth);
+		}
+
 		return true;
 	}
 
@@ -685,6 +703,7 @@ class format {
 	 * @param string $str String.
 	 * @param array $args Arguments.
 	 * @param int $pass Pass (1=URL, 2=EMAIL).
+	 * @param bool $constringent Light cast.
 	 *
 	 * @arg array $class Class(es).
 	 * @arg string $rel Rel.
@@ -692,9 +711,8 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links(&$str, $args=null, $pass=1) {
-		cast::to_string($str, true);
-		cast::to_int($pass, true);
+	public static function links(&$str, $args=null, int $pass=1, bool $constringent=false) {
+		cast::constringent($str, $constringent);
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -704,7 +722,7 @@ class format {
 		);
 		$data = data::parse_args($args, $defaults);
 		$data['class'] = implode(' ', $data['class']);
-		sanitize::html($data);
+		sanitize::html($data, true);
 		$data = array_filter($data, 'strlen');
 		$atts = array();
 		foreach ($data as $k=>$v) {
@@ -733,7 +751,7 @@ class format {
 							$raw = $matches[1];
 
 							// Don't do email bits.
-							if (0 === v_mb::strpos($raw, '@')) {
+							if (0 === strpos($raw, '@')) {
 								return $matches[1];
 							}
 
@@ -768,7 +786,7 @@ class format {
 							}
 
 							// Finally, make a link!
-							sanitize::html($link);
+							sanitize::html($link, true);
 							return '<a href="' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
 						},
 						$str[$k]
@@ -791,13 +809,13 @@ class format {
 								$suffix = '';
 							}
 
-							$link = v_sanitize::email($raw);
+							$link = v_sanitize::email($raw, true);
 							if (!$link) {
 								return $matches[1];
 							}
 
 							// Finally, make a link!
-							sanitize::html($link);
+							sanitize::html($link, true);
 
 							return '<a href="mailto:' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
 						},
@@ -855,10 +873,10 @@ class format {
 		// Pass #1 is for URL-like bits, pass #2 for email addresses,
 		// pass #3 for phone numbers.
 		if (1 === $pass) {
-			static::links($str, $args, 2);
+			static::links($str, $args, 2, true);
 		}
 		elseif (2 === $pass) {
-			static::links($str, $args, 3);
+			static::links($str, $args, 3, true);
 		}
 
 		return true;
@@ -871,6 +889,7 @@ class format {
 	 *
 	 * @param mixed $list List.
 	 * @param mixed $args Arguments or delimiter.
+	 * @param bool $constringent Light cast.
 	 *
 	 * @args string $delimiter Delimiter.
 	 * @args bool $trim Trim.
@@ -882,7 +901,7 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function list_to_array(&$list, $args=null) {
+	public static function list_to_array(&$list, $args=null, bool $constringent=false) {
 		$out = array();
 
 		// If the arguments are a string, we'll assume the delimiter was
@@ -897,7 +916,7 @@ class format {
 		$args['cast'] = strtolower($args['cast']);
 		if (
 			('array' === $args['cast']) ||
-			!array_key_exists($args['cast'], constants::CAST_TYPES)
+			!isset(constants::CAST_TYPES[$args['cast']])
 		) {
 			$args['cast'] = 'string';
 		}
@@ -907,7 +926,7 @@ class format {
 			data::switcheroo($args['min'], $args['max']);
 		}
 
-		cast::to_array($list);
+		cast::array($list);
 		foreach ($list as $k=>$v) {
 			// Recurse if the value is an array.
 			if (is_array($list[$k])) {
@@ -915,28 +934,22 @@ class format {
 			}
 			// Otherwise de-list the line.
 			else {
-				cast::to_string($list[$k], true);
-
-				// Lock UTF-8 Casting.
-				$lock = constants::$str_lock;
-				constants::$str_lock = true;
+				cast::constringent($list[$k], $constringent);
 
 				if ($args['delimiter']) {
 					$list[$k] = explode($args['delimiter'], $list[$k]);
 				}
 				else {
-					$list[$k] = mb::str_split($list[$k]);
+					$list[$k] = mb::str_split($list[$k], 1, true);
 				}
 
 				// Trimming?
 				if ($args['trim']) {
-					mb::trim($list[$k]);
+					mb::trim($list[$k], true);
 				}
 
 				// Get rid of empties.
 				$list[$k] = array_filter($list[$k], 'strlen');
-
-				constants::$str_lock = $lock;
 
 				// Casting?
 				if ('string' !== $args['cast']) {
@@ -978,17 +991,14 @@ class format {
 	 * @param bool $no00 Remove trailing cents if none.
 	 * @return bool True.
 	 */
-	public static function money(&$value=0, $cents=false, $separator='', $no00=false) {
+	public static function money(&$value=0, bool $cents=false, string $separator='', bool $no00=false) {
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::money($value[$k], $cents, $separator, $no00);
 			}
 		}
 		else {
-			cast::to_float($value);
-			cast::to_bool($cents, true);
-			cast::to_string($separator, true);
-			cast::to_bool($no00, true);
+			cast::float($value, true);
 
 			$value = round($value, 2);
 			$negative = $value < 0;
@@ -1017,7 +1027,16 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function number_to_ip(&$ip) {
-		cast::to_string($ip, true);
+		if (!is_string($ip)) {
+			if (is_numeric($ip)) {
+				$ip = (string) $ip;
+			}
+			else {
+				$ip = false;
+				return false;
+			}
+		}
+
 		if (!$ip || ('0' === $ip)) {
 			$ip = false;
 			return false;
@@ -1044,13 +1063,7 @@ class format {
 			$ip = '0.0.0.0';
 		}
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
 		sanitize::ip($ip, true);
-
-		constants::$str_lock = $lock;
 
 		return true;
 	}
@@ -1070,22 +1083,26 @@ class format {
 			}
 		}
 		else {
-			cast::to_string($str);
-			// Lock UTF-8 Casting.
-			$lock = constants::$str_lock;
-			constants::$str_lock = true;
-
-			sanitize::whitespace($str);
-
-			constants::$str_lock = $lock;
+			if (!is_string($str)) {
+				if (is_numeric($str)) {
+					$str = (string) $str;
+				}
+				else {
+					$str = '';
+					return false;
+				}
+			}
+			sanitize::whitespace($str, 0, true);
 
 			if (!$str) {
 				$str = '';
 				return false;
 			}
 
-			cast::to_string($country);
-			cast::to_array($types);
+			if (!is_string($country)) {
+				$country = '';
+			}
+			cast::array($types);
 
 			$str = new phone($str, $country);
 			if (!$str->is_phone($types)) {
@@ -1107,15 +1124,14 @@ class format {
 	 * @param int $mode Mode.
 	 * @return bool True.
 	 */
-	public static function round(&$num, $precision=0, $mode=PHP_ROUND_HALF_UP) {
+	public static function round(&$num, int $precision=0, int $mode=PHP_ROUND_HALF_UP) {
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::round($num[$k], $precision, $mode);
 			}
 		}
 		else {
-			cast::to_float($num, true);
-			cast::to_int($precision, true);
+			cast::float($num, true);
 			sanitize::to_range($precision, 0);
 
 			$num = round($num, $precision, $mode);
@@ -1132,15 +1148,7 @@ class format {
 	 * @param string $to New Timezone.
 	 * @return bool True.
 	 */
-	public static function to_timezone(&$date, $from='UTC', $to='UTC') {
-		cast::to_string($date, true);
-		cast::to_string($from, true);
-		cast::to_string($to, true);
-
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
+	public static function to_timezone(string &$date, $from='UTC', $to='UTC') {
 		sanitize::datetime($date);
 		if ('UTC' !== $from) {
 			sanitize::timezone($from);
@@ -1149,9 +1157,7 @@ class format {
 			sanitize::timezone($to);
 		}
 
-		constants::$str_lock = $lock;
-
-		if ('0000-00-00 00:00:00' === $date || $from === $to) {
+		if (('0000-00-00 00:00:00' === $date) || ($from === $to)) {
 			return true;
 		}
 
@@ -1162,12 +1168,8 @@ class format {
 			$date = $date_new->format('Y-m-d H:i:s');
 		} catch (\Throwable $e) {
 			$date = $original;
-		} catch (\Exception $e) {
-			$date = $original;
 		}
 
 		return true;
 	}
 }
-
-

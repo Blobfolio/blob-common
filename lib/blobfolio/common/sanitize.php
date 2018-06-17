@@ -16,28 +16,29 @@ class sanitize {
 	 * Strip Accents
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function accents($str='') {
-		ref\sanitize::accents($str);
+	public static function accents($str='', bool $constringent=false) {
+		ref\sanitize::accents($str, $constringent);
 		return $str;
 	}
 
 	/**
 	 * Attribute Value
 	 *
-	 * This will decode entities, strip control
-	 * characters, and trim outside whitespace.
+	 * This will decode entities, strip control characters, and trim
+	 * outside whitespace.
 	 *
-	 * Note: this should not be used for safe
-	 * insertion into HTML. For that, use the
-	 * html() function.
+	 * Note: this should not be used for safe insertion into HTML. For
+	 * that, use the html() function.
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function attribute_value($str='') {
-		ref\sanitize::attribute_value($str);
+	public static function attribute_value($str='', bool $constringent=false) {
+		ref\sanitize::attribute_value($str, $constringent);
 		return $str;
 	}
 
@@ -67,10 +68,11 @@ class sanitize {
 	 * Control Characters
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function control_characters($str='') {
-		ref\sanitize::control_characters($str);
+	public static function control_characters($str='', bool $constringent=false) {
+		ref\sanitize::control_characters($str, $constringent);
 		return $str;
 	}
 
@@ -78,10 +80,11 @@ class sanitize {
 	 * Country
 	 *
 	 * @param string $str Country.
+	 * @param bool $constringent Light cast.
 	 * @return string ISO country code.
 	 */
-	public static function country($str='') {
-		ref\sanitize::country($str);
+	public static function country($str='', bool $constringent=false) {
+		ref\sanitize::country($str, $constringent);
 		return $str;
 	}
 
@@ -89,10 +92,11 @@ class sanitize {
 	 * CSV Cell Data
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function csv($str='') {
-		ref\sanitize::csv($str);
+	public static function csv($str='', bool $constringent=false) {
+		ref\sanitize::csv($str, $constringent);
 		return $str;
 	}
 
@@ -129,7 +133,7 @@ class sanitize {
 	 * @param bool $unicode Unicode.
 	 * @return string Domain.
 	 */
-	public static function domain($str='', $unicode=false) {
+	public static function domain($str='', bool $unicode=false) {
 		ref\sanitize::domain($str, $unicode);
 		return $str;
 	}
@@ -143,7 +147,7 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function ean($str, $formatted=false) {
+	public static function ean($str, bool $formatted=false) {
 		ref\sanitize::ean($str, $formatted);
 		return $str;
 	}
@@ -155,10 +159,11 @@ class sanitize {
 	 * invalid characters, quotes, and apostrophes.
 	 *
 	 * @param string $str Email.
+	 * @param bool $constringent Light cast.
 	 * @return string Email.
 	 */
-	public static function email($str=null) {
-		ref\sanitize::email($str);
+	public static function email($str=null, bool $constringent=false) {
+		ref\sanitize::email($str, $constringent);
 		return $str;
 	}
 
@@ -166,21 +171,11 @@ class sanitize {
 	 * File Extension
 	 *
 	 * @param string $str Extension.
+	 * @param bool $constringent Light cast.
 	 * @return string Extension.
 	 */
-	public static function file_extension($str='') {
-		ref\sanitize::file_extension($str);
-		return $str;
-	}
-
-	/**
-	 * HTML
-	 *
-	 * @param string $str HTML.
-	 * @return string HTML.
-	 */
-	public static function html($str=null) {
-		ref\sanitize::html($str);
+	public static function file_extension($str='', bool $constringent=false) {
+		ref\sanitize::file_extension($str, $constringent);
 		return $str;
 	}
 
@@ -190,11 +185,24 @@ class sanitize {
 	 * @param string $domain Hostname.
 	 * @param bool $www Keep leading www.
 	 * @param bool $unicode Unicode.
+	 * @param bool $constringent Light cast.
 	 * @return string|bool Hostname or false.
 	 */
-	public static function hostname($domain, $www=false, $unicode=false) {
-		ref\sanitize::hostname($domain, $www, $unicode);
+	public static function hostname($domain, bool $www=false, bool $unicode=false, bool $constringent=false) {
+		ref\sanitize::hostname($domain, $www, $unicode, $constringent);
 		return $domain;
+	}
+
+	/**
+	 * HTML
+	 *
+	 * @param string $str HTML.
+	 * @param bool $constringent Light cast.
+	 * @return string HTML.
+	 */
+	public static function html($str=null, bool $constringent=false) {
+		ref\sanitize::html($str, $constringent);
+		return $str;
 	}
 
 	/**
@@ -205,7 +213,7 @@ class sanitize {
 	 * @param bool $condense Condense IPv6.
 	 * @return string IP.
 	 */
-	public static function ip($str='', $restricted=false, $condense=true) {
+	public static function ip($str='', bool $restricted=false, bool $condense=true) {
 		ref\sanitize::ip($str, $restricted, $condense);
 		return $str;
 	}
@@ -216,10 +224,11 @@ class sanitize {
 	 * @param string $str IRI value.
 	 * @param array $protocols Allowed protocols.
 	 * @param array $domains Allowed domains.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function iri_value($str='', $protocols=null, $domains=null) {
-		ref\sanitize::iri_value($str, $protocols, $domains);
+	public static function iri_value($str='', $protocols=null, $domains=null, bool $constringent=false) {
+		ref\sanitize::iri_value($str, $protocols, $domains, $constringent);
 		return $str;
 	}
 
@@ -241,10 +250,11 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param string $quote Quote type.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function js($str='', $quote="'") {
-		ref\sanitize::js($str, $quote);
+	public static function js($str='', $quote="'", bool $constringent=false) {
+		ref\sanitize::js($str, $quote, $constringent);
 		return $str;
 	}
 
@@ -267,10 +277,11 @@ class sanitize {
 	 * casing.
 	 *
 	 * @param string $str Name.
+	 * @param bool $constringent Light cast.
 	 * @return string Name.
 	 */
-	public static function name($str='') {
-		ref\sanitize::name($str);
+	public static function name($str='', bool $constringent=false) {
+		ref\sanitize::name($str, $constringent);
 		return $str;
 	}
 
@@ -282,10 +293,11 @@ class sanitize {
 	 * only present because of user error.
 	 *
 	 * @param string $str Password.
+	 * @param bool $constringent Light cast.
 	 * @return string Password.
 	 */
-	public static function password($str='') {
-		ref\sanitize::password($str);
+	public static function password($str='', bool $constringent=false) {
+		ref\sanitize::password($str, $constringent);
 		return $str;
 	}
 
@@ -295,10 +307,11 @@ class sanitize {
 	 * Remove non-printable characters (except spaces).
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function printable($str='') {
-		ref\sanitize::printable($str);
+	public static function printable($str='', bool $constringent=false) {
+		ref\sanitize::printable($str, $constringent);
 		return $str;
 	}
 
@@ -306,10 +319,11 @@ class sanitize {
 	 * Canadian Province
 	 *
 	 * @param string $str Province.
+	 * @param bool $constringent Light cast.
 	 * @return string Province.
 	 */
-	public static function province($str='') {
-		ref\sanitize::province($str);
+	public static function province($str='', bool $constringent=false) {
+		ref\sanitize::province($str, $constringent);
 		return $str;
 	}
 
@@ -320,10 +334,11 @@ class sanitize {
 	 * ones Athena intended!
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function quotes($str='') {
-		ref\sanitize::quotes($str);
+	public static function quotes($str='', bool $constringent=false) {
+		ref\sanitize::quotes($str, $constringent);
 		return $str;
 	}
 
@@ -331,10 +346,11 @@ class sanitize {
 	 * US State/Territory
 	 *
 	 * @param string $str State.
+	 * @param bool $constringent Light cast.
 	 * @return string State.
 	 */
-	public static function state($str='') {
-		ref\sanitize::state($str);
+	public static function state($str='', bool $constringent=false) {
+		ref\sanitize::state($str, $constringent);
 		return $str;
 	}
 
@@ -342,10 +358,11 @@ class sanitize {
 	 * Australian State/Territory
 	 *
 	 * @param string $str State.
+	 * @param bool $constringent Light cast.
 	 * @return string State.
 	 */
-	public static function au_state($str='') {
-		ref\sanitize::au_state($str);
+	public static function au_state($str='', bool $constringent=false) {
+		ref\sanitize::au_state($str, $constringent);
 		return $str;
 	}
 
@@ -395,7 +412,7 @@ class sanitize {
 	 * @param bool $formatted Formatted.
 	 * @return string String.
 	 */
-	public static function upc($str, $formatted=false) {
+	public static function upc($str, bool $formatted=false) {
 		ref\sanitize::upc($str, $formatted);
 		return $str;
 	}
@@ -406,10 +423,11 @@ class sanitize {
 	 * Validate URLishness and convert // schemas.
 	 *
 	 * @param string $str URL.
+	 * @param bool $constringent Light cast.
 	 * @return string URL.
 	 */
-	public static function url($str='') {
-		ref\sanitize::url($str);
+	public static function url($str='', bool $constringent=false) {
+		ref\sanitize::url($str, $constringent);
 		return $str;
 	}
 
@@ -434,10 +452,11 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param int $newlines Consecutive newlines allowed.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function whitespace($str='', $newlines=0) {
-		ref\sanitize::whitespace($str, $newlines);
+	public static function whitespace($str='', int $newlines=0, bool $constringent=false) {
+		ref\sanitize::whitespace($str, $newlines, $constringent);
 		return $str;
 	}
 
@@ -446,10 +465,11 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param int $newlines Consecutive newlines allowed.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function whitespace_multiline($str='', $newlines=1) {
-		ref\sanitize::whitespace_multiline($str, $newlines);
+	public static function whitespace_multiline($str='', int $newlines=1, bool $constringent=false) {
+		ref\sanitize::whitespace_multiline($str, $newlines, $constringent);
 		return $str;
 	}
 

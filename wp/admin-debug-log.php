@@ -252,7 +252,7 @@ $logpath = trailingslashit(WP_CONTENT_DIR) . 'debug.log';
 					?>
 					<div class="postbox">
 						<div class="inside">
-							<a href="https://blobfolio.com/" target="_blank" class="sister-plugins--blobfolio"><?php echo file_get_contents(BLOBCOMMON_ROOT . '/img/blobfolio.svg'); ?></a>
+							<a href="https://blobfolio.com/" target="_blank" class="sister-plugins--blobfolio"><?php echo file_get_contents(BLOBCOMMON_PLUGIN_DIR . '/img/blobfolio.svg'); ?></a>
 
 							<div class="sister-plugins--intro">
 								We hope you find this plugin useful!  If you do, you might be interested in our other plugins, which are also completely free (and useful).

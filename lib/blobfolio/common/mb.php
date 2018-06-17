@@ -22,14 +22,10 @@ class mb {
 	 * @param int $component Component.
 	 * @return mixed Array, Component, or Null.
 	 */
-	public static function parse_url($url, $component = -1) {
-		ref\cast::to_string($url, true);
+	public static function parse_url($url, int $component = -1) {
+		ref\cast::string($url, true);
 
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = true;
-
-		ref\mb::trim($url);
+		ref\mb::trim($url, true);
 
 		// Before we start, let's fix scheme-agnostic URLs.
 		$url = preg_replace('/^:?\/\//', 'https://', $url);
@@ -78,14 +74,14 @@ class mb {
 				}
 
 				// Lowercase it.
-				ref\mb::strtolower($parts);
+				ref\mb::strtolower($parts, false, true);
 
 				// Get rid of trailing periods.
 				$parts = ltrim($parts, '.');
 				$parts = rtrim($parts, '.');
 
 				// Standardize IPv6 formatting.
-				if ('[' === static::substr($parts, 0, 1)) {
+				if (0 === strpos($parts, '[')) {
 					$parts = str_replace(array('[', ']'), '', $parts);
 					ref\sanitize::ip($parts, true);
 					$parts = "[{$parts}]";
@@ -116,14 +112,14 @@ class mb {
 					}
 
 					// Lowercase it.
-					ref\mb::strtolower($parts[$k]);
+					ref\mb::strtolower($parts[$k], false, true);
 
 					// Get rid of trailing periods.
 					$parts[$k] = ltrim($parts[$k], '.');
 					$parts[$k] = rtrim($parts[$k], '.');
 
 					// Standardize IPv6 formatting.
-					if ('[' === static::substr($parts[$k], 0, 1)) {
+					if (0 === strpos($parts[$k], '[')) {
 						$parts[$k] = str_replace(array('[', ']'), '', $parts[$k]);
 						ref\sanitize::ip($parts[$k], true);
 						$parts[$k] = "[{$parts[$k]}]";
@@ -132,7 +128,6 @@ class mb {
 			}
 		}
 
-		constants::$str_lock = $lock;
 		return $parts;
 	}
 
@@ -160,10 +155,11 @@ class mb {
 	 * @param int $pad_length Pad length.
 	 * @param string $pad_string Pad string.
 	 * @param int $pad_type Pad type.
+	 * @param bool $constringent Light cast.
 	 * @return string Padded string.
 	 */
-	public static function str_pad($str='', $pad_length, $pad_string=' ', $pad_type=null) {
-		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
+	public static function str_pad($str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT, bool $constringent=false) {
+		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type, $constringent);
 		return $str;
 	}
 
@@ -172,10 +168,11 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param int $split_length Split length.
+	 * @param bool $constringent Light cast.
 	 * @return array|bool Split string or false.
 	 */
-	public static function str_split($str, $split_length=1) {
-		ref\mb::str_split($str, $split_length);
+	public static function str_split($str, int $split_length=1, bool $constringent=false) {
+		ref\mb::str_split($str, $split_length, $constringent);
 		return $str;
 	}
 
@@ -183,10 +180,11 @@ class mb {
 	 * Wrapper For strlen()
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return int String length.
 	 */
-	public static function strlen($str) {
-		ref\cast::to_string($str, true);
+	public static function strlen($str, bool $constringent=false) {
+		ref\cast::constringent($str, $constringent);
 
 		if (function_exists('mb_strlen')) {
 			return (int) mb_strlen($str, 'UTF-8');
@@ -204,10 +202,7 @@ class mb {
 	 * @param int $offset Offset.
 	 * @return int|bool First occurrence or false.
 	 */
-	public static function strpos($haystack, $needle, $offset=0) {
-		ref\cast::to_string($haystack, true);
-		ref\cast::to_string($needle, true);
-
+	public static function strpos(string $haystack, string $needle, int $offset=0) {
 		if (function_exists('mb_strpos')) {
 			return mb_strpos($haystack, $needle, $offset, 'UTF-8');
 		}
@@ -220,10 +215,11 @@ class mb {
 	 * Wrapper For strrev()
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return string Reversed string.
 	 */
-	public static function strrev($str) {
-		ref\mb::strrev($str);
+	public static function strrev($str, bool $constringent=false) {
+		ref\mb::strrev($str, $constringent);
 		return $str;
 	}
 
@@ -235,10 +231,7 @@ class mb {
 	 * @param int $offset Offset.
 	 * @return int|bool Last occurrence or false.
 	 */
-	public static function strrpos($haystack, $needle, $offset=0) {
-		ref\cast::to_string($haystack, true);
-		ref\cast::to_string($needle, true);
-
+	public static function strrpos(string $haystack, string $needle, int $offset=0) {
 		if (function_exists('mb_strrpos')) {
 			return mb_strrpos($haystack, $needle, $offset, 'UTF-8');
 		}
@@ -255,10 +248,11 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function strtolower($str='', $strict=false) {
-		ref\mb::strtolower($str, $strict);
+	public static function strtolower($str='', bool $strict=false, bool $constringent=false) {
+		ref\mb::strtolower($str, $strict, $constringent);
 		return $str;
 	}
 
@@ -270,10 +264,11 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function strtoupper($str='', $strict=false) {
-		ref\mb::strtoupper($str, $strict);
+	public static function strtoupper($str='', bool $strict=false, bool $constringent=false) {
+		ref\mb::strtoupper($str, $strict, $constringent);
 		return $str;
 	}
 
@@ -283,10 +278,11 @@ class mb {
 	 * @param string $str String.
 	 * @param int $start Start.
 	 * @param int $length Length.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function substr($str, $start=0, $length=null) {
-		ref\cast::to_string($str, true);
+	public static function substr($str, $start=0, $length=null, bool $constringent=false) {
+		ref\cast::constringent($str, $constringent);
 
 		if (function_exists('mb_substr')) {
 			return mb_substr($str, $start, $length, 'UTF-8');
@@ -303,10 +299,7 @@ class mb {
 	 * @param string $needle Needle.
 	 * @return int Count.
 	 */
-	public static function substr_count($haystack, $needle) {
-		ref\cast::to_string($haystack, true);
-		ref\cast::to_string($needle, true);
-
+	public static function substr_count(string $haystack, string $needle) {
 		if (function_exists('mb_substr_count')) {
 			return mb_substr_count($haystack, $needle, 'UTF-8');
 		}
@@ -321,10 +314,11 @@ class mb {
 	 * Trim all whitespacey bits from both ends.
 	 *
 	 * @param string $str String.
+	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function trim($str='') {
-		ref\mb::trim($str);
+	public static function trim($str='', bool $constringent=false) {
+		ref\mb::trim($str, $constringent);
 		return $str;
 	}
 
@@ -336,10 +330,11 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function ucfirst($str='', $strict=false) {
-		ref\mb::ucfirst($str, $strict);
+	public static function ucfirst($str='', bool $strict=false, bool $constringent=false) {
+		ref\mb::ucfirst($str, $strict, $constringent);
 		return $str;
 	}
 
@@ -351,10 +346,11 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function ucwords($str='', $strict=false) {
-		ref\mb::ucwords($str, $strict);
+	public static function ucwords($str='', bool $strict=false, bool $constringent=false) {
+		ref\mb::ucwords($str, $strict, $constringent);
 		return $str;
 	}
 
@@ -369,10 +365,11 @@ class mb {
 	 * @param int $width Width.
 	 * @param string $break Break.
 	 * @param bool $cut Cut.
+	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function wordwrap($str, $width=75, $break="\n", $cut=false) {
-		ref\mb::wordwrap($str, $width, $break, $cut);
+	public static function wordwrap($str, int $width=75, $break="\n", bool $cut=false, bool $constringent=false) {
+		ref\mb::wordwrap($str, $width, $break, $cut, $constringent);
 		return $str;
 	}
 }
