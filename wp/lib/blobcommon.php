@@ -62,7 +62,7 @@ class blobcommon {
 		// This soft fail exists for exactly one release. The purpose is
 		// to notify site operators that they will no longer receive
 		// updates because their PHP environment is too old.
-		if (version_compare(PHP_VERSION, '7.1.0') < 0) {
+		if (version_compare(PHP_VERSION, '7.2.0') < 0) {
 			add_action('admin_notices', function() {
 				global $pagenow;
 				// But this should only go on the dashboard and plugin
@@ -77,7 +77,7 @@ class blobcommon {
 						<?php echo sprintf(
 							__('The version of PHP running on this server has reached its %s. To ensure WordPress continues to operate as expected, please update to PHP %s or newer as soon as possible.', 'blob-common'),
 							'<a href="http://php.net/supported-versions.php" target="_blank" rel="noopener">' . __('End of Life', 'blob-common') . '</a>',
-							'<code>7.1</code>'
+							'<code>7.2</code>'
 						);
 						?>
 					</p>
@@ -96,7 +96,7 @@ class blobcommon {
 		}
 
 		// Load the library.
-		require(BLOBCOMMON_PHAR_PATH);
+		require_once(BLOBCOMMON_PHAR_PATH);
 
 		static::init_plugin();
 	}
@@ -186,7 +186,7 @@ class blobcommon {
 	protected static function get_release_info(string $key, $template) {
 		// PHP 5.6.0 compatibility has been dropped, so nobody can
 		// update until they update PHP.
-		if (version_compare(PHP_VERSION, '7.1.0') < 0) {
+		if (version_compare(PHP_VERSION, '7.2.0') < 0) {
 			return false;
 		}
 

@@ -3,11 +3,11 @@
  * Functions to assist common theme operations.
  *
  * @package blobfolio/common
- * @version 7.3.5
+ * @version 8.0.0
  *
  * @wordpress-plugin
  * Plugin Name: Tutan Common
- * Version: 7.3.5
+ * Version: 8.0.0
  * Plugin URI: https://github.com/Blobfolio/blob-common
  * Description: Functions to assist common theme operations.
  * Author: Blobfolio, LLC
@@ -67,7 +67,7 @@ function blobcommon_compatibility() {
 	// Really we require 7.0, but for this one release, we'll let the
 	// plugin load with shitty PHP, we just won't allow updates.
 	if (version_compare(PHP_VERSION, '5.6.0') < 0) {
-		$errors[] = __('PHP 7.1+ is required.', 'blob-common');
+		$errors[] = __('PHP 7.2+ is required.', 'blob-common');
 	}
 
 	if (function_exists('is_multisite') && is_multisite()) {
