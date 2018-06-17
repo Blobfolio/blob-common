@@ -67,6 +67,34 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * ::getimagesize()
+	 *
+	 * @dataProvider data_getimagesize
+	 *
+	 * @param string $file File.
+	 * @param mixed $expected Expected.
+	 * @return void Nothing.
+	 */
+	function test_getimagesize(string $file, $expected) {
+		$result = image::getimagesize($file);
+
+		// Make sure the return type matches.
+		$this->assertSame(gettype($expected), gettype($result));
+
+		// If we were expecting an array, check the keys we passed.
+		if (is_array($expected)) {
+			foreach ($expected as $k=>$v) {
+				$this->assertTrue(isset($result[$k]));
+				$this->assertSame($v, $result[$k]);
+			}
+		}
+		// Otherwise they should match.
+		else {
+			$this->assertSame($expected, $result);
+		}
+	}
+
+	/**
 	 * ::has_webp()
 	 *
 	 * @return void Nothing.
@@ -114,6 +142,75 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	// ----------------------------------------------------------------- end tests
+
+
+
+	// -----------------------------------------------------------------
+	// Data
+	// -----------------------------------------------------------------
+
+	/**
+	 * Data for ::getimagesize()
+	 *
+	 * @return array Data.
+	 */
+	function data_getimagesize() {
+		return array(
+			array(
+				static::ASSETS . 'space.jpg',
+				array(
+					0=>3000,
+					1=>750,
+					2=>2,
+					3=>'width="3000" height="750"',
+					'mime'=>'image/jpeg',
+				),
+			),
+			array(
+				// This is actually a JPEG.
+				static::ASSETS . 'space.png',
+				array(
+					0=>3000,
+					1=>750,
+					2=>2,
+					3=>'width="3000" height="750"',
+					'mime'=>'image/jpeg',
+				),
+			),
+			array(
+				static::ASSETS . 'space-real.png',
+				array(
+					0=>3000,
+					1=>750,
+					2=>3,
+					3=>'width="3000" height="750"',
+					'mime'=>'image/png',
+				),
+			),
+			array(
+				static::ASSETS . 'space-real.webp',
+				array(
+					0=>3000,
+					1=>750,
+					2=>18,
+					3=>'width="3000" height="750"',
+					'mime'=>'image/webp',
+				),
+			),
+			array(
+				static::ASSETS . 'monogram-inkscape.svg',
+				array(
+					0=>330.056,
+					1=>495.558,
+					2=>-1,
+					3=>'width="330" height="495"',
+					'mime'=>'image/svg+xml',
+				),
+			),
+		);
+	}
+
+	// ----------------------------------------------------------------- end data
 }
 
 
