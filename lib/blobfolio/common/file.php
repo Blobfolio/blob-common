@@ -316,7 +316,7 @@ class file {
 	public static function line_count(string $file, bool $trim=true) {
 		// We definitely need a file.
 		if (!$file || !@is_file($file)) {
-			return false;
+			return 0;
 		}
 
 		$lines = 0;
