@@ -486,7 +486,7 @@ class format {
 
 		// Maybe it just works?
 		$tmp = json_decode($str, true);
-		if (!is_null($tmp)) {
+		if (null !== $tmp) {
 			$str = $tmp;
 			return true;
 		}
@@ -687,7 +687,7 @@ class format {
 		$value = json_encode($value, $options, $depth);
 
 		// Try again with UTF-8 sanitizing if this failed.
-		if (is_null($value)) {
+		if (null === $value) {
 			sanitize::utf8($original);
 			$value = json_encode($original, $options, $depth);
 		}
@@ -922,7 +922,11 @@ class format {
 		}
 
 		// Sanitize min/max.
-		if (!is_null($args['min']) && !is_null($args['max']) && $args['min'] > $args['max']) {
+		if (
+			(null !== $args['min']) &&
+			(null !== $args['max']) &&
+			$args['min'] > $args['max']
+		) {
 			data::switcheroo($args['min'], $args['max']);
 		}
 
@@ -960,8 +964,8 @@ class format {
 			// Add whatever we've got to the running total.
 			foreach ($list[$k] as $v2) {
 				if (
-					(is_null($args['min']) || $v2 >= $args['min']) &&
-					(is_null($args['max']) || $v2 <= $args['max'])
+					((null === $args['min']) || $v2 >= $args['min']) &&
+					((null === $args['max']) || $v2 <= $args['max'])
 				) {
 					$out[] = $v2;
 				}

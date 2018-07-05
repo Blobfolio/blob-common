@@ -683,7 +683,7 @@ class format {
 						}
 					}
 
-					$out[] = '<Cell' . (!is_null($format) ? ' ss:StyleID="s' . $format . '"' : '') . '><Data ss:Type="' . $type . '">' . $cell . '</Data></Cell>';
+					$out[] = '<Cell' . ((null !== $format) ? ' ss:StyleID="s' . $format . '"' : '') . '><Data ss:Type="' . $type . '">' . $cell . '</Data></Cell>';
 				}
 				$out[] = '</Row>';
 			}

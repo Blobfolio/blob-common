@@ -1365,8 +1365,8 @@ class sanitize {
 
 		// Make sure min/max are in the right order.
 		if (
-			!is_null($min) &&
-			!is_null($max) &&
+			(null !== $min) &&
+			(null !== $max) &&
 			$min > $max
 		) {
 			data::switcheroo($min, $max);
@@ -1382,10 +1382,10 @@ class sanitize {
 			$original = $value;
 
 			try {
-				if (!is_null($min) && $value < $min) {
+				if ((null !== $min) && $value < $min) {
 					$value = $min;
 				}
-				if (!is_null($max) && $value > $max) {
+				if ((null !== $max) && $value > $max) {
 					$value = $max;
 				}
 			} catch (\Throwable $e) {

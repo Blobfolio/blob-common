@@ -44,7 +44,7 @@ class bc {
 		}
 
 		// Calculate bits.
-		if (is_null($bits)) {
+		if (null === $bits) {
 			$bits = max(static::bit_size($left), static::bit_size($right));
 		}
 		ref\cast::int($bits, true);

@@ -446,7 +446,7 @@ class data {
 			$max = $range['max'];
 		}
 		// Max is required otherwise.
-		elseif (is_null($max)) {
+		elseif (null === $max) {
 			return false;
 		}
 
@@ -483,7 +483,7 @@ class data {
 		}
 
 		$json = json_decode($str);
-		return !is_null($json);
+		return (null !== $json);
 	}
 
 	/**
@@ -519,7 +519,7 @@ class data {
 	public static function json_decode_array($json, $defaults=null, bool $strict=true, bool $recursive=true) {
 		ref\format::json_decode($json);
 
-		if (is_null($json) || (is_string($json) && !$json)) {
+		if ((null === $json) || (is_string($json) && !$json)) {
 			$json = array();
 		}
 		else {
@@ -545,23 +545,23 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function length_in_range(string $str, $min=null, $max=null) {
-		if (!is_null($min) && !is_int($min)) {
+		if ((null !== $min) && !is_int($min)) {
 			ref\cast::int($min, true);
 		}
-		if (!is_null($max) && !is_int($max)) {
+		if ((null !== $max) && !is_int($max)) {
 			ref\cast::int($max, true);
 		}
 
 		$length = mb::strlen($str, true);
-		if (!is_null($min) && !is_null($max) && $min > $max) {
+		if ((null !== $min) && (null !== $max) && $min > $max) {
 			static::switcheroo($min, $max);
 		}
 
-		if (!is_null($min) && $min > $length) {
+		if ((null !== $min) && $min > $length) {
 			return false;
 		}
 
-		if (!is_null($max) && $max < $length) {
+		if ((null !== $max) && $max < $length) {
 			return false;
 		}
 
@@ -602,7 +602,7 @@ class data {
 				// Otherwise just replace.
 				else {
 					$defaults[$k] = $args[$k];
-					if ($strict && !is_null($v)) {
+					if ($strict && (null !== $v)) {
 						ref\cast::to_type($defaults[$k], gettype($v), true);
 					}
 				}

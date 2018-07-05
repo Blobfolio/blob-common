@@ -234,14 +234,14 @@ class image {
 
 							// All there or none there? Can't help it.
 							if (
-								(!is_null($width) && !is_null($height) && !is_null($vb)) ||
-								(is_null($width) && is_null($height) && is_null($vb))
+								((null !== $width) && (null !== $height) && (null !== $vb)) ||
+								((null === $width) && (null === $height) && (null === $vb))
 							) {
 								continue;
 							}
 
 							// Width and height from viewbox.
-							if (!is_null($vb)) {
+							if (null !== $vb) {
 								$d = explode(' ', $vb);
 								$t->setAttribute('width', $d[2]);
 								$t->setAttribute('height', $d[3]);
@@ -586,7 +586,7 @@ class image {
 	 */
 	public static function has_webp($cwebp=null, $gif2webp=null) {
 		// Gotta set it first?
-		if (is_null(static::$_webp_gd)) {
+		if (null === static::$_webp_gd) {
 			$image_types = imagetypes();
 			static::$_webp_gd = (
 				(0 !== ($image_types & IMG_WEBP)) &&
@@ -599,7 +599,7 @@ class image {
 		// we'll just check this once, but if a previous check failed
 		// and binary paths are supplied, we'll check again.
 		if (
-			is_null(static::$_webp_binary) ||
+			(null === static::$_webp_binary) ||
 			(
 				(false === static::$_webp_binary) &&
 				$cwebp &&
@@ -612,13 +612,13 @@ class image {
 			// missing or disabled, we're done.
 			if (function_exists('proc_open') && is_callable('proc_open')) {
 				// Resolve the binary paths.
-				if (is_null($cwebp)) {
+				if (null === $cwebp) {
 					$cwebp = constants::CWEBP;
 				}
 				else {
 					ref\cast::string($cwebp, true);
 				}
-				if (is_null($gif2webp)) {
+				if (null === $gif2webp) {
 					$gif2webp = constants::GIF2WEBP;
 				}
 				else {
@@ -764,7 +764,7 @@ class image {
 		}
 
 		// Build a destination if we need to.
-		if (!is_null($to)) {
+		if (null !== $to) {
 			ref\cast::string($to, true);
 			// If this is just a file name, throw it in from's dir.
 			if (false === strpos($to, '/')) {
