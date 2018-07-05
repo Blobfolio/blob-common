@@ -29,7 +29,7 @@ class format {
 	 * level.
 	 *
 	 * @param array $arr Array.
-	 * @return array Values.
+	 * @return void Nothing.
 	 */
 	public static function array_flatten(&$arr) {
 		$out = array();
@@ -49,7 +49,6 @@ class format {
 		}
 
 		$arr = $out;
-		return true;
 	}
 
 	/**
@@ -61,7 +60,7 @@ class format {
 	 * ordering.
 	 *
 	 * @param array $arr Array.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function array_to_indexed(&$arr) {
 		cast::array($arr);
@@ -75,8 +74,6 @@ class format {
 			}
 			$arr = $out;
 		}
-
-		return true;
 	}
 
 	/**
@@ -84,7 +81,7 @@ class format {
 	 *
 	 * @param float $num Number.
 	 * @param int $precision Precision.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function ceil(&$num, int $precision=0) {
 		if (is_array($num)) {
@@ -99,7 +96,6 @@ class format {
 			$precision = (10 ** $precision);
 			$num = ceil($num * $precision) / $precision;
 		}
-		return true;
 	}
 
 	/**
@@ -108,7 +104,7 @@ class format {
 	 * Decode escape and unicode chars.
 	 *
 	 * @param string $str String.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function decode_js_entities(&$str='') {
 		// Lock UTF-8 Casting.
@@ -121,7 +117,6 @@ class format {
 		static::decode_escape_entities($str);
 
 		constants::$str_lock = $lock;
-		return true;
 	}
 
 	/**
@@ -130,7 +125,7 @@ class format {
 	 * Decode \b, \f, \n, \r, \t.
 	 *
 	 * @param string $str String.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function decode_escape_entities(&$str='') {
 		// Lock UTF-8 Casting.
@@ -153,8 +148,6 @@ class format {
 		);
 
 		constants::$str_lock = $lock;
-
-		return true;
 	}
 
 	/**
@@ -163,7 +156,7 @@ class format {
 	 * Decode \u1234 into chars.
 	 *
 	 * @param string $str String.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function decode_unicode_entities(&$str='') {
 		// Lock UTF-8 Casting.
@@ -187,7 +180,6 @@ class format {
 		}
 
 		constants::$str_lock = $lock;
-		return true;
 	}
 
 	/**
@@ -197,7 +189,7 @@ class format {
 	 * recursively until every last one is captured.
 	 *
 	 * @param string $str String.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function decode_entities(&$str='') {
 		// Force UTF-8 Casting.
@@ -218,7 +210,6 @@ class format {
 		}
 
 		constants::$str_lock = $lock;
-		return true;
 	}
 
 	/**
@@ -246,7 +237,7 @@ class format {
 	 *
 	 * @param float $num Number.
 	 * @param int $precision Precision.
-	 * @return float Number.
+	 * @return void Nothing.
 	 */
 	public static function floor(&$num, int $precision=0) {
 		if (is_array($num)) {
@@ -261,8 +252,6 @@ class format {
 			$precision = (10 ** $precision);
 			$num = floor($num * $precision) / $precision;
 		}
-
-		return true;
 	}
 
 	/**
@@ -274,7 +263,7 @@ class format {
 	 *
 	 * @param float $num Number.
 	 * @param float $precision Precision.
-	 * @return string Fraction.
+	 * @return void Nothing.
 	 */
 	public static function fraction(&$num, float $precision=0.0001) {
 		if (is_array($num)) {
@@ -287,12 +276,14 @@ class format {
 
 			// We need a tolerable tolerance.
 			if ($precision <= 0 || $precision >= 1) {
-				return '';
+				$num = '';
+				return;
 			}
 
 			// We don't have to work very hard to calculate zero.
 			if (0.0 === $num) {
-				return '0';
+				$num = '0';
+				return;
 			}
 
 			// We'll have to add the negative sign on at the end.
@@ -329,8 +320,6 @@ class format {
 				$num = "-{$num}";
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -428,7 +417,7 @@ class format {
 	 *
 	 * @param string $str String.
 	 * @param bool $pretty Pretty.
-	 * @return bool True.
+	 * @return bool True/false.
 	 */
 	public static function json(&$str='', $pretty=true) {
 		if (!is_string($str)) {
@@ -457,7 +446,7 @@ class format {
 	 * associative arrays.
 	 *
 	 * @param string $str String.
-	 * @return bool True.
+	 * @return bool True/false.
 	 */
 	public static function json_decode(&$str='') {
 		cast::string($str, true);
@@ -674,13 +663,13 @@ class format {
 	 * @param mixed $value Value.
 	 * @param int $options Options.
 	 * @param int $depth Depth.
-	 * @return bool True/false.
+	 * @return void Nothing.
 	 */
 	public static function json_encode(&$value, $options=0, $depth=512) {
 		// Simple values don't require a lot of thought.
 		if (!$value || is_numeric($value) || is_bool($value)) {
 			$value = json_encode($value, $options, $depth);
-			return true;
+			return;
 		}
 
 		$original = $value;
@@ -691,8 +680,6 @@ class format {
 			sanitize::utf8($original);
 			$value = json_encode($original, $options, $depth);
 		}
-
-		return true;
 	}
 
 	/**
@@ -709,7 +696,7 @@ class format {
 	 * @arg string $rel Rel.
 	 * @arg string $target Target.
 	 *
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function links(&$str, $args=null, int $pass=1, bool $constringent=false) {
 		cast::constringent($str, $constringent);
@@ -743,113 +730,116 @@ class format {
 				}
 
 				// URL bits.
-				if (1 === $pass) {
-					// We can afford to be sloppy here, thanks to FDQN validation later.
-					$str[$k] = preg_replace_callback(
-						'/((ht|f)tps?:\/\/[^\s\'"\[\]\(\){}]+|[^\s\'"\[\]\(\){}]*xn--[^\s\'"\[\]\(\){}]+|[@]?[\w\.]+\.[\w\.]{2,}[^\s]*)/ui',
-						function($matches) use($atts) {
-							$raw = $matches[1];
+				switch ($pass) {
+					// URL bits.
+					case 1:
+						// We can afford to be sloppy here, thanks to FDQN validation later.
+						$str[$k] = preg_replace_callback(
+							'/((ht|f)tps?:\/\/[^\s\'"\[\]\(\){}]+|[^\s\'"\[\]\(\){}]*xn--[^\s\'"\[\]\(\){}]+|[@]?[\w\.]+\.[\w\.]{2,}[^\s]*)/ui',
+							function($matches) use($atts) {
+								$raw = $matches[1];
 
-							// Don't do email bits.
-							if (0 === strpos($raw, '@')) {
-								return $matches[1];
-							}
+								// Don't do email bits.
+								if (0 === strpos($raw, '@')) {
+									return $matches[1];
+								}
 
-							// We don't want trailing punctuation added to the link.
-							if (preg_match('/([^\w\/]+)$/ui', $raw, $suffix)) {
-								$suffix = $suffix[1];
-								$raw = preg_replace('/([^\w\/]+)$/ui', '', $raw);
-							}
-							else {
-								$suffix = '';
-							}
+								// We don't want trailing punctuation added to the link.
+								if (preg_match('/([^\w\/]+)$/ui', $raw, $suffix)) {
+									$suffix = $suffix[1];
+									$raw = preg_replace('/([^\w\/]+)$/ui', '', $raw);
+								}
+								else {
+									$suffix = '';
+								}
 
-							$link = v_mb::parse_url($raw);
-							if (!is_array($link) || !isset($link['host'])) {
-								return $matches[1];
-							}
+								$link = v_mb::parse_url($raw);
+								if (!is_array($link) || !isset($link['host'])) {
+									return $matches[1];
+								}
 
-							// Only linkify FQDNs.
-							$domain = new domain($link['host']);
-							if (!$domain->is_valid() || !$domain->is_fqdn()) {
-								return $matches[1];
-							}
+								// Only linkify FQDNs.
+								$domain = new domain($link['host']);
+								if (!$domain->is_valid() || !$domain->is_fqdn()) {
+									return $matches[1];
+								}
 
-							// Supply a scheme, if missing.
-							if (!isset($link['scheme'])) {
-								$link['scheme'] = 'http';
-							}
+								// Supply a scheme, if missing.
+								if (!isset($link['scheme'])) {
+									$link['scheme'] = 'http';
+								}
 
-							$link = v_file::unparse_url($link);
-							if (filter_var($link, FILTER_SANITIZE_URL) !== $link) {
-								return $matches[1];
-							}
+								$link = v_file::unparse_url($link);
+								if (filter_var($link, FILTER_SANITIZE_URL) !== $link) {
+									return $matches[1];
+								}
 
-							// Finally, make a link!
-							sanitize::html($link, true);
-							return '<a href="' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
-						},
-						$str[$k]
-					);
-				}
-				// Email address bits.
-				elseif (2 === $pass) {
-					// Again, we can be pretty careless here thanks to later checks.
-					$str[$k] = preg_replace_callback(
-						'/([\w\.\!#\$%&\*\+\=\?_~]+@[^\s\'"\[\]\(\){}@]{2,})/ui',
-						function($matches) use($atts) {
-							$raw = $matches[1];
+								// Finally, make a link!
+								sanitize::html($link, true);
+								return '<a href="' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
+							},
+							$str[$k]
+						);
+						break;
+					// Email address bits.
+					case 2:
+						// Again, we can be pretty careless here thanks to later checks.
+						$str[$k] = preg_replace_callback(
+							'/([\w\.\!#\$%&\*\+\=\?_~]+@[^\s\'"\[\]\(\){}@]{2,})/ui',
+							function($matches) use($atts) {
+								$raw = $matches[1];
 
-							// We don't want trailing punctuation added to the link.
-							if (preg_match('/([^\w]+)$/ui', $raw, $suffix)) {
-								$suffix = $suffix[1];
-								$raw = preg_replace('/([^\w]+)$/ui', '', $raw);
-							}
-							else {
-								$suffix = '';
-							}
+								// We don't want trailing punctuation added to the link.
+								if (preg_match('/([^\w]+)$/ui', $raw, $suffix)) {
+									$suffix = $suffix[1];
+									$raw = preg_replace('/([^\w]+)$/ui', '', $raw);
+								}
+								else {
+									$suffix = '';
+								}
 
-							$link = v_sanitize::email($raw, true);
-							if (!$link) {
-								return $matches[1];
-							}
+								$link = v_sanitize::email($raw, true);
+								if (!$link) {
+									return $matches[1];
+								}
 
-							// Finally, make a link!
-							sanitize::html($link, true);
+								// Finally, make a link!
+								sanitize::html($link, true);
 
-							return '<a href="mailto:' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
-						},
-						$str[$k]
-					);
-				}
-				// Phone numbers.
-				elseif (3 === $pass) {
-					// Again, we can be pretty careless here thanks to later checks.
-					$str[$k] = preg_replace_callback(
-						'/(\s)?(\+\d[\d\-\s]{5,}+|\(\d{3}\)\s[\d]{3}[\-\.\s]\d{4}|\d{3}[\-\.\s]\d{3}[\-\.\s]\d{4}|\+\d{7,})/ui',
-						function($matches) use($atts) {
-							$prefix = $matches[1];
-							$raw = $matches[2];
+								return '<a href="mailto:' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
+							},
+							$str[$k]
+						);
+						break;
+					// Phone numbers.
+					case 3:
+						// Again, we can be pretty careless here thanks to later checks.
+						$str[$k] = preg_replace_callback(
+							'/(\s)?(\+\d[\d\-\s]{5,}+|\(\d{3}\)\s[\d]{3}[\-\.\s]\d{4}|\d{3}[\-\.\s]\d{3}[\-\.\s]\d{4}|\+\d{7,})/ui',
+							function($matches) use($atts) {
+								$prefix = $matches[1];
+								$raw = $matches[2];
 
-							// We don't want trailing punctuation added to the link.
-							if (preg_match('/([^\d]+)$/ui', $raw, $suffix)) {
-								$suffix = $suffix[1];
-								$raw = preg_replace('/([^\d]+)$/ui', '', $raw);
-							}
-							else {
-								$suffix = '';
-							}
+								// We don't want trailing punctuation added to the link.
+								if (preg_match('/([^\d]+)$/ui', $raw, $suffix)) {
+									$suffix = $suffix[1];
+									$raw = preg_replace('/([^\d]+)$/ui', '', $raw);
+								}
+								else {
+									$suffix = '';
+								}
 
-							$link = v_format::phone($raw);
-							$link = preg_replace('/[^\d]/', '', $link);
-							if (!$link) {
-								return $matches[1] . $matches[2];
-							}
+								$link = v_format::phone($raw);
+								$link = preg_replace('/[^\d]/', '', $link);
+								if (!$link) {
+									return $matches[1] . $matches[2];
+								}
 
-							return $prefix . '<a href="tel:+' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
-						},
-						$str[$k]
-					);
+								return $prefix . '<a href="tel:+' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
+							},
+							$str[$k]
+						);
+						break;
 				}
 			}
 			// Odd keys indicate a tag, opening or closing.
@@ -878,8 +868,6 @@ class format {
 		elseif (2 === $pass) {
 			static::links($str, $args, 3, true);
 		}
-
-		return true;
 	}
 
 	/**
@@ -899,7 +887,7 @@ class format {
 	 * @args mixed $min Minimum value.
 	 * @args mixed $max Maximum value.
 	 *
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function list_to_array(&$list, $args=null, bool $constringent=false) {
 		$out = array();
@@ -983,7 +971,6 @@ class format {
 		}
 
 		$list = $out;
-		return true;
 	}
 
 	/**
@@ -993,7 +980,7 @@ class format {
 	 * @param bool $cents Return sub-$1 values with ¢.
 	 * @param string $separator Separator.
 	 * @param bool $no00 Remove trailing cents if none.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function money(&$value=0, bool $cents=false, string $separator='', bool $no00=false) {
 		if (is_array($value)) {
@@ -1020,8 +1007,6 @@ class format {
 				$value = ($negative ? '-' : '') . (100 * $value) . '¢';
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -1068,7 +1053,6 @@ class format {
 		}
 
 		sanitize::ip($ip, true);
-
 		return true;
 	}
 
@@ -1132,7 +1116,7 @@ class format {
 	 * @param float $num Number.
 	 * @param int $precision Precision.
 	 * @param int $mode Mode.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function round(&$num, int $precision=0, int $mode=PHP_ROUND_HALF_UP) {
 		if (is_array($num)) {
@@ -1146,8 +1130,6 @@ class format {
 
 			$num = round($num, $precision, $mode);
 		}
-
-		return true;
 	}
 
 	/**
@@ -1156,7 +1138,7 @@ class format {
 	 * @param string $date Date.
 	 * @param string $from Original Timezone.
 	 * @param string $to New Timezone.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function to_timezone(string &$date, $from='UTC', $to='UTC') {
 		sanitize::datetime($date);
@@ -1168,7 +1150,7 @@ class format {
 		}
 
 		if (('0000-00-00 00:00:00' === $date) || ($from === $to)) {
-			return true;
+			return;
 		}
 
 		$original = $date;
@@ -1179,7 +1161,5 @@ class format {
 		} catch (\Throwable $e) {
 			$date = $original;
 		}
-
-		return true;
 	}
 }

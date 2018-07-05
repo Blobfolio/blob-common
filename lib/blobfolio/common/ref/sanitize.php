@@ -27,7 +27,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function accents(&$str, bool $constringent=false) {
 		if (is_array($str)) {
@@ -42,8 +42,6 @@ class sanitize {
 				$str = strtr($str, constants::ACCENT_CHARS);
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -57,7 +55,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function attribute_value(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -73,15 +71,13 @@ class sanitize {
 			// And trim the edges while we're here.
 			mb::trim($str, true);
 		}
-
-		return true;
 	}
 
 	/**
 	 * CA Postal Code
 	 *
 	 * @param string $str Postal Code.
-	 * @return string Postal Code.
+	 * @return void Nothing.
 	 */
 	public static function ca_postal_code(&$str='') {
 		if (is_array($str)) {
@@ -93,7 +89,7 @@ class sanitize {
 			// There's no point in checking if this is not a string.
 			if (!is_string($str)) {
 				$str = '';
-				return false;
+				return;
 			}
 
 			$str = strtoupper($str);
@@ -111,15 +107,13 @@ class sanitize {
 				$str = substr($str, 0, 3) . ' ' . substr($str, -3);
 			}
 		}
-
-		return true;
 	}
 
 	/**
 	 * Credit Card
 	 *
 	 * @param string $ccnum Card number.
-	 * @return string|bool Card number or false.
+	 * @return bool True/false.
 	 */
 	public static function cc(&$ccnum='') {
 		if (!is_string($ccnum)) {
@@ -216,7 +210,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function control_characters(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -229,8 +223,6 @@ class sanitize {
 			$str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
 			$str = preg_replace('/\\\\+0+/', '', $str);
 		}
-
-		return true;
 	}
 
 	/**
@@ -238,7 +230,7 @@ class sanitize {
 	 *
 	 * @param string $str Country.
 	 * @param bool $constringent Light cast.
-	 * @return string ISO country code.
+	 * @return void Nothing.
 	 */
 	public static function country(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -286,8 +278,6 @@ class sanitize {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -295,7 +285,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function csv(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -317,15 +307,13 @@ class sanitize {
 			// Double quotes.
 			$str = str_replace('"', '""', $str);
 		}
-
-		return true;
 	}
 
 	/**
 	 * Datetime
 	 *
 	 * @param string|int $str Date or timestamp.
-	 * @return string Date.
+	 * @return void Nothing.
 	 */
 	public static function datetime(&$str='') {
 		if (is_array($str)) {
@@ -341,14 +329,14 @@ class sanitize {
 				}
 				else {
 					$str = '0000-00-00 00:00:00';
-					return true;
+					return;
 				}
 			}
 
 			// Could be a timestamp.
 			if (preg_match('/^\d{9,}$/', $str)) {
 				$str = date('Y-m-d H:i:s', intval($str));
-				return true;
+				return;
 			}
 
 			$str = trim($str);
@@ -358,21 +346,19 @@ class sanitize {
 				(false === ($str = strtotime($str)))
 			) {
 				$str = '0000-00-00 00:00:00';
-				return true;
+				return;
 			}
 
 			// Make it!
 			$str = date('Y-m-d H:i:s', $str);
 		}
-
-		return true;
 	}
 
 	/**
 	 * Date
 	 *
 	 * @param string|int $str Date or timestamp.
-	 * @return string Date.
+	 * @return void Nothing.
 	 */
 	public static function date(&$str='') {
 		if (is_array($str)) {
@@ -384,8 +370,6 @@ class sanitize {
 			static::datetime($str);
 			$str = substr($str, 0, 10);
 		}
-
-		return true;
 	}
 
 	/**
@@ -397,7 +381,7 @@ class sanitize {
 	 *
 	 * @param string $str Domain.
 	 * @param bool $unicode Unicode.
-	 * @return string Domain.
+	 * @return bool True/false.
 	 */
 	public static function domain(&$str='', bool $unicode=false) {
 		if (is_array($str)) {
@@ -426,7 +410,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $formatted Formatted.
-	 * @return string String.
+	 * @return bool True/false.
 	 */
 	public static function ean(&$str, bool $formatted=false) {
 		if (is_array($str)) {
@@ -483,7 +467,7 @@ class sanitize {
 	 *
 	 * @param string $str Email.
 	 * @param bool $constringent Light cast.
-	 * @return string Email.
+	 * @return void Nothing.
 	 */
 	public static function email(&$str=null, bool $constringent=false) {
 		if (is_array($str)) {
@@ -514,14 +498,14 @@ class sanitize {
 
 				if (!$parts[0]) {
 					$str = '';
-					return true;
+					return;
 				}
 
 				// Sanitize host.
 				$domain = new domain($parts[1]);
 				if (!$domain->is_valid() || !$domain->is_fqdn() || $domain->is_ip()) {
 					$str = '';
-					return true;
+					return;
 				}
 				$parts[1] = (string) $domain;
 
@@ -529,11 +513,9 @@ class sanitize {
 			}
 			else {
 				$str = '';
-				return true;
+				return;
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -541,7 +523,7 @@ class sanitize {
 	 *
 	 * @param string $str Extension.
 	 * @param bool $constringent Light cast.
-	 * @return string Extension.
+	 * @return void Nothing.
 	 */
 	public static function file_extension(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -556,8 +538,6 @@ class sanitize {
 			$str = preg_replace('/\s/u', '', $str);
 			$str = ltrim($str, '*.');
 		}
-
-		return true;
 	}
 
 	/**
@@ -588,7 +568,7 @@ class sanitize {
 	 *
 	 * @param string $str HTML.
 	 * @param bool $constringent Light cast.
-	 * @return string HTML.
+	 * @return void Nothing.
 	 */
 	public static function html(&$str=null, bool $constringent=false) {
 		if (is_array($str)) {
@@ -600,8 +580,6 @@ class sanitize {
 			cast::constringent($str, $constringent);
 			$str = htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		}
-
-		return true;
 	}
 
 	/**
@@ -611,7 +589,7 @@ class sanitize {
 	 * @param bool $www Keep leading www.
 	 * @param bool $unicode Unicode.
 	 * @param bool $constringent Light cast.
-	 * @return string|bool Hostname or false.
+	 * @return bool True/false.
 	 */
 	public static function hostname(&$domain, bool $www=false, bool $unicode=false, bool $constringent=false) {
 		cast::constringent($domain, true, $constringent);
@@ -623,7 +601,6 @@ class sanitize {
 		}
 
 		$domain = $host->get_host($unicode);
-
 		return true;
 	}
 
@@ -633,7 +610,7 @@ class sanitize {
 	 * @param string $str IP.
 	 * @param bool $restricted Allow private/restricted values.
 	 * @param bool $condense Condense IPv6.
-	 * @return string IP.
+	 * @return void Nothing.
 	 */
 	public static function ip(&$str='', bool $restricted=false, bool $condense=true) {
 		if (is_array($str)) {
@@ -645,7 +622,7 @@ class sanitize {
 			// Don't need to fancy cast.
 			if (!is_string($str)) {
 				$str = '';
-				return false;
+				return;
 			}
 
 			// Start by getting rid of obviously bad data.
@@ -685,8 +662,6 @@ class sanitize {
 				$str = '';
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -696,7 +671,7 @@ class sanitize {
 	 * @param array $protocols Allowed protocols.
 	 * @param array $domains Allowed domains.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function iri_value(&$str='', $protocols=null, $domains=null, bool $constringent=false) {
 		if (is_array($str)) {
@@ -736,14 +711,14 @@ class sanitize {
 				$test = explode(':', $test);
 				if (!in_array($test[0], $allowed_protocols, true)) {
 					$str = '';
-					return true;
+					return;
 				}
 			}
 
 			// Is this at least a URLish thing?
 			if (filter_var($str, FILTER_SANITIZE_URL) !== $str) {
 				$str = '';
-				return true;
+				return;
 			}
 
 			// Check the domain, if applicable.
@@ -754,8 +729,6 @@ class sanitize {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -854,7 +827,7 @@ class sanitize {
 	 * @param string $str String.
 	 * @param string $quote Quote type.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function js(&$str='', $quote="'", bool $constringent=false) {
 		if (is_array($str)) {
@@ -878,15 +851,13 @@ class sanitize {
 				$str = str_replace('"', '\"', $str);
 			}
 		}
-
-		return true;
 	}
 
 	/**
 	 * IANA MIME Type
 	 *
 	 * @param string $str MIME.
-	 * @return string MIME.
+	 * @return bool True/false.
 	 */
 	public static function mime(&$str='') {
 		if (is_array($str)) {
@@ -922,7 +893,7 @@ class sanitize {
 	 *
 	 * @param string $str Name.
 	 * @param bool $constringent Light cast.
-	 * @return string Name.
+	 * @return void Nothing.
 	 */
 	public static function name(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -939,8 +910,6 @@ class sanitize {
 			static::whitespace($str, 0, true);
 			mb::ucwords($str, false, true);
 		}
-
-		return true;
 	}
 
 	/**
@@ -952,7 +921,7 @@ class sanitize {
 	 *
 	 * @param string $str Password.
 	 * @param bool $constringent Light cast.
-	 * @return string Password.
+	 * @return void Nothing.
 	 */
 	public static function password(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -966,8 +935,6 @@ class sanitize {
 			static::printable($str, true);
 			static::whitespace($str, 0, true);
 		}
-
-		return true;
 	}
 
 	/**
@@ -977,7 +944,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function printable(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -1012,8 +979,6 @@ class sanitize {
 				$str
 			);
 		}
-
-		return true;
 	}
 
 	/**
@@ -1021,7 +986,7 @@ class sanitize {
 	 *
 	 * @param string $str Province.
 	 * @param bool $constringent Light cast.
-	 * @return string Province.
+	 * @return void Nothing.
 	 */
 	public static function province(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -1041,8 +1006,6 @@ class sanitize {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -1053,7 +1016,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function quotes(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -1067,8 +1030,6 @@ class sanitize {
 			$to = array_values(constants::QUOTE_CHARS);
 			$str = str_replace($from, $to, $str);
 		}
-
-		return true;
 	}
 
 	/**
@@ -1076,7 +1037,7 @@ class sanitize {
 	 *
 	 * @param string $str State.
 	 * @param bool $constringent Light cast.
-	 * @return string State.
+	 * @return void Nothing.
 	 */
 	public static function state(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -1096,8 +1057,6 @@ class sanitize {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -1105,7 +1064,7 @@ class sanitize {
 	 *
 	 * @param string $str State.
 	 * @param bool $constringent Light cast.
-	 * @return string State.
+	 * @return void Nothing.
 	 */
 	public static function au_state(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -1125,8 +1084,6 @@ class sanitize {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -1142,37 +1099,18 @@ class sanitize {
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
 		// First, sanitize and build out function arguments!
 		cast::string($str, true);
-		cast::array($tags);
-		cast::array($attr);
-		cast::array($protocols);
-		cast::array($domains);
 
-		$allowed_tags = array_merge(constants::SVG_WHITELIST_TAGS, $tags);
-		mb::strtolower($allowed_tags);
-		$allowed_tags = array_map('trim', $allowed_tags);
-		$allowed_tags = array_filter($allowed_tags, 'strlen');
-		$allowed_tags = array_unique($allowed_tags);
-		sort($allowed_tags);
+		$allowed_tags = constants::SVG_WHITELIST_TAGS;
+		static::_merge_svg_args($allowed_tags, $tags);
 
-		$allowed_attributes = array_merge(constants::SVG_WHITELIST_ATTR, $attr);
-		mb::strtolower($allowed_attributes);
-		$allowed_attributes = array_map('trim', $allowed_attributes);
-		$allowed_attributes = array_filter($allowed_attributes, 'strlen');
-		$allowed_attributes = array_unique($allowed_attributes);
-		sort($allowed_attributes);
+		$allowed_attributes = constants::SVG_WHITELIST_ATTR;
+		static::_merge_svg_args($allowed_attributes, $attr);
 
-		$allowed_protocols = array_merge(constants::SVG_WHITELIST_PROTOCOLS, $protocols);
-		mb::strtolower($allowed_protocols);
-		$allowed_protocols = array_map('trim', $allowed_protocols);
-		$allowed_protocols = array_filter($allowed_protocols, 'strlen');
-		$allowed_protocols = array_unique($allowed_protocols);
-		sort($allowed_protocols);
+		$allowed_protocols = constants::SVG_WHITELIST_PROTOCOLS;
+		static::_merge_svg_args($allowed_protocols, $protocols);
 
-		$allowed_domains = array_merge(constants::SVG_WHITELIST_DOMAINS, $domains);
-		static::domain($allowed_domains);
-		$allowed_domains = array_filter($allowed_domains, 'strlen');
-		$allowed_domains = array_unique($allowed_domains);
-		sort($allowed_domains);
+		$allowed_domains = constants::SVG_WHITELIST_DOMAINS;
+		static::_merge_svg_args($allowed_domains, $domains);
 
 		$iri_attributes = constants::SVG_IRI_ATTRIBUTES;
 
@@ -1323,10 +1261,50 @@ class sanitize {
 	}
 
 	/**
+	 * Process SVG Args
+	 *
+	 * This code is just a little tedious.
+	 *
+	 * @param array $default Default.
+	 * @param array $extra Extra.
+	 * @return void Nothing.
+	 */
+	protected static function _merge_svg_args(&$default, $extra=null) {
+		// We always want default to be an array.
+		if (!is_array($default)) {
+			$default = array();
+		}
+
+		// If there are no extras, we're done.
+		if (!is_array($extra) || !count($extra)) {
+			return;
+		}
+
+		// Loop.
+		foreach ($extra as $v) {
+			if (!is_string($v)) {
+				continue;
+			}
+
+			mb::strtolower($v);
+			$v = trim($v);
+
+			// There aren't likely to be too many extra values passed,
+			// otherwise we'd want to flip and test isset().
+			if ($v && !in_array($default, $v, true)) {
+				$default[] = $v;
+			}
+		}
+
+		// Sort and we're done.
+		sort($default);
+	}
+
+	/**
 	 * Timezone
 	 *
 	 * @param string $str Timezone.
-	 * @return string Timezone or UTC on failure.
+	 * @return bool True/false.
 	 */
 	public static function timezone(&$str='') {
 		if (is_array($str)) {
@@ -1359,7 +1337,7 @@ class sanitize {
 	 * @param mixed $value Value.
 	 * @param mixed $min Min.
 	 * @param mixed $max Max.
-	 * @return mixed Value.
+	 * @return void Nothing.
 	 */
 	public static function to_range(&$value, $min=null, $max=null) {
 
@@ -1392,8 +1370,6 @@ class sanitize {
 				$value = $original;
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -1401,7 +1377,7 @@ class sanitize {
 	 *
 	 * @param string $str String.
 	 * @param bool $formatted Formatted.
-	 * @return string String.
+	 * @return bool True/false.
 	 */
 	public static function upc(&$str, bool $formatted=false) {
 		if (is_array($str)) {
@@ -1460,7 +1436,7 @@ class sanitize {
 	 *
 	 * @param string $str URL.
 	 * @param bool $constringent Light cast.
-	 * @return string URL.
+	 * @return bool True/false.
 	 */
 	public static function url(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -1481,10 +1457,12 @@ class sanitize {
 			// Validate the host, and ASCIIfy international bits
 			// to keep PHP happy.
 			if (!isset($tmp['host'])) {
+				$str = '';
 				return false;
 			}
 			$tmp['host'] = new domain($tmp['host']);
 			if (!$tmp['host']->is_valid()) {
+				$str = '';
 				return false;
 			}
 			$tmp['host'] = (string) $tmp['host'];
@@ -1492,8 +1470,13 @@ class sanitize {
 			$str = v_file::unparse_url($tmp);
 
 			$str = filter_var($str, FILTER_SANITIZE_URL);
-			if (!filter_var($str, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED)) {
+			if (!filter_var(
+				$str,
+				FILTER_VALIDATE_URL,
+				FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED
+			)) {
 				$str = '';
+				return false;
 			}
 		}
 
@@ -1508,7 +1491,7 @@ class sanitize {
 	 * @see {https://github.com/neitanod/forceutf8}
 	 *
 	 * @param string $str String.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function utf8(&$str='') {
 		if (is_array($str)) {
@@ -1639,8 +1622,6 @@ class sanitize {
 				$str = (1 === @preg_match('/^./us', $out)) ? $out : '';
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -1652,7 +1633,7 @@ class sanitize {
 	 * @param string $str String.
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function whitespace(&$str='', int $newlines=0, bool $constringent=false) {
 		if (is_array($str)) {
@@ -1663,7 +1644,7 @@ class sanitize {
 		else {
 			// If there are no spaces, we're done.
 			if (is_string($str) && !preg_match('/\s/u', $str)) {
-				return true;
+				return;
 			}
 
 			cast::constringent($str, $constringent);
@@ -1672,7 +1653,7 @@ class sanitize {
 			if (!$newlines) {
 				$str = preg_replace('/\s+/u', ' ', $str);
 				mb::trim($str, true);
-				return true;
+				return;
 			}
 
 			// Sanitize newlines.
@@ -1689,8 +1670,6 @@ class sanitize {
 
 			$str = trim($str);
 		}
-
-		return true;
 	}
 
 	/**
@@ -1699,18 +1678,17 @@ class sanitize {
 	 * @param string $str String.
 	 * @param int $newlines Consecutive newlines allowed.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function whitespace_multiline(&$str='', int $newlines=1, bool $constringent=false) {
 		static::whitespace($str, $newlines, $constringent);
-		return true;
 	}
 
 	/**
 	 * US ZIP5
 	 *
 	 * @param string $str ZIP Code.
-	 * @return string ZIP Code.
+	 * @return bool True/false.
 	 */
 	public static function zip5(&$str='') {
 		if (is_array($str)) {
@@ -1741,6 +1719,7 @@ class sanitize {
 
 			if ('00000' === $str) {
 				$str = '';
+				return false;
 			}
 		}
 

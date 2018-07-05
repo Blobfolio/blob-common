@@ -87,7 +87,7 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function leadingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
@@ -101,8 +101,6 @@ class file {
 			static::unleadingslash($path, true);
 			$path = "/$path";
 		}
-
-		return true;
 	}
 
 	/**
@@ -111,7 +109,7 @@ class file {
 	 * @param string $path Path.
 	 * @param bool $validate Require valid file.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return bool True/false.
 	 */
 	public static function path(&$path, bool $validate=true, bool $constringent=false) {
 		if (is_array($path)) {
@@ -143,7 +141,7 @@ class file {
 				$path = false;
 			}
 
-			if ($validate && false === $path) {
+			if ($validate && (false === $path)) {
 				$path = false;
 				return false;
 			}
@@ -181,7 +179,7 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function trailingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
@@ -195,8 +193,6 @@ class file {
 			static::untrailingslash($path, true);
 			$path .= '/';
 		}
-
-		return true;
 	}
 
 	/**
@@ -204,7 +200,7 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function unixslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
@@ -218,8 +214,6 @@ class file {
 			$path = str_replace('/./', '//', $path);
 			$path = preg_replace('/\/{2,}/u', '/', $path);
 		}
-
-		return true;
 	}
 
 	/**
@@ -227,7 +221,7 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function unleadingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
@@ -241,8 +235,6 @@ class file {
 			static::unixslash($path, true);
 			$path = ltrim($path, '/');
 		}
-
-		return true;
 	}
 
 	/**
@@ -250,7 +242,7 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function untrailingslash(&$path, bool $constringent=false) {
 		if (is_array($path)) {
@@ -264,8 +256,6 @@ class file {
 			static::unixslash($path, true);
 			$path = rtrim($path, '/');
 		}
-
-		return true;
 	}
 
 }

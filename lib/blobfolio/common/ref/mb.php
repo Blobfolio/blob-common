@@ -23,7 +23,7 @@ class mb {
 	 * @param string $pad_string Pad string.
 	 * @param int $pad_type Pad type.
 	 * @param bool $constringent Light cast.
-	 * @return bool True/false.
+	 * @return void Nothing.
 	 */
 	public static function str_pad(&$str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT, bool $constringent=false) {
 		cast::constringent($str, $constringent);
@@ -33,7 +33,7 @@ class mb {
 		$pad_string_length = v_mb::strlen($pad_string, true);
 
 		if ($pad_length <= $current_length || !$pad_string_length) {
-			return true;
+			return;
 		}
 
 		// Pad left.
@@ -75,8 +75,6 @@ class mb {
 				$str = v_mb::substr($str, 0, $pad_length, true);
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -135,7 +133,7 @@ class mb {
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function strtolower(&$str='', bool $strict=false, bool $constringent=false) {
 		if (is_array($str)) {
@@ -166,8 +164,6 @@ class mb {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -179,7 +175,7 @@ class mb {
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function strtoupper(&$str='', bool $strict=false, bool $constringent=false) {
 		if (is_array($str)) {
@@ -210,8 +206,6 @@ class mb {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -221,7 +215,7 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function trim(&$str='', bool $constringent=false) {
 		if (is_array($str)) {
@@ -235,8 +229,6 @@ class mb {
 			$str = preg_replace('/^\s+/u', '', $str);
 			$str = preg_replace('/\s+$/u', '', $str);
 		}
-
-		return true;
 	}
 
 	/**
@@ -248,7 +240,7 @@ class mb {
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function ucfirst(&$str='', bool $strict=false, bool $constringent=false) {
 		if (is_array($str)) {
@@ -276,8 +268,6 @@ class mb {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -289,7 +279,7 @@ class mb {
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param bool $constringent Light cast.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function ucwords(&$str='', bool $strict=false, bool $constringent=false) {
 		if (is_array($str)) {
@@ -333,8 +323,6 @@ class mb {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -349,7 +337,7 @@ class mb {
 	 * @param string $break Break.
 	 * @param bool $cut Cut.
 	 * @param bool $constringent Light cast.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function wordwrap(&$str, int $width=75, $break="\n", bool $cut=false, bool $constringent=false) {
 		cast::constringent($str, $constringent);
@@ -357,13 +345,13 @@ class mb {
 
 		// Bad data?
 		if (!$str || $width <= 0) {
-			return true;
+			return;
 		}
 
 		// No mbstring?
 		if (!function_exists('mb_substr')) {
 			$str = wordwrap($str, $width, $break, $cut);
-			return true;
+			return;
 		}
 
 		// First, split on horizontal whitespace.
@@ -449,7 +437,5 @@ class mb {
 		// Finally, join our lines by the delimiter.
 		$str = implode($break, $lines);
 		static::trim($str, true);
-
-		return true;
 	}
 }

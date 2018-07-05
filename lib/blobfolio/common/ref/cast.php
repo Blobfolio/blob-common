@@ -22,12 +22,12 @@ class cast {
 	 * To Array
 	 *
 	 * @param mixed $value Variable.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function array(&$value=null) {
 		// Short circuit.
 		if (is_array($value)) {
-			return true;
+			return;
 		}
 
 		try {
@@ -35,18 +35,16 @@ class cast {
 		} catch (\Throwable $e) {
 			$value = array();
 		}
-
-		return true;
 	}
 
 	/**
 	 * To Array
 	 *
 	 * @param mixed $value Variable.
-	 * @return array Array.
+	 * @return void Nothing.
 	 */
 	public static function to_array(&$value=null) {
-		return static::array($value);
+		static::array($value);
 	}
 
 	/**
@@ -54,12 +52,12 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Do not recurse.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function bool(&$value=false, bool $flatten=false) {
 		// Short circuit.
 		if (is_bool($value)) {
-			return true;
+			return;
 		}
 
 		if (!$flatten && is_array($value)) {
@@ -90,8 +88,6 @@ class cast {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -99,10 +95,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return bool True/false.
+	 * @return void Nothing.
 	 */
 	public static function to_bool(&$value=null, bool $flatten=false) {
-		return static::bool($value, $flatten);
+		static::bool($value, $flatten);
 	}
 
 	/**
@@ -110,10 +106,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return bool True/false.
+	 * @return void Nothing.
 	 */
 	public static function boolean(&$value=null, bool $flatten=false) {
-		return static::bool($value, $flatten);
+		static::bool($value, $flatten);
 	}
 
 	/**
@@ -121,12 +117,12 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Do not recurse.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function float(&$value=0, bool $flatten=false) {
 		// Short circuit.
 		if (is_float($value)) {
-			return true;
+			return;
 		}
 
 		if (!$flatten && is_array($value)) {
@@ -142,8 +138,6 @@ class cast {
 				$value = 0.0;
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -151,10 +145,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return float Value.
+	 * @return void Nothing.
 	 */
 	public static function double(&$value=null, bool $flatten=false) {
-		return static::float($value, $flatten);
+		static::float($value, $flatten);
 	}
 
 	/**
@@ -162,10 +156,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return float Value.
+	 * @return void Nothing.
 	 */
 	public static function to_float(&$value=null, bool $flatten=false) {
-		return static::float($value, $flatten);
+		static::float($value, $flatten);
 	}
 
 	/**
@@ -173,12 +167,12 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Do not recurse.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function int(&$value=0, bool $flatten=false) {
 		// Short circuit.
 		if (is_int($value)) {
-			return true;
+			return;
 		}
 
 		if (!$flatten && is_array($value)) {
@@ -208,8 +202,6 @@ class cast {
 				$value = (int) $value;
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -217,10 +209,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return int Value.
+	 * @return void Nothing.
 	 */
 	public static function to_int(&$value=null, bool $flatten=false) {
-		return static::int($value, $flatten);
+		static::int($value, $flatten);
 	}
 
 	/**
@@ -228,10 +220,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return int Value.
+	 * @return void Nothing.
 	 */
 	public static function integer(&$value=null, bool $flatten=false) {
-		return static::int($value, $flatten);
+		static::int($value, $flatten);
 	}
 
 	/**
@@ -239,12 +231,12 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Do not recurse.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function number(&$value=0, bool $flatten=false) {
 		// Short circuit.
 		if (is_float($value)) {
-			return true;
+			return;
 		}
 
 		if (!$flatten && is_array($value)) {
@@ -284,8 +276,6 @@ class cast {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -293,10 +283,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return float Value.
+	 * @return void Nothing.
 	 */
 	public static function to_number(&$value=null, bool $flatten=false) {
-		return static::number($value, $flatten);
+		static::number($value, $flatten);
 	}
 
 	/**
@@ -304,12 +294,12 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Do not recurse.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function string(&$value='', bool $flatten=false) {
 		// Short circuit.
 		if (constants::$str_lock && is_string($value)) {
-			return true;
+			return;
 		}
 
 		if (!$flatten && is_array($value)) {
@@ -338,8 +328,6 @@ class cast {
 				$value = '';
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -347,10 +335,10 @@ class cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param bool $flatten Flatten.
-	 * @return string String.
+	 * @return void Nothing.
 	 */
 	public static function to_string(&$value=null, bool $flatten=false) {
-		return static::string($value, $flatten);
+		static::string($value, $flatten);
 	}
 
 	/**
@@ -359,11 +347,11 @@ class cast {
 	 * @param mixed $value Variable.
 	 * @param string $type Type.
 	 * @param bool $flatten Do not recurse.
-	 * @return bool True.
+	 * @return void Nothing.
 	 */
 	public static function to_type(&$value, string $type='', bool $flatten=false) {
 		if (!$type) {
-			return true;
+			return;
 		}
 
 		switch (strtolower($type)) {
@@ -387,8 +375,6 @@ class cast {
 				static::array($value);
 				break;
 		}
-
-		return true;
 	}
 
 	/**
@@ -403,19 +389,19 @@ class cast {
 	 *
 	 * @param mixed $value String.
 	 * @param bool $light Actually check.
-	 * @return bool True/false.
+	 * @return void Nothing.
 	 */
 	public static function constringent(&$value=null, bool $light=false) {
 		// Don't need to do anything!
 		if ($light && is_string($value)) {
-			return true;
+			return;
 		}
 
 		// Flatten single-entry arrays.
 		if (is_array($value) && (1 === count($value))) {
 			$value = data::array_pop_top($value);
 			if ($light && is_string($value)) {
-				return true;
+				return;
 			}
 		}
 
@@ -437,7 +423,5 @@ class cast {
 		} catch (\Throwable $e) {
 			$value = '';
 		}
-
-		return true;
 	}
 }
