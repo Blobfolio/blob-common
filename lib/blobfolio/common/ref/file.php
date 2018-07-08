@@ -10,8 +10,6 @@
 
 namespace blobfolio\common\ref;
 
-use \blobfolio\common\constants;
-
 class file {
 
 	/**
@@ -86,17 +84,16 @@ class file {
 	 * Add Leading Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function leadingslash(&$path, bool $constringent=false) {
+	public static function leadingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::leadingslash($path[$k]);
 			}
 		}
 		else {
-			cast::constringent($path, $constringent);
+			cast::string($path, true);
 
 			static::unleadingslash($path, true);
 			$path = "/$path";
@@ -108,17 +105,16 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $validate Require valid file.
-	 * @param bool $constringent Light cast.
 	 * @return bool True/false.
 	 */
-	public static function path(&$path, bool $validate=true, bool $constringent=false) {
+	public static function path(&$path, bool $validate=true) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::path($path[$k], $validate);
 			}
 		}
 		else {
-			cast::constringent($path, $constringent);
+			cast::string($path, true);
 
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.
@@ -178,17 +174,16 @@ class file {
 	 * Add Trailing Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function trailingslash(&$path, bool $constringent=false) {
+	public static function trailingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::trailingslash($path[$k]);
 			}
 		}
 		else {
-			cast::constringent($path, $constringent);
+			cast::string($path, true);
 
 			static::untrailingslash($path, true);
 			$path .= '/';
@@ -199,17 +194,16 @@ class file {
 	 * Fix Path Slashes
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function unixslash(&$path, bool $constringent=false) {
+	public static function unixslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unixslash($path[$k]);
 			}
 		}
 		else {
-			cast::constringent($path, $constringent);
+			cast::string($path);
 			$path = str_replace('\\', '/', $path);
 			$path = str_replace('/./', '//', $path);
 			$path = preg_replace('/\/{2,}/u', '/', $path);
@@ -220,17 +214,16 @@ class file {
 	 * Strip Leading Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function unleadingslash(&$path, bool $constringent=false) {
+	public static function unleadingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unleadingslash($path[$k]);
 			}
 		}
 		else {
-			cast::constringent($path, $constringent);
+			cast::string($path, true);
 
 			static::unixslash($path, true);
 			$path = ltrim($path, '/');
@@ -241,17 +234,16 @@ class file {
 	 * Strip Trailing Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function untrailingslash(&$path, bool $constringent=false) {
+	public static function untrailingslash(&$path) {
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::untrailingslash($path[$k]);
 			}
 		}
 		else {
-			cast::constringent($path, $constringent);
+			cast::string($path, true);
 
 			static::unixslash($path, true);
 			$path = rtrim($path, '/');

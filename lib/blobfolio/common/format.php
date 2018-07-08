@@ -387,7 +387,6 @@ class format {
 	 * @param string $str String.
 	 * @param array $args Arguments.
 	 * @param int $pass Pass (1=URL, 2=EMAIL).
-	 * @param bool $constringent Light cast.
 	 *
 	 * @arg array $class Class(es).
 	 * @arg string $rel Rel.
@@ -395,8 +394,8 @@ class format {
 	 *
 	 * @return bool True.
 	 */
-	public static function links($str, $args=null, int $pass=1, bool $constringent=false) {
-		ref\format::links($str, $args, $pass, $constringent);
+	public static function links($str, $args=null, int $pass=1) {
+		ref\format::links($str, $args, $pass);
 		return $str;
 	}
 
@@ -407,7 +406,6 @@ class format {
 	 *
 	 * @param mixed $list List.
 	 * @param mixed $args Arguments or delimiter.
-	 * @param bool $constringent Light cast.
 	 *
 	 * @args string $delimiter Delimiter.
 	 * @args bool $trim Trim.
@@ -419,8 +417,8 @@ class format {
 	 *
 	 * @return array List.
 	 */
-	public static function list_to_array($list, $args=null, bool $constringent=false) {
-		ref\format::list_to_array($list, $args, $constringent);
+	public static function list_to_array($list, $args=null) {
+		ref\format::list_to_array($list, $args);
 		return $list;
 	}
 

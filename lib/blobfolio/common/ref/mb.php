@@ -22,11 +22,10 @@ class mb {
 	 * @param int $pad_length Pad length.
 	 * @param string $pad_string Pad string.
 	 * @param int $pad_type Pad type.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function str_pad(&$str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT, bool $constringent=false) {
-		cast::constringent($str, $constringent);
+	public static function str_pad(&$str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
+		cast::string($str, true);
 		cast::string($pad_string, true);
 
 		$current_length = v_mb::strlen($str, true);
@@ -82,16 +81,15 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param int $split_length Split length.
-	 * @param bool $constringent Light cast.
 	 * @return bool True/false.
 	 */
-	public static function str_split(&$str, int $split_length=1, bool $constringent=false) {
+	public static function str_split(&$str, int $split_length=1) {
 		if ($split_length < 1) {
 			$str = false;
 			return false;
 		}
 
-		cast::constringent($str, $constringent);
+		cast::string($str, true);
 
 		$str_length = v_mb::strlen($str, true);
 		$out = array();
@@ -108,11 +106,10 @@ class mb {
 	 * Wrapper For strrev()
 	 *
 	 * @param string $str String.
-	 * @param bool $constringent Light cast.
 	 * @return bool True/false.
 	 */
-	public static function strrev(&$str, bool $constringent=false) {
-		cast::constringent($str, $constringent);
+	public static function strrev(&$str) {
+		cast::string($str, true);
 
 		if (!$str) {
 			return false;
@@ -132,17 +129,16 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function strtolower(&$str='', bool $strict=false, bool $constringent=false) {
+	public static function strtolower(&$str='', bool $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::strtolower($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::constringent($str, $constringent);
+			cast::string($str, true);
 
 			if ($str) {
 				if (
@@ -174,17 +170,16 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function strtoupper(&$str='', bool $strict=false, bool $constringent=false) {
+	public static function strtoupper(&$str='', bool $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::strtoupper($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::constringent($str, $constringent);
+			cast::string($str, true);
 
 			if ($str) {
 				if (
@@ -214,17 +209,16 @@ class mb {
 	 * Trim all whitespacey bits from both ends.
 	 *
 	 * @param string $str String.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function trim(&$str='', bool $constringent=false) {
+	public static function trim(&$str='') {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::trim($str[$k]);
 			}
 		}
 		else {
-			cast::constringent($str, $constringent);
+			cast::string($str, true);
 
 			$str = preg_replace('/^\s+/u', '', $str);
 			$str = preg_replace('/\s+$/u', '', $str);
@@ -239,17 +233,16 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function ucfirst(&$str='', bool $strict=false, bool $constringent=false) {
+	public static function ucfirst(&$str='', bool $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ucfirst($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::constringent($str, $constringent);
+			cast::string($str, true);
 
 			if ($str) {
 				if (
@@ -278,17 +271,16 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function ucwords(&$str='', bool $strict=false, bool $constringent=false) {
+	public static function ucwords(&$str='', bool $strict=false) {
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ucwords($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::constringent($str, $constringent);
+			cast::string($str, true);
 
 			if ($str) {
 				// Don't use the built-in case functions as those
@@ -336,11 +328,10 @@ class mb {
 	 * @param int $width Width.
 	 * @param string $break Break.
 	 * @param bool $cut Cut.
-	 * @param bool $constringent Light cast.
 	 * @return void Nothing.
 	 */
-	public static function wordwrap(&$str, int $width=75, $break="\n", bool $cut=false, bool $constringent=false) {
-		cast::constringent($str, $constringent);
+	public static function wordwrap(&$str, int $width=75, $break="\n", bool $cut=false) {
+		cast::string($str, true);
 		cast::string($break, true);
 
 		// Bad data?

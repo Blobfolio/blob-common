@@ -107,16 +107,10 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_js_entities(&$str='') {
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = false;
-
 		cast::string($str, true);
 
 		static::decode_unicode_entities($str);
 		static::decode_escape_entities($str);
-
-		constants::$str_lock = $lock;
 	}
 
 	/**
@@ -128,10 +122,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_escape_entities(&$str='') {
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = false;
-
 		cast::string($str, true);
 
 		$replacements = array(
@@ -146,8 +136,6 @@ class format {
 			array_values($replacements),
 			$str
 		);
-
-		constants::$str_lock = $lock;
 	}
 
 	/**
@@ -159,10 +147,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_unicode_entities(&$str='') {
-		// Lock UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = false;
-
 		cast::string($str, true);
 
 		$last = '';
@@ -178,8 +162,6 @@ class format {
 
 			cast::string($str, true);
 		}
-
-		constants::$str_lock = $lock;
 	}
 
 	/**
@@ -192,10 +174,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_entities(&$str='') {
-		// Force UTF-8 Casting.
-		$lock = constants::$str_lock;
-		constants::$str_lock = false;
-
 		cast::string($str, true);
 
 		$last = '';
@@ -208,8 +186,6 @@ class format {
 
 			cast::string($str, true);
 		}
-
-		constants::$str_lock = $lock;
 	}
 
 	/**
@@ -690,7 +666,6 @@ class format {
 	 * @param string $str String.
 	 * @param array $args Arguments.
 	 * @param int $pass Pass (1=URL, 2=EMAIL).
-	 * @param bool $constringent Light cast.
 	 *
 	 * @arg array $class Class(es).
 	 * @arg string $rel Rel.
@@ -698,8 +673,8 @@ class format {
 	 *
 	 * @return void Nothing.
 	 */
-	public static function links(&$str, $args=null, int $pass=1, bool $constringent=false) {
-		cast::constringent($str, $constringent);
+	public static function links(&$str, $args=null, int $pass=1) {
+		cast::string($str, true);
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -877,7 +852,6 @@ class format {
 	 *
 	 * @param mixed $list List.
 	 * @param mixed $args Arguments or delimiter.
-	 * @param bool $constringent Light cast.
 	 *
 	 * @args string $delimiter Delimiter.
 	 * @args bool $trim Trim.
@@ -889,7 +863,7 @@ class format {
 	 *
 	 * @return void Nothing.
 	 */
-	public static function list_to_array(&$list, $args=null, bool $constringent=false) {
+	public static function list_to_array(&$list, $args=null) {
 		$out = array();
 
 		// If the arguments are a string, we'll assume the delimiter was
@@ -926,7 +900,7 @@ class format {
 			}
 			// Otherwise de-list the line.
 			else {
-				cast::constringent($list[$k], $constringent);
+				cast::string($list[$k], true);
 
 				if ($args['delimiter']) {
 					$list[$k] = explode($args['delimiter'], $list[$k]);

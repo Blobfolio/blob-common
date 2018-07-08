@@ -165,11 +165,10 @@ class file {
 	 * Get Data-URI From File
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return string|bool Data-URI or false.
 	 */
-	public static function data_uri(string $path, bool $constringent=false) {
-		ref\cast::constringent($path, $constringent);
+	public static function data_uri(string $path) {
+		ref\cast::string($path, true);
 
 		ref\file::path($path, true, true);
 
@@ -296,11 +295,10 @@ class file {
 	 * Add Leading Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function leadingslash($path, bool $constringent=false) {
-		ref\file::leadingslash($path, $constringent);
+	public static function leadingslash($path) {
+		ref\file::leadingslash($path);
 		return $path;
 	}
 
@@ -420,11 +418,10 @@ class file {
 	 *
 	 * @param string $path Path.
 	 * @param bool $validate Require valid file.
-	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function path($path, bool $validate=true, bool $constringent=false) {
-		ref\file::path($path, $validate, $constringent);
+	public static function path($path, bool $validate=true) {
+		ref\file::path($path, $validate);
 		return $path;
 	}
 
@@ -599,11 +596,10 @@ class file {
 	 * Add Trailing Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function trailingslash($path, bool $constringent=false) {
-		ref\file::trailingslash($path, $constringent);
+	public static function trailingslash($path) {
+		ref\file::trailingslash($path);
 		return $path;
 	}
 
@@ -611,11 +607,10 @@ class file {
 	 * Fix Path Slashes
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function unixslash($path, bool $constringent=false) {
-		ref\file::unixslash($path, $constringent);
+	public static function unixslash($path) {
+		ref\file::unixslash($path);
 		return $path;
 	}
 
@@ -623,11 +618,10 @@ class file {
 	 * Strip Leading Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function unleadingslash($path, bool $constringent=false) {
-		ref\file::unleadingslash($path, $constringent);
+	public static function unleadingslash($path) {
+		ref\file::unleadingslash($path);
 		return $path;
 	}
 
@@ -700,11 +694,10 @@ class file {
 	 * Strip Trailing Slash
 	 *
 	 * @param string $path Path.
-	 * @param bool $constringent Light cast.
 	 * @return string Path.
 	 */
-	public static function untrailingslash($path, bool $constringent=false) {
-		ref\file::untrailingslash($path, $constringent);
+	public static function untrailingslash($path) {
+		ref\file::untrailingslash($path);
 		return $path;
 	}
 

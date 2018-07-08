@@ -651,11 +651,10 @@ class image {
 	 * Determine SVG Dimensions
 	 *
 	 * @param string $svg SVG content or file path.
-	 * @param bool $constringent Light cast.
 	 * @return array|bool Dimensions or false.
 	 */
-	public static function svg_dimensions($svg, bool $constringent=false) {
-		ref\cast::constringent($svg, $constringent);
+	public static function svg_dimensions($svg) {
+		ref\cast::string($svg, true);
 
 		// Make sure this is SVG-looking.
 		if (false === ($start = strpos(strtolower($svg), '<svg'))) {

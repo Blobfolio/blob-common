@@ -338,11 +338,6 @@ class cast {
 			return;
 		}
 
-		// Short circuit.
-		if (constants::$str_lock && is_string($value)) {
-			return;
-		}
-
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::string($value[$k]);
@@ -422,53 +417,14 @@ class cast {
 	/**
 	 * Light String Cast
 	 *
-	 * We kinda fucked ourselves with heavy string typecasting
-	 * dependencies — namely fixing UTF-8 — so we want to offer up a
-	 * way to conditionally bypass the extra bits.
-	 *
-	 * Functions requiring strings have been altered to include a
-	 * $constringent argument that will allow light checks.
+	 * This method is deprecated.
 	 *
 	 * @param mixed $value String.
 	 * @param bool $light Actually check.
 	 * @return void Nothing.
 	 */
 	public static function constringent(&$value=null, bool $light=false) {
-		// Don't need to do anything!
-		if ($light && is_string($value)) {
-			return;
-		}
-
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toString($value, true);
-			return;
-		}
-
-		// Flatten single-entry arrays.
-		if (is_array($value) && (1 === count($value))) {
-			$value = data::array_pop_top($value);
-			if ($light && is_string($value)) {
-				return;
-			}
-		}
-
-		// Cast it.
-		try {
-			$value = (string) $value;
-
-			// Do heavy stuff if needed.
-			if (
-				$value &&
-				!$light &&
-				(
-					!function_exists('mb_check_encoding') ||
-					!mb_check_encoding($value, 'ASCII')
-				)
-			) {
-				sanitize::utf8($value);
-			}
-		} catch (\Throwable $e) {
-			$value = '';
-		}
+		// This method is deprecated.
+		static::string($value, true);
 	}
 }

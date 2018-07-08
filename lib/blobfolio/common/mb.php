@@ -155,11 +155,10 @@ class mb {
 	 * @param int $pad_length Pad length.
 	 * @param string $pad_string Pad string.
 	 * @param int $pad_type Pad type.
-	 * @param bool $constringent Light cast.
 	 * @return string Padded string.
 	 */
-	public static function str_pad($str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT, bool $constringent=false) {
-		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type, $constringent);
+	public static function str_pad($str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
+		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
 		return $str;
 	}
 
@@ -168,11 +167,10 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param int $split_length Split length.
-	 * @param bool $constringent Light cast.
 	 * @return array|bool Split string or false.
 	 */
-	public static function str_split($str, int $split_length=1, bool $constringent=false) {
-		ref\mb::str_split($str, $split_length, $constringent);
+	public static function str_split($str, int $split_length=1) {
+		ref\mb::str_split($str, $split_length);
 		return $str;
 	}
 
@@ -180,11 +178,10 @@ class mb {
 	 * Wrapper For strlen()
 	 *
 	 * @param string $str String.
-	 * @param bool $constringent Light cast.
 	 * @return int String length.
 	 */
-	public static function strlen($str, bool $constringent=false) {
-		ref\cast::constringent($str, $constringent);
+	public static function strlen($str) {
+		ref\cast::string($str, true);
 
 		if (function_exists('mb_strlen')) {
 			return (int) mb_strlen($str, 'UTF-8');
@@ -215,11 +212,10 @@ class mb {
 	 * Wrapper For strrev()
 	 *
 	 * @param string $str String.
-	 * @param bool $constringent Light cast.
 	 * @return string Reversed string.
 	 */
-	public static function strrev($str, bool $constringent=false) {
-		ref\mb::strrev($str, $constringent);
+	public static function strrev($str) {
+		ref\mb::strrev($str);
 		return $str;
 	}
 
@@ -248,11 +244,10 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function strtolower($str='', bool $strict=false, bool $constringent=false) {
-		ref\mb::strtolower($str, $strict, $constringent);
+	public static function strtolower($str='', bool $strict=false) {
+		ref\mb::strtolower($str, $strict);
 		return $str;
 	}
 
@@ -264,11 +259,10 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function strtoupper($str='', bool $strict=false, bool $constringent=false) {
-		ref\mb::strtoupper($str, $strict, $constringent);
+	public static function strtoupper($str='', bool $strict=false) {
+		ref\mb::strtoupper($str, $strict);
 		return $str;
 	}
 
@@ -278,11 +272,10 @@ class mb {
 	 * @param string $str String.
 	 * @param int $start Start.
 	 * @param int $length Length.
-	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function substr($str, $start=0, $length=null, bool $constringent=false) {
-		ref\cast::constringent($str, $constringent);
+	public static function substr($str, $start=0, $length=null) {
+		ref\cast::string($str, true);
 
 		if (function_exists('mb_substr')) {
 			return mb_substr($str, $start, $length, 'UTF-8');
@@ -314,11 +307,10 @@ class mb {
 	 * Trim all whitespacey bits from both ends.
 	 *
 	 * @param string $str String.
-	 * @param bool $constringent Light cast.
 	 * @return bool True.
 	 */
-	public static function trim($str='', bool $constringent=false) {
-		ref\mb::trim($str, $constringent);
+	public static function trim($str='') {
+		ref\mb::trim($str);
 		return $str;
 	}
 
@@ -330,11 +322,10 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function ucfirst($str='', bool $strict=false, bool $constringent=false) {
-		ref\mb::ucfirst($str, $strict, $constringent);
+	public static function ucfirst($str='', bool $strict=false) {
+		ref\mb::ucfirst($str, $strict);
 		return $str;
 	}
 
@@ -346,11 +337,10 @@ class mb {
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
-	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function ucwords($str='', bool $strict=false, bool $constringent=false) {
-		ref\mb::ucwords($str, $strict, $constringent);
+	public static function ucwords($str='', bool $strict=false) {
+		ref\mb::ucwords($str, $strict);
 		return $str;
 	}
 
@@ -365,11 +355,10 @@ class mb {
 	 * @param int $width Width.
 	 * @param string $break Break.
 	 * @param bool $cut Cut.
-	 * @param bool $constringent Light cast.
 	 * @return string String.
 	 */
-	public static function wordwrap($str, int $width=75, $break="\n", bool $cut=false, bool $constringent=false) {
-		ref\mb::wordwrap($str, $width, $break, $cut, $constringent);
+	public static function wordwrap($str, int $width=75, $break="\n", bool $cut=false) {
+		ref\mb::wordwrap($str, $width, $break, $cut);
 		return $str;
 	}
 }
