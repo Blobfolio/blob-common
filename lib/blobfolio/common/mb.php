@@ -262,6 +262,10 @@ class mb {
 	 * @return string String.
 	 */
 	public static function strtolower($str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::strtolower($str, $strict);
+		}
+
 		ref\mb::strtolower($str, $strict);
 		return $str;
 	}
@@ -277,6 +281,10 @@ class mb {
 	 * @return string String.
 	 */
 	public static function strtoupper($str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::strtoupper($str, $strict);
+		}
+
 		ref\mb::strtoupper($str, $strict);
 		return $str;
 	}

@@ -153,18 +153,18 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function strtolower(&$str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::strtolower($str, $strict);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::strtolower($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			if ($str) {
 				if (
@@ -199,18 +199,18 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function strtoupper(&$str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::strtoupper($str, $strict);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::strtoupper($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			if ($str) {
 				if (

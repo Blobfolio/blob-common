@@ -16,6 +16,57 @@ namespace Blobfolio;
 use \Throwable;
 
 final class Strings {
+
+	/**
+	 * @var array $case_char_upper Uppercase Unicode.
+	 */
+	private static case_char_upper = [
+		"\xC7\x85", "\xC7\x88", "\xC7\x8B", "\xC7\xB2", "\xCF\xB7", "\xCF\xB9",
+		"\xCF\xBA", "\xE1\xBE\x88", "\xE1\xBE\x89", "\xE1\xBE\x8A",
+		"\xE1\xBE\x8B", "\xE1\xBE\x8C", "\xE1\xBE\x8D", "\xE1\xBE\x8E",
+		"\xE1\xBE\x8F", "\xE1\xBE\x98", "\xE1\xBE\x99", "\xE1\xBE\x9A",
+		"\xE1\xBE\x9B", "\xE1\xBE\x9C", "\xE1\xBE\x9D", "\xE1\xBE\x9E",
+		"\xE1\xBE\x9F", "\xE1\xBE\xA8", "\xE1\xBE\xA9", "\xE1\xBE\xAA",
+		"\xE1\xBE\xAB", "\xE1\xBE\xAC", "\xE1\xBE\xAD", "\xE1\xBE\xAE",
+		"\xE1\xBE\xAF", "\xE1\xBE\xBC", "\xE1\xBF\x8C", "\xE1\xBF\xBC",
+		"\xE2\x85\xA0", "\xE2\x85\xA1", "\xE2\x85\xA2", "\xE2\x85\xA3",
+		"\xE2\x85\xA4", "\xE2\x85\xA5", "\xE2\x85\xA6", "\xE2\x85\xA7",
+		"\xE2\x85\xA8", "\xE2\x85\xA9", "\xE2\x85\xAA", "\xE2\x85\xAB",
+		"\xE2\x85\xAC", "\xE2\x85\xAD", "\xE2\x85\xAE", "\xE2\x85\xAF",
+		"\xE2\x92\xB6", "\xE2\x92\xB7", "\xE2\x92\xB8", "\xE2\x92\xB9",
+		"\xE2\x92\xBA", "\xE2\x92\xBB", "\xE2\x92\xBC", "\xE2\x92\xBD",
+		"\xE2\x92\xBE", "\xE2\x92\xBF", "\xE2\x93\x80", "\xE2\x93\x81",
+		"\xE2\x93\x82", "\xE2\x93\x83", "\xE2\x93\x84", "\xE2\x93\x85",
+		"\xE2\x93\x86", "\xE2\x93\x87", "\xE2\x93\x88", "\xE2\x93\x89",
+		"\xE2\x93\x8A", "\xE2\x93\x8B", "\xE2\x93\x8C", "\xE2\x93\x8D",
+		"\xE2\x93\x8E", "\xE2\x93\x8F", "\xF0\x90\xA6", "\xF0\x90\xA7"
+	];
+
+	/**
+	 * @var array $case_char_lower Lowercase Unicode.
+	 */
+	private static case_char_lower = [
+		"\xC7\x86", "\xC7\x89", "\xC7\x8C", "\xC7\xB3", "\xCF\xB8", "\xCF\xB2",
+		"\xCF\xBB", "\xE1\xBE\x80", "\xE1\xBE\x81", "\xE1\xBE\x82",
+		"\xE1\xBE\x83", "\xE1\xBE\x84", "\xE1\xBE\x85", "\xE1\xBE\x86",
+		"\xE1\xBE\x87", "\xE1\xBE\x90", "\xE1\xBE\x91", "\xE1\xBE\x92",
+		"\xE1\xBE\x93", "\xE1\xBE\x94", "\xE1\xBE\x95", "\xE1\xBE\x96",
+		"\xE1\xBE\x97", "\xE1\xBE\xA0", "\xE1\xBE\xA1", "\xE1\xBE\xA2",
+		"\xE1\xBE\xA3", "\xE1\xBE\xA4", "\xE1\xBE\xA5", "\xE1\xBE\xA6",
+		"\xE1\xBE\xA7", "\xE1\xBE\xB3", "\xE1\xBF\x83", "\xE1\xBF\xB3",
+		"\xE2\x85\xB0", "\xE2\x85\xB1", "\xE2\x85\xB2", "\xE2\x85\xB3",
+		"\xE2\x85\xB4",  "\xE2\x85\xB5", "\xE2\x85\xB6", "\xE2\x85\xB7",
+		"\xE2\x85\xB8", "\xE2\x85\xB9", "\xE2\x85\xBA", "\xE2\x85\xBB",
+		"\xE2\x85\xBC", "\xE2\x85\xBD", "\xE2\x85\xBE", "\xE2\x85\xBF",
+		"\xE2\x93\x90", "\xE2\x93\x91", "\xE2\x93\x92", "\xE2\x93\x93",
+		"\xE2\x93\x94", "\xE2\x93\x95", "\xE2\x93\x96", "\xE2\x93\x97",
+		"\xE2\x93\x98", "\xE2\x93\x99", "\xE2\x93\x9A", "\xE2\x93\x9B",
+		"\xE2\x93\x9C", "\xE2\x93\x9D", "\xE2\x93\x9E", "\xE2\x93\x9F",
+		"\xE2\x93\xA0", "\xE2\x93\xA1", "\xE2\x93\xA2", "\xE2\x93\xA3",
+		"\xE2\x93\xA4", "\xE2\x93\xA5", "\xE2\x93\xA6", "\xE2\x93\xA7",
+		"\xE2\x93\xA8", "\xE2\x93\xA9", "\xF0\x91\x8E", "\xF0\x91\x8F"
+	];
+
 	/**
 	 * Accents
 	 *
@@ -132,6 +183,98 @@ final class Strings {
 		];
 
 		let str = str_replace(quote_char_keys, quote_char_values, str);
+		return str;
+	}
+
+	/**
+	 * Strtolower
+	 *
+	 * @param array|string $str String.
+	 * @param bool $strict Strict.
+	 */
+	public static function strtolower(var str, const bool! strict=false) {
+		// Recurse.
+		if ("array" === typeof str) {
+			var k, v;
+			for k, v in str {
+				let str[k] = self::strtolower(v, strict);
+			}
+			return str;
+		}
+
+		// Proceed if we have a string, or don't care about type
+		// conversion.
+		if (!strict || ("string" === typeof str)) {
+			let str = \Blobfolio\Cast::toString(str, true);
+
+			if (
+				function_exists("mb_strtolower") &&
+				(
+					!function_exists("mb_check_encoding") ||
+					!mb_check_encoding($str, "ASCII")
+				)
+			) {
+				// Hit the bulk of the conversion.
+				let str = mb_strtolower(str, "UTF-8");
+
+				// Replace some more.
+				let str = str_replace(
+					self::case_char_upper,
+					self::case_char_lower,
+					str
+				);
+			}
+			else {
+				let str = strtolower(str);
+			}
+		}
+
+		return str;
+	}
+
+	/**
+	 * Strtoupper
+	 *
+	 * @param array|string $str String.
+	 * @param bool $strict Strict.
+	 */
+	public static function strtoupper(var str, const bool! strict=false) {
+		// Recurse.
+		if ("array" === typeof str) {
+			var k, v;
+			for k, v in str {
+				let str[k] = self::strtoupper(v, strict);
+			}
+			return str;
+		}
+
+		// Proceed if we have a string, or don't care about type
+		// conversion.
+		if (!strict || ("string" === typeof str)) {
+			let str = \Blobfolio\Cast::toString(str, true);
+
+			if (
+				function_exists("mb_strtoupper") &&
+				(
+					!function_exists("mb_check_encoding") ||
+					!mb_check_encoding($str, "ASCII")
+				)
+			) {
+				// Hit the bulk of the conversion.
+				let str = mb_strtoupper(str, "UTF-8");
+
+				// Replace some more.
+				let str = str_replace(
+					self::case_char_lower,
+					self::case_char_upper,
+					str
+				);
+			}
+			else {
+				let str = strtoupper(str);
+			}
+		}
+
 		return str;
 	}
 
