@@ -12,3 +12,7 @@
 /build/lib/vendor/
 /lib/vendor/
 /wp/lib/*.phar
+/zephir/blobfolio/.temp/
+/zephir/blobfolio/ext/
+/zephir/blobfolio/compile-errors.log
+/zephir/blobfolio/compile.log
