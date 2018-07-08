@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class file {
 
 	/**
@@ -168,7 +173,12 @@ class file {
 	 * @return string|bool Data-URI or false.
 	 */
 	public static function data_uri(string $path) {
-		ref\cast::string($path, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$path = \Blobfolio\Cast::toString($path, true);
+		}
+		else {
+			ref\cast::string($path, true);
+		}
 
 		ref\file::path($path, true, true);
 
@@ -203,7 +213,6 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function empty_dir(string $path) {
-		ref\cast::string($path);
 		if (!@is_readable($path) || !@is_dir($path)) {
 			return false;
 		}

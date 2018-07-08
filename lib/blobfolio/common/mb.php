@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class mb {
 
 	/**
@@ -23,7 +28,12 @@ class mb {
 	 * @return mixed Array, Component, or Null.
 	 */
 	public static function parse_url($url, int $component = -1) {
-		ref\cast::string($url, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$url = \Blobfolio\Cast::toString($url, true);
+		}
+		else {
+			ref\cast::string($url, true);
+		}
 
 		ref\mb::trim($url, true);
 
@@ -181,7 +191,12 @@ class mb {
 	 * @return int String length.
 	 */
 	public static function strlen($str) {
-		ref\cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			ref\cast::string($str, true);
+		}
 
 		if (function_exists('mb_strlen')) {
 			return (int) mb_strlen($str, 'UTF-8');
@@ -275,7 +290,12 @@ class mb {
 	 * @return string String.
 	 */
 	public static function substr($str, $start=0, $length=null) {
-		ref\cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			ref\cast::string($str, true);
+		}
 
 		if (function_exists('mb_substr')) {
 			return mb_substr($str, $start, $length, 'UTF-8');

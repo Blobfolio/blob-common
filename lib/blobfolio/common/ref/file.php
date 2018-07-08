@@ -10,6 +10,11 @@
 
 namespace blobfolio\common\ref;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class file {
 
 	/**
@@ -93,7 +98,12 @@ class file {
 			}
 		}
 		else {
-			cast::string($path, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$path = \Blobfolio\Cast::toString($path, true);
+			}
+			else {
+				cast::string($path, true);
+			}
 
 			static::unleadingslash($path, true);
 			$path = "/$path";
@@ -114,7 +124,12 @@ class file {
 			}
 		}
 		else {
-			cast::string($path, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$path = \Blobfolio\Cast::toString($path, true);
+			}
+			else {
+				cast::string($path, true);
+			}
 
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.
@@ -183,7 +198,12 @@ class file {
 			}
 		}
 		else {
-			cast::string($path, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$path = \Blobfolio\Cast::toString($path, true);
+			}
+			else {
+				cast::string($path, true);
+			}
 
 			static::untrailingslash($path, true);
 			$path .= '/';
@@ -203,7 +223,13 @@ class file {
 			}
 		}
 		else {
-			cast::string($path);
+			if (BLOBCOMMON_HAS_EXT) {
+				$path = \Blobfolio\Cast::toString($path, true);
+			}
+			else {
+				cast::string($path, true);
+			}
+
 			$path = str_replace('\\', '/', $path);
 			$path = str_replace('/./', '//', $path);
 			$path = preg_replace('/\/{2,}/u', '/', $path);
@@ -223,7 +249,12 @@ class file {
 			}
 		}
 		else {
-			cast::string($path, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$path = \Blobfolio\Cast::toString($path, true);
+			}
+			else {
+				cast::string($path, true);
+			}
 
 			static::unixslash($path, true);
 			$path = ltrim($path, '/');
@@ -243,7 +274,12 @@ class file {
 			}
 		}
 		else {
-			cast::string($path, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$path = \Blobfolio\Cast::toString($path, true);
+			}
+			else {
+				cast::string($path, true);
+			}
 
 			static::unixslash($path, true);
 			$path = rtrim($path, '/');

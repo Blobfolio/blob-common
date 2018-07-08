@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class format {
 
 	/**
@@ -63,11 +68,21 @@ class format {
 	 * @return array|bool Range or false.
 	 */
 	public static function cidr_to_range($cidr) {
-		ref\cast::string($cidr, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$cidr = \Blobfolio\Cast::toString($cidr, true);
+		}
+		else {
+			ref\cast::string($cidr, true);
+		}
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
-		ref\cast::int($cidr[1], true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$cidr[1] = \Blobfolio\Cast::toInt($cidr[1], true);
+		}
+		else {
+			ref\cast::int($cidr[1], true);
+		}
 
 		// IPv4?
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
@@ -212,7 +227,12 @@ class format {
 	 * @return string Excerpt.
 	 */
 	public static function excerpt($str='', $args=null) {
-		ref\cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			ref\cast::string($str, true);
+		}
 
 		ref\sanitize::whitespace($str, 0, true);
 		$str = strip_tags($str);
@@ -297,15 +317,30 @@ class format {
 			$count = (float) count($count);
 		}
 		else {
-			ref\cast::number($count);
+			if (BLOBCOMMON_HAS_EXT) {
+				$count = \Blobfolio\Cast::toFloat($count, true);
+			}
+			else {
+				ref\cast::float($count, true);
+			}
 		}
 
 		if (1.0 === $count) {
-			ref\cast::string($single, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$single = \Blobfolio\Cast::toString($single, true);
+			}
+			else {
+				ref\cast::string($single, true);
+			}
 			return sprintf($single, $count);
 		}
 		else {
-			ref\cast::string($plural, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$plural = \Blobfolio\Cast::toString($plural, true);
+			}
+			else {
+				ref\cast::string($plural, true);
+			}
 			return sprintf($plural, $count);
 		}
 	}
@@ -501,7 +536,12 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				ref\cast::string($headers[$k], true);
+				if (BLOBCOMMON_HAS_EXT) {
+					$headers[$k] = \Blobfolio\Cast::toString($headers[$k], true);
+				}
+				else {
+					ref\cast::string($headers[$k], true);
+				}
 			}
 
 			ref\sanitize::csv($headers, true);
@@ -513,7 +553,12 @@ class format {
 		if (count($data)) {
 			foreach ($data as $line) {
 				foreach ($line as $k=>$v) {
-					ref\cast::string($line[$k], true);
+					if (BLOBCOMMON_HAS_EXT) {
+						$line[$k] = \Blobfolio\Cast::toString($line[$k], true);
+					}
+					else {
+						ref\cast::string($line[$k], true);
+					}
 				}
 
 				ref\sanitize::csv($line, true);
@@ -594,7 +639,12 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				ref\cast::string($headers[$k], true);
+				if (BLOBCOMMON_HAS_EXT) {
+					$headers[$k] = \Blobfolio\Cast::toString($headers[$k], true);
+				}
+				else {
+					ref\cast::string($headers[$k], true);
+				}
 			}
 
 			$out[] = '<Row>';
@@ -629,10 +679,20 @@ class format {
 					}
 					elseif (is_numeric($cell)) {
 						$type = 'Number';
-						ref\cast::number($cell);
+						if (BLOBCOMMON_HAS_EXT) {
+							$cell = \Blobfolio\Cast::toFloat($cell, true);
+						}
+						else {
+							ref\cast::float($cell, true);
+						}
 					}
 					else {
-						ref\cast::string($cell, true);
+						if (BLOBCOMMON_HAS_EXT) {
+							$cell = \Blobfolio\Cast::toString($cell, true);
+						}
+						else {
+							ref\cast::string($cell, true);
+						}
 						ref\sanitize::whitespace($cell, 2, true);
 
 						// Date and time.
@@ -660,13 +720,23 @@ class format {
 						elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $cell)) {
 							$type = 'Number';
 							$format = '4';
-							ref\cast::number($cell);
+							if (BLOBCOMMON_HAS_EXT) {
+								$cell = \Blobfolio\Cast::toFloat($cell, true);
+							}
+							else {
+								ref\cast::float($cell, true);
+							}
 						}
 						// Currency.
 						elseif (preg_match('/^\-\$?[\d,]*\.?\d+$/', $cell) || preg_match('/^\-?[\d,]*\.?\d+¢$/', $cell)) {
 							$type = 'Number';
 							$format = '5';
-							ref\cast::number($cell);
+							if (BLOBCOMMON_HAS_EXT) {
+								$cell = \Blobfolio\Cast::toFloat($cell, true);
+							}
+							else {
+								ref\cast::float($cell, true);
+							}
 						}
 						// Everything else.
 						else {

@@ -13,6 +13,11 @@ namespace blobfolio\common\ref;
 use \blobfolio\common\constants;
 use \blobfolio\common\mb as v_mb;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class mb {
 
 	/**
@@ -25,8 +30,14 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function str_pad(&$str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
-		cast::string($str, true);
-		cast::string($pad_string, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+			$pad_string = \Blobfolio\Cast::toString($pad_string, true);
+		}
+		else {
+			cast::string($str, true);
+			cast::string($pad_string, true);
+		}
 
 		$current_length = v_mb::strlen($str, true);
 		$pad_string_length = v_mb::strlen($pad_string, true);
@@ -89,7 +100,12 @@ class mb {
 			return false;
 		}
 
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		$str_length = v_mb::strlen($str, true);
 		$out = array();
@@ -109,7 +125,12 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function strrev(&$str) {
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		if (!$str) {
 			return false;
@@ -138,7 +159,12 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			if ($str) {
 				if (
@@ -179,7 +205,12 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			if ($str) {
 				if (
@@ -218,7 +249,12 @@ class mb {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			$str = preg_replace('/^\s+/u', '', $str);
 			$str = preg_replace('/\s+$/u', '', $str);
@@ -242,7 +278,12 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			if ($str) {
 				if (
@@ -280,7 +321,12 @@ class mb {
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			if ($str) {
 				// Don't use the built-in case functions as those
@@ -331,8 +377,14 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function wordwrap(&$str, int $width=75, $break="\n", bool $cut=false) {
-		cast::string($str, true);
-		cast::string($break, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+			$break = \Blobfolio\Cast::toString($break, true);
+		}
+		else {
+			cast::string($str, true);
+			cast::string($break, true);
+		}
 
 		// Bad data?
 		if (!$str || $width <= 0) {

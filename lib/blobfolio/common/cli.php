@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class cli {
 
 	/**
@@ -71,13 +76,23 @@ class cli {
 
 			// The string comes first.
 			$str = array_shift($v);
-			ref\cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				ref\cast::string($str, true);
+			}
 
 			// Deal with codes.
 			ref\format::array_flatten($v);
 			$codes = array_filter($v, 'is_numeric');
 			if (count($codes)) {
-				ref\cast::int($codes);
+				if (BLOBCOMMON_HAS_EXT) {
+					$codes = \Blobfolio\Cast::toInt($codes);
+				}
+				else {
+					ref\cast::int($codes);
+				}
 				$out .= "\033[" . implode(';', $codes) . "m{$str}\033[0m";
 			}
 			else {

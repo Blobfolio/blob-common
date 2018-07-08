@@ -18,6 +18,11 @@ use \blobfolio\common\mb as v_mb;
 use \blobfolio\common\sanitize as v_sanitize;
 use \blobfolio\domain\domain;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 // Check for MB functions once.
 define(
 	'BLOBCOMMON_SANITIZE_HAS_MB',
@@ -42,7 +47,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			if (preg_match('/[\x80-\xff]/', $str)) {
 				$str = strtr($str, constants::ACCENT_CHARS);
@@ -69,7 +79,13 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
+
 			static::control_characters($str, true);
 			format::decode_entities($str);
 
@@ -223,7 +239,13 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
+
 			$str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
 			$str = preg_replace('/\\\\+0+/', '', $str);
 		}
@@ -242,7 +264,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::whitespace($str, 0, true);
 			mb::strtoupper($str, false, true);
@@ -296,7 +323,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::quotes($str, true);
 			static::whitespace($str, 0, true);
@@ -477,7 +509,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::quotes($str, true);
 			mb::strtolower($str, false, true);
@@ -532,7 +569,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			mb::strtolower($str, false, true);
 			$str = preg_replace('/\s/u', '', $str);
@@ -576,7 +618,13 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
+
 			$str = htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		}
 	}
@@ -590,7 +638,12 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function hostname(&$domain, bool $www=false, bool $unicode=false) {
-		cast::string($domain, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$domain = \Blobfolio\Cast::toString($domain, true);
+		}
+		else {
+			cast::string($domain, true);
+		}
 
 		$host = new domain($domain, !$www);
 		if (!$host->is_valid()) {
@@ -677,10 +730,19 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+				$protocols = \Blobfolio\Cast::toArray($protocols);
+				$domains = \Blobfolio\Cast::toArray($domains);
+			}
+			else {
+				cast::string($str, true);
+				cast::array($protocols);
+				cast::array($domains);
+			}
+
 			static::attribute_value($str, true);
 
-			cast::array($protocols);
 			$allowed_protocols = array_merge(constants::SVG_WHITELIST_PROTOCOLS, $protocols);
 			mb::strtolower($allowed_protocols, false, true);
 			$allowed_protocols = array_map('trim', $allowed_protocols);
@@ -688,7 +750,6 @@ class sanitize {
 			$allowed_protocols = array_unique($allowed_protocols);
 			sort($allowed_protocols);
 
-			cast::array($domains);
 			$allowed_domains = array_merge(constants::SVG_WHITELIST_DOMAINS, $domains);
 			static::domain($allowed_domains);
 			$allowed_domains = array_filter($allowed_domains, 'strlen');
@@ -832,7 +893,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			sanitize::quotes($str, true);
 			sanitize::whitespace($str, 0, true);
@@ -897,7 +963,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::quotes($str, true);
 			static::whitespace($str, 0, true);
@@ -924,7 +995,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::printable($str, true);
 			static::whitespace($str, 0, true);
@@ -946,7 +1022,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			// Stripe zero-width chars.
 			$str = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $str);
@@ -987,7 +1068,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
@@ -1016,7 +1102,13 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
+
 			$from = array_keys(constants::QUOTE_CHARS);
 			$to = array_values(constants::QUOTE_CHARS);
 			$str = str_replace($from, $to, $str);
@@ -1036,7 +1128,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
@@ -1062,7 +1159,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
@@ -1087,7 +1189,12 @@ class sanitize {
 	 */
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
 		// First, sanitize and build out function arguments!
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		$allowed_tags = constants::SVG_WHITELIST_TAGS;
 		static::_merge_svg_args($allowed_tags, $tags);
@@ -1433,7 +1540,12 @@ class sanitize {
 			}
 		}
 		else {
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 
 			$tmp = v_mb::parse_url($str);
 
@@ -1625,7 +1737,13 @@ class sanitize {
 				return;
 			}
 
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
+
 			static::to_range($newlines, 0);
 
 			if (!$newlines) {

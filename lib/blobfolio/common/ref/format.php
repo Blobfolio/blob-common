@@ -20,6 +20,11 @@ use \blobfolio\common\sanitize as v_sanitize;
 use \blobfolio\domain\domain;
 use \blobfolio\phone\phone;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class format {
 
 	/**
@@ -90,7 +95,13 @@ class format {
 			}
 		}
 		else {
-			cast::float($num, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$num = \Blobfolio\Cast::toFloat($num, true);
+			}
+			else {
+				cast::float($num, true);
+			}
+
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -107,7 +118,12 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_js_entities(&$str='') {
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		static::decode_unicode_entities($str);
 		static::decode_escape_entities($str);
@@ -122,7 +138,12 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_escape_entities(&$str='') {
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		$replacements = array(
 			'\b'=>chr(0x08),
@@ -147,7 +168,12 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_unicode_entities(&$str='') {
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		$last = '';
 		$class = get_called_class();
@@ -160,7 +186,12 @@ class format {
 				$str
 			);
 
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 		}
 	}
 
@@ -174,7 +205,12 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_entities(&$str='') {
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		$last = '';
 		while ($str !== $last) {
@@ -184,7 +220,12 @@ class format {
 			$str = preg_replace_callback('/&#([0-9]+);/', array(get_called_class(), 'decode_entities_chr'), $str);
 			$str = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', array(get_called_class(), 'decode_entities_hex'), $str);
 
-			cast::string($str, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toString($str, true);
+			}
+			else {
+				cast::string($str, true);
+			}
 		}
 	}
 
@@ -222,7 +263,13 @@ class format {
 			}
 		}
 		else {
-			cast::float($num, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$num = \Blobfolio\Cast::toFloat($num, true);
+			}
+			else {
+				cast::float($num, true);
+			}
+
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -248,7 +295,12 @@ class format {
 			}
 		}
 		else {
-			cast::float($num, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$num = \Blobfolio\Cast::toFloat($num, true);
+			}
+			else {
+				cast::float($num, true);
+			}
 
 			// We need a tolerable tolerance.
 			if ($precision <= 0 || $precision >= 1) {
@@ -425,7 +477,12 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function json_decode(&$str='') {
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		// Remove comments.
 		$str = preg_replace(
@@ -459,7 +516,12 @@ class format {
 		$lower = v_mb::strtolower($str, false, true);
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
-			cast::bool($str);
+			if (BLOBCOMMON_HAS_EXT) {
+				$str = \Blobfolio\Cast::toBool($str, true);
+			}
+			else {
+				cast::bool($str, true);
+			}
 			return true;
 		}
 		// Null.
@@ -674,7 +736,12 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function links(&$str, $args=null, int $pass=1) {
-		cast::string($str, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Cast::toString($str, true);
+		}
+		else {
+			cast::string($str, true);
+		}
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -900,7 +967,12 @@ class format {
 			}
 			// Otherwise de-list the line.
 			else {
-				cast::string($list[$k], true);
+				if (BLOBCOMMON_HAS_EXT) {
+					$list[$k] = \Blobfolio\Cast::toString($list[$k], true);
+				}
+				else {
+					cast::string($list[$k], true);
+				}
 
 				if ($args['delimiter']) {
 					$list[$k] = explode($args['delimiter'], $list[$k]);
@@ -919,7 +991,12 @@ class format {
 
 				// Casting?
 				if ('string' !== $args['cast']) {
-					cast::to_type($list[$k], $args['cast']);
+					if (BLOBCOMMON_HAS_EXT) {
+						$list[$k] = \Blobfolio\Cast::toType($list[$k], $args['cast']);
+					}
+					else {
+						cast::to_type($list[$k], $args['cast']);
+					}
 				}
 			}
 

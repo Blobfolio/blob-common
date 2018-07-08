@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class data {
 
 	/**
@@ -234,7 +239,12 @@ class data {
 		// Make sure everything is numeric.
 		foreach ($arr as $k=>$v) {
 			if (!is_int($arr[$k]) && !is_float($arr[$k])) {
-				ref\cast::float($arr[$k], true);
+				if (BLOBCOMMON_HAS_EXT) {
+					$arr[$k] = \Blobfolio\Cast::toFloat($arr[$k], true);
+				}
+				else {
+					ref\cast::float($arr[$k], true);
+				}
 			}
 		}
 
@@ -247,7 +257,13 @@ class data {
 			return $arr;
 		}
 
-		ref\cast::string($other, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$other = \Blobfolio\Cast::toString($other, true);
+		}
+		else {
+			ref\cast::string($other, true);
+		}
+
 		if (!$other) {
 			$other = 'Other';
 		}
@@ -546,10 +562,20 @@ class data {
 	 */
 	public static function length_in_range(string $str, $min=null, $max=null) {
 		if ((null !== $min) && !is_int($min)) {
-			ref\cast::int($min, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$min = \Blobfolio\Cast::toInt($min, true);
+			}
+			else {
+				ref\cast::int($min, true);
+			}
 		}
 		if ((null !== $max) && !is_int($max)) {
-			ref\cast::int($max, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$max = \Blobfolio\Cast::toInt($max, true);
+			}
+			else {
+				ref\cast::int($max, true);
+			}
 		}
 
 		$length = mb::strlen($str, true);
@@ -603,7 +629,16 @@ class data {
 				else {
 					$defaults[$k] = $args[$k];
 					if ($strict && (null !== $v)) {
-						ref\cast::to_type($defaults[$k], gettype($v), true);
+						if (BLOBCOMMON_HAS_EXT) {
+							$defaults[$k] = \Blobfolio\Cast::toType(
+								$defaults[$k],
+								gettype($v),
+								true
+							);
+						}
+						else {
+							ref\cast::to_type($defaults[$k], gettype($v), true);
+						}
 					}
 				}
 			}
@@ -652,10 +687,15 @@ class data {
 		}
 
 		if (is_array($soup) && count($soup)) {
-			ref\cast::string($soup);
+			if (BLOBCOMMON_HAS_EXT) {
+				$soup = \Blobfolio\Cast::toString($soup);
+			}
+			else {
+				ref\cast::string($soup);
+			}
 
 			$soup = implode('', $soup);
-			ref\sanitize::printable($soup, true);
+			ref\sanitize::printable($soup);
 
 			$soup = preg_replace('/\s/u', '', $soup);
 			$soup = array_unique(mb::str_split($soup, 1, true));

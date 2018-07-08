@@ -15,6 +15,3 @@ use \blobfolio\mimes\mimes;
 class mime extends mimes {
 
 }
-
-
-

@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 // PHP introduced WebP capabilities in batches; oddly this constant was
 // a late arrival.
 if (!defined('IMAGETYPE_WEBP')) {
@@ -213,7 +218,13 @@ class image {
 
 							// Make sure width and height are numbers.
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
-								ref\cast::float($width);
+								if (BLOBCOMMON_HAS_EXT) {
+									$width = \Blobfolio\Cast::toFloat($width, true);
+								}
+								else {
+									ref\cast::float($width, true);
+								}
+
 								if ($width <= 0) {
 									$width = null;
 								}
@@ -223,7 +234,12 @@ class image {
 							}
 
 							if (is_numeric($height) || preg_match('/^[\d\.]+px$/', $height)) {
-								ref\cast::float($height);
+								if (BLOBCOMMON_HAS_EXT) {
+									$height = \Blobfolio\Cast::toFloat($height, true);
+								}
+								else {
+									ref\cast::float($height, true);
+								}
 								if ($height <= 0) {
 									$height = null;
 								}
@@ -616,13 +632,13 @@ class image {
 					$cwebp = constants::CWEBP;
 				}
 				else {
-					ref\cast::string($cwebp, true);
+					$cwebp = (string) $cwebp;
 				}
 				if (null === $gif2webp) {
 					$gif2webp = constants::GIF2WEBP;
 				}
 				else {
-					ref\cast::string($gif2webp, true);
+					$gif2webp = (string) $gif2webp;
 				}
 
 				ref\file::path($cwebp, true, true);
@@ -654,7 +670,12 @@ class image {
 	 * @return array|bool Dimensions or false.
 	 */
 	public static function svg_dimensions($svg) {
-		ref\cast::string($svg, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$svg = \Blobfolio\Cast::toString($svg, true);
+		}
+		else {
+			ref\cast::string($svg, true);
+		}
 
 		// Make sure this is SVG-looking.
 		if (false === ($start = strpos(strtolower($svg), '<svg'))) {
@@ -698,7 +719,13 @@ class image {
 				switch ($v[1]) {
 					case 'width':
 					case 'height':
-						ref\cast::float($v[3]);
+						if (BLOBCOMMON_HAS_EXT) {
+							$v[3] = \Blobfolio\Cast::toFloat($v[3], true);
+						}
+						else {
+							ref\cast::float($v[3], true);
+						}
+
 						ref\sanitize::to_range($v[3], 0.0);
 						if ($v[3]) {
 							$out[$v[1]] = $v[3];
@@ -722,7 +749,12 @@ class image {
 			$viewbox = trim(str_replace(',', ' ', $viewbox));
 			$viewbox = explode(' ', $viewbox);
 			foreach ($viewbox as $k=>$v) {
-				ref\cast::float($viewbox[$k], true);
+				if (BLOBCOMMON_HAS_EXT) {
+					$viewbox[$k] = \Blobfolio\Cast::toFloat($viewbox[$k], true);
+				}
+				else {
+					ref\cast::float($viewbox[$k], true);
+				}
 				ref\sanitize::to_range($viewbox[$k], 0.0);
 			}
 			if (count($viewbox) === 4) {
@@ -748,8 +780,7 @@ class image {
 	 */
 	protected static function to_webp_sources(string &$from, &$to) {
 		// Validate the source.
-		ref\cast::string($from, true);
-		ref\file::path($from, true, true);
+		ref\file::path($from, true);
 		if (!$from) {
 			$from = '';
 			return false;
@@ -764,7 +795,13 @@ class image {
 
 		// Build a destination if we need to.
 		if (null !== $to) {
-			ref\cast::string($to, true);
+			if (BLOBCOMMON_HAS_EXT) {
+				$to = \Blobfolio\Cast::toString($to, true);
+			}
+			else {
+				ref\cast::string($to, true);
+			}
+
 			// If this is just a file name, throw it in from's dir.
 			if (false === strpos($to, '/')) {
 				$to = "{$info['dirname']}/$to";

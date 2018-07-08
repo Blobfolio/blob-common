@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class dom {
 
 	/**
@@ -21,7 +26,12 @@ class dom {
 	 * @return bool|DOMDocument DOM object or false.
 	 */
 	public static function load_svg($svg='') {
-		ref\cast::string($svg, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$svg = \Blobfolio\Cast::toString($svg, true);
+		}
+		else {
+			ref\cast::string($svg, true);
+		}
 
 		// First thing first, lowercase all tags.
 		$svg = preg_replace('/<svg/ui', '<svg', $svg);
@@ -231,7 +241,12 @@ class dom {
 	 * @return array Parsed styles.
 	 */
 	public static function parse_css($styles='') {
-		ref\cast::string($styles, true);
+		if (BLOBCOMMON_HAS_EXT) {
+			$styles = \Blobfolio\Cast::toString($styles, true);
+		}
+		else {
+			ref\cast::string($styles, true);
+		}
 
 		// Remove comments.
 		while (false !== ($start = mb::strpos($styles, '/*'))) {
