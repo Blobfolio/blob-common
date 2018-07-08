@@ -272,13 +272,6 @@ class constants {
 
 
 	// -------------------------------------------------
-	// MIME Types.
-
-	const MIME_DEFAULT = 'application/octet-stream';
-
-
-
-	// -------------------------------------------------
 	// Geography.
 
 	const COUNTRIES = array(
@@ -2024,6 +2017,9 @@ class constants {
 
 	// -------------------------------------------------
 	// Miscellaneous.
+
+	// Default MIME Type
+	const MIME_DEFAULT = 'application/octet-stream';
 
 	// From e.g. parse_url.
 	const URL_PARTS = array(
