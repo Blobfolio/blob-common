@@ -18,9 +18,16 @@ use \blobfolio\common\mb as v_mb;
 use \blobfolio\common\sanitize as v_sanitize;
 use \blobfolio\domain\domain;
 
-class sanitize {
+// Check for MB functions once.
+define(
+	'BLOBCOMMON_SANITIZE_HAS_MB',
+	(
+		function_exists('mb_check_encoding') &&
+		function_exists('mb_strlen')
+	)
+);
 
-	protected static $_mb;
+class sanitize {
 
 	/**
 	 * Strip Accents
@@ -1508,20 +1515,11 @@ class sanitize {
 				}
 			}
 
-			// Let's run our library checks just once.
-			if (null === static::$_mb) {
-				static::$_mb = (
-					function_exists('mb_check_encoding') &&
-					function_exists('mb_strlen') &&
-					(intval(ini_get('mbstring.func_overload'))) & 2
-				);
-			}
-
 			if (
 				$str &&
-				(!static::$_mb || !mb_check_encoding($str, 'ASCII'))
+				(!BLOBCOMMON_SANITIZE_HAS_MB || !mb_check_encoding($str, 'ASCII'))
 			) {
-				if (static::$_mb) {
+				if (BLOBCOMMON_SANITIZE_HAS_MB) {
 					$length = mb_strlen($str, '8bit');
 				}
 				else {
