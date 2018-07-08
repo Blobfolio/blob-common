@@ -2018,7 +2018,7 @@ class constants {
 	// -------------------------------------------------
 	// Miscellaneous.
 
-	// Default MIME Type
+	// Default MIME Type.
 	const MIME_DEFAULT = 'application/octet-stream';
 
 	// From e.g. parse_url.
