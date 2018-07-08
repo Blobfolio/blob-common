@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class cast {
 
 	/**
@@ -19,8 +24,7 @@ class cast {
 	 * @return array Array.
 	 */
 	public static function to_array($value=null) {
-		ref\cast::array($value);
-		return $value;
+		return static::array($value);
 	}
 
 	/**
@@ -30,6 +34,10 @@ class cast {
 	 * @return array Array.
 	 */
 	public static function array($value=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::toArray($value);
+		}
+
 		ref\cast::array($value);
 		return $value;
 	}
@@ -70,8 +78,7 @@ class cast {
 	 * @return bool Bool.
 	 */
 	public static function to_bool($value=false, bool $flatten=false) {
-		ref\cast::bool($value, $flatten);
-		return $value;
+		return static::bool($value, $flatten);
 	}
 
 	/**
@@ -82,6 +89,10 @@ class cast {
 	 * @return bool Bool.
 	 */
 	public static function bool($value=false, bool $flatten=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::toBool($value, $flatten);
+		}
+
 		ref\cast::bool($value, $flatten);
 		return $value;
 	}
@@ -94,8 +105,7 @@ class cast {
 	 * @return bool Bool.
 	 */
 	public static function boolean($value=false, bool $flatten=false) {
-		ref\cast::bool($value, $flatten);
-		return $value;
+		return static::bool($value, $flatten);
 	}
 
 	/**
@@ -106,8 +116,7 @@ class cast {
 	 * @return float Float.
 	 */
 	public static function to_float($value=0, bool $flatten=false) {
-		ref\cast::float($value, $flatten);
-		return $value;
+		return static::float($value, $flatten);
 	}
 
 	/**
@@ -118,8 +127,7 @@ class cast {
 	 * @return float Float.
 	 */
 	public static function double($value=0, bool $flatten=false) {
-		ref\cast::float($value, $flatten);
-		return $value;
+		return static::float($value, $flatten);
 	}
 
 	/**
@@ -130,6 +138,10 @@ class cast {
 	 * @return float Float.
 	 */
 	public static function float($value=0, bool $flatten=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::toFloat($value, $flatten);
+		}
+
 		ref\cast::float($value, $flatten);
 		return $value;
 	}
@@ -142,8 +154,7 @@ class cast {
 	 * @return int Int.
 	 */
 	public static function to_int($value=0, bool $flatten=false) {
-		ref\cast::int($value, $flatten);
-		return $value;
+		return static::int($value, $flatten);
 	}
 
 	/**
@@ -154,6 +165,10 @@ class cast {
 	 * @return int Int.
 	 */
 	public static function int($value=0, bool $flatten=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::toInt($value, $flatten);
+		}
+
 		ref\cast::int($value, $flatten);
 		return $value;
 	}
@@ -166,8 +181,7 @@ class cast {
 	 * @return int Int.
 	 */
 	public static function integer($value=0, bool $flatten=false) {
-		ref\cast::int($value, $flatten);
-		return $value;
+		return static::int($value, $flatten);
 	}
 
 	/**
@@ -178,8 +192,7 @@ class cast {
 	 * @return float Number.
 	 */
 	public static function to_number($value=0, bool $flatten=false) {
-		ref\cast::number($value, $flatten);
-		return $value;
+		return static::number($value, $flatten);
 	}
 
 	/**
@@ -190,6 +203,10 @@ class cast {
 	 * @return float Number.
 	 */
 	public static function number($value=0, bool $flatten=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::toNumber($value, $flatten);
+		}
+
 		ref\cast::number($value, $flatten);
 		return $value;
 	}
@@ -202,8 +219,7 @@ class cast {
 	 * @return string String.
 	 */
 	public static function to_string($value='', bool $flatten=false) {
-		ref\cast::string($value, $flatten);
-		return $value;
+		return static::string($value, $flatten);
 	}
 
 	/**
@@ -214,6 +230,10 @@ class cast {
 	 * @return string String.
 	 */
 	public static function string($value='', bool $flatten=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::toString($value, $flatten);
+		}
+
 		ref\cast::string($value, $flatten);
 		return $value;
 	}
@@ -227,6 +247,10 @@ class cast {
 	 * @return mixed Cast value.
 	 */
 	public static function to_type($value, string $type='', bool $flatten=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::toType($value, $type, $flatten);
+		}
+
 		ref\cast::to_type($value, $type, $flatten);
 		return $value;
 	}
