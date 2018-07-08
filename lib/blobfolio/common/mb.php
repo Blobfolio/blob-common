@@ -329,7 +329,11 @@ class mb {
 	 * @param string $str String.
 	 * @return bool True.
 	 */
-	public static function trim($str='') {
+	public static function trim($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::trim($str);
+		}
+
 		ref\mb::trim($str);
 		return $str;
 	}

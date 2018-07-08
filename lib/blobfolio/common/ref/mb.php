@@ -243,18 +243,18 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function trim(&$str='') {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::trim($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::trim($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			$str = preg_replace('/^\s+/u', '', $str);
 			$str = preg_replace('/\s+$/u', '', $str);

@@ -41,6 +41,11 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function accents(&$str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::accents($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::accents($str[$k]);
@@ -1095,7 +1100,12 @@ class sanitize {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function quotes(&$str='') {
+	public static function quotes(&$str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::quotes($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::quotes($str[$k]);
@@ -1726,6 +1736,11 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function whitespace(&$str='', int $newlines=0) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::whitespace($str, $newlines);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::whitespace($str[$k], $newlines);
@@ -1737,13 +1752,7 @@ class sanitize {
 				return;
 			}
 
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
-
+			cast::string($str, true);
 			static::to_range($newlines, 0);
 
 			if (!$newlines) {

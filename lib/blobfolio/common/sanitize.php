@@ -10,6 +10,11 @@
 
 namespace blobfolio\common;
 
+// The PHP module is faster.
+if (!defined('BLOBCOMMON_HAS_EXT')) {
+	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
+}
+
 class sanitize {
 
 	/**
@@ -18,7 +23,11 @@ class sanitize {
 	 * @param string $str String.
 	 * @return string String.
 	 */
-	public static function accents($str='') {
+	public static function accents($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::accents($str);
+		}
+
 		ref\sanitize::accents($str);
 		return $str;
 	}
@@ -321,7 +330,11 @@ class sanitize {
 	 * @param string $str String.
 	 * @return string String.
 	 */
-	public static function quotes($str='') {
+	public static function quotes($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::quotes($str);
+		}
+
 		ref\sanitize::quotes($str);
 		return $str;
 	}
@@ -436,6 +449,10 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function whitespace($str='', int $newlines=0) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::whitespace($str, $newlines);
+		}
+
 		ref\sanitize::whitespace($str, $newlines);
 		return $str;
 	}
