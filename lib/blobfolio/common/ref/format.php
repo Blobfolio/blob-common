@@ -37,6 +37,11 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function array_flatten(&$arr) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$arr = \Blobfolio\Arrays::flatten($arr);
+			return;
+		}
+
 		$out = array();
 
 		cast::array($arr);
@@ -68,6 +73,11 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function array_to_indexed(&$arr) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$arr = \Blobfolio\Arrays::toIndexed($arr);
+			return;
+		}
+
 		cast::array($arr);
 		if (count($arr)) {
 			$out = array();

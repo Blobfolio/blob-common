@@ -27,6 +27,10 @@ class format {
 	 * @return array Values.
 	 */
 	public static function array_flatten($arr) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::flatten($arr);
+		}
+
 		ref\format::array_flatten($arr);
 		return $arr;
 	}
@@ -43,6 +47,10 @@ class format {
 	 * @return array Array.
 	 */
 	public static function array_to_indexed($arr) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::toIndexed($arr);
+		}
+
 		ref\format::array_to_indexed($arr);
 		return $arr;
 	}

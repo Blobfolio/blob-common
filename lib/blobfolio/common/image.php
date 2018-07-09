@@ -671,11 +671,10 @@ class image {
 	 */
 	public static function svg_dimensions($svg) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$svg = \Blobfolio\Cast::toString($svg, true);
+			return \Blobfolio\Files::getSvgDimensions($svg);
 		}
-		else {
-			ref\cast::string($svg, true);
-		}
+
+		ref\cast::string($svg, true);
 
 		// Make sure this is SVG-looking.
 		if (false === ($start = strpos(strtolower($svg), '<svg'))) {
@@ -719,13 +718,7 @@ class image {
 				switch ($v[1]) {
 					case 'width':
 					case 'height':
-						if (BLOBCOMMON_HAS_EXT) {
-							$v[3] = \Blobfolio\Cast::toFloat($v[3], true);
-						}
-						else {
-							ref\cast::float($v[3], true);
-						}
-
+						ref\cast::float($v[3], true);
 						ref\sanitize::to_range($v[3], 0.0);
 						if ($v[3]) {
 							$out[$v[1]] = $v[3];
@@ -749,12 +742,7 @@ class image {
 			$viewbox = trim(str_replace(',', ' ', $viewbox));
 			$viewbox = explode(' ', $viewbox);
 			foreach ($viewbox as $k=>$v) {
-				if (BLOBCOMMON_HAS_EXT) {
-					$viewbox[$k] = \Blobfolio\Cast::toFloat($viewbox[$k], true);
-				}
-				else {
-					ref\cast::float($viewbox[$k], true);
-				}
+				ref\cast::float($viewbox[$k], true);
 				ref\sanitize::to_range($viewbox[$k], 0.0);
 			}
 			if (count($viewbox) === 4) {

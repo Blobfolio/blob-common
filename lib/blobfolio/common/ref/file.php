@@ -129,12 +129,7 @@ class file {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$path = \Blobfolio\Cast::toString($path, true);
-			}
-			else {
-				cast::string($path, true);
-			}
+			cast::string($path, true);
 
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.

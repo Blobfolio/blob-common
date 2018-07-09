@@ -17,6 +17,110 @@ use \Throwable;
 
 final class Files {
 	// -----------------------------------------------------------------
+	// Images
+	// -----------------------------------------------------------------
+
+	/**
+	 * Determine SVG Dimensions
+	 *
+	 * @param string $svg SVG content or file path.
+	 * @return array|bool Dimensions or false.
+	 */
+	public static function getSvgDimensions(string svg) -> bool | array {
+		let svg = (string) \Blobfolio\Cast::toString(svg, true);
+
+		// Make sure this is SVG-looking.
+		var start = stripos(svg, "<svg");
+		if (false === start) {
+			if (is_file(svg)) {
+				let svg = file_get_contents(svg);
+				let start = stripos(svg, "<svg");
+				if (false === start) {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+
+		// Chop the code to the opening <svg> tag.
+		if (0 !== start) {
+			let svg = substr(svg, start);
+		}
+		var end = strpos(svg, '>');
+		if (false === end) {
+			return false;
+		}
+		let svg = strtolower(substr(svg, 0, end + 1));
+
+		// Hold our values.
+		array out = [
+			"width": null,
+			"height": null
+		];
+		var viewbox = null;
+
+		// Search for width, height, and viewbox.
+		let svg = \Blobfolio\Strings::whitespace(svg, 0);
+		var match;
+		preg_match_all(
+			"/(height|width|viewbox)\s*=\s*([\"'])((?:(?!\2).)*)\2/",
+			svg,
+			match,
+			PREG_SET_ORDER
+		);
+
+		var k, v;
+		if (("array" === typeof match) && count(match)) {
+			for v in match {
+				switch (v[1]) {
+					case "width":
+					case "height":
+						let v[3] = \Blobfolio\Cast::toFloat($v[3], true);
+						if (v[3] > 0.0) {
+							let out[v[1]] = v[3];
+						}
+
+						break;
+					case "viewbox":
+						// Defer processing for later.
+						let viewbox = v[3];
+						break;
+				}
+			}
+		}
+
+		// If we have a width and height, we're done!
+		if (!empty out["width"] && !empty out["height"]) {
+			return out;
+		}
+
+		// Maybe pull from viewbox?
+		if (!empty viewbox) {
+			// Sometimes these are comma-separated.
+			let viewbox = trim(str_replace(",", " ", viewbox));
+			let viewbox = explode(" ", viewbox);
+
+			for k, v in viewbox {
+				let viewbox[k] = \Blobfolio\Cast::toFloat(v, true);
+				if (viewbox[k] < 0.0) {
+					let viewbox[k] = 0.0;
+				}
+			}
+			if ((count(viewbox) === 4) && viewbox[2] > 0.0 && viewbox[3] > 0.0) {
+				let out["width"] = viewbox[2];
+				let out["height"] = viewbox[3];
+				return out;
+			}
+		}
+
+		return false;
+	}
+
+
+
+	// -----------------------------------------------------------------
 	// Path Formatting
 	// -----------------------------------------------------------------
 

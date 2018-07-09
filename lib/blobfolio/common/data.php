@@ -288,6 +288,10 @@ class data {
 	 * @return mixed Value. False on error.
 	 */
 	public static function array_pop(array &$arr) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::pop($arr);
+		}
+
 		if (!count($arr)) {
 			return false;
 		}
@@ -303,6 +307,10 @@ class data {
 	 * @return mixed Value. False on error.
 	 */
 	public static function array_pop_rand(array &$arr) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::popRand($arr);
+		}
+
 		$length = count($arr);
 
 		if (!$length) {
@@ -665,12 +673,7 @@ class data {
 			static::switcheroo($min, $max);
 		}
 
-		if (function_exists('random_int')) {
-			return random_int($min, $max);
-		}
-		else {
-			return mt_rand($min, $max);
-		}
+		return random_int($min, $max);
 	}
 
 	/**
