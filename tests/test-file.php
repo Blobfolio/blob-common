@@ -256,19 +256,19 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 
 		// Files and directories.
 		$files = file::scandir($path);
-		$this->assertSame(true, in_array("{$path}/assets", $files, true));
+		$this->assertSame(true, in_array("{$path}/assets/", $files, true));
 		$this->assertSame(true, in_array("{$path}/assets/pi.svg", $files, true));
 		$this->assertSame(true, in_array("{$path}/test-file.php", $files, true));
 
 		// Only files.
 		$files = file::scandir($path, true, false);
-		$this->assertSame(false, in_array("{$path}/assets", $files, true));
+		$this->assertSame(false, in_array("{$path}/assets/", $files, true));
 		$this->assertSame(true, in_array("{$path}/assets/pi.svg", $files, true));
 		$this->assertSame(true, in_array("{$path}/test-file.php", $files, true));
 
 		// Only directories.
 		$files = file::scandir($path, false, true);
-		$this->assertSame(true, in_array("{$path}/assets", $files, true));
+		$this->assertSame(true, in_array("{$path}/assets/", $files, true));
 		$this->assertSame(false, in_array("{$path}/assets/pi.svg", $files, true));
 		$this->assertSame(false, in_array("{$path}/test-file.php", $files, true));
 	}
