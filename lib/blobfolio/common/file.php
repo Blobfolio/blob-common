@@ -25,6 +25,10 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function copy(string $from, string $to) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::copy($from, $to);
+		}
+
 		ref\file::path($from, true);
 		if (!$from) {
 			return false;
@@ -198,6 +202,10 @@ class file {
 	 * @return int Size.
 	 */
 	public static function dirsize(string $path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::dirsize($path);
+		}
+
 		$size = 0;
 		$files = static::scandir($path, true, false);
 		foreach ($files as $v) {
@@ -213,6 +221,10 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function empty_dir(string $path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::isEmptyDir($path);
+		}
+
 		if (!@is_readable($path) || !@is_dir($path)) {
 			return false;
 		}
@@ -245,6 +257,10 @@ class file {
 	 * @return string|bool Hash or false.
 	 */
 	public static function hash_dir($path, string $dir_algo='md5', string $file_algo=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::dirhash($path, $dir_algo, $file_algo);
+		}
+
 		// We definitely need a valid directory algorithm.
 		if (!$dir_algo || !in_array($dir_algo, hash_algos(), true)) {
 			return false;
@@ -321,6 +337,10 @@ class file {
 	 * @return int Lines.
 	 */
 	public static function line_count(string $file, bool $trim=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::getLineCount($file, $trim);
+		}
+
 		// We definitely need a file.
 		if (!$file || !@is_file($file)) {
 			return 0;
@@ -360,6 +380,10 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function mkdir(string $path, $chmod=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::mkdir($path, $chmod);
+		}
+
 		// Figure out a good default CHMOD.
 		if (!$chmod || !is_numeric($chmod)) {
 			$chmod = (fileperms(__DIR__) & 0777 | 0755);
@@ -430,6 +454,10 @@ class file {
 	 * @return string Path.
 	 */
 	public static function path($path, bool $validate=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::path($path, $validate);
+		}
+
 		ref\file::path($path, $validate);
 		return $path;
 	}
@@ -509,6 +537,10 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function rmdir(string $path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::rmdir($path);
+		}
+
 		ref\file::path($path, true);
 		if (!$path || !@is_readable($path) || !@is_dir($path)) {
 			return false;
@@ -553,6 +585,10 @@ class file {
 	 * @return array Path(s).
 	 */
 	public static function scandir($path, bool $show_files=true, bool $show_dirs=true, int $depth=-1) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::scandir($path, $show_files, $show_dirs, $depth);
+		}
+
 		ref\file::path($path, true);
 		if (!$path || !@is_dir($path) || (!$show_files && !$show_dirs)) {
 			return array();
@@ -586,7 +622,7 @@ class file {
 				}
 				elseif (@is_dir("{$path}{$file}")) {
 					if ($show_dirs) {
-						$out[] = "{$path}{$file}";
+						$out[] = "{$path}{$file}/";
 					}
 
 					if ((-1 === $inner_depth) || $inner_depth > 0) {

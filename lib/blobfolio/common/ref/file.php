@@ -118,6 +118,11 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function path(&$path, bool $validate=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$path = \Blobfolio\Files::path($path, $validate);
+			return;
+		}
+
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::path($path[$k], $validate);
