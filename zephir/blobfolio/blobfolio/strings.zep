@@ -101,7 +101,7 @@ final class Strings {
 			return str;
 		}
 
-		let str = \Blobfolio\Cast::toString(str, true);
+		let str = (string) \Blobfolio\Cast::toString(str, true);
 		if (preg_match("/[\x80-\xff]/", str)) {
 			array accent_chars = [
 				"ª":"a", "º":"o", "À":"A", "Á":"A", "Â":"A", "Ã":"A",
@@ -182,7 +182,7 @@ final class Strings {
 			return str;
 		}
 
-		let str = \Blobfolio\Cast::toString(str, true);
+		let str = (string) \Blobfolio\Cast::toString(str, true);
 
 		// Curly quotes.
 		array quote_char_keys = [
@@ -267,9 +267,9 @@ final class Strings {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
 		if (!strict || ("string" === typeof str)) {
-			let str = \Blobfolio\Cast::toString(str, true);
+			let str = (string) \Blobfolio\Cast::toString(str, true);
 
-			if ("" !== str) {
+			if (!empty str) {
 				if (
 					function_exists("mb_strtolower") &&
 					(
@@ -315,9 +315,9 @@ final class Strings {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
 		if (!strict || ("string" === typeof str)) {
-			let str = \Blobfolio\Cast::toString(str, true);
+			let str = (string) \Blobfolio\Cast::toString(str, true);
 
-			if ("" !== str) {
+			if (!empty str) {
 				if (
 					function_exists("mb_strtoupper") &&
 					(
@@ -376,7 +376,7 @@ final class Strings {
 			return str;
 		}
 
-		let str = \Blobfolio\Cast::toString(str, true);
+		let str = (string) \Blobfolio\Cast::toString(str, true);
 		return preg_replace("/(^\s+|\s+$)/u", "", str);
 	}
 
@@ -503,7 +503,7 @@ final class Strings {
 	 */
 	public static function utf8(string str) -> string {
 		// Easy bypass.
-		if (("" === str) || is_numeric(str)) {
+		if (empty str || is_numeric(str)) {
 			return str;
 		}
 
