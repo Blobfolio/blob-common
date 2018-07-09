@@ -190,20 +190,12 @@ class mb {
 	 * @param string $str String.
 	 * @return int String length.
 	 */
-	public static function strlen($str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-		}
-		else {
-			ref\cast::string($str, true);
-		}
-
+	public static function strlen(string $str) {
 		if (function_exists('mb_strlen')) {
 			return (int) mb_strlen($str, 'UTF-8');
 		}
-		else {
-			return strlen($str);
-		}
+
+		return strlen($str);
 	}
 
 	/**
@@ -218,9 +210,8 @@ class mb {
 		if (function_exists('mb_strpos')) {
 			return mb_strpos($haystack, $needle, $offset, 'UTF-8');
 		}
-		else {
-			return strpos($haystack, $needle, $offset);
-		}
+
+		return strpos($haystack, $needle, $offset);
 	}
 
 	/**
@@ -297,20 +288,12 @@ class mb {
 	 * @param int $length Length.
 	 * @return string String.
 	 */
-	public static function substr($str, $start=0, $length=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-		}
-		else {
-			ref\cast::string($str, true);
-		}
-
+	public static function substr(string $str, int $start=0, $length=null) {
 		if (function_exists('mb_substr')) {
 			return mb_substr($str, $start, $length, 'UTF-8');
 		}
-		else {
-			return substr($str, $start, $length);
-		}
+
+		return substr($str, $start, $length);
 	}
 
 	/**
@@ -357,6 +340,10 @@ class mb {
 	 * @return string String.
 	 */
 	public static function ucfirst($str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::ucfirst($str, $strict);
+		}
+
 		ref\mb::ucfirst($str, $strict);
 		return $str;
 	}
@@ -372,6 +359,10 @@ class mb {
 	 * @return string String.
 	 */
 	public static function ucwords($str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::ucwords($str, $strict);
+		}
+
 		ref\mb::ucwords($str, $strict);
 		return $str;
 	}

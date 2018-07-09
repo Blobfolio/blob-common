@@ -92,18 +92,18 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function leadingslash(&$path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$path = \Blobfolio\Files::leadingSlash($path);
+			return;
+		}
+
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::leadingslash($path[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$path = \Blobfolio\Cast::toString($path, true);
-			}
-			else {
-				cast::string($path, true);
-			}
+			cast::string($path, true);
 
 			static::unleadingslash($path, true);
 			$path = "/$path";
@@ -192,18 +192,18 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function trailingslash(&$path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$path = \Blobfolio\Files::trailingSlash($path);
+			return;
+		}
+
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::trailingslash($path[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$path = \Blobfolio\Cast::toString($path, true);
-			}
-			else {
-				cast::string($path, true);
-			}
+			cast::string($path, true);
 
 			static::untrailingslash($path, true);
 			$path .= '/';
@@ -217,18 +217,18 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function unixslash(&$path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$path = \Blobfolio\Files::unixSlash($path);
+			return;
+		}
+
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unixslash($path[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$path = \Blobfolio\Cast::toString($path, true);
-			}
-			else {
-				cast::string($path, true);
-			}
+			cast::string($path, true);
 
 			$path = str_replace('\\', '/', $path);
 			$path = str_replace('/./', '//', $path);
@@ -243,18 +243,18 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function unleadingslash(&$path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$path = \Blobfolio\Files::unleadingSlash($path);
+			return;
+		}
+
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unleadingslash($path[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$path = \Blobfolio\Cast::toString($path, true);
-			}
-			else {
-				cast::string($path, true);
-			}
+			cast::string($path, true);
 
 			static::unixslash($path, true);
 			$path = ltrim($path, '/');
@@ -268,18 +268,18 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function untrailingslash(&$path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$path = \Blobfolio\Files::untrailingSlash($path);
+			return;
+		}
+
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::untrailingslash($path[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$path = \Blobfolio\Cast::toString($path, true);
-			}
-			else {
-				cast::string($path, true);
-			}
+			cast::string($path, true);
 
 			static::unixslash($path, true);
 			$path = rtrim($path, '/');

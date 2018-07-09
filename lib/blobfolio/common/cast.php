@@ -58,6 +58,10 @@ class cast {
 			return false;
 		}
 
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::getArrayType($arr);
+		}
+
 		$keys = array_keys($arr);
 		if (range(0, count($keys) - 1) === $keys) {
 			return 'sequential';

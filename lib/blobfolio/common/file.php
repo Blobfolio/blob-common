@@ -608,6 +608,10 @@ class file {
 	 * @return string Path.
 	 */
 	public static function trailingslash($path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::trailingSlash($path);
+		}
+
 		ref\file::trailingslash($path);
 		return $path;
 	}
@@ -619,6 +623,10 @@ class file {
 	 * @return string Path.
 	 */
 	public static function unixslash($path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::unixSlash($path);
+		}
+
 		ref\file::unixslash($path);
 		return $path;
 	}
@@ -630,6 +638,10 @@ class file {
 	 * @return string Path.
 	 */
 	public static function unleadingslash($path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::unleadingSlash($path);
+		}
+
 		ref\file::unleadingslash($path);
 		return $path;
 	}
@@ -706,6 +718,10 @@ class file {
 	 * @return string Path.
 	 */
 	public static function untrailingslash($path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::untrailingSlash($path);
+		}
+
 		ref\file::untrailingslash($path);
 		return $path;
 	}

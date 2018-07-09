@@ -255,9 +255,7 @@ class mb {
 		}
 		else {
 			cast::string($str, true);
-
-			$str = preg_replace('/^\s+/u', '', $str);
-			$str = preg_replace('/\s+$/u', '', $str);
+			$str = preg_replace('/(^\s+|\s+$)/u', '', $str);
 		}
 	}
 
@@ -272,18 +270,18 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function ucfirst(&$str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::ucfirst($str, $strict);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ucfirst($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			if ($str) {
 				if (
@@ -293,9 +291,9 @@ class mb {
 						!mb_check_encoding($str, 'ASCII')
 					)
 				) {
-					$first = v_mb::substr($str, 0, 1, true);
-					static::strtoupper($first, false, true);
-					$str = $first . v_mb::substr($str, 1, null, true);
+					$first = v_mb::substr($str, 0, 1);
+					static::strtoupper($first, false);
+					$str = $first . v_mb::substr($str, 1, null);
 				}
 				else {
 					$str = ucfirst($str);
@@ -315,50 +313,31 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function ucwords(&$str='', bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::ucwords($str, $strict);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ucwords($str[$k], $strict);
 			}
 		}
 		elseif (!$strict || is_string($str)) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			if ($str) {
-				// Don't use the built-in case functions as those
-				// kinda suck. Instead let's adjust manually.
-				$extra = array();
-
 				// The first letter.
-				preg_match_all('/^(\p{L})/u', $str, $matches);
-				if (count($matches[0])) {
-					static::strtoupper($matches[1][0], false, true);
-					if ($matches[0][0] !== $matches[1][0]) {
-						$extra[$matches[0][0]] = $matches[1][0];
-					}
-				}
+				$str = preg_replace_callback('/^(\p{L})/u', function($matches) {
+					static::strtoupper($matches[0]);
+					return $matches[0];
+				}, $str);
 
 				// Any letter following a dash, space, or forward slash.
-				preg_match_all('/(\s|\p{Pd}|\/)(.)/u', $str, $matches);
-				if (count($matches[0])) {
-					foreach ($matches[0] as $k=>$v) {
-						static::strtoupper($matches[2][$k], false, true);
-						$new = $matches[1][$k] . $matches[2][$k];
-						if ($v !== $new) {
-							$extra[$v] = $new;
-						}
-					}
-				}
-
-				// Make replacement(s).
-				if (count($extra)) {
-					$extra = array_unique($extra);
-					$str = str_replace(array_keys($extra), array_values($extra), $str);
-				}
+				$str = preg_replace_callback('/(\s|\p{Pd}|\/)(.)/u', function($matches) {
+					static::strtoupper($matches[2], false);
+					return $matches[1] . $matches[2];
+				}, $str);
 			}
 		}
 	}

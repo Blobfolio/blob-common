@@ -2,7 +2,6 @@
 
 require(__DIR__ . '/../../lib/vendor/autoload.php');
 
-// define('BLOBCOMMON_HAS_EXT', true);
 
 $data = array(
 	'Björk Guðmundsdóttir',

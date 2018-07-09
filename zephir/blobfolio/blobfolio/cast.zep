@@ -35,21 +35,6 @@ final class Cast {
 		"yes": true
 	];
 
-	/**
-	 * @var array $win1252_chars Win-1252: UTF-8.
-	 */
-	private static win1252_chars = [
-		128: "\xe2\x82\xac", 130: "\xe2\x80\x9a", 131: "\xc6\x92",
-		132: "\xe2\x80\x9e", 133: "\xe2\x80\xa6", 134: "\xe2\x80\xa0",
-		135: "\xe2\x80\xa1", 136: "\xcb\x86", 137: "\xe2\x80\xb0",
-		138: "\xc5\xa0", 139: "\xe2\x80\xb9", 140: "\xc5\x92",
-		142: "\xc5\xbd", 145: "\xe2\x80\x98", 146: "\xe2\x80\x99",
-		147: "\xe2\x80\x9c", 148: "\xe2\x80\x9d", 149: "\xe2\x80\xa2",
-		150: "\xe2\x80\x93", 151: "\xe2\x80\x94", 152: "\xcb\x9c",
-		153: "\xe2\x84\xa2", 154: "\xc5\xa1", 155: "\xe2\x80\xba",
-		156: "\xc5\x93", 158: "\xc5\xbe", 159: "\xc5\xb8"
-	];
-
 
 
 	// -----------------------------------------------------------------
@@ -190,85 +175,6 @@ final class Cast {
 	}
 
 	/**
-	 * To String
-	 *
-	 * @param mixed $value Value.
-	 * @param bool $flatten Flatten.
-	 * @return string String.
-	 */
-	public static function toString(var value, const bool! flatten=false) -> string | array {
-		// Recurse.
-		if (!flatten && ("array" === typeof value)) {
-			var k, v;
-			for k, v in value {
-				let value[k] = self::toString(v);
-			}
-			return value;
-		}
-
-		// If a single-entry array is passed, use that value.
-		if (("array" === typeof value) && (1 === count(value))) {
-			reset(value);
-			let value = value[key(value)];
-		}
-
-		try {
-			let value = (string) value;
-		} catch Throwable {
-			let value = "";
-		}
-
-		// Fix up UTF-8 maybe.
-		if (
-			value &&
-			(
-				!function_exists("mb_check_encoding") ||
-				!mb_check_encoding(value, "ASCII")
-			)
-		) {
-			let value = self::_utf8(value);
-		}
-
-		return value;
-	}
-
-	/**
-	 * To X Type
-	 *
-	 * @param mixed $value Variable.
-	 * @param string $type Type.
-	 * @param bool $flatten Do not recurse.
-	 * @return void Nothing.
-	 */
-	public static function toType(var value, string! type, const bool! flatten=false) {
-		switch (strtolower(type)) {
-			case "string":
-				return self::toString(value, flatten);
-			case "int":
-			case "integer":
-			case "long":
-				return self::toInt(value, flatten);
-			case "double":
-			case "float":
-			case "number":
-				return self::toFloat(value, flatten);
-			case "bool":
-			case "boolean":
-				return self::toBool(value, flatten);
-			case "array":
-				return self::toArray(value);
-		}
-
-		return value;
-	}
-
-
-
-	// -----------------------------------------------------------------
-	// Helpers
-	// -----------------------------------------------------------------
-
-	/**
 	 * Sanitize Number
 	 *
 	 * This ultimately returns a float, but does a lot of string
@@ -363,151 +269,174 @@ final class Cast {
 	}
 
 	/**
-	 * UTF-8
+	 * To String
 	 *
-	 * Ensure string contains valid UTF-8 encoding.
+	 * @param mixed $value Value.
+	 * @param bool $flatten Flatten.
+	 * @return string String.
+	 */
+	public static function toString(var value, const bool! flatten=false) -> string | array {
+		// Recurse.
+		if (!flatten && ("array" === typeof value)) {
+			var k, v;
+			for k, v in value {
+				let value[k] = self::toString(v);
+			}
+			return value;
+		}
+
+		// If a single-entry array is passed, use that value.
+		if (("array" === typeof value) && (1 === count(value))) {
+			reset(value);
+			let value = value[key(value)];
+		}
+
+		try {
+			let value = (string) value;
+		} catch Throwable {
+			let value = "";
+		}
+
+		// Fix up UTF-8 maybe.
+		if (
+			value &&
+			(
+				!function_exists("mb_check_encoding") ||
+				!mb_check_encoding(value, "ASCII")
+			)
+		) {
+			let value = \Blobfolio\Strings::utf8(value);
+		}
+
+		return value;
+	}
+
+	/**
+	 * To X Type
 	 *
-	 * @see {https://github.com/neitanod/forceutf8}
-	 *
-	 * @param string $str String.
+	 * @param mixed $value Variable.
+	 * @param string $type Type.
+	 * @param bool $flatten Do not recurse.
 	 * @return void Nothing.
 	 */
-	private static function _utf8(string str) -> string {
-		// Easy bypass.
-		if (("" === str) || is_numeric(str)) {
-			return str;
+	public static function toType(var value, string! type, const bool! flatten=false) {
+		switch (strtolower(type)) {
+			case "string":
+				return self::toString(value, flatten);
+			case "int":
+			case "integer":
+			case "long":
+				return self::toInt(value, flatten);
+			case "double":
+			case "float":
+			case "number":
+				return self::toFloat(value, flatten);
+			case "bool":
+			case "boolean":
+				return self::toBool(value, flatten);
+			case "array":
+				return self::toArray(value);
 		}
 
-		// Let"s run our library checks just once.
-		bool has_mb = (
-			function_exists("mb_check_encoding") &&
-			function_exists("mb_strlen")
-		);
+		return value;
+	}
 
-		// Fix it up if we need to.
-		if (!has_mb || !mb_check_encoding(str, "ASCII")) {
-			string out = "";
-			int length = 0;
 
-			// The length of the string.
-			if (has_mb) {
-				let length = (int) mb_strlen(str, "8bit");
-			}
-			else {
-				let length = (int) strlen(str);
-			}
 
-			// We need to keep our chars variant for bitwise operations.
-			var c1, c2, c3, c4, cc1, cc2;
-			var x00 = "\x00";
-			var x3f = "\x3f";
-			var x80 = "\x80";
-			var xbf = "\xbf";
-			var xc0 = "\xc0";
-			var xdf = "\xdf";
-			var xe0 = "\xe0";
-			var xef = "\xef";
-			var xf0 = "\xf0";
-			var xf7 = "\xf7";
+	// -----------------------------------------------------------------
+	// Helpers
+	// -----------------------------------------------------------------
 
-			int x = 0;
-			while x < length {
-				let c1 = substr(str, x, 1);
+	/**
+	 * Get Array Type
+	 *
+	 * "associative": If there are string keys.
+	 * "sequential": If the keys are sequential numbers.
+	 * "indexed": If the keys are at least numeric.
+	 * FALSE: Any other condition.
+	 *
+	 * @param array $arr Array.
+	 * @return string|bool Type. False on failure.
+	 */
+	public static function getArrayType(const array arr) -> string | bool {
+		if (!is_array(arr) || !count(arr)) {
+			return false;
+		}
 
-				// Should be converted to UTF-8 if not already.
-				if (c1 >= xc0) {
-					let c2 = (x + 1) >= length ? strval(x00) : strval(str[x + 1]);
-					let c3 = (x + 2) >= length ? strval(x00) : strval(str[x + 2]);
-					let c4 = (x + 3) >= length ? strval(x00) : strval(str[x + 3]);
+		array keys = (array) array_keys(arr);
+		if (range(0, count(keys) - 1) === keys) {
+			return "sequential";
+		}
+		elseif (count(keys) === count(array_filter(keys, "is_numeric"))) {
+			return "indexed";
+		}
 
-					// Probably 2-byte UTF-8.
-					if ((c1 >= xc0) & (c1 <= xdf)) {
-						// Looks good.
-						if (c2 >= x80 && c2 <= xbf) {
-							let out .= c1 . c2;
-							let x += 1;
-						}
-						// Invalid; convert it.
-						else {
-							let cc1 = (chr(ord(c1) / 64) | xc0);
-							let cc2 = (c1 & x3f) | x80;
-							let out .= cc1 . cc2;
-						}
-					}
-					// Probably 3-byte UTF-8.
-					elseif ((c1 >= xe0) & (c1 <= xef)) {
-						// Looks good.
-						if (
-							c2 >= x80 &&
-							c2 <= xbf &&
-							c3 >= x80 &&
-							c3 <= xbf
-						) {
-							let out .= c1 . c2 . c3;
-							let x += 2;
-						}
-						// Invalid; convert it.
-						else {
-							let cc1 = strval((chr(ord(c1) / 64) | xc0));
-							let cc2 = strval((c1 & x3f) | x80);
-							let out .= cc1 . cc2;
-						}
-					}
-					// Probably 4-byte UTF-8.
-					elseif ((c1 >= xf0) & (c1 <= xf7)) {
-						// Looks good.
-						if (
-							c2 >= x80 &&
-							c2 <= xbf &&
-							c3 >= x80 &&
-							c3 <= xbf &&
-							c4 >= x80 &&
-							c4 <= xbf
-						) {
-							let out .= c1 . c2 . c3 . c4;
-							let x += 3;
-						}
-						// Invalid; convert it.
-						else {
-							let cc1 = strval((chr(ord(c1) / 64) | xc0));
-							let cc2 = strval((c1 & x3f) | x80);
-							let out .= cc1 . cc2;
-						}
-					}
-					// Doesn"t appear to be UTF-8; convert it.
-					else {
-						let cc1 = strval((chr(ord(c1) / 64) | xc0));
-						let cc2 = strval(((c1 & x3f) | x80));
-						let out .= cc1 . cc2;
-					}
+		return "associative";
+	}
+
+	/**
+	 * Parse Arguments
+	 *
+	 * Make sure user arguments follow a default
+	 * format. Unlike `wp_parse_args()`-type functions,
+	 * only keys from the template are allowed.
+	 *
+	 * @param mixed $args User arguments.
+	 * @param mixed $defaults Default values/format.
+	 * @param bool $strict Strict type enforcement.
+	 * @param bool $recursive Recursively apply formatting if inner values are also arrays.
+	 * @return array Parsed arguments.
+	 */
+	public static function parseArgs(var args, var defaults, const bool strict=true, const bool recursive=true) -> array {
+		// Nothing to crunch if the template isn't set.
+		let defaults = self::toArray(defaults);
+		if (!count(defaults)) {
+			return [];
+		}
+
+		// If there are no arguments to crunch, return the template.
+		let args = self::toArray(args);
+		if (!count(args)) {
+			return defaults;
+		}
+
+		// Rebuild with user args!
+		var k, v;
+		for k, v in defaults {
+			if (array_key_exists(k, args)) {
+				// Recurse if the default is a populated associative
+				// array.
+				if (
+					recursive &&
+					("array" === typeof defaults[k]) &&
+					("associative" === self::getArrayType(defaults[k]))
+				) {
+					let defaults[k] = self::parseArgs(
+						args[k],
+						defaults[k],
+						strict,
+						recursive
+					);
 				}
-				// Convert it.
-				elseif ((c1 & xc0) === x80) {
-					int o1 = (int) ord(c1);
-
-					// Convert from Windows-1252.
-					if (isset(self::win1252_chars[o1])) {
-						let out .= self::win1252_chars[o1];
-					}
-					else {
-						let cc1 = strval((chr(o1 / 64) | xc0));
-						let cc2 = strval(((c1 & x3f) | x80));
-						let out .= cc1 . cc2;
-					}
-				}
-				// No change.
+				// Otherwise just replace.
 				else {
-					let out .= c1;
+					let defaults[k] = args[k];
+					if (strict && (null !== v)) {
+						string d_type = typeof v;
+						string a_type = typeof defaults[k];
+
+						if (a_type !== d_type) {
+							let defaults[k] = self::toType(
+								defaults[k],
+								d_type,
+								true
+							);
+						}
+					}
 				}
-
-				// Increment.
-				let x += 1;
 			}
-
-			// If it seems valid, return it, otherwise empty it out.
-			return (1 === preg_match("/^./us", out)) ? out : "";
 		}
 
-		return str;
+		return defaults;
 	}
 }

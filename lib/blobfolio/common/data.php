@@ -608,11 +608,23 @@ class data {
 	 * @return array Parsed arguments.
 	 */
 	public static function parse_args($args, $defaults, bool $strict=true, bool $recursive=true) {
-		ref\cast::array($args);
-		ref\cast::array($defaults);
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Cast::parseArgs(
+				$args,
+				$defaults,
+				$strict,
+				$recursive
+			);
+		}
 
+		ref\cast::array($defaults);
 		if (!count($defaults)) {
 			return array();
+		}
+
+		ref\cast::array($args);
+		if (!count($args)) {
+			return $defaults;
 		}
 
 		foreach ($defaults as $k=>$v) {
@@ -629,16 +641,7 @@ class data {
 				else {
 					$defaults[$k] = $args[$k];
 					if ($strict && (null !== $v)) {
-						if (BLOBCOMMON_HAS_EXT) {
-							$defaults[$k] = \Blobfolio\Cast::toType(
-								$defaults[$k],
-								gettype($v),
-								true
-							);
-						}
-						else {
-							ref\cast::to_type($defaults[$k], gettype($v), true);
-						}
+						ref\cast::to_type($defaults[$k], gettype($v), true);
 					}
 				}
 			}
