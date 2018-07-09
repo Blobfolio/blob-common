@@ -433,7 +433,7 @@ class sanitize {
 	 * @param string $str String.
 	 * @return string String.
 	 */
-	public static function utf8($str='') {
+	public static function utf8($str) {
 		ref\sanitize::utf8($str);
 		return $str;
 	}
