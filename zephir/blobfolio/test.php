@@ -2,7 +2,6 @@
 
 require(__DIR__ . '/../../lib/vendor/autoload.php');
 
-
 $data = array(
 	'Björk Guðmundsdóttir',
 	trim(file_get_contents(__DIR__ . '/test1.txt')),
@@ -18,10 +17,12 @@ foreach ($data as $v) {
 
 	$start = microtime(true);
 	var_dump(\blobfolio\common\cast::string($v, true));
+	//\blobfolio\common\file::scandir(__DIR__);
 	$lib += (microtime(true) - $start);
 
 	$start = microtime(true);
 	var_dump(Blobfolio\Cast::toString($v, true));
+	//Blobfolio\Files::scandir(__DIR__);
 	$ext += (microtime(true) - $start);
 
 	echo "\n\n";
