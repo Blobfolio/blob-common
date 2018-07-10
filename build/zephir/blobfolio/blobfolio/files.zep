@@ -27,11 +27,11 @@ final class Files {
 	 * @return array|bool Dimensions or false.
 	 */
 	public static function getSvgDimensions(string svg) -> bool | array {
-		let svg = (string) \Blobfolio\Cast::toString(svg, true);
+		let svg = Cast::toString(svg, true);
 
 		// Make sure this is SVG-looking.
 		var start = stripos(svg, "<svg");
-		if (false === start) {
+		if (unlikely false === start) {
 			if (is_file(svg)) {
 				let svg = file_get_contents(svg);
 				let start = stripos(svg, "<svg");
@@ -49,7 +49,7 @@ final class Files {
 			let svg = substr(svg, start);
 		}
 		var end = strpos(svg, '>');
-		if (false === end) {
+		if (unlikely false === end) {
 			return false;
 		}
 		let svg = strtolower(substr(svg, 0, end + 1));
@@ -62,7 +62,7 @@ final class Files {
 		var viewbox = null;
 
 		// Search for width, height, and viewbox.
-		let svg = \Blobfolio\Strings::whitespace(svg, 0);
+		let svg = Strings::whitespace(svg, 0);
 		var match;
 		preg_match_all(
 			"/(height|width|viewbox)\s*=\s*([\"'])((?:(?!\2).)*)\2/",
@@ -77,7 +77,7 @@ final class Files {
 				switch (v[1]) {
 					case "width":
 					case "height":
-						let v[3] = \Blobfolio\Cast::toFloat($v[3], true);
+						let v[3] = Cast::toFloat($v[3], true);
 						if (v[3] > 0.0) {
 							let out[v[1]] = v[3];
 						}
@@ -103,7 +103,7 @@ final class Files {
 			let viewbox = explode(" ", viewbox);
 
 			for k, v in viewbox {
-				let viewbox[k] = \Blobfolio\Cast::toFloat(v, true);
+				let viewbox[k] = Cast::toFloat(v, true);
 				if (viewbox[k] < 0.0) {
 					let viewbox[k] = 0.0;
 				}
@@ -132,7 +132,7 @@ final class Files {
 	 */
 	public static function leadingSlash(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::leadingSlash(v);
@@ -152,7 +152,7 @@ final class Files {
 	 */
 	public static function path(var str, const bool validate=true) -> string | bool {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::path(v, validate);
@@ -160,16 +160,16 @@ final class Files {
 			return str;
 		}
 
-		let str = (string) \Blobfolio\Cast::toString(str, true);
+		let str = Cast::toString(str, true);
 
 		// This might be a URL rather than something local. We only want
 		// to focus on local ones.
 		if (preg_match("#^(https?|ftps?|sftp):#iu", str)) {
 			// TODO try not to depend on library methods.
-			var class_name = "\\blobfolio\\common\\sanitize";
+			/* var class_name = "\\blobfolio\\common\\sanitize";
 			if (class_exists(class_name)) {
 				return {class_name}::url(str);
-			}
+			} */
 
 			return str;
 		}
@@ -225,7 +225,7 @@ final class Files {
 	 */
 	public static function trailingSlash(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::trailingSlash(v);
@@ -244,7 +244,7 @@ final class Files {
 	 */
 	public static function unixSlash(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::unixSlash(v);
@@ -252,7 +252,7 @@ final class Files {
 			return str;
 		}
 
-		let str = (string) \Blobfolio\Cast::toString(str, true);
+		let str = Cast::toString(str, true);
 		let str = str_replace("\\", "/", str);
 		let str = str_replace("/./", "/", str);
 		return preg_replace("#/{2,}#u", "/", str);
@@ -266,7 +266,7 @@ final class Files {
 	 */
 	public static function unleadingSlash(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::unleadingSlash(v);
@@ -286,7 +286,7 @@ final class Files {
 	 */
 	public static function untrailingSlash(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::untrailingSlash(v);
@@ -313,12 +313,12 @@ final class Files {
 	 */
 	public static function copy(string from, string to) -> bool {
 		// Double-check the from.
-		let from = (string) self::path(from, true);
+		let from = self::path(from, true);
 		if (empty from) {
 			return false;
 		}
 
-		let to = (string) self::path(to, false);
+		let to = self::path(to, false);
 		if (empty to || (from === to)) {
 			return false;
 		}
@@ -409,7 +409,7 @@ final class Files {
 			let file_algo = dir_algo;
 		}
 
-		array files = (array) static::scandir(str, true, false);
+		array files = (array) self::scandir(str, true, false);
 		if (!count(files)) {
 			return hash(dir_algo, "empty");
 		}
@@ -547,13 +547,13 @@ final class Files {
 
 				// Base should be inside path. If not, something weird
 				// has happened.
-				if (0 !== \Blobfolio\Strings::strpos(str, base)) {
+				if (0 !== Strings::strpos(str, base)) {
 					return true;
 				}
 
-				let str = (string) \Blobfolio\Strings::substr(
+				let str = Strings::substr(
 					str,
-					\Blobfolio\Strings::strlen(base),
+					Strings::strlen(base),
 					null
 				);
 				let str = self::unleadingSlash(str);
@@ -585,7 +585,7 @@ final class Files {
 	 * @return bool True/false.
 	 */
 	public static function rmdir(string str) -> bool {
-		let str = (string) self::path(str, true);
+		let str = self::path(str, true);
 		if (empty str || !is_readable(str) || !is_dir(str)) {
 			return false;
 		}
@@ -633,8 +633,8 @@ final class Files {
 	 * @param int $depth Depth.
 	 * @return array Path(s).
 	 */
-	public static function scandir(string str, const bool show_files=true, const bool show_dirs=true, const int depth=-1) {
-		let str = (string) self::path(str, true);
+	public static function scandir(string str, const bool show_files=true, const bool show_dirs=true, const int depth=-1) -> array {
+		let str = self::path(str, true);
 		if (empty str || !is_dir(str) || (!show_files && !show_dirs)) {
 			return [];
 		}

@@ -93,7 +93,7 @@ final class Strings {
 	 */
 	public static function accents(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::accents(v);
@@ -101,7 +101,7 @@ final class Strings {
 			return str;
 		}
 
-		let str = (string) \Blobfolio\Cast::toString(str, true);
+		let str = Cast::toString(str, true);
 		if (preg_match("/[\x80-\xff]/", str)) {
 			array accent_chars = [
 				"ª":"a", "º":"o", "À":"A", "Á":"A", "Â":"A", "Ã":"A",
@@ -174,7 +174,7 @@ final class Strings {
 	 */
 	public static function quotes(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::quotes(v);
@@ -182,7 +182,7 @@ final class Strings {
 			return str;
 		}
 
-		let str = (string) \Blobfolio\Cast::toString(str, true);
+		let str = Cast::toString(str, true);
 
 		// Curly quotes.
 		array quote_char_keys = [
@@ -209,11 +209,7 @@ final class Strings {
 	 * @return int String length.
 	 */
 	public static function strlen(const string str) -> int {
-		if (function_exists("mb_strlen")) {
-			return (int) mb_strlen(str, "UTF-8");
-		}
-
-		return (int) strlen(str);
+		return (int) mb_strlen(str, "UTF-8");
 	}
 
 	/**
@@ -225,11 +221,7 @@ final class Strings {
 	 * @return int|bool First occurrence or false.
 	 */
 	public static function strpos(const string haystack, const string needle, const int offset=0) -> int | bool {
-		if (function_exists("mb_strpos")) {
-			return mb_strpos(haystack, needle, offset, "UTF-8");
-		}
-
-		return strpos(haystack, needle, offset);
+		return mb_strpos(haystack, needle, offset, "UTF-8");
 	}
 
 	/**
@@ -241,11 +233,7 @@ final class Strings {
 	 * @return int|bool Last occurrence or false.
 	 */
 	public static function strrpos(const string haystack, const string needle, const int offset=0) -> int | bool {
-		if (function_exists("mb_strrpos")) {
-			return mb_strrpos(haystack, needle, offset, "UTF-8");
-		}
-
-		return strrpos(haystack, needle, offset);
+		return mb_strrpos(haystack, needle, offset, "UTF-8");
 	}
 
 	/**
@@ -256,7 +244,7 @@ final class Strings {
 	 */
 	public static function strtolower(var str, const bool strict=false) {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::strtolower(v, strict);
@@ -267,16 +255,10 @@ final class Strings {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
 		if (!strict || ("string" === typeof str)) {
-			let str = (string) \Blobfolio\Cast::toString(str, true);
+			let str = Cast::toString(str, true);
 
 			if (!empty str) {
-				if (
-					function_exists("mb_strtolower") &&
-					(
-						!function_exists("mb_check_encoding") ||
-						!mb_check_encoding($str, "ASCII")
-					)
-				) {
+				if (unlikely !mb_check_encoding($str, "ASCII")) {
 					// Hit the bulk of the conversion.
 					let str = mb_strtolower(str, "UTF-8");
 
@@ -304,7 +286,7 @@ final class Strings {
 	 */
 	public static function strtoupper(var str, const bool strict=false) {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::strtoupper(v, strict);
@@ -315,16 +297,10 @@ final class Strings {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
 		if (!strict || ("string" === typeof str)) {
-			let str = (string) \Blobfolio\Cast::toString(str, true);
+			let str = Cast::toString(str, true);
 
 			if (!empty str) {
-				if (
-					function_exists("mb_strtoupper") &&
-					(
-						!function_exists("mb_check_encoding") ||
-						!mb_check_encoding($str, "ASCII")
-					)
-				) {
+				if (unlikely !mb_check_encoding($str, "ASCII")) {
 					// Hit the bulk of the conversion.
 					let str = mb_strtoupper(str, "UTF-8");
 
@@ -353,11 +329,7 @@ final class Strings {
 	 * @return string String.
 	 */
 	public static function substr(const string str, const int start=0, const var length=null) -> string | bool {
-		if (function_exists("mb_substr")) {
-			return mb_substr(str, start, length, "UTF-8");
-		}
-
-		return substr(str, start, length);
+		return mb_substr(str, start, length, "UTF-8");
 	}
 
 	/**
@@ -368,7 +340,7 @@ final class Strings {
 	 */
 	public static function trim(var str) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::trim(v);
@@ -376,7 +348,7 @@ final class Strings {
 			return str;
 		}
 
-		let str = (string) \Blobfolio\Cast::toString(str, true);
+		let str = Cast::toString(str, true);
 		return preg_replace("/(^\s+|\s+$)/u", "", str);
 	}
 
@@ -392,7 +364,7 @@ final class Strings {
 	 */
 	public static function ucfirst(var str, const bool strict=false) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::ucfirst(v, strict);
@@ -403,16 +375,10 @@ final class Strings {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
 		if (!strict || ("string" === typeof str)) {
-			let str = (string) \Blobfolio\Cast::toString(str, true);
+			let str = Cast::toString(str, true);
 
 			if (str) {
-				if (
-					function_exists("mb_substr") &&
-					(
-						!function_exists("mb_check_encoding") ||
-						!mb_check_encoding(str, "ASCII")
-					)
-				) {
+				if (unlikely !mb_check_encoding(str, "ASCII")) {
 					string first = (string) self::substr(str, 0, 1);
 					let first = self::strtoupper($first, false);
 					let str = first . self::substr(str, 1, null);
@@ -438,7 +404,7 @@ final class Strings {
 	 */
 	public static function ucwords(var str, const bool strict=false) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::ucwords(v, strict);
@@ -449,7 +415,7 @@ final class Strings {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
 		if (!strict || ("string" === typeof str)) {
-			let str = (string) \Blobfolio\Cast::toString(str, true);
+			let str = Cast::toString(str, true);
 
 			if (str) {
 				// The first letter.
@@ -477,7 +443,7 @@ final class Strings {
 	 * @param array $matches Matches.
 	 * @return string Replacement.
 	 */
-	public static function ucwordsCallback1(array matches) -> string {
+	private static function ucwordsCallback1(array matches) -> string {
 		return self::strtoupper(matches[0]);
 	}
 
@@ -487,7 +453,7 @@ final class Strings {
 	 * @param array $matches Matches.
 	 * @return string Replacement.
 	 */
-	public static function ucwordsCallback2(array matches) -> string {
+	private static function ucwordsCallback2(array matches) -> string {
 		return matches[1] . self::strtoupper(matches[2]);
 	}
 
@@ -507,24 +473,10 @@ final class Strings {
 			return str;
 		}
 
-		// Let"s run our library checks just once.
-		bool has_mb = (
-			function_exists("mb_check_encoding") &&
-			function_exists("mb_strlen")
-		);
-
 		// Fix it up if we need to.
-		if (!has_mb || !mb_check_encoding(str, "ASCII")) {
+		if (!mb_check_encoding(str, "ASCII")) {
 			string out = "";
-			int length = 0;
-
-			// The length of the string.
-			if (has_mb) {
-				let length = (int) mb_strlen(str, "8bit");
-			}
-			else {
-				let length = (int) strlen(str);
-			}
+			int length = (int) mb_strlen(str, "8bit");
 
 			// We need to keep our chars variant for bitwise operations.
 			var c1, c2, c3, c4, cc1, cc2;
@@ -611,7 +563,7 @@ final class Strings {
 					}
 				}
 				// Convert it.
-				elseif ((c1 & xc0) === x80) {
+				elseif (unlikely (c1 & xc0) === x80) {
 					int o1 = (int) ord(c1);
 
 					// Convert from Windows-1252.
@@ -649,7 +601,7 @@ final class Strings {
 	 */
 	public static function whitespace(var str, const int newlines=0) -> string | array {
 		// Recurse.
-		if ("array" === typeof str) {
+		if (unlikely "array" === typeof str) {
 			var k, v;
 			for k, v in str {
 				let str[k] = self::whitespace(v, newlines);
@@ -657,13 +609,12 @@ final class Strings {
 			return str;
 		}
 
-		let str = (string) \Blobfolio\Cast::toString(str, true);
+		let str = Cast::toString(str, true);
 
 		// If we aren't allowing new lines at all, we can do this
 		// quickly.
 		if (newlines <= 0) {
-			let str = preg_replace("/\s+/u", " ", str);
-			return trim(str);
+			return trim(preg_replace("/\s+/u", " ", str));
 		}
 
 		// Convert different types of whitespace.

@@ -72,7 +72,7 @@ final class Cast {
 	 */
 	public static function toBool(var value, const bool! flatten=false) -> boolean | array {
 		// Recurse.
-		if (!flatten && ("array" === typeof value)) {
+		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
 			for k, v in value {
 				let value[k] = self::toBool(v);
@@ -115,7 +115,7 @@ final class Cast {
 	 */
 	public static function toFloat(var value, const bool! flatten=false) -> float | array {
 		// Recurse.
-		if (!flatten && ("array" === typeof value)) {
+		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
 			for k, v in value {
 				let value[k] = self::toFloat(v);
@@ -141,7 +141,7 @@ final class Cast {
 	 */
 	public static function toInt(var value, const bool! flatten=false) -> int | array {
 		// Recurse.
-		if (!flatten && ("array" === typeof value)) {
+		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
 			for k, v in value {
 				let value[k] = self::toInt(v);
@@ -186,7 +186,7 @@ final class Cast {
 	 */
 	public static function toNumber(var value, const bool! flatten=false) -> float | array {
 		// Recurse.
-		if (!flatten && ("array" === typeof value)) {
+		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
 			for k, v in value {
 				let value[k] = self::toNumber(v);
@@ -242,13 +242,7 @@ final class Cast {
 				);
 
 				// Convert from cents.
-				if (preg_match("/^\-?[\d,]*\.?\d+¢$/", value)) {
-					return self::toNumber(
-						preg_replace("/[^\-\d\.]/", "", value)
-					) / 100;
-				}
-				// Convert from percent.
-				elseif (preg_match("/^\-?[\d,]*\.?\d+%$/", value)) {
+				if (preg_match("/^\-?[\d,]*\.?\d+(¢|%)$/", value)) {
 					return self::toNumber(
 						preg_replace("/[^\-\d\.]/", "", value)
 					) / 100;
@@ -277,7 +271,7 @@ final class Cast {
 	 */
 	public static function toString(var value, const bool! flatten=false) -> string | array {
 		// Recurse.
-		if (!flatten && ("array" === typeof value)) {
+		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
 			for k, v in value {
 				let value[k] = self::toString(v);
@@ -286,7 +280,7 @@ final class Cast {
 		}
 
 		// If a single-entry array is passed, use that value.
-		if (("array" === typeof value) && (1 === count(value))) {
+		if (unlikely ("array" === typeof value) && (1 === count(value))) {
 			reset(value);
 			let value = value[key(value)];
 		}
@@ -294,18 +288,12 @@ final class Cast {
 		try {
 			let value = (string) value;
 		} catch Throwable {
-			let value = "";
+			return "";
 		}
 
 		// Fix up UTF-8 maybe.
-		if (
-			value &&
-			(
-				!function_exists("mb_check_encoding") ||
-				!mb_check_encoding(value, "ASCII")
-			)
-		) {
-			let value = \Blobfolio\Strings::utf8(value);
+		if (value && !mb_check_encoding(value, "ASCII")) {
+			let value = Strings::utf8(value);
 		}
 
 		return value;
@@ -319,7 +307,7 @@ final class Cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return void Nothing.
 	 */
-	public static function toType(var value, string! type, const bool! flatten=false) {
+	public static function toType(var value, string type, const bool flatten=false) {
 		switch (strtolower(type)) {
 			case "string":
 				return self::toString(value, flatten);
@@ -359,7 +347,7 @@ final class Cast {
 	 * @return string|bool Type. False on failure.
 	 */
 	public static function getArrayType(const array arr) -> string | bool {
-		if (!is_array(arr) || !count(arr)) {
+		if (unlikely !count(arr)) {
 			return false;
 		}
 
@@ -390,7 +378,7 @@ final class Cast {
 	public static function parseArgs(var args, var defaults, const bool strict=true, const bool recursive=true) -> array {
 		// Nothing to crunch if the template isn't set.
 		let defaults = self::toArray(defaults);
-		if (!count(defaults)) {
+		if (unlikely !count(defaults)) {
 			return [];
 		}
 

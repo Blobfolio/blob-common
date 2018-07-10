@@ -27,7 +27,10 @@ final class Arrays {
 	 */
 	public static function flatten(var arr) -> array {
 		array out = [];
-		let arr = \Blobfolio\Cast::toArray(arr);
+		let arr = Cast::toArray(arr);
+		if (unlikely !count(arr)) {
+			return out;
+		}
 
 		var v;
 		for v in arr {
@@ -59,8 +62,11 @@ final class Arrays {
 	 * @return array Array.
 	 */
 	public static function toIndexed(var arr) -> array {
-		let arr = \Blobfolio\Cast::toArray(arr);
 		array out = [];
+		let arr = Cast::toArray(arr);
+		if (unlikely !count(arr)) {
+			return out;
+		}
 
 		var k, v;
 		for k, v in arr {
@@ -119,7 +125,7 @@ final class Arrays {
 	 * @return mixed Value. False on error.
 	 */
 	public static function popTop(array $arr) {
-		if (!count(arr)) {
+		if (unlikely !count(arr)) {
 			return false;
 		}
 
