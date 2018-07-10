@@ -669,6 +669,11 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function ip(&$str='', bool $restricted=false, bool $condense=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\IPs::niceIp($str, $restricted, $condense);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ip($str[$k], $restricted, $condense);

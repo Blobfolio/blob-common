@@ -214,6 +214,10 @@ class sanitize {
 	 * @return string IP.
 	 */
 	public static function ip($str='', bool $restricted=false, bool $condense=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\IPs::niceIp($str, $restricted, $condense);
+		}
+
 		ref\sanitize::ip($str, $restricted, $condense);
 		return $str;
 	}
