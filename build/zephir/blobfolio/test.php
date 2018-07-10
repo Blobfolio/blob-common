@@ -1,8 +1,12 @@
 <?php
 
-require(__DIR__ . '/../../lib/vendor/autoload.php');
+require(__DIR__ . '/../../../lib/vendor/autoload.php');
 
 $data = array(
+	'Björk Guðmundsdóttir',
+	trim(file_get_contents(__DIR__ . '/test1.txt')),
+	trim(file_get_contents(__DIR__ . '/test1Latin.txt')),
+	array('hello'),
 	'Björk Guðmundsdóttir',
 	trim(file_get_contents(__DIR__ . '/test1.txt')),
 	trim(file_get_contents(__DIR__ . '/test1Latin.txt')),
