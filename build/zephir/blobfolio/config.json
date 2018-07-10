@@ -59,6 +59,10 @@
     "version": "0.0.1",
     "verbose": false,
     "requires": {
-        "extensions": []
+        "extensions": [
+            "gmp",
+            "intl",
+            "mbstring"
+        ]
     }
 }
