@@ -1,0 +1,21 @@
+Package: php-blobfolio
+Version: 0.1-1
+Architecture: amd64
+Maintainer: Debian PHP PECL Maintainers <pkg-php-pecl@lists.alioth.debian.org>
+Installed-Size: 293
+Depends: php-common (>= 1:7.0+33~), phpapi-20170718, libc6 (>= 2.14)
+Provides: php7.2-blobfolio
+Section: php
+Priority: optional
+Homepage: https://github.com/Blobfolio/blob-common
+Description: Blobfolio Common PHP
+ Blob-common is a set of tools to help make sanitizing, formatting,
+ and other data manipulation tasks easier and better than they are
+ with native PHP functionality alone.
+ .
+ This extension implements some of the more baser functions contained
+ in the PHP library, allowing them to execute 10-1000x more
+ efficiently.
+ .
+ This is highly experimental and not yet recommended for production
+ use.

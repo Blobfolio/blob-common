@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+# Automatically added by dh_php
+for conf in blobfolio; do
+    dpkg-maintscript-helper rm_conffile /etc/php/mods-available/${conf}.ini -- "$@"
+done
+
+if [ "$1" = "remove" ]; then
+    if [ -e /usr/lib/php/php-maintscript-helper ] ; then
+	. /usr/lib/php/php-maintscript-helper
+
+	for version in 7.2 ; do
+	    for conf in blobfolio ; do
+		php_invoke dismod $version ALL $conf || exit $?
+	    done
+	done
+    fi
+fi
+
+if [ "$1" = "purge" ] ; then
+    for version in 7.2 7.1 7.0 5.6 ; do
+	inidir="/etc/php/$version/mods-available"
+	for conf in blobfolio; do
+	    inifile=${conf}.ini
+	    # Final cleanup of possible leftover symlinks
+	    find /etc/php/ -type l | \
+		while read symlink; do
+		    if [ "$(readlink $symlink)" = "${inidir}/$inifile" ]; then
+			rm -f "${symlink}"
+		    fi
+		done
+	done
+    done
+fi
+# End automatically added section

@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+# Automatically added by dh_php
+for conf in blobfolio; do
+    dpkg-maintscript-helper rm_conffile /etc/php/mods-available/${conf}.ini -- "$@"
+done
+
+if [ -e /usr/lib/php/php-maintscript-helper ] ; then
+    . /usr/lib/php/php-maintscript-helper
+
+    for version in 7.2 ; do
+        for conf in blobfolio ; do
+            php_invoke enmod $version ALL $conf || exit $?
+	done
+    done
+else
+    for conf in blobfolio ; do
+        phpenmod $conf
+    done
+fi
+# End automatically added section
