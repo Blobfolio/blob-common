@@ -77,11 +77,10 @@ class format {
 	 */
 	public static function cidr_to_range($cidr) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$cidr = \Blobfolio\Cast::toString($cidr, true);
+			return \Blobfolio\IPs::cidrToRange($cidr);
 		}
-		else {
-			ref\cast::string($cidr, true);
-		}
+
+		ref\cast::string($cidr, true);
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
@@ -178,6 +177,10 @@ class format {
 	 * @return string String.
 	 */
 	public static function decode_js_entities($str='') {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::decodeJsEntities($str);
+		}
+
 		ref\format::decode_js_entities($str);
 		return $str;
 	}
@@ -191,6 +194,10 @@ class format {
 	 * @return string String.
 	 */
 	public static function decode_escape_entities($str='') {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::decodeEscapeEntities($str);
+		}
+
 		ref\format::decode_escape_entities($str);
 		return $str;
 	}
@@ -204,6 +211,10 @@ class format {
 	 * @return string String.
 	 */
 	public static function decode_unicode_entities($str='') {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::decodeUnicodeEntities($str);
+		}
+
 		ref\format::decode_unicode_entities($str);
 		return $str;
 	}
@@ -217,7 +228,11 @@ class format {
 	 * @param string $str String.
 	 * @return string HTML.
 	 */
-	public static function decode_entities($str='') {
+	public static function decode_entities($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::decodeEntities($str);
+		}
+
 		ref\format::decode_entities($str);
 		return $str;
 	}
@@ -236,12 +251,10 @@ class format {
 	 */
 	public static function excerpt($str='', $args=null) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-		}
-		else {
-			ref\cast::string($str, true);
+			return \Blobfolio\Strings::excerpt($str, $args);
 		}
 
+		ref\cast::string($str, true);
 		ref\sanitize::whitespace($str, 0, true);
 		$str = strip_tags($str);
 
@@ -321,34 +334,23 @@ class format {
 	 * @return string Inflected string.
 	 */
 	public static function inflect($count, $single, $plural) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::inflect($count, $single, $plural);
+		}
+
 		if (is_array($count)) {
 			$count = (float) count($count);
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$count = \Blobfolio\Cast::toFloat($count, true);
-			}
-			else {
-				ref\cast::float($count, true);
-			}
+			ref\cast::float($count, true);
 		}
 
 		if (1.0 === $count) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$single = \Blobfolio\Cast::toString($single, true);
-			}
-			else {
-				ref\cast::string($single, true);
-			}
+			ref\cast::string($single, true);
 			return sprintf($single, $count);
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$plural = \Blobfolio\Cast::toString($plural, true);
-			}
-			else {
-				ref\cast::string($plural, true);
-			}
+			ref\cast::string($plural, true);
 			return sprintf($plural, $count);
 		}
 	}
@@ -360,6 +362,10 @@ class format {
 	 * @return int|bool IP or false.
 	 */
 	public static function ip_to_number($ip) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\IPs::toNumber($ip);
+		}
+
 		ref\format::ip_to_number($ip);
 		return $ip;
 	}
@@ -373,6 +379,10 @@ class format {
 	 * @return string|bool Subnet or false.
 	 */
 	public static function ip_to_subnet($ip) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\IPs::toSubnet($ip);
+		}
+
 		ref\format::ip_to_subnet($ip);
 		return $ip;
 	}
@@ -386,7 +396,11 @@ class format {
 	 * @param bool $pretty Pretty.
 	 * @return string|null JSON or null.
 	 */
-	public static function json($str='', bool $pretty=true) {
+	public static function json($str, bool $pretty=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Json::fix($str, $pretty);
+		}
+
 		ref\format::json($str, $pretty);
 		return $str;
 	}
@@ -401,7 +415,11 @@ class format {
 	 * @param string $str String.
 	 * @return mixed Value.
 	 */
-	public static function json_decode($str='') {
+	public static function json_decode($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Json::decode($str);
+		}
+
 		ref\format::json_decode($str);
 		return $str;
 	}
@@ -418,6 +436,10 @@ class format {
 	 * @return string JSON.
 	 */
 	public static function json_encode($value, $options=0, $depth=512) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Json::encode($value, $options, $depth);
+		}
+
 		ref\format::json_encode($value, $options, $depth);
 		return $value;
 	}
@@ -486,6 +508,10 @@ class format {
 	 * @return string|bool IP or false.
 	 */
 	public static function number_to_ip($ip) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\IPs::fromNumber($ip);
+		}
+
 		ref\format::number_to_ip($ip);
 		return $ip;
 	}

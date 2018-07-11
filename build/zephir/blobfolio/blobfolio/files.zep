@@ -165,11 +165,10 @@ final class Files {
 		// This might be a URL rather than something local. We only want
 		// to focus on local ones.
 		if (preg_match("#^(https?|ftps?|sftp):#iu", str)) {
-			// TODO try not to depend on library methods.
-			/* var class_name = "\\blobfolio\\common\\sanitize";
-			if (class_exists(class_name)) {
-				return {class_name}::url(str);
-			} */
+			let str = Domains::niceUrl(str);
+			if (empty str) {
+				return false;
+			}
 
 			return str;
 		}
@@ -381,7 +380,6 @@ final class Files {
 			return true;
 		}
 
-		echo "--BADDEFAULT--";
 		return false;
 	}
 
@@ -397,7 +395,7 @@ final class Files {
 	 * @param string $file_algo File hashing algorithm.
 	 * @return string|bool Hash or false.
 	 */
-	public static function dirhash(const string str, string dir_algo="md5", string file_algo="") -> string | bool {
+	public static function hashDir(const string str, string dir_algo="md5", string file_algo="") -> string | bool {
 		// We definitely need a valid directory algorithm.
 		if (empty dir_algo || !in_array(dir_algo, hash_algos(), true)) {
 			return false;
@@ -430,7 +428,7 @@ final class Files {
 	 * @param string $path Path.
 	 * @return int Size.
 	 */
-	public static function dirsize(const string str) -> int {
+	public static function dirSize(const string str) -> int {
 		int size = 0;
 		array files = (array) self::scandir(str, true, false);
 
@@ -547,14 +545,15 @@ final class Files {
 
 				// Base should be inside path. If not, something weird
 				// has happened.
-				if (0 !== Strings::strpos(str, base)) {
+				if (0 !== mb_strpos(str, base, 0, "UTF-8")) {
 					return true;
 				}
 
-				let str = Strings::substr(
+				let str = mb_substr(
 					str,
-					Strings::strlen(base),
-					null
+					(int) mb_strlen(base, "UTF-8"),
+					null,
+					"UTF-8"
 				);
 				let str = self::unleadingSlash(str);
 				array parts = (array) explode("/", str);

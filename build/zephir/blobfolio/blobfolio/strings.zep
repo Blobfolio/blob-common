@@ -165,6 +165,287 @@ final class Strings {
 	}
 
 	/**
+	 * Control Characters
+	 *
+	 * @param string $str String
+	 * @return string String.
+	 */
+	public static function controlChars(var str) -> string | array {
+		// Recurse.
+		if (unlikely "array" === typeof str) {
+			var k, v;
+			for k, v in str {
+				let str[k] = self::controlChars(v);
+			}
+			return str;
+		}
+
+		let str = Cast::toString(str, true);
+		let str = preg_replace("/[\x00-\x08\x0B\x0C\x0E-\x1F]/", "", str);
+		return preg_replace("/\\\\+0+/", "", str);
+	}
+
+	/**
+	 * Decode JS Entities
+	 *
+	 * Decode escape and unicode chars.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function decodeJsEntities(string str) -> string {
+		let str = self::decodeUnicodeEntities(str);
+		return self::decodeEscapeEntities(str);
+	}
+
+	/**
+	 * Decode Escape Entities
+	 *
+	 * Decode \b, \f, \n, \r, \t.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function decodeEscapeEntities(string str) -> string {
+		let str = Cast::toString(str, true);
+
+		array from = [
+			"\\b",
+			"\\f",
+			"\\n",
+			"\\r",
+			"\\t"
+		];
+		array to = [
+			chr(0x08),
+			chr(0x0C),
+			chr(0x0A),
+			chr(0x0D),
+			chr(0x09)
+		];
+
+		return str_replace(from, to, str);
+	}
+
+	/**
+	 * Decode Unicode Entities
+	 *
+	 * Decode \u1234 into chars.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function decodeUnicodeEntities(string str) -> string {
+		let str = Cast::toString(str, true);
+
+		string last = "";
+		while (str !== last) {
+			let last = str;
+
+			let str = preg_replace_callback(
+				"/\\\u([0-9A-Fa-f]{4})/u",
+				[__CLASS__, "decodeHexEntities"],
+				str
+			);
+
+			let str = Cast::toString(str, true);
+		}
+
+		return str;
+	}
+
+	/**
+	 * Decode HTML Entities
+	 *
+	 * Decode all HTML entities back into their char counterparts,
+	 * recursively until every last one is captured.
+	 *
+	 * @param string $str String.
+	 * @return void Nothing.
+	 */
+	public static function decodeEntities(string str) -> string {
+		let str = Cast::toString(str, true);
+
+		string last = "";
+		while (str !== last) {
+			let last = str;
+
+			let str = html_entity_decode(str, ENT_QUOTES, "UTF-8");
+			let str = preg_replace_callback(
+				"/&#([0-9]+);/",
+				[__CLASS__, "decodeChrEntities"],
+				str
+			);
+			let str = preg_replace_callback(
+				"/&#[Xx]([0-9A-Fa-f]+);/",
+				[__CLASS__, "decodeHexEntities"],
+				str
+			);
+
+			let str = Cast::toString(str, true);
+		}
+
+		return str;
+	}
+
+	/**
+	 * Decode HTML Entities Callback - Chr
+	 *
+	 * @param array $matches Matches.
+	 * @return string ASCII.
+	 */
+	private static function decodeChrEntities(array matches) -> string {
+		return chr(matches[1]);
+	}
+
+	/**
+	 * Decode HTML Entities Callback - Hex
+	 *
+	 * @param array $matches Matches.
+	 * @return string ASCII.
+	 */
+	private static function decodeHexEntities(array matches) -> string {
+		return chr(hexdec(matches[1]));
+	}
+
+	/**
+	 * Generate Text Excerpt
+	 *
+	 * @param string $str String.
+	 * @param mixed $args Arguments.
+	 *
+	 * @arg int $length Length limit.
+	 * @arg string $unit Unit to examine, "character" or "word".
+	 * @arg string $suffix Suffix, e.g. ...
+	 *
+	 * @return string Excerpt.
+	 */
+	public static function excerpt(string str, var args=null) -> string {
+		let str = self::whitespace(str, 0);
+		let str = strip_tags(str);
+
+		let args = Cast::parseArgs(
+			args,
+			[
+				"length": 200,
+				"suffix": "…",
+				"unit": "character",
+				"inclusive": false
+			]
+		);
+
+		if (args["length"] < 1) {
+			return "";
+		}
+
+		// Limit words.
+		if ("word" === strtolower(substr(args["unit"], 0, 4))) {
+			if (substr_count(str, " ") > args["length"] - 1) {
+				array tmp = (array) explode(" ", str);
+				let tmp = array_slice(tmp, 0, args["length"]);
+				return implode(" ", tmp) . args["suffix"];
+			}
+		}
+		// Character limit.
+		else {
+			if (mb_strlen(str, "UTF-8") > args["length"]) {
+				return trim(mb_substr(str, 0, args["length"], "UTF-8")) . args["suffix"];
+			}
+		}
+
+		return str;
+	}
+
+	/**
+	 * Inflect
+	 *
+	 * Inflect a phrase given a count. `sprintf` formatting is
+	 * supported. If an array is passed as $count, its size will be used
+	 * for inflection.
+	 *
+	 * @param int|array $count Count.
+	 * @param string $single Singular.
+	 * @param string $plural Plural.
+	 * @return string Inflected string.
+	 */
+	public static function inflect(var count, const string single, const string plural) -> string {
+		// Use the count() as $count for arrays.
+		if ("array" === typeof count) {
+			let count = (int) count(count);
+		}
+		// For everything else, there's floats.
+		else {
+			let count = Cast::toFloat(count);
+		}
+
+		// Figure out which phrase to use.
+		string str;
+		if (1 == count) {
+			let str = (string) Cast::toString(single, true);
+		}
+		else {
+			let str = (string) Cast::toString(plural, true);
+		}
+
+		return sprintf(str, count);
+	}
+
+	/**
+	 * Printable
+	 *
+	 * Remove non-printable characters (except spaces).
+	 *
+	 * @param string $str String.
+	 * @return void Nothing.
+	 */
+	public static function printable(var str) -> string | array {
+		// Recurse.
+		if (unlikely "array" === typeof str) {
+			var k, v;
+			for k, v in str {
+				let str[k] = self::printable(v);
+			}
+			return str;
+		}
+
+		let str = Cast::toString(str, true);
+
+		// Stripe zero-width chars.
+		let str = preg_replace("/[\x{200B}-\x{200D}\x{FEFF}]/u", "", str);
+
+		// Make whitespace consistent.
+		let str = str_replace("\r\n", "\n", str);
+		let str = str_replace("\r", "\n", str);
+		let str = preg_replace_callback(
+			"/[^[:print:]]/u",
+			[__CLASS__, "printableCallback"],
+			str
+		);
+
+		return str;
+	}
+
+	/**
+	 * Printable Callback
+	 *
+	 * @param array $match Match.
+	 * @return string Replacement.
+	 */
+	private static function printableCallback(array match) -> string {
+		// Allow newlines and tabs, in case the OS considers
+		// those non-printable.
+		if (
+			("\n" === match[0]) ||
+			("\t" === match[0])
+		) {
+			return match[0];
+		}
+
+		// Ignore everything else.
+		return "";
+	}
+
+	/**
 	 * Quotes
 	 *
 	 * Straighten out various forms of curly quotes and apostrophes.
@@ -213,6 +494,101 @@ final class Strings {
 	}
 
 	/**
+	 * Wrapper For str_pad()
+	 *
+	 * @param string $str String.
+	 * @param int $pad_length Pad length.
+	 * @param string $pad_string Pad string.
+	 * @param int $pad_type Pad type.
+	 * @return void Nothing.
+	 */
+	public static function str_pad(string str, int pad_length, string pad_string=" ", const int pad_type = 1) -> string {
+		let str = Cast::toString(str, true);
+		let pad_string = Cast::toString(pad_string, true);
+
+		int current_length = (int) mb_strlen(str, "UTF-8");
+		int pad_string_length = (int) mb_strlen(pad_string, "UTF-8");
+		int new_length = 0;
+
+		if (pad_length <= current_length || !pad_string_length) {
+			return str;
+		}
+
+		// Pad left.
+		if (STR_PAD_LEFT === pad_type) {
+			let str = str_repeat(
+				pad_string,
+				ceil((pad_length - current_length) / pad_string_length)
+			) . str;
+			let new_length = (int) mb_strlen(str, "UTF-8");
+			if (new_length > pad_length) {
+				let str = mb_substr(str, new_length - pad_length, null, "UTF-8");
+			}
+		}
+		// Pad both.
+		elseif (STR_PAD_BOTH === pad_type) {
+			string leftright = "right";
+			while (mb_strlen(str, "UTF-8") < pad_length) {
+				let leftright = ("left" === leftright) ? "right" : "left";
+				if ("left" === leftright) {
+					let str = pad_string . str;
+				}
+				else {
+					let str .= pad_string;
+				}
+			}
+
+			let new_length = (int) mb_strlen(str, "UTF-8");
+			if (new_length > pad_length) {
+				if ("left" === leftright) {
+					let str = mb_substr(str, new_length - pad_length, null, "UTF-8");
+				}
+				else {
+					let str = mb_substr(str, 0, pad_length, "UTF-8");
+				}
+			}
+		}
+		// Pad right.
+		else {
+			let str .= str_repeat(
+				pad_string,
+				ceil((pad_length - current_length) / pad_string_length)
+			);
+			let new_length = (int) mb_strlen(str, "UTF-8");
+			if (new_length > pad_length) {
+				let str = mb_substr(str, 0, pad_length, "UTF-8");
+			}
+		}
+
+		return str;
+	}
+
+	/**
+	 * Wrapper For str_split()
+	 *
+	 * @param string $str String.
+	 * @param int $split_length Split length.
+	 * @return bool True/false.
+	 */
+	public static function str_split(string str, const int split_length=1) -> array | bool {
+		if (split_length < 1) {
+			return false;
+		}
+
+		let str = Cast::toString(str, true);
+
+		int str_length = (int) mb_strlen(str, "UTF-8");
+		array out = [];
+		int x = 0;
+		while x < str_length {
+			let out[] = mb_substr(str, x, split_length, "UTF-8");
+			let x += split_length;
+		}
+
+		return out;
+	}
+
+	/**
 	 * Wrapper For strpos()
 	 *
 	 * @param string $haystack Haystack.
@@ -222,6 +598,24 @@ final class Strings {
 	 */
 	public static function strpos(const string haystack, const string needle, const int offset=0) -> int | bool {
 		return mb_strpos(haystack, needle, offset, "UTF-8");
+	}
+
+	/**
+	 * Wrapper For strrev()
+	 *
+	 * @param string $str String.
+	 * @return bool True/false.
+	 */
+	public static function strrev(string str) -> string {
+		let str = Cast::toString($str, true);
+
+		if (!empty str) {
+			array tmp = (array) self::str_split(str);
+			let tmp = array_reverse(tmp);
+			return implode("", tmp);
+		}
+
+		return "";
 	}
 
 	/**
@@ -333,6 +727,17 @@ final class Strings {
 	}
 
 	/**
+	 * Wrapper For substr_count()
+	 *
+	 * @param string $haystack Haystack.
+	 * @param string $needle Needle.
+	 * @return int Count.
+	 */
+	public static function substr_count(string haystack, string needle) {
+		return mb_substr_count(haystack, needle, "UTF-8");
+	}
+
+	/**
 	 * Trim
 	 *
 	 * @param array|string $str String.
@@ -379,9 +784,9 @@ final class Strings {
 
 			if (str) {
 				if (unlikely !mb_check_encoding(str, "ASCII")) {
-					string first = (string) self::substr(str, 0, 1);
+					string first = (string) mb_substr(str, 0, 1, "UTF-8");
 					let first = self::strtoupper($first, false);
-					let str = first . self::substr(str, 1, null);
+					let str = first . mb_substr(str, 1, null, "UTF-8");
 				}
 				else {
 					let str = ucfirst(str);
@@ -593,6 +998,32 @@ final class Strings {
 	}
 
 	/**
+	 * UTF-8 Recursive
+	 *
+	 * Virtually every method that uses UTF-8 sanitizing is itself
+	 * recursive, so to reduce overhead, the main method accepts only
+	 * string data.
+	 *
+	 * This method exists for the odd cases.
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed Value.
+	 */
+	public static function utf8Recursive(var value) {
+		// Recurse.
+		if (unlikely "array" === typeof value) {
+			var k, v;
+			for k, v in value {
+				let value[k] = self::utf8Recursive(v);
+			}
+			return value;
+		}
+
+		let value = Cast::toString(value, true);
+		return self::utf8(value);
+	}
+
+	/**
 	 * Whitespace
 	 *
 	 * @param array|string $str String.
@@ -638,5 +1069,133 @@ final class Strings {
 		);
 
 		return str;
+	}
+
+	/**
+	 * Wrapper for wordwrap()
+	 *
+	 * Wrap text to specified line length. Unlike PHP's version, this
+	 * will preferentially break long strings on any hypens or dashes
+	 * they might have.
+	 *
+	 * @param string $str String.
+	 * @param int $width Width.
+	 * @param string $break Break.
+	 * @param bool $cut Cut.
+	 * @return void Nothing.
+	 */
+	public static function wordwrap(string str, const int width=75, string eol="\n", const bool cut=false) -> string {
+		let str = Cast::toString(str, true);
+		let eol = Cast::toString(eol, true);
+
+		// Bad data?
+		if (empty str || width <= 0) {
+			return str;
+		}
+
+		// First, split on horizontal whitespace.
+		array chunks = (array) preg_split(
+			"/([\s$]+)/uS",
+			trim(str),
+			-1,
+			PREG_SPLIT_DELIM_CAPTURE
+		);
+
+		// Zephir sucks at dynamic array memory allocation, so instead
+		// we have to use a hacky ࠄ-separated string during the initial
+		// parsing. Obviously, this will break text using this string,
+		// but that's a risk we'll have to take. Haha.
+		string line = "ࠄ";
+
+		// Loop through chunks.
+		var v;
+		for v in chunks {
+			// Always start a new line with vertical whitespace.
+			if (preg_match("/\v/u", v)) {
+				let line .= "ࠄ" . v . "ࠄ";
+				continue;
+			}
+
+			// Always append horizontal whitespace.
+			if (preg_match("/\h/u", v)) {
+				let line .= v;
+				continue;
+			}
+
+			// Start a new line?
+			int last_null = (int) mb_strrpos(line, "ࠄ", 0, "UTF-8") + 1;
+			int full_length = (int) mb_strlen(line, "UTF-8");
+			int line_length = full_length - last_null;
+
+			if (line_length >= width) {
+				let line .= "ࠄ";
+				let line_length = 0;
+				let full_length = (int) mb_strlen(line, "UTF-8");
+			}
+
+			int word_length = (int) mb_strlen(v, "UTF-8");
+
+			// We can just add it.
+			if (word_length + line_length <= width) {
+				let line .= v;
+				continue;
+			}
+
+			// We should make sure each chunk fits.
+			if (cut) {
+				let v = self::str_split(v, width);
+				let v = implode("ࠄ", v);
+			}
+
+			// Is this word hyphenated or dashed?
+			let v = preg_replace("/(\p{Pd})\n/u", "$1", v);
+			let v = preg_replace("/(\p{Pd}+)/u", "$1ࠄ", v);
+			let v = self::trim(v);
+
+			// Loop through word chunks to see what fits where.
+			array tmp = (array) explode("ࠄ", v);
+			var v2;
+			for v2 in tmp {
+				let last_null = (int) mb_strrpos(line, "ࠄ", 0, "UTF-8") + 1;
+				let full_length = (int) mb_strlen(line, "UTF-8");
+				let line_length = full_length - last_null;
+				let word_length = (int) mb_strlen(v2, "UTF-8");
+
+				// New line?
+				if (word_length + line_length > width) {
+					let line .= "ࠄ";
+				}
+
+				let line .= v2;
+			}
+		}
+
+		array out = [];
+		array lines = (array) explode("ࠄ", line);
+		string preg_eol = (string) preg_quote(eol, "/");
+
+		// Okay, let's trim our lines real quick.
+		for v in lines {
+			// Ignore vertical space, unless it matches the breaker.
+			if (!empty preg_eol && preg_match("/\v/u", v)) {
+				// Don't need to double it.
+				if (v === eol) {
+					continue;
+				}
+
+				let out[] = self::trim(preg_replace(
+					"/^" . preg_eol . "/ui",
+					"",
+					v
+				));
+
+				continue;
+			}
+
+			let out[] = self::trim(v);
+		}
+
+		// Finally, join our lines by the delimiter.
+		return self::trim(implode(eol, out));
 	}
 }

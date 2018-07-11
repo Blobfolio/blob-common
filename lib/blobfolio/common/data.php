@@ -451,6 +451,10 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function ip_in_range(string $ip, $min, $max=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\IPs::inRange($ip, $min, $max);
+		}
+
 		ref\sanitize::ip($ip, true);
 		if (!is_string($min)) {
 			return false;

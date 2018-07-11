@@ -127,12 +127,10 @@ class format {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function decode_js_entities(&$str='') {
+	public static function decode_js_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-		}
-		else {
-			cast::string($str, true);
+			$str = \Blobfolio\Strings::decodeJsEntities($str);
+			return;
 		}
 
 		static::decode_unicode_entities($str);
@@ -147,13 +145,13 @@ class format {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function decode_escape_entities(&$str='') {
+	public static function decode_escape_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
+			$str = \Blobfolio\Strings::decodeEscapeEntities($str);
+			return;
 		}
-		else {
-			cast::string($str, true);
-		}
+
+		cast::string($str, true);
 
 		$replacements = array(
 			'\b'=>chr(0x08),
@@ -177,13 +175,13 @@ class format {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function decode_unicode_entities(&$str='') {
+	public static function decode_unicode_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
+			$str = \Blobfolio\Strings::decodeUnicodeEntities($str);
+			return;
 		}
-		else {
-			cast::string($str, true);
-		}
+
+		cast::string($str, true);
 
 		$last = '';
 		$class = get_called_class();
@@ -214,13 +212,13 @@ class format {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function decode_entities(&$str='') {
+	public static function decode_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
+			$str = \Blobfolio\Strings::decodeEntities($str);
+			return;
 		}
-		else {
-			cast::string($str, true);
-		}
+
+		cast::string($str, true);
 
 		$last = '';
 		while ($str !== $last) {
@@ -367,6 +365,11 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function ip_to_number(&$ip) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$ip = \Blobfolio\IPs::toNumber($ip);
+			return $ip ? true : false;
+		}
+
 		// Don't need to fancy cast.
 		if (!is_string($ip)) {
 			$ip = false;
@@ -421,6 +424,11 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function ip_to_subnet(&$ip) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$ip = \Blobfolio\IPs::toSubnet($ip);
+			return $ip ? true : false;
+		}
+
 		sanitize::ip($ip, true, false);
 
 		// Not an IP.
@@ -457,7 +465,12 @@ class format {
 	 * @param bool $pretty Pretty.
 	 * @return bool True/false.
 	 */
-	public static function json(&$str='', $pretty=true) {
+	public static function json(&$str, $pretty=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Json::fix($str, $pretty);
+			return;
+		}
+
 		if (!is_string($str)) {
 			static::json_encode($str);
 		}
@@ -486,13 +499,13 @@ class format {
 	 * @param string $str String.
 	 * @return bool True/false.
 	 */
-	public static function json_decode(&$str='') {
+	public static function json_decode(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
+			$str = \Blobfolio\Json::decode($str);
+			return;
 		}
-		else {
-			cast::string($str, true);
-		}
+
+		cast::string($str, true);
 
 		// Remove comments.
 		$str = preg_replace(
@@ -632,7 +645,7 @@ class format {
 				('string' === $last['type']) &&
 				(
 					('\\' !== $chunk{$x - 1}) ||
-					(('\\' === $chrs{$c - 1}) && ('\\' === $chunk{$x - 2}))
+					(('\\' === $chunk{$x - 1}) && ('\\' === $chunk{$x - 2}))
 				)
 			) {
 				array_pop($slices);
@@ -687,7 +700,7 @@ class format {
 			}
 			// Closing comment.
 			elseif (
-				('/*' === $subchunk) &&
+				('*/' === $subchunk) &&
 				('comment' === $last['type'])
 			) {
 				array_pop($slices);
@@ -714,6 +727,11 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function json_encode(&$value, $options=0, $depth=512) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$value = \Blobfolio\Json::encode($value, $options, $depth);
+			return;
+		}
+
 		// Simple values don't require a lot of thought.
 		if (!$value || is_numeric($value) || is_bool($value)) {
 			$value = json_encode($value, $options, $depth);
@@ -1077,6 +1095,11 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function number_to_ip(&$ip) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$ip = \Blobfolio\IPs::fromNumber($ip);
+			return $ip ? true : false;
+		}
+
 		if (!is_string($ip)) {
 			if (is_numeric($ip)) {
 				$ip = (string) $ip;

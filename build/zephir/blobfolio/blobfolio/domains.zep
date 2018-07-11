@@ -35,21 +35,27 @@ final class Domains {
 	 * @return void Nothing.
 	 */
 	public function __construct(string host, const bool www=false) -> void {
-		array parsed = [];
+		var parsed = self::parseHostParts(host);
+		if (false === parsed) {
+			return;
+		}
 
 		let this->host = parsed["host"];
 		let this->subdomain = parsed["subdomain"];
 		let this->domain = parsed["domain"];
 		let this->suffix = parsed["suffix"];
+
+		if (www) {
+			this->stripWww();
+		}
 	}
 
 
 	/**
 	 * Parse Host
 	 *
-	 * Try to tease the hostname out of any arbitrary
-	 * string, which might be the hostname, a URL, or
-	 * something else.
+	 * Try to tease the hostname out of any arbitrary string, which
+	 * might be the hostname, a URL, or something else.
 	 *
 	 * @param string $host Host.
 	 * @return string|bool Host or false.
@@ -65,21 +71,21 @@ final class Domains {
 			let host = Strings::trim(host);
 
 			// Cut off the path, if any.
-			var start = Strings::strpos(host, "/");
+			var start = mb_strpos(host, "/", 0, "UTF-8");
 			if (false !== start) {
-				let host = Strings::substr(host, 0, start);
+				let host = mb_substr(host, 0, start, "UTF-8");
 			}
 
 			// Cut off the query, if any.
-			let start = Strings::strpos(host, "?");
+			let start = mb_strpos(host, "?", 0, "UTF-8");
 			if (false !== start) {
-				let host = Strings::substr(host, 0, start);
+				let host = mb_substr(host, 0, start, "UTF-8");
 			}
 
 			// Cut off credentials, if any.
-			let start = Strings::strpos(host, "@");
+			let start = mb_strpos(host, "@", 0, "UTF-8");
 			if (false !== start) {
-				let host = Strings::substr(host, start + 1, null);
+				let host = mb_substr(host, start + 1, null, "UTF-8");
 			}
 
 			// Is this an IPv6 address?
@@ -91,14 +97,14 @@ final class Domains {
 				let start = strpos(host, "[");
 				var end = strpos(host, "]");
 				if ((0 === start) && false !== end) {
-					let host = Strings::substr(host, 1, end - 1);
+					let host = mb_substr(host, 1, end - 1, "UTF-8");
 					let host = IPs::niceIp(host, true);
 				}
 				// Chop off the port, if any.
 				else {
-					let start = Strings::strpos(host, ":");
+					let start = mb_strpos(host, ":", 0, "UTF-8");
 					if (false !== start) {
-						let host = Strings::substr(host, 0, start);
+						let host = mb_substr(host, 0, start, "UTF-8");
 					}
 				}
 			}
@@ -109,17 +115,10 @@ final class Domains {
 			}
 
 			// Convert to ASCII if possible.
-			let host = explode(".", host);
-			if (defined("INTL_IDNA_VARIANT_UTS46")) {
-				let host = idn_to_ascii(host, 0, INTL_IDNA_VARIANT_UTS46);
-			}
-			else {
-				let host = idn_to_ascii(host);
-			}
-			let host = implode(".", host);
+			let host = (string) self::toAscii(host);
 
 			// Lowercase it.
-			let host = Strings::strtolower(host, false);
+			let host = strtolower(host);
 
 			// Get rid of trailing periods.
 			let host = ltrim(host, ".");
@@ -159,7 +158,7 @@ final class Domains {
 		return implode(".", parts);
 	}
 
-		/**
+	/**
 	 * Parse Host Parts
 	 *
 	 * Break a host down into subdomain, domain, and
@@ -419,7 +418,7 @@ final class Domains {
 	 * @param bool $unicode Unicode.
 	 * @return string|null Host.
 	 */
-	public function getHost(const bool unicode) {
+	public function getHost(const bool unicode=false) -> string | null {
 		if (
 			unicode &&
 			!empty this->host
@@ -436,7 +435,7 @@ final class Domains {
 	 * @param bool $unicode Unicode.
 	 * @return string|null Subdomain.
 	 */
-	public function getSubdomain(const bool unicode) {
+	public function getSubdomain(const bool unicode=false) -> string | null {
 		if (
 			unicode &&
 			!empty this->subdomain
@@ -453,7 +452,7 @@ final class Domains {
 	 * @param bool $unicode Unicode.
 	 * @return string|null Domain.
 	 */
-	public function getDomain(const bool unicode) {
+	public function getDomain(const bool unicode=false) -> string | null {
 		if (
 			unicode &&
 			!empty this->domain
@@ -470,7 +469,7 @@ final class Domains {
 	 * @param bool $unicode Unicode.
 	 * @return string|null Suffix.
 	 */
-	public function getSuffix(const bool unicode) {
+	public function getSuffix(const bool unicode=false) -> string | null {
 		if (
 			unicode &&
 			!empty this->suffix
@@ -484,7 +483,174 @@ final class Domains {
 
 
 	// -----------------------------------------------------------------
-	// Helpers
+	// Formatting
+	// -----------------------------------------------------------------
+
+	/**
+	 * Domain Name.
+	 *
+	 * This locates the domain name portion of a URL, removes leading
+	 * "www" subdomains, and ignores IP addresses.
+	 *
+	 * @param string $str Domain.
+	 * @param bool $unicode Unicode.
+	 * @return bool True/false.
+	 */
+	public static function niceDomain(var str, const bool unicode=false) -> string | array {
+		// Recurse.
+		if (unlikely "array" === typeof str) {
+			var k, v;
+			for k, v in str {
+				let str[k] = self::niceDomain(v);
+			}
+			return str;
+		}
+
+		var host;
+		let host = new self(str, true);
+		if (host->isFqdn() && !host->isIp()) {
+			return host->getHost(unicode);
+		}
+
+		return "";
+	}
+
+	/**
+	 * Email
+	 *
+	 * Converts the email to lowercase, strips
+	 * invalid characters, quotes, and apostrophes.
+	 *
+	 * @param string $str Email.
+	 * @return void Nothing.
+	 */
+	public static function niceEmail(var str) -> string | array {
+		// Recurse.
+		if (unlikely "array" === typeof str) {
+			var k, v;
+			for k, v in str {
+				let str[k] = self::niceEmail(v);
+			}
+			return str;
+		}
+
+		let str = Strings::quotes(str);
+		let str = Strings::strtolower(str);
+
+		// Strip comments.
+		let str = preg_replace("/\([^)]*\)/u", "", str);
+
+		// Early bail: wrong number of "@".
+		if (1 !== substr_count(str, "@")) {
+			return "";
+		}
+
+		// For backward-compatibility, strip quotes now.
+		let str = str_replace(["'", "\""], "", str);
+
+		// Sanitize by part.
+		array parts = (array) explode("@", str);
+
+		// Sanitize local part.
+		let parts[0] = preg_replace(
+			"/[^\.a-z0-9\!#\$%&\*\+\-\=\?_~]/u",
+			"",
+			parts[0]
+		);
+		let parts[0] = ltrim(parts[0], ".");
+		let parts[0] = rtrim(parts[0], ".");
+
+		// Another early bail, nothing local left.
+		if (empty parts[0]) {
+			return "";
+		}
+
+		// Sanitize host.
+		var host;
+		let host = new self(parts[1]);
+		if (!host->isValid() || !host->isFqdn() || host->isIp()) {
+			return "";
+		}
+		let parts[1] = host->getHost();
+
+		return implode("@", parts);
+	}
+
+	/**
+	 * Hostname
+	 *
+	 * @param string $str Hostname.
+	 * @param bool $www Strip leading www.
+	 * @param bool $unicode Unicode.
+	 * @return bool True/false.
+	 */
+	public static function niceHost(var str, const bool www=true, const bool unicode=false) -> string | bool {
+
+		var host;
+		let host = new self(str, www);
+		if (!host->isValid()) {
+			return false;
+		}
+
+		return host->getHost(unicode);
+	}
+
+	/**
+	 * URL
+	 *
+	 * Validate URLishness and convert // schemas.
+	 *
+	 * @param string $str URL.
+	 * @return bool True/false.
+	 */
+	public static function niceUrl(var str) -> string | array {
+		// Recurse.
+		if (unlikely "array" === typeof str) {
+			var k, v;
+			for k, v in str {
+				let str[k] = self::niceUrl(v);
+			}
+			return str;
+		}
+
+		array tmp = (array) self::parseUrl(str);
+
+		// Validate the host, and ASCIIfy international bits
+		// to keep PHP happy.
+		if (!isset(tmp["host"]) || empty tmp["host"]) {
+			return "";
+		}
+
+		let tmp["host"] = new self(tmp["host"]);
+		if (!tmp["host"]->isValid()) {
+			return "";
+		}
+		let tmp["host"] = tmp["host"]->getHost();
+
+		// Schemes can be lowercase.
+		if (isset(tmp["scheme"])) {
+			let tmp["scheme"] = strtolower(tmp["scheme"]);
+		}
+
+		// Put it back together.
+		let str = self::unparseUrl(tmp);
+
+		let str = filter_var(str, FILTER_SANITIZE_URL);
+		if (!filter_var(
+			str,
+			FILTER_VALIDATE_URL,
+			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED
+		)) {
+			return "";
+		}
+
+		return str;
+	}
+
+
+
+	// -----------------------------------------------------------------
+	// Other Helpers
 	// -----------------------------------------------------------------
 
 	/**
@@ -537,21 +703,10 @@ final class Domains {
 
 			if (PHP_URL_HOST === component) {
 				// Fix Unicode.
-				let parts = explode(".", parts);
-				if (defined("INTL_IDNA_VARIANT_UTS46")) {
-					let parts = (string) idn_to_ascii(
-						parts,
-						0,
-						INTL_IDNA_VARIANT_UTS46
-					);
-				}
-				else {
-					let parts = (string) idn_to_ascii(parts);
-				}
-				let parts = implode(".", parts);
+				let parts = (string) self::toAscii(parts);
 
 				// Lowercase it.
-				let parts = Strings::strtolower(parts, false);
+				let parts = strtolower(parts);
 
 				// Get rid of trailing periods.
 				let parts = ltrim(parts, ".");
@@ -581,23 +736,12 @@ final class Domains {
 					continue;
 				}
 
-				if ("host" === k) {
+				if (("host" === k) && ("string" === typeof parts[k])) {
 					// Fix Unicode.
-					let parts[k] = explode(".", parts[k]);
-					if (defined("INTL_IDNA_VARIANT_UTS46")) {
-						let parts[k] = (string) idn_to_ascii(
-							parts[k],
-							0,
-							INTL_IDNA_VARIANT_UTS46
-						);
-					}
-					else {
-						let parts[k] = (string) idn_to_ascii(parts[k]);
-					}
-					let parts[k] = implode(".", parts[k]);
+					let parts[k] = (string) self::toAscii(parts[k]);
 
 					// Lowercase it.
-					let parts[k] = Strings::strtolower(parts[k], false);
+					let parts[k] = strtolower(parts[k]);
 
 					// Get rid of trailing periods.
 					let parts[k] = ltrim(parts[k], ".");
@@ -617,27 +761,6 @@ final class Domains {
 	}
 
 	/**
-	 * To Unicode
-	 *
-	 * @param string $value Value.
-	 * @return string|null Value.
-	 */
-	private static function toUnicode(var value) -> string | null {
-		if (!empty value && ("string" === typeof value)) {
-			let value = explode(".", value);
-			if (defined("INTL_IDNA_VARIANT_UTS46")) {
-				let value = idn_to_utf8(value, 0, INTL_IDNA_VARIANT_UTS46);
-			}
-			else {
-				let value = idn_to_utf8(value);
-			}
-			return implode(".", value);
-		}
-
-		return value;
-	}
-
-	/**
 	 * Parse URL Callback.
 	 *
 	 * @param array $matches Matches.
@@ -645,5 +768,140 @@ final class Domains {
 	 */
 	private static function _parseUrlCallback(array matches) -> string {
 		return matches[1] . matches[2] . urldecode(matches[3]);
+	}
+
+	/**
+	 * Reverse `parse_url()`
+	 *
+	 * @param array $parsed Parsed data.
+	 * @return string URL.
+	 */
+	public static function unparseUrl(array parsed) -> string | bool {
+		string url = "";
+		array url_parts = [
+			"scheme":"",
+			"host":"",
+			"user":"",
+			"pass":"",
+			"port":"",
+			"path":"",
+			"query":"",
+			"fragment":""
+		];
+
+		let parsed = Cast::parseArgs(parsed, url_parts);
+
+		// To simplify, unset anything without length.
+		var k, v;
+		for k, v in parsed {
+			let parsed[k] = Strings::trim(v);
+			if (empty parsed[k]) {
+				unset(parsed[k]);
+			}
+		}
+
+		// We don't really care about validating url integrity,
+		// but if nothing at all was passed then it is trash.
+		if (!count(parsed)) {
+			return false;
+		}
+
+		// The scheme.
+		if (isset($parsed["scheme"])) {
+			let url .= parsed["scheme"] . ":";
+		}
+
+		// The host.
+		if (isset(parsed["host"])) {
+			if (!empty url) {
+				let url .= "//";
+			}
+
+			// Is this a user:pass situation?
+			if (isset(parsed["user"])) {
+				let url .= parsed["user"];
+				if (isset(parsed["pass"])) {
+					let url .= ":" . parsed["pass"];
+				}
+				let url .= "@";
+			}
+
+			// Finally the host.
+			if (filter_var(parsed["host"], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+				let url .= "[" . parsed["host"] . "]";
+			}
+			else {
+				let url .= parsed["host"];
+			}
+
+			// The port.
+			if (isset(parsed["port"])) {
+				let url .= ":" . parsed["port"];
+			}
+
+			// Prepare for a path by adding a trailing slash.
+			if (isset(parsed["path"]) && (0 !== strpos(parsed["path"], "/"))) {
+				let url .= "/";
+			}
+		}
+
+		// Add the path.
+		if (isset(parsed["path"])) {
+			let url .= parsed["path"];
+		}
+
+		// Add the query.
+		if (isset(parsed["query"])) {
+			let url .= "?" . parsed["query"];
+		}
+
+		// And top it off with a fragment.
+		if (isset(parsed["fragment"])) {
+			let url .= "#" . parsed["fragment"];
+		}
+
+		if (empty url) {
+			return false;
+		}
+
+		return url;
+	}
+
+	/**
+	 * To ASCII
+	 *
+	 * @param string $value Value.
+	 * @return string|null Value.
+	 */
+	private static function toAscii(string value) -> string | null {
+		if (!empty value) {
+			array parts = (array) explode(".", value);
+			var k, v;
+			for k, v in parts {
+				let parts[k] = (string) idn_to_ascii(v, 0, INTL_IDNA_VARIANT_UTS46);
+			}
+			return implode(".", parts);
+		}
+
+		return null;
+	}
+
+	/**
+	 * To Unicode
+	 *
+	 * @param string $value Value.
+	 * @return string|null Value.
+	 */
+	private static function toUnicode(string value) -> string | null {
+		if (!empty value) {
+			array parts = (array) explode(".", value);
+			var k, v;
+			for k, v in parts {
+				let parts[k] = (string) idn_to_utf8(v, 0, INTL_IDNA_VARIANT_UTS46);
+			}
+			return implode(".", parts);
+		}
+
+		return null;
 	}
 }

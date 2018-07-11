@@ -237,19 +237,19 @@ class sanitize {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function control_characters(&$str='') {
+	public static function control_characters(&$str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::controlChars($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::control_characters($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			$str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
 			$str = preg_replace('/\\\\+0+/', '', $str);
@@ -423,6 +423,11 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function domain(&$str='', bool $unicode=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Domains::niceDomain($str, $unicode);
+			return $str ? true : false;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::domain($str[$k], $unicode);
@@ -507,19 +512,19 @@ class sanitize {
 	 * @param string $str Email.
 	 * @return void Nothing.
 	 */
-	public static function email(&$str=null) {
+	public static function email(&$str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Domains::niceEmail($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::email($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::quotes($str, true);
 			mb::strtolower($str, false, true);
@@ -644,11 +649,11 @@ class sanitize {
 	 */
 	public static function hostname(&$domain, bool $www=false, bool $unicode=false) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$domain = \Blobfolio\Cast::toString($domain, true);
+			$domain = \Blobfolio\Domains::niceHost($domain, !$www, $unicode);
+			return $domain ? true : false;
 		}
-		else {
-			cast::string($domain, true);
-		}
+
+		cast::string($domain, true);
 
 		$host = new domain($domain, !$www);
 		if (!$host->is_valid()) {
@@ -1025,19 +1030,19 @@ class sanitize {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function printable(&$str='') {
+	public static function printable(&$str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::printable($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::printable($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			// Stripe zero-width chars.
 			$str = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $str);
@@ -1548,19 +1553,19 @@ class sanitize {
 	 * @param string $str URL.
 	 * @return bool True/false.
 	 */
-	public static function url(&$str='') {
+	public static function url(&$str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Domains::niceUrl($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::url($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			$tmp = v_mb::parse_url($str);
 
@@ -1609,6 +1614,11 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function utf8(&$str='') {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::utf8Recursive($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::utf8($str[$k]);

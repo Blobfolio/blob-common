@@ -29,12 +29,10 @@ class mb {
 	 */
 	public static function parse_url($url, int $component = -1) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$url = \Blobfolio\Cast::toString($url, true);
-		}
-		else {
-			ref\cast::string($url, true);
+			return \Blobfolio\Domains::parseUrl($url, $component);
 		}
 
+		ref\cast::string($url, true);
 		ref\mb::trim($url, true);
 
 		// Before we start, let's fix scheme-agnostic URLs.
@@ -168,6 +166,10 @@ class mb {
 	 * @return string Padded string.
 	 */
 	public static function str_pad($str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::str_pad($str, $pad_length, $pad_string, $pad_type);
+		}
+
 		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
 		return $str;
 	}
@@ -180,6 +182,10 @@ class mb {
 	 * @return array|bool Split string or false.
 	 */
 	public static function str_split($str, int $split_length=1) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::str_split($str, $split_length);
+		}
+
 		ref\mb::str_split($str, $split_length);
 		return $str;
 	}
@@ -221,6 +227,10 @@ class mb {
 	 * @return string Reversed string.
 	 */
 	public static function strrev($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::strrev($str);
+		}
+
 		ref\mb::strrev($str);
 		return $str;
 	}
@@ -381,6 +391,10 @@ class mb {
 	 * @return string String.
 	 */
 	public static function wordwrap($str, int $width=75, $break="\n", bool $cut=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::wordwrap($str, $width, $break, $cut);
+		}
+
 		ref\mb::wordwrap($str, $width, $break, $cut);
 		return $str;
 	}

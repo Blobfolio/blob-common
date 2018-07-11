@@ -203,7 +203,7 @@ class file {
 	 */
 	public static function dirsize(string $path) {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Files::dirsize($path);
+			return \Blobfolio\Files::dirSize($path);
 		}
 
 		$size = 0;
@@ -258,7 +258,7 @@ class file {
 	 */
 	public static function hash_dir($path, string $dir_algo='md5', string $file_algo=null) {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Files::dirhash($path, $dir_algo, $file_algo);
+			return \Blobfolio\Files::hashDir($path, $dir_algo, $file_algo);
 		}
 
 		// We definitely need a valid directory algorithm.
@@ -689,6 +689,10 @@ class file {
 	 * @return string URL.
 	 */
 	public static function unparse_url($parsed=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Domains::unparseUrl($parsed);
+		}
+
 		$url = '';
 		$parsed = data::parse_args($parsed, constants::URL_PARTS);
 

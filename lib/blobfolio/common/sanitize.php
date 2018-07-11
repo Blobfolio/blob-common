@@ -77,7 +77,11 @@ class sanitize {
 	 * @param string $str String.
 	 * @return string String.
 	 */
-	public static function control_characters($str='') {
+	public static function control_characters($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::controlChars($str);
+		}
+
 		ref\sanitize::control_characters($str);
 		return $str;
 	}
@@ -138,6 +142,10 @@ class sanitize {
 	 * @return string Domain.
 	 */
 	public static function domain($str='', bool $unicode=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Domains::niceDomain($str, $unicode);
+		}
+
 		ref\sanitize::domain($str, $unicode);
 		return $str;
 	}
@@ -165,7 +173,11 @@ class sanitize {
 	 * @param string $str Email.
 	 * @return string Email.
 	 */
-	public static function email($str=null) {
+	public static function email($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Domains::niceEmail($str);
+		}
+
 		ref\sanitize::email($str);
 		return $str;
 	}
@@ -190,6 +202,10 @@ class sanitize {
 	 * @return string|bool Hostname or false.
 	 */
 	public static function hostname($domain, bool $www=false, bool $unicode=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Domains::niceHost($domain, !$www, $unicode);
+		}
+
 		ref\sanitize::hostname($domain, $www, $unicode);
 		return $domain;
 	}
@@ -309,7 +325,11 @@ class sanitize {
 	 * @param string $str String.
 	 * @return string String.
 	 */
-	public static function printable($str='') {
+	public static function printable($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::printable($str);
+		}
+
 		ref\sanitize::printable($str);
 		return $str;
 	}
@@ -424,7 +444,11 @@ class sanitize {
 	 * @param string $str URL.
 	 * @return string URL.
 	 */
-	public static function url($str='') {
+	public static function url($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Domains::niceUrl($str);
+		}
+
 		ref\sanitize::url($str);
 		return $str;
 	}
@@ -438,6 +462,10 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function utf8($str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::utf8Recursive($str);
+		}
+
 		ref\sanitize::utf8($str);
 		return $str;
 	}

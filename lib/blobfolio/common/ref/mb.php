@@ -29,15 +29,14 @@ class mb {
 	 * @param int $pad_type Pad type.
 	 * @return void Nothing.
 	 */
-	public static function str_pad(&$str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
+	public static function str_pad(&$str, int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-			$pad_string = \Blobfolio\Cast::toString($pad_string, true);
+			$str = \Blobfolio\Strings::str_pad($str, $pad_length, $pad_string, $pad_type);
+			return;
 		}
-		else {
-			cast::string($str, true);
-			cast::string($pad_string, true);
-		}
+
+		cast::string($str, true);
+		cast::string($pad_string, true);
 
 		$current_length = v_mb::strlen($str, true);
 		$pad_string_length = v_mb::strlen($pad_string, true);
@@ -95,17 +94,17 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function str_split(&$str, int $split_length=1) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$str = \Blobfolio\Strings::str_split($str, $split_length);
+			return;
+		}
+
 		if ($split_length < 1) {
 			$str = false;
 			return false;
 		}
 
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-		}
-		else {
-			cast::string($str, true);
-		}
+		cast::string($str, true);
 
 		$str_length = v_mb::strlen($str, true);
 		$out = array();
@@ -126,11 +125,11 @@ class mb {
 	 */
 	public static function strrev(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
+			$str = \Blobfolio\Strings::strrev($str);
+			return;
 		}
-		else {
-			cast::string($str, true);
-		}
+
+		cast::string($str, true);
 
 		if (!$str) {
 			return false;
@@ -357,13 +356,12 @@ class mb {
 	 */
 	public static function wordwrap(&$str, int $width=75, $break="\n", bool $cut=false) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-			$break = \Blobfolio\Cast::toString($break, true);
+			$str = \Blobfolio\Strings::wordwrap($str, $width, $break, $cut);
+			return;
 		}
-		else {
-			cast::string($str, true);
-			cast::string($break, true);
-		}
+
+		cast::string($str, true);
+		cast::string($break, true);
 
 		// Bad data?
 		if (!$str || $width <= 0) {
