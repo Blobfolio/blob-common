@@ -16,6 +16,9 @@
             }
         }
     },
+    "backend": {
+        "templatepath": "ZendEngine3"
+    },
     "warnings": {
         "unused-variable": true,
         "unused-variable-external": false,
