@@ -88,20 +88,11 @@ final class Strings {
 	 *
 	 * Convert accented to non-accented characters.
 	 *
-	 * @param array|string String.
-	 * @return array|string String.
+	 * @param string String.
+	 * @return string String.
 	 */
-	public static function accents(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::accents(v);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function accents(string str) -> string {
+		let str = self::utf8(str);
 		if (preg_match("/[\x80-\xff]/", str)) {
 			array accent_chars = [
 				"ª":"a", "º":"o", "À":"A", "Á":"A", "Â":"A", "Ã":"A",
@@ -170,17 +161,8 @@ final class Strings {
 	 * @param string $str String
 	 * @return string String.
 	 */
-	public static function controlChars(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::controlChars(v);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function controlChars(string str) -> string {
+		let str = self::utf8(str);
 		let str = preg_replace("/[\x00-\x08\x0B\x0C\x0E-\x1F]/", "", str);
 		return preg_replace("/\\\\+0+/", "", str);
 	}
@@ -207,7 +189,7 @@ final class Strings {
 	 * @return string String.
 	 */
 	public static function decodeEscapeEntities(string str) -> string {
-		let str = Cast::toString(str, true);
+		let str = self::utf8(str);
 
 		array from = [
 			"\\b",
@@ -236,7 +218,7 @@ final class Strings {
 	 * @return string String.
 	 */
 	public static function decodeUnicodeEntities(string str) -> string {
-		let str = Cast::toString(str, true);
+		let str = self::utf8(str);
 
 		string last = "";
 		while (str !== last) {
@@ -248,7 +230,7 @@ final class Strings {
 				str
 			);
 
-			let str = Cast::toString(str, true);
+			let str = self::utf8(str);
 		}
 
 		return str;
@@ -264,7 +246,7 @@ final class Strings {
 	 * @return void Nothing.
 	 */
 	public static function decodeEntities(string str) -> string {
-		let str = Cast::toString(str, true);
+		let str = self::utf8(str);
 
 		string last = "";
 		while (str !== last) {
@@ -282,7 +264,7 @@ final class Strings {
 				str
 			);
 
-			let str = Cast::toString(str, true);
+			let str = self::utf8(str);
 		}
 
 		return str;
@@ -398,17 +380,8 @@ final class Strings {
 	 * @param string $str String.
 	 * @return void Nothing.
 	 */
-	public static function printable(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::printable(v);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function printable(string str) -> string {
+		let str = self::utf8(str);
 
 		// Stripe zero-width chars.
 		let str = preg_replace("/[\x{200B}-\x{200D}\x{FEFF}]/u", "", str);
@@ -453,17 +426,8 @@ final class Strings {
 	 * @param array|string $str String.
 	 * @return array|string String.
 	 */
-	public static function quotes(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::quotes(v);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function quotes(string str) -> string {
+		let str = self::utf8(str);
 
 		// Curly quotes.
 		array quote_char_keys = [
@@ -479,8 +443,7 @@ final class Strings {
 			"'", "'", "'", "\"", "\"", "\"", "\"", "'", "'"
 		];
 
-		let str = str_replace(quote_char_keys, quote_char_values, str);
-		return str;
+		return str_replace(quote_char_keys, quote_char_values, str);
 	}
 
 	/**
@@ -503,8 +466,8 @@ final class Strings {
 	 * @return void Nothing.
 	 */
 	public static function str_pad(string str, int pad_length, string pad_string=" ", const int pad_type = 1) -> string {
-		let str = Cast::toString(str, true);
-		let pad_string = Cast::toString(pad_string, true);
+		let str = self::utf8(str);
+		let pad_string = self::utf8(pad_string);
 
 		int current_length = (int) mb_strlen(str, "UTF-8");
 		int pad_string_length = (int) mb_strlen(pad_string, "UTF-8");
@@ -575,7 +538,7 @@ final class Strings {
 			return false;
 		}
 
-		let str = Cast::toString(str, true);
+		let str = self::utf8(str);
 
 		int str_length = (int) mb_strlen(str, "UTF-8");
 		array out = [];
@@ -607,7 +570,7 @@ final class Strings {
 	 * @return bool True/false.
 	 */
 	public static function strrev(string str) -> string {
-		let str = Cast::toString($str, true);
+		let str = self::utf8($str);
 
 		if (!empty str) {
 			array tmp = (array) self::str_split(str);
@@ -652,7 +615,7 @@ final class Strings {
 			let str = Cast::toString(str, true);
 
 			if (!empty str) {
-				if (unlikely !mb_check_encoding($str, "ASCII")) {
+				if (unlikely !mb_check_encoding(str, "ASCII")) {
 					// Hit the bulk of the conversion.
 					let str = mb_strtolower(str, "UTF-8");
 
@@ -694,7 +657,7 @@ final class Strings {
 			let str = Cast::toString(str, true);
 
 			if (!empty str) {
-				if (unlikely !mb_check_encoding($str, "ASCII")) {
+				if (unlikely !mb_check_encoding(str, "ASCII")) {
 					// Hit the bulk of the conversion.
 					let str = mb_strtoupper(str, "UTF-8");
 
@@ -740,20 +703,11 @@ final class Strings {
 	/**
 	 * Trim
 	 *
-	 * @param array|string $str String.
-	 * @return array|string String.
+	 * @param string $str String.
+	 * @return string String.
 	 */
-	public static function trim(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::trim(v);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function trim(string str) -> string {
+		let str = self::utf8(str);
 		return preg_replace("/(^\s+|\s+$)/u", "", str);
 	}
 
@@ -874,127 +828,123 @@ final class Strings {
 	 */
 	public static function utf8(string str) -> string {
 		// Easy bypass.
-		if (empty str || is_numeric(str)) {
+		if (empty str || is_numeric(str) || mb_check_encoding(str, "ASCII")) {
 			return str;
 		}
 
 		// Fix it up if we need to.
-		if (!mb_check_encoding(str, "ASCII")) {
-			string out = "";
-			int length = (int) mb_strlen(str, "8bit");
+		string out = "";
+		int length = (int) mb_strlen(str, "8bit");
 
-			// We need to keep our chars variant for bitwise operations.
-			var c1, c2, c3, c4, cc1, cc2;
-			var x00 = "\x00";
-			var x3f = "\x3f";
-			var x80 = "\x80";
-			var xbf = "\xbf";
-			var xc0 = "\xc0";
-			var xdf = "\xdf";
-			var xe0 = "\xe0";
-			var xef = "\xef";
-			var xf0 = "\xf0";
-			var xf7 = "\xf7";
+		// We need to keep our chars variant for bitwise operations.
+		var c1, c2, c3, c4, cc1, cc2;
+		var x00 = "\x00";
+		var x3f = "\x3f";
+		var x80 = "\x80";
+		var xbf = "\xbf";
+		var xc0 = "\xc0";
+		var xdf = "\xdf";
+		var xe0 = "\xe0";
+		var xef = "\xef";
+		var xf0 = "\xf0";
+		var xf7 = "\xf7";
 
-			int x = 0;
-			while x < length {
-				let c1 = substr(str, x, 1);
+		int x = 0;
+		while x < length {
+			let c1 = substr(str, x, 1);
 
-				// Should be converted to UTF-8 if not already.
-				if (c1 >= xc0) {
-					let c2 = (x + 1) >= length ? strval(x00) : strval(str[x + 1]);
-					let c3 = (x + 2) >= length ? strval(x00) : strval(str[x + 2]);
-					let c4 = (x + 3) >= length ? strval(x00) : strval(str[x + 3]);
+			// Should be converted to UTF-8 if not already.
+			if (c1 >= xc0) {
+				let c2 = (x + 1) >= length ? strval(x00) : strval(str[x + 1]);
+				let c3 = (x + 2) >= length ? strval(x00) : strval(str[x + 2]);
+				let c4 = (x + 3) >= length ? strval(x00) : strval(str[x + 3]);
 
-					// Probably 2-byte UTF-8.
-					if ((c1 >= xc0) & (c1 <= xdf)) {
-						// Looks good.
-						if (c2 >= x80 && c2 <= xbf) {
-							let out .= c1 . c2;
-							let x += 1;
-						}
-						// Invalid; convert it.
-						else {
-							let cc1 = (chr(ord(c1) / 64) | xc0);
-							let cc2 = (c1 & x3f) | x80;
-							let out .= cc1 . cc2;
-						}
+				// Probably 2-byte UTF-8.
+				if ((c1 >= xc0) & (c1 <= xdf)) {
+					// Looks good.
+					if (c2 >= x80 && c2 <= xbf) {
+						let out .= c1 . c2;
+						let x++;
 					}
-					// Probably 3-byte UTF-8.
-					elseif ((c1 >= xe0) & (c1 <= xef)) {
-						// Looks good.
-						if (
-							c2 >= x80 &&
-							c2 <= xbf &&
-							c3 >= x80 &&
-							c3 <= xbf
-						) {
-							let out .= c1 . c2 . c3;
-							let x += 2;
-						}
-						// Invalid; convert it.
-						else {
-							let cc1 = strval((chr(ord(c1) / 64) | xc0));
-							let cc2 = strval((c1 & x3f) | x80);
-							let out .= cc1 . cc2;
-						}
+					// Invalid; convert it.
+					else {
+						let cc1 = (chr(ord(c1) / 64) | xc0);
+						let cc2 = (c1 & x3f) | x80;
+						let out .= cc1 . cc2;
 					}
-					// Probably 4-byte UTF-8.
-					elseif ((c1 >= xf0) & (c1 <= xf7)) {
-						// Looks good.
-						if (
-							c2 >= x80 &&
-							c2 <= xbf &&
-							c3 >= x80 &&
-							c3 <= xbf &&
-							c4 >= x80 &&
-							c4 <= xbf
-						) {
-							let out .= c1 . c2 . c3 . c4;
-							let x += 3;
-						}
-						// Invalid; convert it.
-						else {
-							let cc1 = strval((chr(ord(c1) / 64) | xc0));
-							let cc2 = strval((c1 & x3f) | x80);
-							let out .= cc1 . cc2;
-						}
+				}
+				// Probably 3-byte UTF-8.
+				elseif ((c1 >= xe0) & (c1 <= xef)) {
+					// Looks good.
+					if (
+						c2 >= x80 &&
+						c2 <= xbf &&
+						c3 >= x80 &&
+						c3 <= xbf
+					) {
+						let out .= c1 . c2 . c3;
+						let x += 2;
 					}
-					// Doesn"t appear to be UTF-8; convert it.
+					// Invalid; convert it.
 					else {
 						let cc1 = strval((chr(ord(c1) / 64) | xc0));
-						let cc2 = strval(((c1 & x3f) | x80));
+						let cc2 = strval((c1 & x3f) | x80);
 						let out .= cc1 . cc2;
 					}
 				}
-				// Convert it.
-				elseif (unlikely (c1 & xc0) === x80) {
-					int o1 = (int) ord(c1);
-
-					// Convert from Windows-1252.
-					if (isset(self::win1252_chars[o1])) {
-						let out .= self::win1252_chars[o1];
+				// Probably 4-byte UTF-8.
+				elseif ((c1 >= xf0) & (c1 <= xf7)) {
+					// Looks good.
+					if (
+						c2 >= x80 &&
+						c2 <= xbf &&
+						c3 >= x80 &&
+						c3 <= xbf &&
+						c4 >= x80 &&
+						c4 <= xbf
+					) {
+						let out .= c1 . c2 . c3 . c4;
+						let x += 3;
 					}
+					// Invalid; convert it.
 					else {
-						let cc1 = strval((chr(o1 / 64) | xc0));
-						let cc2 = strval(((c1 & x3f) | x80));
+						let cc1 = strval((chr(ord(c1) / 64) | xc0));
+						let cc2 = strval((c1 & x3f) | x80);
 						let out .= cc1 . cc2;
 					}
 				}
-				// No change.
+				// Doesn"t appear to be UTF-8; convert it.
 				else {
-					let out .= c1;
+					let cc1 = strval((chr(ord(c1) / 64) | xc0));
+					let cc2 = strval(((c1 & x3f) | x80));
+					let out .= cc1 . cc2;
 				}
+			}
+			// Convert it.
+			elseif (unlikely (c1 & xc0) === x80) {
+				int o1 = (int) ord(c1);
 
-				// Increment.
-				let x += 1;
+				// Convert from Windows-1252.
+				if (isset(self::win1252_chars[o1])) {
+					let out .= self::win1252_chars[o1];
+				}
+				else {
+					let cc1 = strval((chr(o1 / 64) | xc0));
+					let cc2 = strval(((c1 & x3f) | x80));
+					let out .= cc1 . cc2;
+				}
+			}
+			// No change.
+			else {
+				let out .= c1;
 			}
 
-			// If it seems valid, return it, otherwise empty it out.
-			return (1 === preg_match("/^./us", out)) ? out : "";
+			// Increment.
+			let x++;
 		}
 
-		return str;
+		// If it seems valid, return it, otherwise empty it out.
+		return (1 === preg_match("/^./us", out)) ? out : "";
 	}
 
 	/**
@@ -1030,17 +980,8 @@ final class Strings {
 	 * @param int $newlines Newlines.
 	 * @return array|string String.
 	 */
-	public static function whitespace(var str, const int newlines=0) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::whitespace(v, newlines);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function whitespace(string str, const int newlines=0) -> string {
+		let str = self::utf8(str);
 
 		// If we aren't allowing new lines at all, we can do this
 		// quickly.
@@ -1050,15 +991,14 @@ final class Strings {
 
 		// Convert different types of whitespace.
 		let str = str_replace("\r\n", "\n", str);
-		let str = preg_replace("/\v/u", "\n", str);
 
 		// Go through line by line.
-		let str = explode("\n", str);
+		array lines = (array) preg_split("/\\v/u", str);
 		var k, v;
-		for k, v in str {
-			let str[k] = trim(preg_replace("/\s+/u", " ", v));
+		for k, v in lines {
+			let lines[k] = trim(preg_replace("/\s+/u", " ", v));
 		}
-		let str = implode("\n", str);
+		let str = (string) implode("\n", lines);
 		let str = self::trim(str);
 
 		// Cap newlines.
@@ -1085,8 +1025,9 @@ final class Strings {
 	 * @return void Nothing.
 	 */
 	public static function wordwrap(string str, const int width=75, string eol="\n", const bool cut=false) -> string {
-		let str = Cast::toString(str, true);
-		let eol = Cast::toString(eol, true);
+
+		let str = self::utf8(str);
+		let eol = self::utf8(eol);
 
 		// Bad data?
 		if (empty str || width <= 0) {
@@ -1101,18 +1042,24 @@ final class Strings {
 			PREG_SPLIT_DELIM_CAPTURE
 		);
 
-		// Zephir sucks at dynamic array memory allocation, so instead
-		// we have to use a hacky ࠄ-separated string during the initial
-		// parsing. Obviously, this will break text using this string,
-		// but that's a risk we'll have to take. Haha.
-		string line = "ࠄ";
+		array lines = [];
+		array out = [];
+		array tmp;
+		int breakLength = (int) mb_strlen(eol, "UTF-8");
+		int lineLength = 0;
+		int wordLength = 0;
+		string line = "";
+		string preg_eol = (string) preg_quote(eol, "/");
+		var v2;
+		var v;
 
 		// Loop through chunks.
-		var v;
 		for v in chunks {
 			// Always start a new line with vertical whitespace.
 			if (preg_match("/\v/u", v)) {
-				let line .= "ࠄ" . v . "ࠄ";
+				let lines[] = line;
+				let lines[] = v;
+				let line = "";
 				continue;
 			}
 
@@ -1123,20 +1070,18 @@ final class Strings {
 			}
 
 			// Start a new line?
-			int last_null = (int) mb_strrpos(line, "ࠄ", 0, "UTF-8") + 1;
-			int full_length = (int) mb_strlen(line, "UTF-8");
-			int line_length = full_length - last_null;
+			let lineLength = (int) mb_strlen(line, "UTF-8");
 
-			if (line_length >= width) {
-				let line .= "ࠄ";
-				let line_length = 0;
-				let full_length = (int) mb_strlen(line, "UTF-8");
+			if (lineLength >= width) {
+				let lines[] = line;
+				let line = "";
+				let lineLength = 0;
 			}
 
-			int word_length = (int) mb_strlen(v, "UTF-8");
+			let wordLength = (int) mb_strlen(v, "UTF-8");
 
 			// We can just add it.
-			if (word_length + line_length <= width) {
+			if (wordLength + lineLength <= width) {
 				let line .= v;
 				continue;
 			}
@@ -1144,35 +1089,34 @@ final class Strings {
 			// We should make sure each chunk fits.
 			if (cut) {
 				let v = self::str_split(v, width);
-				let v = implode("ࠄ", v);
+				let v = implode("\n", v);
 			}
 
 			// Is this word hyphenated or dashed?
 			let v = preg_replace("/(\p{Pd})\n/u", "$1", v);
-			let v = preg_replace("/(\p{Pd}+)/u", "$1ࠄ", v);
+			let v = preg_replace("/(\p{Pd}+)/u", "$1\n", v);
 			let v = self::trim(v);
 
 			// Loop through word chunks to see what fits where.
-			array tmp = (array) explode("ࠄ", v);
-			var v2;
+			let tmp = (array) explode("\n", v);
 			for v2 in tmp {
-				let last_null = (int) mb_strrpos(line, "ࠄ", 0, "UTF-8") + 1;
-				let full_length = (int) mb_strlen(line, "UTF-8");
-				let line_length = full_length - last_null;
-				let word_length = (int) mb_strlen(v2, "UTF-8");
+				let lineLength = (int) mb_strlen(line, "UTF-8");
+				let wordLength = (int) mb_strlen(v2, "UTF-8");
 
 				// New line?
-				if (word_length + line_length > width) {
-					let line .= "ࠄ";
+				if (wordLength + lineLength > width) {
+					let lines[] = line;
+					let line = "";
 				}
 
 				let line .= v2;
 			}
 		}
 
-		array out = [];
-		array lines = (array) explode("ࠄ", line);
-		string preg_eol = (string) preg_quote(eol, "/");
+		// Just in case anything was missed.
+		if (!empty line) {
+			let lines[] = line;
+		}
 
 		// Okay, let's trim our lines real quick.
 		for v in lines {
@@ -1182,12 +1126,16 @@ final class Strings {
 				if (v === eol) {
 					continue;
 				}
-
-				let out[] = self::trim(preg_replace(
-					"/^" . preg_eol . "/ui",
-					"",
-					v
-				));
+				elseif (1 === breakLength) {
+					let out[] = self::trim(ltrim(v, eol));
+				}
+				else {
+					let out[] = self::trim(preg_replace(
+						"/^" . preg_eol . "/ui",
+						"",
+						v
+					));
+				}
 
 				continue;
 			}

@@ -496,16 +496,7 @@ final class Domains {
 	 * @param bool $unicode Unicode.
 	 * @return bool True/false.
 	 */
-	public static function niceDomain(var str, const bool unicode=false) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::niceDomain(v);
-			}
-			return str;
-		}
-
+	public static function niceDomain(const string str, const bool unicode=false) -> string {
 		var host;
 		let host = new self(str, true);
 		if (host->isFqdn() && !host->isIp()) {
@@ -524,17 +515,8 @@ final class Domains {
 	 * @param string $str Email.
 	 * @return void Nothing.
 	 */
-	public static function niceEmail(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::niceEmail(v);
-			}
-			return str;
-		}
-
-		let str = Strings::quotes(str);
+	public static function niceEmail(string str) -> string {
+		string str = (string) Strings::quotes(str);
 		let str = Strings::strtolower(str);
 
 		// Strip comments.
@@ -584,7 +566,7 @@ final class Domains {
 	 * @param bool $unicode Unicode.
 	 * @return bool True/false.
 	 */
-	public static function niceHost(var str, const bool www=true, const bool unicode=false) -> string | bool {
+	public static function niceHost(const string str, const bool www=true, const bool unicode=false) -> string | bool {
 
 		var host;
 		let host = new self(str, www);
@@ -603,16 +585,7 @@ final class Domains {
 	 * @param string $str URL.
 	 * @return bool True/false.
 	 */
-	public static function niceUrl(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::niceUrl(v);
-			}
-			return str;
-		}
-
+	public static function niceUrl(string str) -> string {
 		array tmp = (array) self::parseUrl(str);
 
 		// Validate the host, and ASCIIfy international bits
@@ -633,7 +606,7 @@ final class Domains {
 		}
 
 		// Put it back together.
-		let str = self::unparseUrl(tmp);
+		let str = (string) self::unparseUrl(tmp);
 
 		let str = filter_var(str, FILTER_SANITIZE_URL);
 		if (!filter_var(
@@ -695,9 +668,8 @@ final class Domains {
 
 		var parts = parse_url(encoded, component);
 
-		// And now decode what we've been giving. Let's
-		// also take a moment to translate Unicode hosts
-		// to ASCII.
+		// And now decode what we've been giving. Let's also take a
+		// moment to translate Unicode hosts to ASCII.
 		if (("string" === typeof parts) && (PHP_URL_SCHEME !== component)) {
 			let parts = str_replace(" ", "+", urldecode(parts));
 

@@ -323,6 +323,10 @@ class file {
 	 * @return string Path.
 	 */
 	public static function leadingslash($path) {
+		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
+			return \Blobfolio\Files::leadingSlash($path);
+		}
+
 		ref\file::leadingslash($path);
 		return $path;
 	}
@@ -454,7 +458,7 @@ class file {
 	 * @return string Path.
 	 */
 	public static function path($path, bool $validate=true) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
 			return \Blobfolio\Files::path($path, $validate);
 		}
 
@@ -644,7 +648,7 @@ class file {
 	 * @return string Path.
 	 */
 	public static function trailingslash($path) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
 			return \Blobfolio\Files::trailingSlash($path);
 		}
 
@@ -659,7 +663,7 @@ class file {
 	 * @return string Path.
 	 */
 	public static function unixslash($path) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
 			return \Blobfolio\Files::unixSlash($path);
 		}
 
@@ -674,7 +678,7 @@ class file {
 	 * @return string Path.
 	 */
 	public static function unleadingslash($path) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
 			return \Blobfolio\Files::unleadingSlash($path);
 		}
 
@@ -758,7 +762,7 @@ class file {
 	 * @return string Path.
 	 */
 	public static function untrailingslash($path) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
 			return \Blobfolio\Files::untrailingSlash($path);
 		}
 

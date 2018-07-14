@@ -17,6 +17,35 @@ use \Throwable;
 
 final class Arrays {
 	/**
+	 * Get Array Type
+	 *
+	 * "associative": If there are string keys.
+	 * "sequential": If the keys are sequential numbers.
+	 * "indexed": If the keys are at least numeric.
+	 * FALSE: Any other condition.
+	 *
+	 * @param array $arr Array.
+	 * @return string|bool Type. False on failure.
+	 */
+	public static function getType(const array arr) -> string | bool {
+		if (!count(arr)) {
+			return false;
+		}
+
+		array keys = (array) array_keys(arr);
+
+		if (range(0, count(keys) - 1) === keys) {
+			return "sequential";
+		}
+
+		elseif (count(keys) === count(array_filter(keys, "is_numeric"))) {
+			return "indexed";
+		}
+
+		return "associative";
+	}
+
+	/**
 	 * Flatten Multi-Dimensional Array
 	 *
 	 * Like array_values(), but move child values into the single (main)
@@ -25,10 +54,10 @@ final class Arrays {
 	 * @param array $arr Array.
 	 * @return array Array.
 	 */
-	public static function flatten(var arr) -> array {
+	public static function flatten(array arr) -> array {
 		array out = [];
-		let arr = Cast::toArray(arr);
-		if (unlikely !count(arr)) {
+
+		if (!count(arr)) {
 			return out;
 		}
 
@@ -59,21 +88,22 @@ final class Arrays {
 	 * ordering.
 	 *
 	 * @param array $arr Array.
+	 * @param string $key Key.
+	 * @param string $value Value.
 	 * @return array Array.
 	 */
-	public static function toIndexed(var arr) -> array {
+	public static function toIndexed(array arr, const string key="key", const string value="value") -> array {
 		array out = [];
-		let arr = Cast::toArray(arr);
-		if (unlikely !count(arr)) {
-			return out;
-		}
 
-		var k, v;
-		for k, v in arr {
-			let out[] = [
-				"key": $k,
-				"value": $v
-			];
+		if (count(arr)) {
+			var k;
+			var v;
+			for k, v in arr {
+				let out[] = [
+					key: $k,
+					value: $v
+				];
+			}
 		}
 
 		return out;
@@ -92,7 +122,7 @@ final class Arrays {
 			return false;
 		}
 
-		return array_pop(arr);
+		return end(arr);
 	}
 
 	/**
@@ -101,15 +131,14 @@ final class Arrays {
 	 * @param array $arr Array.
 	 * @return mixed Value. False on error.
 	 */
-	public static function popRand(array $arr) {
+	public static function popRand(array arr) {
 		int length = (int) count(arr);
-		if (!length) {
-			return false;
-		}
 
-		// Nothing random about an array with one thing.
-		if (1 === length) {
-			return self::popTop(arr);
+		switch (length) {
+			case 0:
+				return false;
+			case 1:
+				return end(arr);
 		}
 
 		array keys = (array) array_keys(arr);
@@ -124,8 +153,8 @@ final class Arrays {
 	 * @param array $arr Array.
 	 * @return mixed Value. False on error.
 	 */
-	public static function popTop(array $arr) {
-		if (unlikely !count(arr)) {
+	public static function popTop(array arr) {
+		if (count(arr)) {
 			return false;
 		}
 

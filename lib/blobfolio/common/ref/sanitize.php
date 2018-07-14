@@ -41,7 +41,7 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function accents(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Strings::accents($str);
 			return;
 		}
@@ -238,7 +238,7 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function control_characters(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Strings::controlChars($str);
 			return;
 		}
@@ -423,7 +423,7 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function domain(&$str='', bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Domains::niceDomain($str, $unicode);
 			return $str ? true : false;
 		}
@@ -513,7 +513,7 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function email(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Domains::niceEmail($str);
 			return;
 		}
@@ -648,7 +648,7 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function hostname(&$domain, bool $www=false, bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($domain)) {
 			$domain = \Blobfolio\Domains::niceHost($domain, !$www, $unicode);
 			return $domain ? true : false;
 		}
@@ -674,7 +674,7 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function ip(&$str='', bool $restricted=false, bool $condense=true) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\IPs::niceIp($str, $restricted, $condense);
 			return;
 		}
@@ -1031,7 +1031,7 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function printable(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Strings::printable($str);
 			return;
 		}
@@ -1111,7 +1111,7 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function quotes(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Strings::quotes($str);
 			return;
 		}
@@ -1122,12 +1122,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			$from = array_keys(constants::QUOTE_CHARS);
 			$to = array_values(constants::QUOTE_CHARS);
@@ -1554,7 +1549,7 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function url(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Domains::niceUrl($str);
 			return;
 		}
@@ -1751,17 +1746,17 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function whitespace(&$str='', int $newlines=0) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::whitespace($str, $newlines);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::whitespace($str[$k], $newlines);
 			}
 		}
 		else {
+			if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+				$str = \Blobfolio\Strings::whitespace($str, $newlines);
+				return;
+			}
+
 			// If there are no spaces, we're done.
 			if (is_string($str) && !preg_match('/\s/u', $str)) {
 				return;

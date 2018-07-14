@@ -54,7 +54,7 @@ final class Cast {
 		}
 
 		try {
-			// Zephir doesn't support (array) hinting.
+			// Zephir doesn't support (array) hinting in this one place.
 			settype(value, "array");
 		} catch Throwable {
 			let value = [];
@@ -70,37 +70,38 @@ final class Cast {
 	 * @param bool $flatten Flatten.
 	 * @return bool Bool.
 	 */
-	public static function toBool(var value, const bool! flatten=false) -> boolean | array {
+	public static function toBool(var value, const bool flatten=false) -> boolean | array {
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
 			for k, v in value {
-				let value[k] = self::toBool(v);
+				let value[k] = (bool) self::toBool(v);
 			}
 			return value;
 		}
+		else {
+			switch (typeof value) {
+				// Short circuit.
+				case "boolean":
+					return value;
+				case "string":
+					let value = strtolower(value);
 
-		switch (typeof value) {
-			// Short circuit.
-			case "boolean":
-				return value;
-			case "string":
-				let value = strtolower(value);
+					// Special cases.
+					if (isset(self::boolish[value])) {
+						return self::boolish[value];
+					}
 
-				// Special cases.
-				if (isset(self::boolish[value])) {
-					return self::boolish[value];
-				}
+					return !!value;
+				case "array":
+					return !!count(value);
+			}
 
-				return !!value;
-			case "array":
-				return !!count(value);
-			default:
-				try {
-					let value = (bool) value;
-				} catch Throwable {
-					let value = false;
-				}
+			try {
+				let value = (bool) value;
+			} catch Throwable {
+				let value = false;
+			}
 		}
 
 		return value;
@@ -113,7 +114,7 @@ final class Cast {
 	 * @param bool $flatten Flatten.
 	 * @return float Float.
 	 */
-	public static function toFloat(var value, const bool! flatten=false) -> float | array {
+	public static function toFloat(var value, const bool flatten=false) -> float | array {
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -122,13 +123,14 @@ final class Cast {
 			}
 			return value;
 		}
-
 		// Short circuit.
-		if ("double" === typeof value) {
+		elseif ("double" === typeof value) {
 			return value;
 		}
+		else {
+			let value = self::toNumber(value, true);
+		}
 
-		let value = self::toNumber(value, true);
 		return value;
 	}
 
@@ -139,7 +141,7 @@ final class Cast {
 	 * @param bool $flatten Flatten.
 	 * @return int Integer.
 	 */
-	public static function toInt(var value, const bool! flatten=false) -> int | array {
+	public static function toInt(var value, const bool flatten=false) -> int | array {
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -148,26 +150,27 @@ final class Cast {
 			}
 			return value;
 		}
+		else {
+			switch (typeof value) {
+				case "array":
+					if (1 === count(value)) {
+						reset(value);
+						let value = value[key(value)];
+						return self::toInt(value);
+					}
+					break;
+				case "int":
+				case "integer":
+				case "long":
+					return value;
+				case "string":
+					let value = strtolower(value);
 
-		switch (typeof value) {
-			case "array":
-				if (1 === count(value)) {
-					reset(value);
-					let value = value[key(value)];
-					return self::toInt(value);
-				}
-				break;
-			case "int":
-			case "integer":
-			case "long":
-				return value;
-			case "string":
-				let value = strtolower(value);
-
-				// Special cases.
-				if (isset(self::boolish[value])) {
-					return self::boolish[value] ? 1 : 0;
-				}
+					// Special cases.
+					if (isset(self::boolish[value])) {
+						return self::boolish[value] ? 1 : 0;
+					}
+			}
 		}
 
 		let value = (int) self::toNumber(value, true);
@@ -184,7 +187,7 @@ final class Cast {
 	 * @param bool $flatten Do not recurse.
 	 * @return float Number.
 	 */
-	public static function toNumber(var value, const bool! flatten=false) -> float | array {
+	public static function toNumber(var value, const bool flatten=false) -> float | array {
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -193,60 +196,61 @@ final class Cast {
 			}
 			return value;
 		}
+		else {
+			switch (typeof value) {
+				case "array":
+					if (1 === count(value)) {
+						reset(value);
+						let value = value[key(value)];
+						return self::toNumber(value);
+					}
+					break;
+				case "double":
+				case "float":
+				case "number":
+					return value;
+				case "int":
+				case "integer":
+				case "long":
+					return (float) value;
+				case "string":
+					// Weird Unicode numbers.
+					array number_char_keys = [
+						"\xef\xbc\x90", "\xef\xbc\x91", "\xef\xbc\x92",
+						"\xef\xbc\x93", "\xef\xbc\x94", "\xef\xbc\x95",
+						"\xef\xbc\x96", "\xef\xbc\x97", "\xef\xbc\x98",
+						"\xef\xbc\x99", "\xd9\xa0", "\xd9\xa1", "\xd9\xa2",
+						"\xd9\xa3", "\xd9\xa4", "\xd9\xa5", "\xd9\xa6",
+						"\xd9\xa7", "\xd9\xa8", "\xd9\xa9", "\xdb\xb0",
+						"\xdb\xb1", "\xdb\xb2", "\xdb\xb3", "\xdb\xb4",
+						"\xdb\xb5", "\xdb\xb6", "\xdb\xb7", "\xdb\xb8",
+						"\xdb\xb9", "\xe1\xa0\x90", "\xe1\xa0\x91",
+						"\xe1\xa0\x92", "\xe1\xa0\x93", "\xe1\xa0\x94",
+						"\xe1\xa0\x95", "\xe1\xa0\x96", "\xe1\xa0\x97",
+						"\xe1\xa0\x98", "\xe1\xa0\x99"
+					];
 
-		switch (typeof value) {
-			case "array":
-				if (1 === count(value)) {
-					reset(value);
-					let value = value[key(value)];
-					return self::toNumber(value);
-				}
-				break;
-			case "double":
-			case "float":
-			case "number":
-				return value;
-			case "int":
-			case "integer":
-			case "long":
-				return (float) value;
-			case "string":
-				// Weird Unicode numbers.
-				array number_char_keys = [
-					"\xef\xbc\x90", "\xef\xbc\x91", "\xef\xbc\x92",
-					"\xef\xbc\x93", "\xef\xbc\x94", "\xef\xbc\x95",
-					"\xef\xbc\x96", "\xef\xbc\x97", "\xef\xbc\x98",
-					"\xef\xbc\x99", "\xd9\xa0", "\xd9\xa1", "\xd9\xa2",
-					"\xd9\xa3", "\xd9\xa4", "\xd9\xa5", "\xd9\xa6",
-					"\xd9\xa7", "\xd9\xa8", "\xd9\xa9", "\xdb\xb0",
-					"\xdb\xb1", "\xdb\xb2", "\xdb\xb3", "\xdb\xb4",
-					"\xdb\xb5", "\xdb\xb6", "\xdb\xb7", "\xdb\xb8",
-					"\xdb\xb9", "\xe1\xa0\x90", "\xe1\xa0\x91",
-					"\xe1\xa0\x92", "\xe1\xa0\x93", "\xe1\xa0\x94",
-					"\xe1\xa0\x95", "\xe1\xa0\x96", "\xe1\xa0\x97",
-					"\xe1\xa0\x98", "\xe1\xa0\x99"
-				];
+					// The equivalent as actual numbers.
+					array number_char_values = [
+						0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
+						7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3,
+						4, 5, 6, 7, 8, 9
+					];
 
-				// The equivalent as actual numbers.
-				array number_char_values = [
-					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
-					7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3,
-					4, 5, 6, 7, 8, 9
-				];
+					// Fix weird Unicode numbers.
+					let value = str_replace(
+						number_char_keys,
+						number_char_values,
+						value
+					);
 
-				// Fix weird Unicode numbers.
-				let value = str_replace(
-					number_char_keys,
-					number_char_values,
-					value
-				);
-
-				// Convert from cents.
-				if (preg_match("/^\-?[\d,]*\.?\d+(¢|%)$/", value)) {
-					return self::toNumber(
-						preg_replace("/[^\-\d\.]/", "", value)
-					) / 100;
-				}
+					// Convert from cents.
+					if (preg_match("/^\-?[\d,]*\.?\d+(¢|%)$/", value)) {
+						return self::toNumber(
+							preg_replace("/[^\-\d\.]/", "", value)
+						) / 100;
+					}
+			}
 		}
 
 		try {
@@ -269,7 +273,7 @@ final class Cast {
 	 * @param bool $flatten Flatten.
 	 * @return string String.
 	 */
-	public static function toString(var value, const bool! flatten=false) -> string | array {
+	public static function toString(var value, const bool flatten=false) -> string | array {
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -278,22 +282,23 @@ final class Cast {
 			}
 			return value;
 		}
+		else {
+			// If a single-entry array is passed, use that value.
+			if (("array" === typeof value) && (1 === count(value))) {
+				reset(value);
+				let value = value[key(value)];
+			}
 
-		// If a single-entry array is passed, use that value.
-		if (unlikely ("array" === typeof value) && (1 === count(value))) {
-			reset(value);
-			let value = value[key(value)];
-		}
+			try {
+				let value = (string) value;
+			} catch Throwable {
+				return "";
+			}
 
-		try {
-			let value = (string) value;
-		} catch Throwable {
-			return "";
-		}
-
-		// Fix up UTF-8 maybe.
-		if (value && !mb_check_encoding(value, "ASCII")) {
-			let value = Strings::utf8(value);
+			// Fix up UTF-8 maybe.
+			if (value && !mb_check_encoding(value, "ASCII")) {
+				let value = Strings::utf8(value);
+			}
 		}
 
 		return value;
@@ -336,33 +341,6 @@ final class Cast {
 	// -----------------------------------------------------------------
 
 	/**
-	 * Get Array Type
-	 *
-	 * "associative": If there are string keys.
-	 * "sequential": If the keys are sequential numbers.
-	 * "indexed": If the keys are at least numeric.
-	 * FALSE: Any other condition.
-	 *
-	 * @param array $arr Array.
-	 * @return string|bool Type. False on failure.
-	 */
-	public static function getArrayType(const array arr) -> string | bool {
-		if (unlikely !count(arr)) {
-			return false;
-		}
-
-		array keys = (array) array_keys(arr);
-		if (range(0, count(keys) - 1) === keys) {
-			return "sequential";
-		}
-		elseif (count(keys) === count(array_filter(keys, "is_numeric"))) {
-			return "indexed";
-		}
-
-		return "associative";
-	}
-
-	/**
 	 * Parse Arguments
 	 *
 	 * Make sure user arguments follow a default
@@ -377,8 +355,7 @@ final class Cast {
 	 */
 	public static function parseArgs(var args, var defaults, const bool strict=true, const bool recursive=true) -> array {
 		// Nothing to crunch if the template isn't set.
-		let defaults = self::toArray(defaults);
-		if (unlikely !count(defaults)) {
+		if ("array" !== typeof defaults || !count(defaults)) {
 			return [];
 		}
 
@@ -397,7 +374,7 @@ final class Cast {
 				if (
 					recursive &&
 					("array" === typeof defaults[k]) &&
-					("associative" === self::getArrayType(defaults[k]))
+					("associative" === Arrays::getType(defaults[k]))
 				) {
 					let defaults[k] = self::parseArgs(
 						args[k],

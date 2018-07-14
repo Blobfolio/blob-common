@@ -31,7 +31,7 @@ final class Files {
 
 		// Make sure this is SVG-looking.
 		var start = stripos(svg, "<svg");
-		if (unlikely false === start) {
+		if (false === start) {
 			if (is_file(svg)) {
 				let svg = file_get_contents(svg);
 				let start = stripos(svg, "<svg");
@@ -49,7 +49,7 @@ final class Files {
 			let svg = substr(svg, start);
 		}
 		var end = strpos(svg, '>');
-		if (unlikely false === end) {
+		if (false === end) {
 			return false;
 		}
 		let svg = strtolower(substr(svg, 0, end + 1));
@@ -130,16 +130,7 @@ final class Files {
 	 * @param string $str Path.
 	 * @return string|array Path.
 	 */
-	public static function leadingSlash(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::leadingSlash(v);
-			}
-			return str;
-		}
-
+	public static function leadingSlash(string str) -> string {
 		return "/" . self::unleadingSlash(str);
 	}
 
@@ -150,17 +141,8 @@ final class Files {
 	 * @param bool $validate Require valid file.
 	 * @return bool|string Path or false.
 	 */
-	public static function path(var str, const bool validate=true) -> string | bool {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::path(v, validate);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function path(string str, const bool validate=true) -> string | bool {
+		let str = Strings::utf8(str);
 
 		// This might be a URL rather than something local. We only want
 		// to focus on local ones.
@@ -186,7 +168,7 @@ final class Files {
 		try {
 			let str = realpath(str);
 		} catch Throwable {
-			let str = false;
+			let str = "";
 		}
 
 		// A bad path.
@@ -222,16 +204,7 @@ final class Files {
 	 * @param string $str Path.
 	 * @return string|array Path.
 	 */
-	public static function trailingSlash(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::trailingSlash(v);
-			}
-			return str;
-		}
-
+	public static function trailingSlash(string str) -> string {
 		return self::untrailingSlash(str) . "/";
 	}
 
@@ -241,17 +214,8 @@ final class Files {
 	 * @param string $str Path.
 	 * @return string|array Path.
 	 */
-	public static function unixSlash(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::unixSlash(v);
-			}
-			return str;
-		}
-
-		let str = Cast::toString(str, true);
+	public static function unixSlash(var str) -> string {
+		let str = Strings::utf8(str);
 		let str = str_replace("\\", "/", str);
 		let str = str_replace("/./", "/", str);
 		return preg_replace("#/{2,}#u", "/", str);
@@ -263,16 +227,7 @@ final class Files {
 	 * @param string $str Path.
 	 * @return string|array Path.
 	 */
-	public static function unleadingSlash(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::unleadingSlash(v);
-			}
-			return str;
-		}
-
+	public static function unleadingSlash(var str) -> string {
 		let str = self::unixSlash(str);
 		return ltrim(str, "/");
 	}
@@ -283,16 +238,7 @@ final class Files {
 	 * @param string $str Path.
 	 * @return string|array Path.
 	 */
-	public static function untrailingSlash(var str) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::untrailingSlash(v);
-			}
-			return str;
-		}
-
+	public static function untrailingSlash(var str) -> string {
 		let str = self::unixSlash(str);
 		return rtrim(str, "/");
 	}
@@ -466,11 +412,11 @@ final class Files {
 			while (line) {
 				if (trim) {
 					if (trim(line)) {
-						let lines += 1;
+						let lines++;
 					}
 				}
 				else {
-					let lines += 1;
+					let lines++;
 				}
 
 				let line = fgets(handle);

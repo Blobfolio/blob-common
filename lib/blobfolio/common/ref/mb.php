@@ -242,7 +242,7 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function trim(&$str='') {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			$str = \Blobfolio\Strings::trim($str);
 			return;
 		}

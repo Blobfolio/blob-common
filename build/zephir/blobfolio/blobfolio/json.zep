@@ -28,35 +28,43 @@ final class Json {
 	 * @param string $str String.
 	 * @return bool True/false.
 	 */
-	public static function decode(var str) {
-		let str = Cast::toString(str, true);
+	public static function decode(var str, const bool recursed=false) {
+		array match;
+		string encoded;
+		string lower;
+		var tmp;
+
+		// Copy str over to our typed variable.
+		if (!recursed) {
+			let encoded = (string) Cast::toString(str, true);
+		}
+		else {
+			let encoded = (string) str;
+		}
 
 		// Remove comments.
-		let str = preg_replace("#^\s*//(.+)$#m", "", str);
-		let str = preg_replace("#^\s*/\*(.+)\*/#Us", "", str);
-		let str = preg_replace("#/\*(.+)\*/\s*$#Us", "", str);
+		let encoded = preg_replace("#(^\s*//(.+)$|^\s*/\*(.+)\*/|/\*(.+)\*/\s*$)#m", "", encoded);
 
 		// Trim it.
-		let str = Strings::trim(str);
+		let encoded = preg_replace("/(^\s+|\s+$)/u", "", encoded);
 
 		// Is it empty?
-		if (empty str || ("''" === str) || ("\"\"" === str)) {
+		if (empty encoded || ("''" === encoded) || ("\"\"" === encoded)) {
 			return "";
 		}
 
 		// Maybe it just works?
-		var tmp = json_decode(str, true);
+		let tmp = json_decode(encoded, true);
 		if (null !== tmp) {
 			return tmp;
 		}
 
 		// A lot of the following tests are case-insensitive.
-		string lower = (string) Strings::strtolower(str, false);
-		var match;
+		let lower = (string) Strings::strtolower(encoded, false);
 
 		// Bool.
 		if (("true" === lower) || ("false" === lower)) {
-			return Cast::toBool(str, true);
+			return Cast::toBool(encoded, true);
 		}
 		// Null.
 		elseif ("null" === lower) {
@@ -74,297 +82,327 @@ final class Json {
 		elseif (
 			preg_match(
 				"/^(\"|')(.+)(\1)$/s",
-				str,
+				encoded,
 				match
 			) &&
+			count(match) >= 3 &&
 			(match[1] === match[3])
 		) {
-			let str = match[2];
-			return Strings::decodeJsEntities(str);
+			let encoded = (string) match[2];
+			return Strings::decodeJsEntities(encoded);
 		}
 		// Bail if we don't have an object at this point.
 		elseif (
-			!preg_match("/^\[.*\]$/s", str) &&
-			!preg_match("/^\{.*\}$/s", str)
+			!preg_match("/^(\[.*\]|\{.*\})$/s", encoded)
 		) {
 			return null;
 		}
 
-		// Start building an array.
-		array slices = [["type": "slice", "from": 0, "delimiter": false, "open": true]];
+		// We have to parse it all manually. Ug.
 		array out = [];
+		array sliceLast;
+		array slices = [];
+		boolean hasSlice;
+		boolean stubQuoted;
+		char apostrophe = 39;
+		char asterisk = 42;
+		char backslash = 92;
+		char braceClose = 125;
+		char braceOpen = 123;
+		char bracketClose = 93;
+		char bracketOpen = 91;
+		char comma = 44;
+		char quote = 22;
+		char slash = 47;
+		char slice1;
+		char slice;
+		char slice_1;
+		char slice_2;
+		char sliceFirstChar;
+		int sliceIndex;
+		int sliceKeyEnd;
+		int sliceLength;
+		int sliceValStart;
+		int x = 0;
+		int y = 0;
+		string sliceCurrent;
+		string sliceType;
+		var stubK;
+		var stubV;
 
-		string sliceType = "object";
-		if (0 === strpos(str, "[")) {
+		// Start building an array.
+		let slices[] = ["type": "slice", "from": 0, "delimiter": false];
+
+		// Figure out what kind of wrapper we have.
+		if (0 === strpos(encoded, "[")) {
 			let sliceType = "array";
 		}
-
-		// Zephir doesn't allow access to string chars by index, so we
-		// have to make an array of it.
-		array chunks = (array) Strings::str_split(
-			mb_substr(str, 1, -1, "UTF-8")
-		);
-		long length = (long) count(chunks);
-		if (length <= 0) {
-			return null;
+		else {
+			let sliceType = "object";
 		}
 
-		long x = 0;
-		long y = 0;
-		long sliceKey = 0;
-		var last;
-		string slice = "";
-		string chunk = "";
-		string chunk2 = "";
-		var k, v;
+		let encoded = (string) mb_substr(encoded, 1, -1, "UTF-8");
 
-		while x <= length {
-			// Find the current slice.
-			let sliceKey = (long) self::decodeSliceKey(slices);
-			if (sliceKey < 0) {
-				let last = false;
-			}
-			else {
-				let last = (array) slices[sliceKey];
-			}
+		// The length of our pie. Note: we are looping through ASCII
+		// chars, so this is the non-MB size.
+		let sliceLength = (int) strlen(encoded);
 
-			// Set up some chunks.
-			if (x < length) {
-				let chunk = (string) chunks[x];
-				if (x + 1 < length) {
-					let chunk2 = (string) chunks[x] . chunks[x + 1];
+		while x <= sliceLength {
+			// Fill out the current and future chars.
+			if (x < sliceLength) {
+				let slice = (char) ord(encoded[x]);
+				if (x + 1 < sliceLength) {
+					let slice1 = (char) ord(encoded[x + 1]);
 				}
 				else {
-					let chunk2 = "";
+					let slice1 = 32;
 				}
 			}
 			else {
-				let chunk = "";
-				let chunk2 = "";
+				let slice = 32;
+				let slice1 = 32;
+			}
+
+			// Fill out the previous chars.
+			if (x > 0) {
+				let slice_1 = (char) ord(encoded[x - 1]);
+				if (x > 1) {
+					let slice_2 = (char) ord(encoded[x - 2]);
+				}
+				else {
+					let slice_2 = 32;
+				}
+			}
+			else {
+				let slice_1 = 32;
+				let slice_2 = 32;
+			}
+
+			// What were we last up to?
+			if (count(slices)) {
+				let sliceLast = (array) end(slices);
+				let hasSlice = true;
+			}
+			else {
+				let sliceLast = ["delimiter": false];
+				let hasSlice = false;
 			}
 
 			// Are we done?
 			if (
-				(x === length) ||
-				(("," === chunk) && (false !== last) && ("slice" === last["type"]))
+				(x >= sliceLength) ||
+				((comma === slice) && hasSlice && ("slice" === sliceLast["type"]))
 			) {
-				// Things get weird if there is no current slice.
-				let slice = (string) trim(implode("", array_slice(chunks, last["from"], (x - last["from"]))));
+				let sliceCurrent = (string) trim(substr(
+					encoded,
+					sliceLast["from"],
+					(x - sliceLast["from"])
+				));
 
-				// Arrays are straight-forward.
+				// Arrays are straight forward.
 				if ("array" === sliceType) {
-					let out[] = self::decode(slice);
+					let out[] = self::decode(sliceCurrent, true);
 				}
-				// Objects are more annoying.
+				// Objects can be much more annoying.
 				else {
-					// We have to tease apart the keys and values, extra
-					// annoying since Zephir's regular expressions
-					// behaviors are fucked.
-					if (":" !== slice && false !== strpos(slice, ":")) {
-						var key_end = -1;
-						var val_start = -1;
-						string first = (string) mb_substr(slice, 0, 1, "UTF-8");
-						int last_index = 1;
+					// Tease apart the keys and values.
+					if (
+						(":" !== sliceCurrent) &&
+						(false !== strpos(sliceCurrent, ":"))
+					) {
+						let sliceKeyEnd = -1;
+						let sliceValStart = -1;
+						let sliceFirstChar = (char) ord(sliceCurrent[0]);
+						let sliceIndex = 1;
+						let stubQuoted = false;
+						let stubK = "";
+						let stubV = "";
 
-						// The key is quoted.
-						if (("\"" === first) || ("'" === first)) {
-							while last_index > 0 && key_end < 0 {
-								let last_index = (int) mb_strpos(
-									slice,
-									first,
-									last_index,
+						// The first key is quoted.
+						if ((quote === sliceFirstChar) || (apostrophe === sliceFirstChar)) {
+							let stubQuoted = true;
+							// A preg match would make more sense, but
+							// there's something wrong with Zephir's
+							// implementation.
+							while sliceIndex > 0 && sliceKeyEnd < 0 {
+								let sliceIndex = (int) mb_strpos(
+									sliceCurrent,
+									sliceCurrent[0],
+									sliceIndex,
 									"UTF-8"
 								);
+
 								if (
-									last_index &&
-									("\\" !== mb_substr(slice, last_index - 1, 1, "UTF-8"))
+									sliceIndex &&
+									("\\" !== mb_substr(sliceCurrent, sliceIndex - 1, 1, "UTF-8"))
 								) {
-									let key_end = last_index;
+									let sliceKeyEnd = sliceIndex;
 								}
 							}
 
-							// We have a key, now find the damn colon.
-							if (key_end > 0) {
-								let last_index = (int) mb_strpos(
-									slice,
+							if (sliceKeyEnd) {
+								let sliceIndex = (int) mb_strpos(
+									sliceCurrent,
 									":",
-									key_end,
+									sliceKeyEnd,
 									"UTF-8"
 								);
-								if (last_index) {
-									let val_start = last_index + 1;
+								if (sliceIndex) {
+									let sliceValStart = sliceIndex + 1;
 								}
 							}
 						}
-						// Unquoted keys just get split on the first :.
+						// Unquoted key.
 						else {
-							let last_index = (int) mb_strpos(
-								slice,
+							// This we can just split on the :.
+							let sliceIndex = (int) mb_strpos(
+								sliceCurrent,
 								":",
 								0,
 								"UTF-8"
 							);
-							let key_end = last_index - 1;
-							let val_start = last_index + 1;
+							let sliceKeyEnd = sliceIndex - 1;
+							let sliceValStart = sliceIndex + 1;
 						}
 
 						// We found them!
-						if (key_end > 0 && val_start > 0) {
-							let k = (string) trim(mb_substr(
-								slice,
+						if (sliceKeyEnd > 0 && sliceValStart > 0) {
+							let stubK = (string) trim(mb_substr(
+								sliceCurrent,
 								0,
-								key_end + 1,
+								sliceKeyEnd + 1,
 								"UTF-8"
 							));
 
-							let v = (string) trim(mb_substr(
-								slice,
-								val_start,
+							let stubV = (string) trim(mb_substr(
+								sliceCurrent,
+								sliceValStart,
 								null,
 								"UTF-8"
 							));
 
-							// Recurse.
-							if (("\"" === first) || ("'" === first)) {
-								let k = self::decode(k);
-							}
-							else {
-								let k = Strings::decodeJsEntities(k);
-							}
+							let stubK = stubQuoted ? self::decode(stubK, true) : Strings::decodeJsEntities(stubK);
 
-							let out[k] = self::decode(v);
+							let out[stubK] = self::decode(stubV, true);
 						}
 					}
 				}
 
-				// Start a new slice.
-				let slices[] = ["type": "slice", "from": x + 1, "delimiter": false, "open": true];
+				array_pop(slices);
+				let slices[] = ["type": "slice", "from": x + 1, "delimiter": false];
 
 				// Reboot.
 				let x++;
 				continue;
-			} // End the end, or a comma.
+			}
 
-			// A new quote.
+			// Open: quote.
 			if (
-				(("\"" === chunk) || ("'" === chunk)) &&
-				("string" !== last["type"])
+				((quote === slice) || (apostrophe === slice)) &&
+				("string" !== sliceLast["type"]) &&
+				("comment" !== sliceLast["type"])
 			) {
-				let slices[] = ["type": "string", "from": x, "delimiter": chunk, "open": true];
+				let slices[] = ["type": "string", "from": x, "delimiter": ((quote === slice) ? "\"" : "'")];
 				let x++;
 				continue;
 			}
 
-			// A closing quote.
+			// Close: quote.
 			if (
-				(chunk === last["delimiter"]) &&
-				("string" === last["type"]) &&
+				(slice === (char) ord(sliceLast["delimiter"])) &&
+				("string" === sliceLast["type"]) &&
+				((backslash !== slice_1) && (backslash !== slice_2))
+			) {
+				array_pop(slices);
+				let x++;
+				continue;
+			}
+
+			// Open: bracket.
+			if (
+				(bracketOpen === slice) &&
 				(
-					(x > 0 && ("\\" !== chunks[x - 1])) &&
-					(x < 2 || ("\\" !== chunks[x - 2]))
+					("slice" === sliceLast["type"]) ||
+					("array" === sliceLast["type"]) ||
+					("object" === sliceLast["type"])
 				)
 			) {
-				let slices[sliceKey]["open"] = false;
+				let slices[] = ["type": "array", "from": x, "delimiter": false];
 				let x++;
 				continue;
 			}
 
-			// Opening bracket (and we're in a slice/objectish thing.
-			if (
-				("[" === chunk) &&
-				in_array(last["type"], ["slice", "array", "object"], true)
-			) {
-				let slices[] = ["type": "array", "from": x, "delimiter": false, "open": true];
+			// Close: bracket.
+			if ((bracketClose === slice) && ("array" === sliceLast["type"])) {
+				array_pop(slices);
 				let x++;
 				continue;
 			}
 
-			// Closing bracket.
+			// Open: brace.
 			if (
-				("]" === chunk) &&
-				("array" === last["type"])
+				(braceOpen === slice) &&
+				(
+					("slice" === sliceLast["type"]) ||
+					("array" === sliceLast["type"]) ||
+					("object" === sliceLast["type"])
+				)
 			) {
-				let slices[sliceKey]["open"] = false;
+				let slices[] = ["type": "object", "from": x, "delimiter": false];
 				let x++;
 				continue;
 			}
 
-			// Opening brace (and we're in a slice/objectish thing.
-			if (
-				("{" === chunk) &&
-				in_array(last["type"], ["slice", "array", "object"], true)
-			) {
-				let slices[] = ["type": "object", "from": x, "delimiter": false, "open": true];
+			// Close: brace.
+			if ((braceClose === slice) && ("object" === sliceLast["type"])) {
+				array_pop(slices);
 				let x++;
 				continue;
 			}
 
-			// Closing brace.
+			// Open: comment.
 			if (
-				("}" === chunk) &&
-				("object" === last["type"])
+				(slash === slice) &&
+				(asterisk === slice1) &&
+				(
+					("slice" === sliceLast["type"]) ||
+					("array" === sliceLast["type"]) ||
+					("object" === sliceLast["type"])
+				)
 			) {
-				let slices[sliceKey]["open"] = false;
+				let slices[] = ["type": "comment", "from": x, "delimiter": false];
 				let x++;
 				continue;
 			}
 
-			// Opening comment.
+			// Close: comment.
 			if (
-				("/*" === chunk2) &&
-				in_array(last["type"], ["slice", "array", "object"], true)
+				(asterisk === slice) &&
+				(slash === slice1) &&
+				("comment" === sliceLast["type"])
 			) {
-				let slices[] = ["type": "comment", "from": x, "delimiter": false, "open": true];
-				let x++;
-				continue;
-			}
-
-			// Closing comment.
-			if (
-				("*/" === chunk2) &&
-				("comment" === last["type"])
-			) {
-				let slices[sliceKey]["open"] = false;
+				array_pop(slices);
 				let x++;
 
-				let y = (long) last["from"];
-				while y <= x && y < length {
-					let chunks[y] = " ";
-					let y++;
+				if (y <= x) {
+					let encoded = substr_replace(
+						encoded,
+						str_repeat(" ", (x + 1 - sliceLast["from"])),
+						sliceLast["from"],
+						(x + 1 - sliceLast["from"])
+					);
 				}
 
+				// One extra tick because we're matching 2 chars.
 				let x++;
 				continue;
 			}
 
-			// We shouldn't be hitting this.
+			// Not everything is open and shut.
 			let x++;
 		}
 
 		return out;
-	}
-
-	/**
-	 * JSON Decode Helper
-	 *
-	 * Zephir has memory leak problems with arrays, preventing us from
-	 * sanely unsetting slices aces they're closed. As a workaround,
-	 * we'll try to set the closed values to "null".
-	 *
-	 * @param array Slices.
-	 * @return mixed Key.
-	 */
-	protected static function decodeSliceKey(array slices) -> long {
-		let slices = (array) array_reverse(slices, true);
-		var k, v;
-		for k, v in slices {
-			if (v["open"]) {
-				return (long) k;
-			}
-		}
-
-		long wrong = -1;
-		return wrong;
 	}
 
 	/**

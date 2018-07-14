@@ -29,23 +29,10 @@ final class IPs {
 	 * @param bool $condense Condense IPv6.
 	 * @return void Nothing.
 	 */
-	public static function niceIp(var str, const bool restricted=false, const bool condense=true) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::niceIp(v, restricted, condense);
-			}
-			return str;
-		}
-
-		// Don't need to fancy cast.
-		if ("string" !== typeof str) {
-			return "";
-		}
+	public static function niceIp(string str, const bool restricted=false, const bool condense=true) -> string {
 
 		// Start by getting rid of obviously bad data.
-		let str = preg_replace("/[^\d\.\:a-f]/", "", strtolower(str));
+		let str = (string) preg_replace("/[^\d\.\:a-f]/", "", strtolower(str));
 
 		// IPv6 might be encased in brackets.
 		if (preg_match("/^\[[\d\.\:a-f]+\]$/", str)) {
@@ -61,11 +48,11 @@ final class IPs {
 		if (filter_var(str, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 			// Condense it?
 			if (condense) {
-				let str = inet_ntop(inet_pton(str));
+				let str = (string) inet_ntop(inet_pton(str));
 			}
 			// Expand.
 			else {
-				var hex = unpack("H*hex", inet_pton(str));
+				array hex = (array) unpack("H*hex", inet_pton(str));
 				let str = substr(preg_replace(
 					"/([a-f\d]{4})/",
 					"$1:",

@@ -331,7 +331,7 @@ class mb {
 	 * @return bool True.
 	 */
 	public static function trim($str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Strings::trim($str);
 		}
 

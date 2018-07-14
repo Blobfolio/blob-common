@@ -59,7 +59,7 @@ class cast {
 		}
 
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Cast::getArrayType($arr);
+			return \Blobfolio\Arrays::getType($arr);
 		}
 
 		$keys = array_keys($arr);

@@ -24,7 +24,7 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function accents($str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Strings::accents($str);
 		}
 
@@ -78,7 +78,7 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function control_characters($str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Strings::controlChars($str);
 		}
 
@@ -142,7 +142,7 @@ class sanitize {
 	 * @return string Domain.
 	 */
 	public static function domain($str='', bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Domains::niceDomain($str, $unicode);
 		}
 
@@ -174,7 +174,7 @@ class sanitize {
 	 * @return string Email.
 	 */
 	public static function email($str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Domains::niceEmail($str);
 		}
 
@@ -202,7 +202,7 @@ class sanitize {
 	 * @return string|bool Hostname or false.
 	 */
 	public static function hostname($domain, bool $www=false, bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($domain)) {
 			return \Blobfolio\Domains::niceHost($domain, !$www, $unicode);
 		}
 
@@ -230,7 +230,7 @@ class sanitize {
 	 * @return string IP.
 	 */
 	public static function ip($str='', bool $restricted=false, bool $condense=true) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\IPs::niceIp($str, $restricted, $condense);
 		}
 
@@ -326,7 +326,7 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function printable($str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Strings::printable($str);
 		}
 
@@ -355,7 +355,7 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function quotes($str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Strings::quotes($str);
 		}
 
@@ -445,7 +445,7 @@ class sanitize {
 	 * @return string URL.
 	 */
 	public static function url($str) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Domains::niceUrl($str);
 		}
 
@@ -481,7 +481,7 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function whitespace($str='', int $newlines=0) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
 			return \Blobfolio\Strings::whitespace($str, $newlines);
 		}
 
