@@ -92,7 +92,11 @@ class sanitize {
 	 * @param string $str Country.
 	 * @return string ISO country code.
 	 */
-	public static function country($str='') {
+	public static function country($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceCountry($str);
+		}
+
 		ref\sanitize::country($str);
 		return $str;
 	}
@@ -188,7 +192,11 @@ class sanitize {
 	 * @param string $str Extension.
 	 * @return string Extension.
 	 */
-	public static function file_extension($str='') {
+	public static function file_extension($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Files::niceFileExtension($str);
+		}
+
 		ref\sanitize::file_extension($str);
 		return $str;
 	}
@@ -282,7 +290,11 @@ class sanitize {
 	 * @param string $str MIME.
 	 * @return string MIME.
 	 */
-	public static function mime($str='') {
+	public static function mime($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Files::niceMime($str);
+		}
+
 		ref\sanitize::mime($str);
 		return $str;
 	}
@@ -340,7 +352,11 @@ class sanitize {
 	 * @param string $str Province.
 	 * @return string Province.
 	 */
-	public static function province($str='') {
+	public static function province($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceCaProvince($str);
+		}
+
 		ref\sanitize::province($str);
 		return $str;
 	}
@@ -369,7 +385,11 @@ class sanitize {
 	 * @param string $str State.
 	 * @return string State.
 	 */
-	public static function state($str='') {
+	public static function state($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceUsState($str);
+		}
+
 		ref\sanitize::state($str);
 		return $str;
 	}
@@ -380,7 +400,11 @@ class sanitize {
 	 * @param string $str State.
 	 * @return string State.
 	 */
-	public static function au_state($str='') {
+	public static function au_state($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceAuState($str);
+		}
+
 		ref\sanitize::au_state($str);
 		return $str;
 	}
@@ -407,6 +431,10 @@ class sanitize {
 	 * @return string Timezone or UTC on failure.
 	 */
 	public static function timezone($str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceTimezone($str);
+		}
+
 		ref\sanitize::timezone($str);
 		return $str;
 	}

@@ -524,7 +524,11 @@ class format {
 	 * @param array $types Types, e.g. Mobile.
 	 * @return string Phone in International Format.
 	 */
-	public static function phone($str='', $country='', $types=array()) {
+	public static function phone($str, $country='', $types=array()) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str) && is_string($country)) {
+			return \Blobfolio\Phones::nicePhone($str, $country, $types);
+		}
+
 		ref\format::phone($str, $country, $types);
 		return $str;
 	}

@@ -262,19 +262,19 @@ class sanitize {
 	 * @param string $str Country.
 	 * @return void Nothing.
 	 */
-	public static function country(&$str='') {
+	public static function country(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceCountry($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::country($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::whitespace($str, 0, true);
 			mb::strtoupper($str, false, true);
@@ -572,19 +572,19 @@ class sanitize {
 	 * @param string $str Extension.
 	 * @return void Nothing.
 	 */
-	public static function file_extension(&$str='') {
+	public static function file_extension(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Files::niceFileExtension($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::file_extension($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			mb::strtolower($str, false, true);
 			$str = preg_replace('/\s/u', '', $str);
@@ -936,7 +936,12 @@ class sanitize {
 	 * @param string $str MIME.
 	 * @return bool True/false.
 	 */
-	public static function mime(&$str='') {
+	public static function mime(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Files::niceMime($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::mime($str[$k]);
@@ -1076,7 +1081,12 @@ class sanitize {
 	 * @param string $str Province.
 	 * @return void Nothing.
 	 */
-	public static function province(&$str='') {
+	public static function province(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceCaProvince($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::province($str[$k]);
@@ -1136,19 +1146,19 @@ class sanitize {
 	 * @param string $str State.
 	 * @return void Nothing.
 	 */
-	public static function state(&$str='') {
+	public static function state(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceUsState($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::state($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
@@ -1167,7 +1177,12 @@ class sanitize {
 	 * @param string $str State.
 	 * @return void Nothing.
 	 */
-	public static function au_state(&$str='') {
+	public static function au_state(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceAuState($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::au_state($str[$k]);
@@ -1417,7 +1432,12 @@ class sanitize {
 	 * @param string $str Timezone.
 	 * @return bool True/false.
 	 */
-	public static function timezone(&$str='') {
+	public static function timezone(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceTimezone($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::timezone($str[$k]);

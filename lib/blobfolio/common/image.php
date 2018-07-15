@@ -499,13 +499,20 @@ class image {
 
 		// Do a quick MIME check to make sure this is something image-
 		// like.
-		$finfo = mime::finfo($file);
-		if (0 !== strpos($finfo['mime'], 'image/')) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$mime = \Blobfolio\Files::getMimeType($file);
+		}
+		else {
+			$finfo = mime::finfo($file);
+			$mime = $finfo['mime'];
+		}
+
+		if (0 !== strpos($mime, 'image/')) {
 			return false;
 		}
 
 		// If this is an SVG, let's use our own function.
-		if ('image/svg+xml' === $finfo['mime']) {
+		if ('image/svg+xml' === $mime) {
 			if (false === ($tmp = static::svg_dimensions($file))) {
 				return false;
 			}
@@ -531,7 +538,7 @@ class image {
 
 		// Manually parse WebP.
 		if (
-			('image/webp' === $finfo['mime']) &&
+			('image/webp' === $mime) &&
 			($handle = @fopen($file, 'rb'))
 		) {
 			// The magic (and dimensions) are in the first 40 bytes.

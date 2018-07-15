@@ -1148,7 +1148,12 @@ class format {
 	 * @param array $types Types, e.g. Mobile.
 	 * @return bool True.
 	 */
-	public static function phone(&$str='', $country='', $types=array()) {
+	public static function phone(&$str, $country='', $types=array()) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str) && is_string($country)) {
+			$str = \Blobfolio\Phones::nicePhone($str, $country, $types);
+			return $str ? true : false;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::phone($str[$k], $country, $types);

@@ -1,8 +1,8 @@
 Package: php-blobfolio
-Version: 0.1-1
+Version: 0.1.0-1
 Architecture: amd64
-Maintainer: Debian PHP PECL Maintainers <pkg-php-pecl@lists.alioth.debian.org>
-Installed-Size: 293
+Maintainer: Blobfolio, LLC <hello@blobfolio.com>
+Installed-Size: 10742774
 Depends: php-common (>= 1:7.0+33~), phpapi-20170718, libc6 (>= 2.14)
 Provides: php7.2-blobfolio
 Section: php
@@ -17,5 +17,5 @@ Description: Blobfolio Common PHP
  in the PHP library, allowing them to execute 10-1000x more
  efficiently.
  .
- This is highly experimental and not yet recommended for production
- use.
+ This is highly experimental, subject to change, and *NOT* recommended
+ for production use.

@@ -177,18 +177,19 @@ class file {
 	 * @return string|bool Data-URI or false.
 	 */
 	public static function data_uri(string $path) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$path = \Blobfolio\Cast::toString($path, true);
-		}
-		else {
-			ref\cast::string($path, true);
-		}
-
+		ref\cast::string($path, true);
 		ref\file::path($path, true, true);
 
 		if ((false !== $path) && @is_file($path)) {
 			$content = base64_encode(@file_get_contents($path));
-			$finfo = mime::finfo($path);
+
+			if (BLOBCOMMON_HAS_EXT) {
+				$finfo = \Blobfolio\Files::finfo($path);
+			}
+			else {
+				$finfo = mime::finfo($path);
+			}
+
 			return "data:{$finfo['mime']};base64,{$content}";
 		}
 
@@ -693,7 +694,7 @@ class file {
 	 * @return string URL.
 	 */
 	public static function unparse_url($parsed=null) {
-		if (BLOBCOMMON_HAS_EXT) {
+		if (BLOBCOMMON_HAS_EXT && is_array($parsed)) {
 			return \Blobfolio\Domains::unparseUrl($parsed);
 		}
 
