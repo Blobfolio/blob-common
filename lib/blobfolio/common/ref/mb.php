@@ -31,7 +31,7 @@ class mb {
 	 */
 	public static function str_pad(&$str, int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::str_pad($str, $pad_length, $pad_string, $pad_type);
+			$str = \Blobfolio\Strings::pad($str, $pad_length, $pad_string, $pad_type);
 			return;
 		}
 
@@ -95,7 +95,7 @@ class mb {
 	 */
 	public static function str_split(&$str, int $split_length=1) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::str_split($str, $split_length);
+			$str = \Blobfolio\Strings::split($str, $split_length);
 			return;
 		}
 
@@ -151,9 +151,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return void Nothing.
 	 */
-	public static function strtolower(&$str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::strtolower($str, $strict);
+	public static function strtolower(&$str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Strings::toLower($str);
 			return;
 		}
 
@@ -197,9 +197,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return void Nothing.
 	 */
-	public static function strtoupper(&$str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::strtoupper($str, $strict);
+	public static function strtoupper(&$str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Strings::toUpper($str);
 			return;
 		}
 
@@ -268,9 +268,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return void Nothing.
 	 */
-	public static function ucfirst(&$str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::ucfirst($str, $strict);
+	public static function ucfirst(&$str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Strings::toSentence($str);
 			return;
 		}
 
@@ -311,9 +311,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return void Nothing.
 	 */
-	public static function ucwords(&$str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::ucwords($str, $strict);
+	public static function ucwords(&$str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Strings::toTitle($str);
 			return;
 		}
 

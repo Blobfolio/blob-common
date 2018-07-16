@@ -521,7 +521,7 @@ final class Domains {
 	 */
 	public static function niceEmail(string str) -> string {
 		string str = (string) Strings::quotes(str);
-		let str = Strings::strtolower(str);
+		let str = Strings::toLower(str);
 
 		// Strip comments.
 		let str = preg_replace("/\([^)]*\)/u", "", str);

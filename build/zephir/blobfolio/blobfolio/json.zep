@@ -60,7 +60,7 @@ final class Json {
 		}
 
 		// A lot of the following tests are case-insensitive.
-		let lower = (string) Strings::strtolower(encoded, false);
+		let lower = (string) Strings::toLower(encoded);
 
 		// Bool.
 		if (("true" === lower) || ("false" === lower)) {
@@ -89,7 +89,7 @@ final class Json {
 			(match[1] === match[3])
 		) {
 			let encoded = (string) match[2];
-			return Strings::decodeJsEntities(encoded);
+			return Dom::decodeJsEntities(encoded);
 		}
 		// Bail if we don't have an object at this point.
 		elseif (
@@ -281,7 +281,7 @@ final class Json {
 								"UTF-8"
 							));
 
-							let stubK = stubQuoted ? self::decode(stubK, true) : Strings::decodeJsEntities(stubK);
+							let stubK = stubQuoted ? self::decode(stubK, true) : Dom::decodeJsEntities(stubK);
 
 							let out[stubK] = self::decode(stubV, true);
 						}
@@ -406,6 +406,36 @@ final class Json {
 	}
 
 	/**
+	 * JSON Decode Array
+	 *
+	 * This ensures a JSON string is always returned as an array with
+	 * optional argument parsing.
+	 *
+	 * @param string $json JSON.
+	 * @param array $defaults Defaults.
+	 * @param bool $strict Strict.
+	 * @param bool $recursive Recursive.
+	 * @return array Data.
+	 */
+	public static function decodeArray(var json, const var defaults=null, const bool strict=true, const bool recursive=true) -> array {
+		let json = self::decode(json);
+
+		if ((null === json) || (("string" === typeof json && empty json))) {
+			let json = [];
+		}
+		elseif ("array" !== typeof json) {
+			let json = Cast::toArray(json);
+		}
+
+		// Parse args?
+		if ("array" === typeof defaults) {
+			return Cast::parseArgs(json, defaults, strict, recursive);
+		}
+
+		return json;
+	}
+
+	/**
 	 * JSON Encode
 	 *
 	 * This is a wrapper for json_encode, but will try to fix common
@@ -465,5 +495,26 @@ final class Json {
 		}
 
 		return json_encode(decoded);
+	}
+
+	/**
+	 * Is JSON
+	 *
+	 * @param mixed $str String.
+	 * @param bool $loose Allow empty.
+	 * @return bool True/false.
+	 */
+	public static function isJson(var str, const bool loose=false) -> bool {
+		if (("string" !== typeof str) || (!loose && empty str)) {
+			return false;
+		}
+
+		if (loose && empty str) {
+			return true;
+		}
+
+		var json;
+		let json = json_decode(str);
+		return (null !== json);
 	}
 }

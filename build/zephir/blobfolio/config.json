@@ -63,6 +63,7 @@
     "verbose": true,
     "requires": {
         "extensions": [
+            "date",
             "dom",
             "fileinfo",
             "gmp",

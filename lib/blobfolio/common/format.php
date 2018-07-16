@@ -63,6 +63,10 @@ class format {
 	 * @return float Number.
 	 */
 	public static function ceil($num, int $precision=0) {
+		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
+			return \Blobfolio\Numbers::ceil($num, $precision);
+		}
+
 		ref\format::ceil($num, $precision);
 		return $num;
 	}
@@ -84,12 +88,7 @@ class format {
 
 		$range = array('min'=>0, 'max'=>0);
 		$cidr = array_pad(explode('/', $cidr), 2, 0);
-		if (BLOBCOMMON_HAS_EXT) {
-			$cidr[1] = \Blobfolio\Cast::toInt($cidr[1], true);
-		}
-		else {
-			ref\cast::int($cidr[1], true);
-		}
+		ref\cast::int($cidr[1], true);
 
 		// IPv4?
 		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
@@ -178,7 +177,7 @@ class format {
 	 */
 	public static function decode_js_entities($str='') {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::decodeJsEntities($str);
+			return \Blobfolio\Dom::decodeJsEntities($str);
 		}
 
 		ref\format::decode_js_entities($str);
@@ -195,7 +194,7 @@ class format {
 	 */
 	public static function decode_escape_entities($str='') {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::decodeEscapeEntities($str);
+			return \Blobfolio\Dom::decodeEscapeEntities($str);
 		}
 
 		ref\format::decode_escape_entities($str);
@@ -212,7 +211,7 @@ class format {
 	 */
 	public static function decode_unicode_entities($str='') {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::decodeUnicodeEntities($str);
+			return \Blobfolio\Dom::decodeUnicodeEntities($str);
 		}
 
 		ref\format::decode_unicode_entities($str);
@@ -230,7 +229,7 @@ class format {
 	 */
 	public static function decode_entities($str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::decodeEntities($str);
+			return \Blobfolio\Dom::decodeEntities($str);
 		}
 
 		ref\format::decode_entities($str);
@@ -301,6 +300,10 @@ class format {
 	 * @return float Number.
 	 */
 	public static function floor($num, int $precision=0) {
+		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
+			return \Blobfolio\Numbers::floor($num, $precision);
+		}
+
 		ref\format::floor($num, $precision);
 		return $num;
 	}
@@ -317,6 +320,10 @@ class format {
 	 * @return string Fraction.
 	 */
 	public static function fraction($num, float $precision=0.0001) {
+		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
+			return \Blobfolio\Numbers::fraction($num, $precision);
+		}
+
 		ref\format::fraction($num, $precision);
 		return $num;
 	}
@@ -483,6 +490,10 @@ class format {
 	 * @return array List.
 	 */
 	public static function list_to_array($list, $args=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::fromList($list, $args);
+		}
+
 		ref\format::list_to_array($list, $args);
 		return $list;
 	}
@@ -497,6 +508,10 @@ class format {
 	 * @return string Value.
 	 */
 	public static function money($value=0, bool $cents=false, $separator='', bool $no00=false) {
+		if (BLOBCOMMON_HAS_EXT && !is_array($value)) {
+			return \Blobfolio\Retail::usd($value, $separator, $cents, $no00);
+		}
+
 		ref\format::money($value, $cents, $separator, $no00);
 		return $value;
 	}
@@ -574,12 +589,7 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				if (BLOBCOMMON_HAS_EXT) {
-					$headers[$k] = \Blobfolio\Cast::toString($headers[$k], true);
-				}
-				else {
-					ref\cast::string($headers[$k], true);
-				}
+				ref\cast::string($headers[$k], true);
 			}
 
 			ref\sanitize::csv($headers, true);
@@ -591,12 +601,7 @@ class format {
 		if (count($data)) {
 			foreach ($data as $line) {
 				foreach ($line as $k=>$v) {
-					if (BLOBCOMMON_HAS_EXT) {
-						$line[$k] = \Blobfolio\Cast::toString($line[$k], true);
-					}
-					else {
-						ref\cast::string($line[$k], true);
-					}
+					ref\cast::string($line[$k], true);
 				}
 
 				ref\sanitize::csv($line, true);
@@ -617,6 +622,10 @@ class format {
 	 * @return string Date.
 	 */
 	public static function to_timezone(string $date, $from='UTC', $to='UTC') {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Geo::toTimezone($date, $from, $to);
+		}
+
 		ref\format::to_timezone($date, $from, $to);
 		return $date;
 	}
@@ -677,12 +686,7 @@ class format {
 		// Output headers, if applicable.
 		if (count($headers)) {
 			foreach ($headers as $k=>$v) {
-				if (BLOBCOMMON_HAS_EXT) {
-					$headers[$k] = \Blobfolio\Cast::toString($headers[$k], true);
-				}
-				else {
-					ref\cast::string($headers[$k], true);
-				}
+				ref\cast::string($headers[$k], true);
 			}
 
 			$out[] = '<Row>';
@@ -717,20 +721,10 @@ class format {
 					}
 					elseif (is_numeric($cell)) {
 						$type = 'Number';
-						if (BLOBCOMMON_HAS_EXT) {
-							$cell = \Blobfolio\Cast::toFloat($cell, true);
-						}
-						else {
-							ref\cast::float($cell, true);
-						}
+						ref\cast::float($cell, true);
 					}
 					else {
-						if (BLOBCOMMON_HAS_EXT) {
-							$cell = \Blobfolio\Cast::toString($cell, true);
-						}
-						else {
-							ref\cast::string($cell, true);
-						}
+						ref\cast::string($cell, true);
 						ref\sanitize::whitespace($cell, 2, true);
 
 						// Date and time.
@@ -758,23 +752,13 @@ class format {
 						elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $cell)) {
 							$type = 'Number';
 							$format = '4';
-							if (BLOBCOMMON_HAS_EXT) {
-								$cell = \Blobfolio\Cast::toFloat($cell, true);
-							}
-							else {
-								ref\cast::float($cell, true);
-							}
+							ref\cast::float($cell, true);
 						}
 						// Currency.
 						elseif (preg_match('/^\-\$?[\d,]*\.?\d+$/', $cell) || preg_match('/^\-?[\d,]*\.?\d+¢$/', $cell)) {
 							$type = 'Number';
 							$format = '5';
-							if (BLOBCOMMON_HAS_EXT) {
-								$cell = \Blobfolio\Cast::toFloat($cell, true);
-							}
-							else {
-								ref\cast::float($cell, true);
-							}
+							ref\cast::float($cell, true);
 						}
 						// Everything else.
 						else {

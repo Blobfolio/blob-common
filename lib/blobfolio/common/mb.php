@@ -165,9 +165,9 @@ class mb {
 	 * @param int $pad_type Pad type.
 	 * @return string Padded string.
 	 */
-	public static function str_pad($str='', int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
+	public static function str_pad($str, int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::str_pad($str, $pad_length, $pad_string, $pad_type);
+			return \Blobfolio\Strings::pad($str, $pad_length, $pad_string, $pad_type);
 		}
 
 		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
@@ -183,7 +183,7 @@ class mb {
 	 */
 	public static function str_split($str, int $split_length=1) {
 		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::str_split($str, $split_length);
+			return \Blobfolio\Strings::split($str, $split_length);
 		}
 
 		ref\mb::str_split($str, $split_length);
@@ -262,9 +262,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtolower($str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::strtolower($str, $strict);
+	public static function strtolower($str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Strings::toLower($str);
 		}
 
 		ref\mb::strtolower($str, $strict);
@@ -281,9 +281,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function strtoupper($str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::strtoupper($str, $strict);
+	public static function strtoupper($str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Strings::toUpper($str);
 		}
 
 		ref\mb::strtoupper($str, $strict);
@@ -349,9 +349,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucfirst($str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::ucfirst($str, $strict);
+	public static function ucfirst($str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Strings::toSentence($str);
 		}
 
 		ref\mb::ucfirst($str, $strict);
@@ -368,9 +368,9 @@ class mb {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucwords($str='', bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::ucwords($str, $strict);
+	public static function ucwords($str, bool $strict=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Strings::toTitle($str);
 		}
 
 		ref\mb::ucwords($str, $strict);

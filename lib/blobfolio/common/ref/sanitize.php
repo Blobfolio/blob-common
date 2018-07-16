@@ -52,12 +52,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			if (preg_match('/[\x80-\xff]/', $str)) {
 				$str = strtr($str, constants::ACCENT_CHARS);
@@ -84,12 +79,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::control_characters($str, true);
 			format::decode_entities($str);
@@ -328,12 +318,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::quotes($str, true);
 			static::whitespace($str, 0, true);
@@ -354,7 +339,12 @@ class sanitize {
 	 * @param string|int $str Date or timestamp.
 	 * @return void Nothing.
 	 */
-	public static function datetime(&$str='') {
+	public static function datetime(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceDatetime($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::datetime($str[$k]);
@@ -399,7 +389,12 @@ class sanitize {
 	 * @param string|int $str Date or timestamp.
 	 * @return void Nothing.
 	 */
-	public static function date(&$str='') {
+	public static function date(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceDate($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::date($str[$k]);
@@ -622,18 +617,18 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function html(&$str=null) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Dom::html($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::html($str[$k]);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			$str = htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		}
@@ -745,16 +740,9 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-				$protocols = \Blobfolio\Cast::toArray($protocols);
-				$domains = \Blobfolio\Cast::toArray($domains);
-			}
-			else {
-				cast::string($str, true);
-				cast::array($protocols);
-				cast::array($domains);
-			}
+			cast::string($str, true);
+			cast::array($protocols);
+			cast::array($domains);
 
 			static::attribute_value($str, true);
 
@@ -902,18 +890,18 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function js(&$str='', $quote="'") {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Dom::js($str, $quote);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::js($str[$k], $quote);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			sanitize::quotes($str, true);
 			sanitize::whitespace($str, 0, true);
@@ -983,12 +971,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::quotes($str, true);
 			static::whitespace($str, 0, true);
@@ -1015,12 +998,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::printable($str, true);
 			static::whitespace($str, 0, true);
@@ -1093,12 +1071,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
@@ -1189,12 +1162,7 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 
 			static::whitespace($str, 0, true);
 			$str = strtoupper($str);
@@ -1219,12 +1187,7 @@ class sanitize {
 	 */
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
 		// First, sanitize and build out function arguments!
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-		}
-		else {
-			cast::string($str, true);
-		}
+		cast::string($str, true);
 
 		$allowed_tags = constants::SVG_WHITELIST_TAGS;
 		static::_merge_svg_args($allowed_tags, $tags);

@@ -52,12 +52,7 @@ class bc {
 			$bits = max(static::bit_size($left), static::bit_size($right));
 		}
 
-		if (BLOBCOMMON_HAS_EXT) {
-			$bits = \Blobfolio\Cast::toInt($bits, true);
-		}
-		else {
-			ref\cast::int($bits, true);
-		}
+		ref\cast::int($bits, true);
 		ref\sanitize::to_range($bits, 0);
 
 		// LEFT and RIGHT operations can be done here and now.
@@ -129,12 +124,7 @@ class bc {
 	 * @return int Bits.
 	 */
 	protected static function bit_size($num) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$num = \Blobfolio\Cast::toString($num, true);
-		}
-		else {
-			ref\cast::string($num, true);
-		}
+		ref\cast::string($num, true);
 
 		$bits = 0;
 		while ($num > 0) {
@@ -152,12 +142,7 @@ class bc {
 	 * @return string Decimal.
 	 */
 	public static function bindec($bin) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$bin = \Blobfolio\Cast::toString($bin, true);
-		}
-		else {
-			ref\cast::string($bin, true);
-		}
+		ref\cast::string($bin, true);
 
 		$dec = '0';
 		$length = strlen($bin);
@@ -187,13 +172,7 @@ class bc {
 	 * @return string Binary.
 	 */
 	public static function decbin($dec, int $length=0) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$dec = \Blobfolio\Cast::toString($dec, true);
-		}
-		else {
-			ref\cast::string($dec, true);
-		}
-
+		ref\cast::string($dec, true);
 		ref\sanitize::to_range($length, 0);
 
 		$bin = '';
@@ -235,12 +214,7 @@ class bc {
 	 * @return string Decimal.
 	 */
 	public static function hexdec($hex) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$hex = \Blobfolio\Cast::toString($hex, true);
-		}
-		else {
-			ref\cast::string($hex, true);
-		}
+		ref\cast::string($hex, true);
 
 		// Do it the easy way.
 		if (1 === strlen($hex)) {

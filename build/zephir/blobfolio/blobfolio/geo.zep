@@ -45,7 +45,7 @@ final class Geo {
 		}
 
 		// Uppercase it.
-		let country = Strings::strtoupper(country);
+		let country = Strings::toUpper(country);
 
 		// A direct hit!
 		if (isset(self::_countries[country])) {
@@ -72,7 +72,7 @@ final class Geo {
 		var k;
 		var v;
 		for k, v in self::_countries {
-			let v["name"] = (string) Strings::strtoupper(v["name"]);
+			let v["name"] = (string) Strings::toUpper(v["name"]);
 			if (country === v["name"]) {
 				return (string) k;
 			}
@@ -200,6 +200,57 @@ final class Geo {
 	}
 
 	/**
+	 * Nice Datetime
+	 *
+	 * @param mixed str Date or timestamp.
+	 * @return string Datetime.
+	 */
+	public static function niceDatetime(var str) -> string {
+		// We don't need fancy casting.
+		if ("string" !== typeof str) {
+			if (is_numeric(str)) {
+				let str = (string) str;
+			}
+			else {
+				return "0000-00-00 00:00:00";
+			}
+		}
+
+		// Could be a timestamp.
+		if (preg_match("/^\d{9,}$/", str)) {
+			return date("Y-m-d H:i:s", intval(str));
+		}
+
+		let str = trim(str);
+
+		if (
+			empty str ||
+			(0 === strpos(str, "0000-00-00"))
+		) {
+			return "0000-00-00 00:00:00";
+		}
+
+		var timestamp;
+		let timestamp = strtotime(str);
+		if (false === timestamp) {
+			return "0000-00-00 00:00:00";
+		}
+
+		return date("Y-m-d H:i:s", timestamp);
+	}
+
+	/**
+	 * Nice Date
+	 *
+	 * @param mixed Date.
+	 * @return string Date.
+	 */
+	public static function niceDate(var str) -> string {
+		let str = (string) self::niceDatetime(str);
+		return substr(str, 0, 10);
+	}
+
+	/**
 	 * Nice Timezone
 	 *
 	 * @param string $tz Timezone.
@@ -219,6 +270,72 @@ final class Geo {
 		}
 
 		return self::_timezones[tz];
+	}
+
+
+
+	// -----------------------------------------------------------------
+	// Helpers
+	// -----------------------------------------------------------------
+
+	/**
+	 * Days Between Dates
+	 *
+	 * @param string $date1 Date.
+	 * @param string $date2 Date.
+	 * @return int Difference.
+	 */
+	public static function dateDiff(var date1, var date2) -> int {
+		let date1 = self::niceDate(date1);
+		let date2 = self::niceDate(date2);
+
+		// Bad dates.
+		if (
+			(date1 === date2) ||
+			("0000-00-00" === date1) ||
+			("0000-00-00" === date2)
+		) {
+			return 0;
+		}
+
+		var dt1;
+		var dt2;
+
+		let dt1 = new \DateTime(strval(date1));
+		let dt2 = new \DateTime(strval(date2));
+		var diff = dt1->diff(dt2);
+
+		return abs(diff->days);
+	}
+
+	/**
+	 * To Timezone
+	 *
+	 * @param string $date Date.
+	 * @param string $from From.
+	 * @param string $to To.
+	 * @return string Date.
+	 */
+	public static function toTimezone(string date, string from="UTC", string to="UTC") -> string {
+		let date = self::niceDatetime(date);
+
+		if ("UTC" !== from) {
+			let from = self::niceTimezone(from);
+		}
+
+		if ("UTC" !== to) {
+			let to = self::niceTimezone(to);
+		}
+
+		// Nothing to do.
+		if (("0000-00-00 00:00:00" === date) || (from === to)) {
+			return date;
+		}
+
+		var dateNew;
+		let dateNew = new \DateTime(date, new \DateTimeZone(from));
+		dateNew->setTimezone(new \DateTimeZone(to));
+		return dateNew->format("Y-m-d H:i:s");
 	}
 
 

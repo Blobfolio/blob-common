@@ -118,7 +118,11 @@ class sanitize {
 	 * @param string|int $str Date or timestamp.
 	 * @return string Date.
 	 */
-	public static function datetime($str='') {
+	public static function datetime($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceDatetime($str);
+		}
+
 		ref\sanitize::datetime($str);
 		return $str;
 	}
@@ -129,7 +133,11 @@ class sanitize {
 	 * @param string|int $str Date or timestamp.
 	 * @return string Date.
 	 */
-	public static function date($str='') {
+	public static function date($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceDate($str);
+		}
+
 		ref\sanitize::date($str);
 		return $str;
 	}
@@ -225,6 +233,10 @@ class sanitize {
 	 * @return string HTML.
 	 */
 	public static function html($str=null) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Dom::html($str);
+		}
+
 		ref\sanitize::html($str);
 		return $str;
 	}
@@ -280,6 +292,10 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function js($str='', $quote="'") {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Dom::js($str, $quote);
+		}
+
 		ref\sanitize::js($str, $quote);
 		return $str;
 	}

@@ -218,12 +218,7 @@ class image {
 
 							// Make sure width and height are numbers.
 							if (is_numeric($width) || preg_match('/^[\d\.]+px$/', $width)) {
-								if (BLOBCOMMON_HAS_EXT) {
-									$width = \Blobfolio\Cast::toFloat($width, true);
-								}
-								else {
-									ref\cast::float($width, true);
-								}
+								ref\cast::float($width, true);
 
 								if ($width <= 0) {
 									$width = null;
@@ -234,12 +229,7 @@ class image {
 							}
 
 							if (is_numeric($height) || preg_match('/^[\d\.]+px$/', $height)) {
-								if (BLOBCOMMON_HAS_EXT) {
-									$height = \Blobfolio\Cast::toFloat($height, true);
-								}
-								else {
-									ref\cast::float($height, true);
-								}
+								ref\cast::float($height, true);
 								if ($height <= 0) {
 									$height = null;
 								}
@@ -790,12 +780,7 @@ class image {
 
 		// Build a destination if we need to.
 		if (null !== $to) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$to = \Blobfolio\Cast::toString($to, true);
-			}
-			else {
-				ref\cast::string($to, true);
-			}
+			ref\cast::string($to, true);
 
 			// If this is just a file name, throw it in from's dir.
 			if (false === strpos($to, '/')) {

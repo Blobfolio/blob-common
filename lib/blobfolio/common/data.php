@@ -30,6 +30,10 @@ class data {
 			return false;
 		}
 
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::compare($arr1, $arr2);
+		}
+
 		$length = count($arr1);
 
 		// Length mismatch.
@@ -80,6 +84,13 @@ class data {
 	 * @return array Difference.
 	 */
 	public static function array_idiff($arr1, $arr2) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return call_user_func_array(
+				array('Blobfolio\\Arrays', 'iDiff'),
+				func_get_args()
+			);
+		}
+
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
@@ -132,6 +143,13 @@ class data {
 	 * @return array Intersection.
 	 */
 	public static function array_iintersect($arr1, $arr2) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return call_user_func_array(
+				array('Blobfolio\\Arrays', 'iIntersect'),
+				func_get_args()
+			);
+		}
+
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
@@ -178,6 +196,10 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function array_ikey_exists($needle, $haystack) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::iKeyExists($needle, $haystack);
+		}
+
 		if (!is_array($haystack) || !count($haystack)) {
 			return false;
 		}
@@ -194,8 +216,12 @@ class data {
 	 * @param bool $strict Strict.
 	 * @return mixed Key or false.
 	 */
-	public static function array_isearch($needle, $haystack, bool $strict=true) {
-		if (!is_array($haystack) || !count($haystack)) {
+	public static function array_isearch($needle, array $haystack, bool $strict=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::iSearch($needle, $haystack, $strict);
+		}
+
+		if (!count($haystack)) {
 			return false;
 		}
 
@@ -231,7 +257,11 @@ class data {
 	 * @param string $other Label for others.
 	 * @return array|bool Array or false.
 	 */
-	public static function array_otherize($arr=null, int $length=5, $other='Other') {
+	public static function array_otherize(array $arr, int $length=5, $other='Other') {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Arrays::otherize($arr, $length, $other);
+		}
+
 		if ('associative' !== cast::array_type($arr)) {
 			return false;
 		}
@@ -239,12 +269,7 @@ class data {
 		// Make sure everything is numeric.
 		foreach ($arr as $k=>$v) {
 			if (!is_int($arr[$k]) && !is_float($arr[$k])) {
-				if (BLOBCOMMON_HAS_EXT) {
-					$arr[$k] = \Blobfolio\Cast::toFloat($arr[$k], true);
-				}
-				else {
-					ref\cast::float($arr[$k], true);
-				}
+				ref\cast::float($arr[$k], true);
 			}
 		}
 
@@ -257,12 +282,7 @@ class data {
 			return $arr;
 		}
 
-		if (BLOBCOMMON_HAS_EXT) {
-			$other = \Blobfolio\Cast::toString($other, true);
-		}
-		else {
-			ref\cast::string($other, true);
-		}
+		ref\cast::string($other, true);
 
 		if (!$other) {
 			$other = 'Other';
@@ -350,6 +370,10 @@ class data {
 	 * @return array Months.
 	 */
 	public static function cc_exp_months(string $format='m - M') {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Retail::ccExpMonths($format);
+		}
+
 		$months = array();
 		for ($x = 1; $x <= 12; ++$x) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
@@ -364,6 +388,10 @@ class data {
 	 * @return array Years.
 	 */
 	public static function cc_exp_years(int $length=10) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Retail::ccExpYears($length);
+		}
+
 		if ($length < 1) {
 			$length = 10;
 		}
@@ -385,6 +413,10 @@ class data {
 	 * @return int Difference in Days.
 	 */
 	public static function datediff($date1, $date2) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Geo::dateDiff($date1, $date2);
+		}
+
 		ref\sanitize::date($date1);
 		ref\sanitize::date($date2);
 
@@ -502,6 +534,10 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function is_json($str, bool $empty=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Json::isJson($str, $empty);
+		}
+
 		if (!is_string($str) || (!$empty && !$str)) {
 			return false;
 		}
@@ -545,6 +581,10 @@ class data {
 	 * @return array Data.
 	 */
 	public static function json_decode_array($json, $defaults=null, bool $strict=true, bool $recursive=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Json::decodeArray($json, $defaults, $strict, $recursive);
+		}
+
 		ref\format::json_decode($json);
 
 		if ((null === $json) || (is_string($json) && !$json)) {
@@ -573,21 +613,15 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function length_in_range(string $str, $min=null, $max=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::lengthInRange($str, $min, $max);
+		}
+
 		if ((null !== $min) && !is_int($min)) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$min = \Blobfolio\Cast::toInt($min, true);
-			}
-			else {
-				ref\cast::int($min, true);
-			}
+			ref\cast::int($min, true);
 		}
 		if ((null !== $max) && !is_int($max)) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$max = \Blobfolio\Cast::toInt($max, true);
-			}
-			else {
-				ref\cast::int($max, true);
-			}
+			ref\cast::int($max, true);
 		}
 
 		$length = mb::strlen($str, true);
@@ -692,17 +726,16 @@ class data {
 	 * @return string Random string.
 	 */
 	public static function random_string(int $length=10, $soup=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Strings::random($length, $soup);
+		}
+
 		if ($length < 1) {
 			return '';
 		}
 
 		if (is_array($soup) && count($soup)) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$soup = \Blobfolio\Cast::toString($soup);
-			}
-			else {
-				ref\cast::string($soup);
-			}
+			ref\cast::string($soup);
 
 			$soup = implode('', $soup);
 			ref\sanitize::printable($soup);

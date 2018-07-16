@@ -76,23 +76,13 @@ class cli {
 
 			// The string comes first.
 			$str = array_shift($v);
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				ref\cast::string($str, true);
-			}
+			ref\cast::string($str, true);
 
 			// Deal with codes.
 			ref\format::array_flatten($v);
 			$codes = array_filter($v, 'is_numeric');
 			if (count($codes)) {
-				if (BLOBCOMMON_HAS_EXT) {
-					$codes = \Blobfolio\Cast::toInt($codes);
-				}
-				else {
-					ref\cast::int($codes);
-				}
+				ref\cast::int($codes);
 				$out .= "\033[" . implode(';', $codes) . "m{$str}\033[0m";
 			}
 			else {

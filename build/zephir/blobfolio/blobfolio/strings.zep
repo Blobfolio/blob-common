@@ -168,129 +168,6 @@ final class Strings {
 	}
 
 	/**
-	 * Decode JS Entities
-	 *
-	 * Decode escape and unicode chars.
-	 *
-	 * @param string $str String.
-	 * @return string String.
-	 */
-	public static function decodeJsEntities(string str) -> string {
-		let str = self::decodeUnicodeEntities(str);
-		return self::decodeEscapeEntities(str);
-	}
-
-	/**
-	 * Decode Escape Entities
-	 *
-	 * Decode \b, \f, \n, \r, \t.
-	 *
-	 * @param string $str String.
-	 * @return string String.
-	 */
-	public static function decodeEscapeEntities(string str) -> string {
-		let str = self::utf8(str);
-
-		array from = [
-			"\\b",
-			"\\f",
-			"\\n",
-			"\\r",
-			"\\t"
-		];
-		array to = [
-			chr(0x08),
-			chr(0x0C),
-			chr(0x0A),
-			chr(0x0D),
-			chr(0x09)
-		];
-
-		return str_replace(from, to, str);
-	}
-
-	/**
-	 * Decode Unicode Entities
-	 *
-	 * Decode \u1234 into chars.
-	 *
-	 * @param string $str String.
-	 * @return string String.
-	 */
-	public static function decodeUnicodeEntities(string str) -> string {
-		let str = self::utf8(str);
-
-		string last = "";
-		while (str !== last) {
-			let last = str;
-
-			let str = preg_replace_callback(
-				"/\\\u([0-9A-Fa-f]{4})/u",
-				[__CLASS__, "decodeHexEntities"],
-				str
-			);
-
-			let str = self::utf8(str);
-		}
-
-		return str;
-	}
-
-	/**
-	 * Decode HTML Entities
-	 *
-	 * Decode all HTML entities back into their char counterparts,
-	 * recursively until every last one is captured.
-	 *
-	 * @param string $str String.
-	 * @return void Nothing.
-	 */
-	public static function decodeEntities(string str) -> string {
-		let str = self::utf8(str);
-
-		string last = "";
-		while (str !== last) {
-			let last = str;
-
-			let str = html_entity_decode(str, ENT_QUOTES, "UTF-8");
-			let str = preg_replace_callback(
-				"/&#([0-9]+);/",
-				[__CLASS__, "decodeChrEntities"],
-				str
-			);
-			let str = preg_replace_callback(
-				"/&#[Xx]([0-9A-Fa-f]+);/",
-				[__CLASS__, "decodeHexEntities"],
-				str
-			);
-
-			let str = self::utf8(str);
-		}
-
-		return str;
-	}
-
-	/**
-	 * Decode HTML Entities Callback - Chr
-	 *
-	 * @param array $matches Matches.
-	 * @return string ASCII.
-	 */
-	private static function decodeChrEntities(array matches) -> string {
-		return chr(matches[1]);
-	}
-
-	/**
-	 * Decode HTML Entities Callback - Hex
-	 *
-	 * @param array $matches Matches.
-	 * @return string ASCII.
-	 */
-	private static function decodeHexEntities(array matches) -> string {
-		return chr(hexdec(matches[1]));
-	}
-
-	/**
 	 * Generate Text Excerpt
 	 *
 	 * @param string $str String.
@@ -452,7 +329,7 @@ final class Strings {
 	 * @param string $str String.
 	 * @return int String length.
 	 */
-	public static function strlen(const string str) -> int {
+	public static function length(const string str) -> int {
 		return (int) mb_strlen(str, "UTF-8");
 	}
 
@@ -465,7 +342,7 @@ final class Strings {
 	 * @param int $pad_type Pad type.
 	 * @return void Nothing.
 	 */
-	public static function str_pad(string str, int pad_length, string pad_string=" ", const int pad_type = 1) -> string {
+	public static function pad(string str, int pad_length, string pad_string=" ", const int pad_type = 1) -> string {
 		let str = self::utf8(str);
 		let pad_string = self::utf8(pad_string);
 
@@ -533,7 +410,7 @@ final class Strings {
 	 * @param int $split_length Split length.
 	 * @return bool True/false.
 	 */
-	public static function str_split(string str, const int split_length=1) -> array | bool {
+	public static function split(string str, const int split_length=1) -> array | bool {
 		if (split_length < 1) {
 			return false;
 		}
@@ -573,7 +450,7 @@ final class Strings {
 		let str = self::utf8($str);
 
 		if (!empty str) {
-			array tmp = (array) self::str_split(str);
+			array tmp = (array) self::split(str);
 			let tmp = array_reverse(tmp);
 			return implode("", tmp);
 		}
@@ -599,36 +476,25 @@ final class Strings {
 	 * @param array|string $str String.
 	 * @param bool $strict Strict.
 	 */
-	public static function strtolower(var str, const bool strict=false) {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::strtolower(v, strict);
-			}
-			return str;
-		}
-
+	public static function toLower(string str) -> string {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
-		if (!strict || ("string" === typeof str)) {
-			let str = Cast::toString(str, true);
+		let str = self::utf8(str);
 
-			if (!empty str) {
-				if (unlikely !mb_check_encoding(str, "ASCII")) {
-					// Hit the bulk of the conversion.
-					let str = mb_strtolower(str, "UTF-8");
+		if (!empty str) {
+			if (unlikely !mb_check_encoding(str, "ASCII")) {
+				// Hit the bulk of the conversion.
+				let str = mb_strtolower(str, "UTF-8");
 
-					// Replace some more.
-					let str = str_replace(
-						self::case_char_upper,
-						self::case_char_lower,
-						str
-					);
-				}
-				else {
-					let str = strtolower(str);
-				}
+				// Replace some more.
+				let str = str_replace(
+					self::case_char_upper,
+					self::case_char_lower,
+					str
+				);
+			}
+			else {
+				let str = strtolower(str);
 			}
 		}
 
@@ -641,36 +507,23 @@ final class Strings {
 	 * @param array|string $str String.
 	 * @param bool $strict Strict.
 	 */
-	public static function strtoupper(var str, const bool strict=false) {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::strtoupper(v, strict);
+	public static function toUpper(string str) -> string {
+		let str = self::utf8(str);
+
+		if (!empty str) {
+			if (unlikely !mb_check_encoding(str, "ASCII")) {
+				// Hit the bulk of the conversion.
+				let str = mb_strtoupper(str, "UTF-8");
+
+				// Replace some more.
+				let str = str_replace(
+					self::case_char_lower,
+					self::case_char_upper,
+					str
+				);
 			}
-			return str;
-		}
-
-		// Proceed if we have a string, or don't care about type
-		// conversion.
-		if (!strict || ("string" === typeof str)) {
-			let str = Cast::toString(str, true);
-
-			if (!empty str) {
-				if (unlikely !mb_check_encoding(str, "ASCII")) {
-					// Hit the bulk of the conversion.
-					let str = mb_strtoupper(str, "UTF-8");
-
-					// Replace some more.
-					let str = str_replace(
-						self::case_char_lower,
-						self::case_char_upper,
-						str
-					);
-				}
-				else {
-					let str = strtoupper(str);
-				}
+			else {
+				let str = strtoupper(str);
 			}
 		}
 
@@ -696,7 +549,7 @@ final class Strings {
 	 * @param string $needle Needle.
 	 * @return int Count.
 	 */
-	public static function substr_count(string haystack, string needle) {
+	public static function substrCount(string haystack, string needle) {
 		return mb_substr_count(haystack, needle, "UTF-8");
 	}
 
@@ -718,33 +571,19 @@ final class Strings {
 	 * functions.
 	 *
 	 * @param string $str String.
-	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucfirst(var str, const bool strict=false) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::ucfirst(v, strict);
+	public static function toSentence(string str) -> string {
+		let str = self::utf8(str);
+
+		if (str) {
+			if (unlikely !mb_check_encoding(str, "ASCII")) {
+				string first = (string) mb_substr(str, 0, 1, "UTF-8");
+				let first = self::toUpper($first);
+				let str = first . mb_substr(str, 1, null, "UTF-8");
 			}
-			return str;
-		}
-
-		// Proceed if we have a string, or don't care about type
-		// conversion.
-		if (!strict || ("string" === typeof str)) {
-			let str = Cast::toString(str, true);
-
-			if (str) {
-				if (unlikely !mb_check_encoding(str, "ASCII")) {
-					string first = (string) mb_substr(str, 0, 1, "UTF-8");
-					let first = self::strtoupper($first, false);
-					let str = first . mb_substr(str, 1, null, "UTF-8");
-				}
-				else {
-					let str = ucfirst(str);
-				}
+			else {
+				let str = ucfirst(str);
 			}
 		}
 
@@ -761,36 +600,23 @@ final class Strings {
 	 * @param bool $strict Strict.
 	 * @return string String.
 	 */
-	public static function ucwords(var str, const bool strict=false) -> string | array {
-		// Recurse.
-		if (unlikely "array" === typeof str) {
-			var k, v;
-			for k, v in str {
-				let str[k] = self::ucwords(v, strict);
-			}
-			return str;
-		}
+	public static function toTitle(string str) -> string {
+		let str = self::utf8(str);
 
-		// Proceed if we have a string, or don't care about type
-		// conversion.
-		if (!strict || ("string" === typeof str)) {
-			let str = Cast::toString(str, true);
+		if (str) {
+			// The first letter.
+			let str = preg_replace_callback(
+				"/^(\p{L})/u",
+				[__CLASS__, "toTitleCallback1"],
+				str
+			);
 
-			if (str) {
-				// The first letter.
-				let str = preg_replace_callback(
-					"/^(\p{L})/u",
-					[__CLASS__, "ucwordsCallback1"],
-					str
-				);
-
-				// Any letter following a dash, space, or forward slash.
-				let str = preg_replace_callback(
-					"/(\s|\p{Pd}|\/)(.)/u",
-					[__CLASS__, "ucwordsCallback2"],
-					str
-				);
-			}
+			// Any letter following a dash, space, or forward slash.
+			let str = preg_replace_callback(
+				"/(\s|\p{Pd}|\/)(.)/u",
+				[__CLASS__, "toTitleCallback2"],
+				str
+			);
 		}
 
 		return str;
@@ -802,8 +628,8 @@ final class Strings {
 	 * @param array $matches Matches.
 	 * @return string Replacement.
 	 */
-	private static function ucwordsCallback1(array matches) -> string {
-		return self::strtoupper(matches[0]);
+	private static function toTitleCallback1(array matches) -> string {
+		return self::toUpper(matches[0]);
 	}
 
 	/**
@@ -812,8 +638,8 @@ final class Strings {
 	 * @param array $matches Matches.
 	 * @return string Replacement.
 	 */
-	private static function ucwordsCallback2(array matches) -> string {
-		return matches[1] . self::strtoupper(matches[2]);
+	private static function toTitleCallback2(array matches) -> string {
+		return matches[1] . self::toUpper(matches[2]);
 	}
 
 	/**
@@ -1088,7 +914,7 @@ final class Strings {
 
 			// We should make sure each chunk fits.
 			if (cut) {
-				let v = self::str_split(v, width);
+				let v = self::split(v, width);
 				let v = implode("\n", v);
 			}
 
@@ -1145,5 +971,194 @@ final class Strings {
 
 		// Finally, join our lines by the delimiter.
 		return self::trim(implode(eol, out));
+	}
+
+
+
+	// -----------------------------------------------------------------
+	// Helpers
+	// -----------------------------------------------------------------
+
+	/**
+	 * In Range
+	 *
+	 * Check if the value of a string falls between two points.
+	 *
+	 * @param string $str String.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return bool True/false.
+	 */
+	public static function inRange(string str, var min=null, var max=null) -> bool {
+		bool minString = (("string" === typeof min) && !empty min);
+		bool maxString = (("string" === typeof max) && !empty max);
+
+		// Make sure they're in the right order.
+		if (
+			minString &&
+			maxString &&
+			min > max
+		) {
+			string tmp;
+			let tmp = min;
+			let min = max;
+			let max = tmp;
+		}
+
+		if (minString && str < min) {
+			return false;
+		}
+
+		if (maxString && str > max) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Length In Range
+	 *
+	 * Check if the length of a string is between two values.
+	 *
+	 * @param string $str String.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return bool True/false.
+	 */
+	public static function lengthInRange(string str, var min=null, var max=null) -> bool {
+		bool minNum = is_numeric(min);
+		bool maxNum = is_numeric(max);
+
+		// Make sure they're in the right order.
+		if (
+			minNum &&
+			maxNum &&
+			min > max
+		) {
+			var tmp;
+			let tmp = min;
+			let min = max;
+			let max = tmp;
+		}
+
+		int length = (int) mb_strlen(str, "UTF-8");
+
+		if (minNum && length < min) {
+			return false;
+		}
+
+		if (maxNum && length > max) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * To Range
+	 *
+	 * @param string $str String.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return string String.
+	 */
+	public static function toRange(string str, var min=null, var max=null) -> string {
+		bool minString = (("string" === typeof min) && !empty min);
+		bool maxString = (("string" === typeof max) && !empty max);
+
+		// Make sure they're in the right order.
+		if (
+			minString &&
+			maxString &&
+			min > max
+		) {
+			string tmp;
+			let tmp = min;
+			let min = max;
+			let max = tmp;
+		}
+
+		if (minString && str < min) {
+			let str = min;
+		}
+
+		if (maxString && str > max) {
+			let str = max;
+		}
+
+		return str;
+	}
+
+	/**
+	 * Is Value Valid UTF-8?
+	 *
+	 * @param string $str String.
+	 * @return bool True/false.
+	 */
+	public static function isUtf8(var str) -> bool {
+		if (is_numeric(str) || is_bool(str)) {
+			return true;
+		}
+
+		if (is_string(str)) {
+			return (bool) preg_match("//u", str);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get Random String
+	 *
+	 * @param int $length Length.
+	 * @param array $soup Alternate alphabet.
+	 * @return string Random string.
+	 */
+	public static function random(int length=10, var soup=null) -> string {
+		if (length < 1) {
+			return "";
+		}
+
+		// Build a custom soup.
+		if (("array" === typeof soup) && count(soup)) {
+			let soup = (array) Arrays::flatten(soup);
+			let soup = (string) implode("", soup);
+			let soup = self::printable(soup);
+			let soup = preg_replace("/\s/", "", soup);
+			let soup = (array) self::split(soup);
+			let soup = array_unique(soup);
+			let soup = array_values(soup);
+
+			if (!count(soup)) {
+				return "";
+			}
+		}
+		else {
+			let soup = [
+				"A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
+				"M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
+				"Y", "Z", "2", "3", "4", "5", "6", "7", "8", "9"
+			];
+		}
+
+		int max = count(soup) - 1;
+
+		// Save time if we can't produce anything random.
+		if (!max) {
+			return str_repeat(soup[0], length);
+		}
+
+		string out = "";
+		int x = 0;
+		int index;
+
+		while x < length {
+			let index = (int) random_int(0, max);
+			let out .= soup[index];
+			let x++;
+		}
+
+		return out;
 	}
 }

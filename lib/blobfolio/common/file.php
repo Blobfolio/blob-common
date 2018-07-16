@@ -177,18 +177,17 @@ class file {
 	 * @return string|bool Data-URI or false.
 	 */
 	public static function data_uri(string $path) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$tmp = \Blobfolio\Files::dataUri($path);
+			return $tmp ? $tmp : false;
+		}
+
 		ref\cast::string($path, true);
 		ref\file::path($path, true, true);
 
 		if ((false !== $path) && @is_file($path)) {
 			$content = base64_encode(@file_get_contents($path));
-
-			if (BLOBCOMMON_HAS_EXT) {
-				$finfo = \Blobfolio\Files::finfo($path);
-			}
-			else {
-				$finfo = mime::finfo($path);
-			}
+			$finfo = mime::finfo($path);
 
 			return "data:{$finfo['mime']};base64,{$content}";
 		}

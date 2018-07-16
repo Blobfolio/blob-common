@@ -99,19 +99,18 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function ceil(&$num, int $precision=0) {
+		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
+			$num = \Blobfolio\Numbers::ceil($num, $precision);
+			return;
+		}
+
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::ceil($num[$k], $precision);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$num = \Blobfolio\Cast::toFloat($num, true);
-			}
-			else {
-				cast::float($num, true);
-			}
-
+			cast::float($num, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -129,7 +128,7 @@ class format {
 	 */
 	public static function decode_js_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::decodeJsEntities($str);
+			$str = \Blobfolio\Dom::decodeJsEntities($str);
 			return;
 		}
 
@@ -147,7 +146,7 @@ class format {
 	 */
 	public static function decode_escape_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::decodeEscapeEntities($str);
+			$str = \Blobfolio\Dom::decodeEscapeEntities($str);
 			return;
 		}
 
@@ -177,7 +176,7 @@ class format {
 	 */
 	public static function decode_unicode_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::decodeUnicodeEntities($str);
+			$str = \Blobfolio\Dom::decodeUnicodeEntities($str);
 			return;
 		}
 
@@ -194,12 +193,7 @@ class format {
 				$str
 			);
 
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 		}
 	}
 
@@ -214,7 +208,7 @@ class format {
 	 */
 	public static function decode_entities(&$str) {
 		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::decodeEntities($str);
+			$str = \Blobfolio\Dom::decodeEntities($str);
 			return;
 		}
 
@@ -228,12 +222,7 @@ class format {
 			$str = preg_replace_callback('/&#([0-9]+);/', array(get_called_class(), 'decode_entities_chr'), $str);
 			$str = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', array(get_called_class(), 'decode_entities_hex'), $str);
 
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toString($str, true);
-			}
-			else {
-				cast::string($str, true);
-			}
+			cast::string($str, true);
 		}
 	}
 
@@ -265,19 +254,18 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function floor(&$num, int $precision=0) {
+		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
+			$num = \Blobfolio\Numbers::floor($num, $precision);
+			return;
+		}
+
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::floor($num[$k], $precision);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$num = \Blobfolio\Cast::toFloat($num, true);
-			}
-			else {
-				cast::float($num, true);
-			}
-
+			cast::float($num, true);
 			sanitize::to_range($precision, 0);
 
 			$precision = (10 ** $precision);
@@ -297,18 +285,18 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function fraction(&$num, float $precision=0.0001) {
+		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
+			$num = \Blobfolio\Numbers::fraction($num, $precision);
+			return;
+		}
+
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::fraction($num[$k], $precision);
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT) {
-				$num = \Blobfolio\Cast::toFloat($num, true);
-			}
-			else {
-				cast::float($num, true);
-			}
+			cast::float($num, true);
 
 			// We need a tolerable tolerance.
 			if ($precision <= 0 || $precision >= 1) {
@@ -539,12 +527,7 @@ class format {
 		$lower = v_mb::strtolower($str, false, true);
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
-			if (BLOBCOMMON_HAS_EXT) {
-				$str = \Blobfolio\Cast::toBool($str, true);
-			}
-			else {
-				cast::bool($str, true);
-			}
+			cast::bool($str, true);
 			return true;
 		}
 		// Null.
@@ -764,12 +747,7 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function links(&$str, $args=null, int $pass=1) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Cast::toString($str, true);
-		}
-		else {
-			cast::string($str, true);
-		}
+		cast::string($str, true);
 
 		// Build link attributes from our arguments, if any.
 		$defaults = array(
@@ -959,6 +937,11 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function list_to_array(&$list, $args=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$list = \Blobfolio\Arrays::fromList($list, $args);
+			return;
+		}
+
 		$out = array();
 
 		// If the arguments are a string, we'll assume the delimiter was
@@ -995,12 +978,7 @@ class format {
 			}
 			// Otherwise de-list the line.
 			else {
-				if (BLOBCOMMON_HAS_EXT) {
-					$list[$k] = \Blobfolio\Cast::toString($list[$k], true);
-				}
-				else {
-					cast::string($list[$k], true);
-				}
+				cast::string($list[$k], true);
 
 				if ($args['delimiter']) {
 					$list[$k] = explode($args['delimiter'], $list[$k]);
@@ -1019,12 +997,7 @@ class format {
 
 				// Casting?
 				if ('string' !== $args['cast']) {
-					if (BLOBCOMMON_HAS_EXT) {
-						$list[$k] = \Blobfolio\Cast::toType($list[$k], $args['cast']);
-					}
-					else {
-						cast::to_type($list[$k], $args['cast']);
-					}
+					cast::to_type($list[$k], $args['cast']);
 				}
 			}
 
@@ -1062,6 +1035,11 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function money(&$value=0, bool $cents=false, string $separator='', bool $no00=false) {
+		if (BLOBCOMMON_HAS_EXT && !is_array($value)) {
+			$value = \Blobfolio\Retail::usd($value, $separator, $cents, $no00);
+			return;
+		}
+
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::money($value[$k], $cents, $separator, $no00);
@@ -1230,6 +1208,11 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function to_timezone(string &$date, $from='UTC', $to='UTC') {
+		if (BLOBCOMMON_HAS_EXT) {
+			$date = \Blobfolio\Geo::toTimezone($date, $from, $to);
+			return;
+		}
+
 		sanitize::datetime($date);
 		if ('UTC' !== $from) {
 			sanitize::timezone($from);

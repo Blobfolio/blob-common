@@ -26,12 +26,7 @@ class dom {
 	 * @return bool|DOMDocument DOM object or false.
 	 */
 	public static function load_svg($svg='') {
-		if (BLOBCOMMON_HAS_EXT) {
-			$svg = \Blobfolio\Cast::toString($svg, true);
-		}
-		else {
-			ref\cast::string($svg, true);
-		}
+		ref\cast::string($svg, true);
 
 		// First thing first, lowercase all tags.
 		$svg = preg_replace('/<svg/ui', '<svg', $svg);
@@ -241,12 +236,7 @@ class dom {
 	 * @return array Parsed styles.
 	 */
 	public static function parse_css($styles='') {
-		if (BLOBCOMMON_HAS_EXT) {
-			$styles = \Blobfolio\Cast::toString($styles, true);
-		}
-		else {
-			ref\cast::string($styles, true);
-		}
+		ref\cast::string($styles, true);
 
 		// Remove comments.
 		while (false !== ($start = mb::strpos($styles, '/*'))) {

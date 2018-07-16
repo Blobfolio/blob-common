@@ -139,7 +139,7 @@ final class Files {
 	 * @return string Extension.
 	 */
 	public static function niceFileExtension(string ext) -> string {
-		let ext = Strings::strtolower(ext, false);
+		let ext = Strings::toLower(ext);
 		let ext = preg_replace("/\s/u", "", ext);
 		return ltrim(ext, "*.");
 	}
