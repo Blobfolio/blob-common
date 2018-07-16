@@ -122,6 +122,28 @@ final class Geo {
 	}
 
 	/**
+	 * Nice CA Postal Code
+	 *
+	 * @param string $str Code.
+	 * @return string Code.
+	 */
+	public static function niceCaPostalCode(string str) -> string {
+		let str = strtoupper(str);
+
+		// Alphanumeric, minus D, F, I, O, Q, and U.
+		let str = preg_replace("/[^A-CEGHJ-NPR-TV-Z\d]/", "", str);
+
+		// W and Z are not allowed in the first slot, otherwise it
+		// just alternates between letters and numbers.
+		if (!preg_match("/^[A-VXY][\d][A-Z][\d][A-Z][\d]$/", str)) {
+			return "";
+		}
+
+		// If it looks good, add a space in the middle.
+		return substr(str, 0, 3) . " " . substr(str, -3);
+	}
+
+	/**
 	 * Nice CA Province
 	 *
 	 * @param string $state State.

@@ -55,7 +55,11 @@ class sanitize {
 	 * @param string $str Postal Code.
 	 * @return string Postal Code.
 	 */
-	public static function ca_postal_code($str='') {
+	public static function ca_postal_code($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceCaPostalCode($str);
+		}
+
 		ref\sanitize::ca_postal_code($str);
 		return $str;
 	}
@@ -66,7 +70,12 @@ class sanitize {
 	 * @param string $ccnum Card number.
 	 * @return string|bool Card number or false.
 	 */
-	public static function cc($ccnum='') {
+	public static function cc($ccnum) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$ccnum = \Blobfolio\Retail::niceCc($ccnum);
+			return $ccnum ? $ccnum : false;
+		}
+
 		ref\sanitize::cc($ccnum);
 		return $ccnum;
 	}

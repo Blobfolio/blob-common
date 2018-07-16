@@ -95,7 +95,12 @@ class sanitize {
 	 * @param string $str Postal Code.
 	 * @return void Nothing.
 	 */
-	public static function ca_postal_code(&$str='') {
+	public static function ca_postal_code(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceCaPostalCode($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ca_postal_code($str[$k]);
@@ -131,7 +136,15 @@ class sanitize {
 	 * @param string $ccnum Card number.
 	 * @return bool True/false.
 	 */
-	public static function cc(&$ccnum='') {
+	public static function cc(&$ccnum) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$ccnum = \Blobfolio\Retail::niceCc($ccnum);
+			if (!$ccnum) {
+				$ccnum = false;
+			}
+			return $ccnum ? true : false;
+		}
+
 		if (!is_string($ccnum)) {
 			if (is_numeric($ccnum)) {
 				$ccnum = (string) $ccnum;
