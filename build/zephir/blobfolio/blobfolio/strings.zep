@@ -794,9 +794,10 @@ final class Strings {
 			}
 			return value;
 		}
-
-		let value = Cast::toString(value, true);
-		return self::utf8(value);
+		elseif ("string" === typeof value) {
+			return self::utf8(value);
+		}
+		return value;
 	}
 
 	/**
