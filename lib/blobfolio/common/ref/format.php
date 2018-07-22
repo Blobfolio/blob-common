@@ -747,6 +747,11 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function links(&$str, $args=null, int $pass=1) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Dom::linkify($str, $args);
+			return;
+		}
+
 		cast::string($str, true);
 
 		// Build link attributes from our arguments, if any.
@@ -892,6 +897,7 @@ class format {
 			}
 			// Odd keys indicate a tag, opening or closing.
 			else {
+				echo "Ignoring is empty: ", $v, "\n";
 				// If we aren't already waiting on a closing tag...
 				if (false === $ignoring) {
 					// Start ignoring if this tag is blacklisted and not self-closing.

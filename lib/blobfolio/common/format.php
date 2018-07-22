@@ -467,6 +467,10 @@ class format {
 	 * @return bool True.
 	 */
 	public static function links($str, $args=null, int $pass=1) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Dom::linkify($str, $args);
+		}
+
 		ref\format::links($str, $args, $pass);
 		return $str;
 	}
