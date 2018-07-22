@@ -155,10 +155,10 @@ final class Cast {
 				case "array":
 					if (1 === count(value)) {
 						reset(value);
-						let value = value[key(value)];
-						return self::toInt(value);
+						return self::toInt(value[key(value)], true);
 					}
-					break;
+
+					return 0;
 				case "int":
 				case "integer":
 				case "long":
@@ -201,10 +201,10 @@ final class Cast {
 				case "array":
 					if (1 === count(value)) {
 						reset(value);
-						let value = value[key(value)];
-						return self::toNumber(value);
+						return self::toNumber(value[key(value)], true);
 					}
-					break;
+
+					return 0.0;
 				case "double":
 				case "float":
 				case "number":
@@ -284,9 +284,13 @@ final class Cast {
 		}
 		else {
 			// If a single-entry array is passed, use that value.
-			if (("array" === typeof value) && (1 === count(value))) {
-				reset(value);
-				let value = value[key(value)];
+			if (("array" === typeof value)) {
+				if (1 === count(value)) {
+					reset(value);
+					return self::toString(value[key(value)], true);
+				}
+
+				return "";
 			}
 
 			try {
