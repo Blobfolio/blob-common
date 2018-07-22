@@ -465,6 +465,11 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function ean(&$str, bool $formatted=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Retail::niceEan($str, $formatted);
+			return $str ? true : false;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ean($str[$k], $formatted);
@@ -610,6 +615,10 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	protected static function gtin(string $str) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Retail::checkGtin($str);
+		}
+
 		$str = preg_replace('/[^\d]/', '', $str);
 		$code = str_split(substr($str, 0, -1));
 		$check = (int) substr($str, -1);
@@ -816,6 +825,11 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function isbn(&$str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Retail::niceIsbn($str);
+			return $str ? true : false;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::isbn($str[$k]);
@@ -1487,6 +1501,11 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function upc(&$str, bool $formatted=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Retail::niceUpc($str, $formatted);
+			return $str ? true : false;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::upc($str[$k], $formatted);

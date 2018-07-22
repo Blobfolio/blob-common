@@ -181,6 +181,10 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function ean($str, bool $formatted=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Retail::niceEan($str, $formatted);
+		}
+
 		ref\sanitize::ean($str, $formatted);
 		return $str;
 	}
@@ -289,6 +293,10 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function isbn($str) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Retail::niceIsbn($str);
+		}
+
 		ref\sanitize::isbn($str);
 		return $str;
 	}
@@ -485,6 +493,10 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function upc($str, bool $formatted=false) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Retail::niceUpc($str, $formatted);
+		}
+
 		ref\sanitize::upc($str, $formatted);
 		return $str;
 	}

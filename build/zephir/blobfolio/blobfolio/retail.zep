@@ -153,6 +153,174 @@ final class Retail {
 		return "";
 	}
 
+	/**
+	 * EAN13
+	 *
+	 * Almost exactly like UPC, but not quite.
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return string EAN.
+	 */
+	public static function niceEan(string str, const bool formatted=false) -> string {
+		// Numbers only.
+		let str = preg_replace("/[^\d]/", "", str);
+		let str = str_pad(str, 13, "0", STR_PAD_LEFT);
+
+		// Trim leading zeroes if it is too long.
+		while (strlen(str) > 13 && (0 === strpos(str, "0"))) {
+			let str = substr(str, 1);
+		}
+
+		if (strlen(str) !== 13 || ("0000000000000" === str)) {
+			return "";
+		}
+
+		// Try to pad it.
+		while (!self::checkGtin(str) && strlen(str) <= 18) {
+			let str = "0" . str;
+		}
+
+		if (!self::checkGtin(str)) {
+			return "";
+		}
+
+		// Last thing, format?
+		if (formatted) {
+			let str = preg_replace("/^(\d{1})(\d{6})(\d{6})$/", "$1-$2-$3", str);
+		}
+
+		return str;
+	}
+
+	/**
+	 * ISBN
+	 *
+	 * Validate an ISBN 10 or 13.
+	 *
+	 * @see {https://www.isbn-international.org/export_rangemessage.xml}
+	 *
+	 * @param string $str String.
+	 * @return string ISBN.
+	 */
+	public static function niceIsbn(string str) -> string {
+		let str = strtoupper(str);
+		let str = preg_replace("/[^\dX]/", "", str);
+
+		int length = strlen(str);
+
+		// Zero-pad.
+		if (length < 11) {
+			let str = str_pad(str, 10, "0", STR_PAD_LEFT);
+			let length = 10;
+		}
+		elseif (length < 13) {
+			let str = preg_replace("/[^\d]/", "", str);
+			let str = str_pad(str, 13, "0", STR_PAD_LEFT);
+			let length = 13;
+		}
+
+		if (
+			("0000000000" === str) ||
+			("0000000000000" === str) ||
+			length >= 14
+		) {
+			return "";
+		}
+
+		// Validate a 10.
+		if (length === 10) {
+			int checksum = 0;
+			int x = 0;
+			string current;
+			while x < 9 {
+				let current = substr(str, x, 1);
+				if ("X" === current) {
+					let checksum += 10 * (10 - x);
+				}
+				else {
+					let checksum += intval(current) * (10 - x);
+				}
+
+				let x++;
+			}
+
+			let checksum = 11 - checksum % 11;
+
+			var check1;
+			var check2;
+
+			if (10 === checksum) {
+				let check1 = "X";
+			}
+			elseif (11 === checksum) {
+				let check1 = 0;
+			}
+			else {
+				let check1 = (int) checksum;
+			}
+
+			string last = substr(str, -1);
+			if ("X" === last) {
+				let check2 = "X";
+			}
+			else {
+				let check2 = (int) last;
+			}
+
+			if (check2 !== check1) {
+				return "";
+			}
+		}
+		// Validate a 13.
+		elseif (!self::checkGtin(str)) {
+			return "";
+		}
+
+		return str;
+	}
+
+	/**
+	 * UPC-A
+	 *
+	 * @param string $str String.
+	 * @param bool $formatted Formatted.
+	 * @return string UPC.
+	 */
+	public static function niceUpc(string str, const bool formatted=false) -> string {
+		let str = preg_replace("/[^\d]/", "", str);
+		let str = str_pad(str, 12, "0", STR_PAD_LEFT);
+
+		// Trim leading zeroes if it is too long.
+		while (strlen(str) > 12 && (0 === strpos(str, "0"))) {
+			let str = substr(str, 1);
+		}
+
+		if ((strlen(str) !== 12) || ("000000000000" === str)) {
+			return "";
+		}
+
+		// Temporarily add an extra 0 to validate the GTIN.
+		let str = "0" . str;
+		if (self::checkGtin(str)) {
+			let str = substr(str, 1);
+		}
+		else {
+			return "";
+		}
+
+		// Last thing, format?
+		if (formatted) {
+			let str = preg_replace(
+				"/^(\d)(\d{5})(\d{5})(\d)$/",
+				"$1-$2-$3-$4",
+				str
+			);
+		}
+
+		return str;
+	}
+
 
 
 	// -----------------------------------------------------------------
@@ -203,5 +371,28 @@ final class Retail {
 		}
 
 		return out;
+	}
+
+	/**
+	 * Validate GTIN
+	 *
+	 * @param string $str String.
+	 * @return bool True/false.
+	 */
+	public static function checkGtin(string str) -> bool {
+		let str = preg_replace("/[^\d]/", "", str);
+		array code = (array) str_split(substr(str, 0, -1));
+		int check = (int) substr(str, -1);
+
+		int total = 0;
+		int x = count(code) - 1;
+		while x >= 0 {
+			let total += ((x % 2) * 2 + 1) * code[x];
+			let x--;
+		}
+
+		int checksum = (10 - (total % 10));
+
+		return checksum === check;
 	}
 }
