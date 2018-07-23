@@ -171,7 +171,7 @@ final class Files {
 	 * @param string $path Path.
 	 * @return string Type.
 	 */
-	public static function getMimeType(string path) -> string {
+	public static function getMimeType(const string path) -> string {
 		array finfo = (array) self::finfo(path);
 		return finfo["mime"];
 	}
@@ -416,7 +416,7 @@ final class Files {
 
 		// See if this is a real path.
 		try {
-			let path = realpath(path);
+			let path = stream_resolve_include_path(path);
 			if (!empty path) {
 				let out["path"] = path;
 				let out["dirname"] = dirname(path);
@@ -520,7 +520,7 @@ final class Files {
 		// Is this a real path?
 		string old_str = str;
 		try {
-			let str = realpath(str);
+			let str = stream_resolve_include_path(str);
 		} catch Throwable {
 			let str = "";
 		}
@@ -535,7 +535,7 @@ final class Files {
 			// Start again.
 			let str = old_str;
 			try {
-				var dir = realpath(dirname(str));
+				var dir = stream_resolve_include_path(dirname(str));
 				if (dir) {
 					let str = self::trailingSlash(dir) . basename(str);
 				}
@@ -938,7 +938,7 @@ final class Files {
 			rmdir(str);
 		}
 
-		return !file_exists(str);
+		return (false === stream_resolve_include_path(str));
 	}
 
 	/**
