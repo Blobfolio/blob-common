@@ -35,7 +35,7 @@ final class Files {
 	 * @return array|bool Dimensions or false.
 	 */
 	public static function getSvgDimensions(string svg) -> bool | array {
-		let svg = Cast::toString(svg, true);
+		let svg = \Blobfolio\Cast::toString(svg, true);
 
 		// Make sure this is SVG-looking.
 		var start = stripos(svg, "<svg");
@@ -70,7 +70,7 @@ final class Files {
 		var viewbox = null;
 
 		// Search for width, height, and viewbox.
-		let svg = Strings::whitespace(svg, 0);
+		let svg = \Blobfolio\Strings::whitespace(svg, 0);
 		var match;
 		preg_match_all(
 			"/(height|width|viewbox)\s*=\s*([\"'])((?:(?!\2).)*)\2/",
@@ -85,7 +85,7 @@ final class Files {
 				switch (v[1]) {
 					case "width":
 					case "height":
-						let v[3] = Cast::toFloat($v[3], true);
+						let v[3] = \Blobfolio\Cast::toFloat($v[3], true);
 						if (v[3] > 0.0) {
 							let out[v[1]] = v[3];
 						}
@@ -111,7 +111,7 @@ final class Files {
 			let viewbox = explode(" ", viewbox);
 
 			for k, v in viewbox {
-				let viewbox[k] = Cast::toFloat(v, true);
+				let viewbox[k] = \Blobfolio\Cast::toFloat(v, true);
 				if (viewbox[k] < 0.0) {
 					let viewbox[k] = 0.0;
 				}
@@ -139,7 +139,7 @@ final class Files {
 	 * @return string Extension.
 	 */
 	public static function niceFileExtension(string ext) -> string {
-		let ext = Strings::toLower(ext);
+		let ext = \Blobfolio\Strings::toLower(ext);
 		let ext = preg_replace("/\s/u", "", ext);
 		return ltrim(ext, "*.");
 	}
@@ -346,9 +346,9 @@ final class Files {
 	 * @return array Data.
 	 */
 	public static function finfo(string path, string niceName="") -> array {
-		let path = Strings::utf8(path);
+		let path = \Blobfolio\Strings::utf8(path);
 		if (!empty niceName) {
-			let niceName = Strings::utf8(niceName);
+			let niceName = \Blobfolio\Strings::utf8(niceName);
 		}
 
 		array out = [
@@ -384,7 +384,7 @@ final class Files {
 		// This should be a path of some sort.
 		let path = self::path(path, false);
 		let out["path"] = path;
-		let out = Cast::parseArgs(pathinfo(path), out);
+		let out = \Blobfolio\Cast::parseArgs(pathinfo(path), out);
 
 		// Apply a nice name.
 		if (!empty niceName) {
@@ -496,12 +496,12 @@ final class Files {
 	 * @return bool|string Path or false.
 	 */
 	public static function path(string str, const bool validate=true) -> string | bool {
-		let str = Strings::utf8(str);
+		let str = \Blobfolio\Strings::utf8(str);
 
 		// This might be a URL rather than something local. We only want
 		// to focus on local ones.
 		if (preg_match("#^(https?|ftps?|sftp):#iu", str)) {
-			let str = Domains::niceUrl(str);
+			let str = \Blobfolio\Domains::niceUrl(str);
 			if (empty str) {
 				return false;
 			}
@@ -569,7 +569,7 @@ final class Files {
 	 * @return string|array Path.
 	 */
 	public static function unixSlash(var str) -> string {
-		let str = Strings::utf8(str);
+		let str = \Blobfolio\Strings::utf8(str);
 		let str = str_replace("\\", "/", str);
 		let str = str_replace("/./", "/", str);
 		return preg_replace("#/{2,}#u", "/", str);
@@ -1030,7 +1030,7 @@ final class Files {
 	 */
 	private static function loadMimes() -> void {
 		// Gotta load it!
-		string json = (string) Blobfolio::getDataDir("blob-mimes.json");
+		string json = (string) \Blobfolio\Blobfolio::getDataDir("blob-mimes.json");
 		if (empty json) {
 			throw new \Exception("Missing MIME data.");
 		}

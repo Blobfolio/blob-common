@@ -36,7 +36,7 @@ final class Json {
 
 		// Copy str over to our typed variable.
 		if (!recursed) {
-			let encoded = (string) Cast::toString(str, true);
+			let encoded = (string) \Blobfolio\Cast::toString(str, true);
 		}
 		else {
 			let encoded = (string) str;
@@ -60,11 +60,11 @@ final class Json {
 		}
 
 		// A lot of the following tests are case-insensitive.
-		let lower = (string) Strings::toLower(encoded);
+		let lower = (string) \Blobfolio\Strings::toLower(encoded);
 
 		// Bool.
 		if (("true" === lower) || ("false" === lower)) {
-			return Cast::toBool(encoded, true);
+			return \Blobfolio\Cast::toBool(encoded, true);
 		}
 		// Null.
 		elseif ("null" === lower) {
@@ -73,10 +73,10 @@ final class Json {
 		// Number.
 		elseif (is_numeric(lower)) {
 			if (false !== strpos(lower, ".")) {
-				return Cast::toFloat(lower);
+				return \Blobfolio\Cast::toFloat(lower);
 			}
 
-			return Cast::toInt(lower);
+			return \Blobfolio\Cast::toInt(lower);
 		}
 		// String.
 		elseif (
@@ -89,7 +89,7 @@ final class Json {
 			(match[1] === match[3])
 		) {
 			let encoded = (string) match[2];
-			return Dom::decodeJsEntities(encoded);
+			return \Blobfolio\Dom::decodeJsEntities(encoded);
 		}
 		// Bail if we don't have an object at this point.
 		elseif (
@@ -281,7 +281,7 @@ final class Json {
 								"UTF-8"
 							));
 
-							let stubK = stubQuoted ? self::decode(stubK, true) : Dom::decodeJsEntities(stubK);
+							let stubK = stubQuoted ? self::decode(stubK, true) : \Blobfolio\Dom::decodeJsEntities(stubK);
 
 							let out[stubK] = self::decode(stubV, true);
 						}
@@ -424,12 +424,12 @@ final class Json {
 			let json = [];
 		}
 		elseif ("array" !== typeof json) {
-			let json = Cast::toArray(json);
+			let json = \Blobfolio\Cast::toArray(json);
 		}
 
 		// Parse args?
 		if ("array" === typeof defaults) {
-			return Cast::parseArgs(json, defaults, strict, recursive);
+			return \Blobfolio\Cast::parseArgs(json, defaults, strict, recursive);
 		}
 
 		return json;
@@ -458,7 +458,7 @@ final class Json {
 
 		// Try again with UTF-8 sanitizing if this failed.
 		if (null === value) {
-			let original = Strings::utf8Recursive(original);
+			let original = \Blobfolio\Strings::utf8Recursive(original);
 			let value = json_encode(original, options, depth);
 		}
 

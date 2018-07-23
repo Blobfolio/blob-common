@@ -69,21 +69,6 @@ final class Strings {
 	];
 
 	/**
-	 * @var array $win1252_chars Win-1252: UTF-8.
-	 */
-	private static win1252_chars = [
-		128: "\xe2\x82\xac", 130: "\xe2\x80\x9a", 131: "\xc6\x92",
-		132: "\xe2\x80\x9e", 133: "\xe2\x80\xa6", 134: "\xe2\x80\xa0",
-		135: "\xe2\x80\xa1", 136: "\xcb\x86", 137: "\xe2\x80\xb0",
-		138: "\xc5\xa0", 139: "\xe2\x80\xb9", 140: "\xc5\x92",
-		142: "\xc5\xbd", 145: "\xe2\x80\x98", 146: "\xe2\x80\x99",
-		147: "\xe2\x80\x9c", 148: "\xe2\x80\x9d", 149: "\xe2\x80\xa2",
-		150: "\xe2\x80\x93", 151: "\xe2\x80\x94", 152: "\xcb\x9c",
-		153: "\xe2\x84\xa2", 154: "\xc5\xa1", 155: "\xe2\x80\xba",
-		156: "\xc5\x93", 158: "\xc5\xbe", 159: "\xc5\xb8"
-	];
-
-	/**
 	 * Accents
 	 *
 	 * Convert accented to non-accented characters.
@@ -183,7 +168,7 @@ final class Strings {
 		let str = self::whitespace(str, 0);
 		let str = strip_tags(str);
 
-		let args = Cast::parseArgs(
+		let args = \Blobfolio\Cast::parseArgs(
 			args,
 			[
 				"length": 200,
@@ -234,16 +219,16 @@ final class Strings {
 		}
 		// For everything else, there's floats.
 		else {
-			let count = Cast::toFloat(count);
+			let count = \Blobfolio\Cast::toFloat(count);
 		}
 
 		// Figure out which phrase to use.
 		string str;
 		if (1 == count) {
-			let str = (string) Cast::toString(single, true);
+			let str = (string) \Blobfolio\Cast::toString(single, true);
 		}
 		else {
-			let str = (string) Cast::toString(plural, true);
+			let str = (string) \Blobfolio\Cast::toString(plural, true);
 		}
 
 		return sprintf(str, count);
@@ -659,8 +644,19 @@ final class Strings {
 		}
 
 		// Fix it up if we need to.
-		string out = "";
+		array win1252_chars = [
+			128: "\xe2\x82\xac", 130: "\xe2\x80\x9a", 131: "\xc6\x92",
+			132: "\xe2\x80\x9e", 133: "\xe2\x80\xa6", 134: "\xe2\x80\xa0",
+			135: "\xe2\x80\xa1", 136: "\xcb\x86", 137: "\xe2\x80\xb0",
+			138: "\xc5\xa0", 139: "\xe2\x80\xb9", 140: "\xc5\x92",
+			142: "\xc5\xbd", 145: "\xe2\x80\x98", 146: "\xe2\x80\x99",
+			147: "\xe2\x80\x9c", 148: "\xe2\x80\x9d", 149: "\xe2\x80\xa2",
+			150: "\xe2\x80\x93", 151: "\xe2\x80\x94", 152: "\xcb\x9c",
+			153: "\xe2\x84\xa2", 154: "\xc5\xa1", 155: "\xe2\x80\xba",
+			156: "\xc5\x93", 158: "\xc5\xbe", 159: "\xc5\xb8"
+		];
 		int length = (int) mb_strlen(str, "8bit");
+		string out = "";
 
 		// We need to keep our chars variant for bitwise operations.
 		var c1, c2, c3, c4, cc1, cc2;
@@ -751,8 +747,8 @@ final class Strings {
 				int o1 = (int) ord(c1);
 
 				// Convert from Windows-1252.
-				if (isset(self::win1252_chars[o1])) {
-					let out .= self::win1252_chars[o1];
+				if (isset(win1252_chars[o1])) {
+					let out .= win1252_chars[o1];
 				}
 				else {
 					let cc1 = strval((chr(o1 / 64) | xc0));
@@ -1123,7 +1119,7 @@ final class Strings {
 
 		// Build a custom soup.
 		if (("array" === typeof soup) && count(soup)) {
-			let soup = (array) Arrays::flatten(soup);
+			let soup = (array) \Blobfolio\Arrays::flatten(soup);
 			let soup = (string) implode("", soup);
 			let soup = self::printable(soup);
 			let soup = preg_replace("/\s/", "", soup);

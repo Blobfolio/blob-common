@@ -30,7 +30,7 @@ final class Retail {
 	 * @return string Value.
 	 */
 	public static function usd(var value, const string separator=",", const bool cents=false, const bool trim=false) -> string {
-		float money = (float) Cast::toFloat(value);
+		float money = (float) \Blobfolio\Cast::toFloat(value);
 		let money = round(money, 2);
 		string out = "";
 		if (money < 0) {

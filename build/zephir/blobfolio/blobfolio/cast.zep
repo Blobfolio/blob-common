@@ -301,7 +301,7 @@ final class Cast {
 
 			// Fix up UTF-8 maybe.
 			if (value && !mb_check_encoding(value, "ASCII")) {
-				let value = Strings::utf8(value);
+				let value = \Blobfolio\Strings::utf8(value);
 			}
 		}
 
@@ -378,7 +378,7 @@ final class Cast {
 				if (
 					recursive &&
 					("array" === typeof defaults[k]) &&
-					("associative" === Arrays::getType(defaults[k]))
+					("associative" === \Blobfolio\Arrays::getType(defaults[k]))
 				) {
 					let defaults[k] = self::parseArgs(
 						args[k],

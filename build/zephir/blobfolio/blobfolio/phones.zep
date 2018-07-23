@@ -85,7 +85,7 @@ final class Phones {
 		}
 
 		// Sanitize default country.
-		let country = Geo::niceCountry(country);
+		let country = \Blobfolio\Geo::niceCountry(country);
 		if (empty country) {
 			let country = (string) self::_country;
 		}
@@ -197,7 +197,7 @@ final class Phones {
 	 * @throws Exception Error.
 	 */
 	private static function loadData() -> void {
-		string json = (string) Blobfolio::getDataDir("blob-phone.json");
+		string json = (string) \Blobfolio\Blobfolio::getDataDir("blob-phone.json");
 		if (empty json) {
 			throw new \Exception("Missing phone formatting data.");
 		}
@@ -214,7 +214,7 @@ final class Phones {
 
 		// While we're here, let's also set the default country.
 		let self::_country = (string) ini_get("blobfolio.country");
-		let self::_country = Geo::niceCountry(self::_country);
+		let self::_country = \Blobfolio\Geo::niceCountry(self::_country);
 		if (empty self::_country) {
 			let self::_country = "US";
 		}

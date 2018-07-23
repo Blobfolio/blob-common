@@ -37,7 +37,7 @@ final class Blobfolio {
 				let self::_data_dir = "/usr/share/php/Blobfolio/";
 			}
 
-			let self::_data_dir = (string) Files::path(self::_data_dir, true);
+			let self::_data_dir = (string) \Blobfolio\Files::path(self::_data_dir, true);
 		}
 
 		// Check a specific file?

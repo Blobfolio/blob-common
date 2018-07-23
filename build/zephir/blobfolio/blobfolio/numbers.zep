@@ -30,7 +30,7 @@ final class Numbers {
 	 * @return float Number.
 	 */
 	public static function ceil(var num, int precision=0) -> float {
-		let num = (float) Cast::toFloat(num, true);
+		let num = (float) \Blobfolio\Cast::toFloat(num, true);
 		if (precision < 0) {
 			let precision = 0;
 		}
@@ -51,7 +51,7 @@ final class Numbers {
 	 * @return float Number.
 	 */
 	public static function floor(var num, int precision=0) -> float {
-		let num = (float) Cast::toFloat(num, true);
+		let num = (float) \Blobfolio\Cast::toFloat(num, true);
 		if (precision < 0) {
 			let precision = 0;
 		}
@@ -70,7 +70,7 @@ final class Numbers {
 	 * @return string Fraction.
 	 */
 	public static function fraction(var num, float precision=0.0001) -> string {
-		let num = (float) Cast::toFloat(num, true);
+		let num = (float) \Blobfolio\Cast::toFloat(num, true);
 
 		// We need a tolerable tolerance.
 		if (precision <= 0 || precision >= 1) {
@@ -111,10 +111,10 @@ final class Numbers {
 
 		// Denominator is one.
 		if (1.0 === denominator) {
-			let num = (string) Cast::toString(numerator);
+			let num = (string) \Blobfolio\Cast::toString(numerator);
 		}
 		else {
-			let num = (string) Cast::toString(numerator) . "/" . Cast::toString(denominator);
+			let num = (string) \Blobfolio\Cast::toString(numerator) . "/" . \Blobfolio\Cast::toString(denominator);
 		}
 
 		if (negative) {

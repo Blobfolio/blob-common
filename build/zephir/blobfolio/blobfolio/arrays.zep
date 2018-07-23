@@ -88,13 +88,13 @@ final class Arrays {
 		// There's a weird Zephir casting bug requiring we run these
 		// two alternate realities separately.
 		if ("string" === typeof args) {
-			let data = (array) Cast::parseArgs(
+			let data = (array) \Blobfolio\Cast::parseArgs(
 				["delimiter": args],
 				defaults
 			);
 		}
 		else {
-			let data = (array) Cast::parseArgs(args, defaults);
+			let data = (array) \Blobfolio\Cast::parseArgs(args, defaults);
 		}
 
 		// Make sure the cast type makes sense.
@@ -125,7 +125,7 @@ final class Arrays {
 			let data["max"] = tmp;
 		}
 
-		let list = (array) Cast::toArray(list);
+		let list = (array) \Blobfolio\Cast::toArray(list);
 		if (!count(list)) {
 			return [];
 		}
@@ -142,19 +142,19 @@ final class Arrays {
 			}
 			else {
 				// We need to work with strings.
-				let list[k] = Cast::toString(v, true);
+				let list[k] = \Blobfolio\Cast::toString(v, true);
 
 				if (data["delimiter"]) {
 					let list[k] = (array) explode(data["delimiter"], list[k]);
 				}
 				else {
-					let list[k] = Strings::split(list[k]);
+					let list[k] = \Blobfolio\Strings::split(list[k]);
 				}
 
 				// Trimming?
 				if (data["trim"]) {
 					for k2, v2 in list[k] {
-						let list[k][k2] = Strings::trim(v2);
+						let list[k][k2] = \Blobfolio\Strings::trim(v2);
 					}
 				}
 
@@ -163,7 +163,7 @@ final class Arrays {
 
 				// Cast back?
 				if ("string" !== data["cast"]) {
-					let list[k] = Cast::toType(list[k], data["cast"]);
+					let list[k] = \Blobfolio\Cast::toType(list[k], data["cast"]);
 				}
 			}
 
@@ -218,7 +218,7 @@ final class Arrays {
 		for k, v in arr {
 			let type = typeof v;
 			if (("int" !== type) && ("double" !== type)) {
-				let arr[k] = Cast::toFloat(v, true);
+				let arr[k] = \Blobfolio\Cast::toFloat(v, true);
 			}
 		}
 
@@ -234,7 +234,7 @@ final class Arrays {
 			return arr;
 		}
 
-		let other = Strings::utf8(other);
+		let other = \Blobfolio\Strings::utf8(other);
 		if (empty other) {
 			let other = "Other";
 		}
@@ -335,7 +335,7 @@ final class Arrays {
 				let currentType = typeof v;
 
 				if ("string" === currentType) {
-					let targets[x][k] = Strings::toLower(v);
+					let targets[x][k] = \Blobfolio\Strings::toLower(v);
 				}
 
 				// Remove non-comparable entries.
@@ -367,7 +367,7 @@ final class Arrays {
 				}
 
 				if ("string" === currentType) {
-					let v = Strings::toLower(v);
+					let v = \Blobfolio\Strings::toLower(v);
 				}
 
 				// Save it (the original) if unique.
@@ -449,7 +449,7 @@ final class Arrays {
 				let currentType = typeof v;
 
 				if ("string" === currentType) {
-					let targets[x][k] = Strings::toLower(v);
+					let targets[x][k] = \Blobfolio\Strings::toLower(v);
 				}
 
 				// Remove non-comparable entries.
@@ -481,7 +481,7 @@ final class Arrays {
 				}
 
 				if ("string" === currentType) {
-					let v = Strings::toLower(v);
+					let v = \Blobfolio\Strings::toLower(v);
 				}
 
 				// Save it (the original) if unique.
@@ -529,14 +529,14 @@ final class Arrays {
 
 		// Lowercase needle.
 		if ("string" === typeof needle) {
-			let needle = Strings::toLower(needle);
+			let needle = \Blobfolio\Strings::toLower(needle);
 
 			// Lowercase haystack too.
 			var k;
 			var v;
 			for k, v in haystack {
 				if ("string" === typeof v) {
-					let haystack[k] = Strings::toLower(v);
+					let haystack[k] = \Blobfolio\Strings::toLower(v);
 				}
 			}
 		}

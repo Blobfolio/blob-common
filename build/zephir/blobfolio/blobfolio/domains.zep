@@ -68,7 +68,7 @@ final class Domains {
 		}
 		// Or the hard way?
 		else {
-			let host = Strings::trim(host);
+			let host = \Blobfolio\Strings::trim(host);
 
 			// Cut off the path, if any.
 			var start = mb_strpos(host, "/", 0, "UTF-8");
@@ -520,8 +520,8 @@ final class Domains {
 	 * @return void Nothing.
 	 */
 	public static function niceEmail(string str) -> string {
-		string str = (string) Strings::quotes(str);
-		let str = Strings::toLower(str);
+		string str = (string) \Blobfolio\Strings::quotes(str);
+		let str = \Blobfolio\Strings::toLower(str);
 
 		// Strip comments.
 		let str = preg_replace("/\([^)]*\)/u", "", str);
@@ -641,7 +641,7 @@ final class Domains {
 	 * @return mixed Array, Component, or Null.
 	 */
 	public static function parseUrl(string url, const int $component = -1) -> array | string | null {
-		let url = Strings::trim(url);
+		let url = \Blobfolio\Strings::trim(url);
 
 		// Before we start, let's fix scheme-agnostic URLs.
 		let url = preg_replace("#^:?//#", "https://", url);
@@ -765,12 +765,12 @@ final class Domains {
 			"fragment":""
 		];
 
-		let parsed = Cast::parseArgs(parsed, url_parts);
+		let parsed = \Blobfolio\Cast::parseArgs(parsed, url_parts);
 
 		// To simplify, unset anything without length.
 		var k, v;
 		for k, v in parsed {
-			let parsed[k] = Strings::trim(v);
+			let parsed[k] = \Blobfolio\Strings::trim(v);
 			if (empty parsed[k]) {
 				unset(parsed[k]);
 			}
@@ -898,7 +898,7 @@ final class Domains {
 	 */
 	private static function loadSuffixes() -> void {
 		// Gotta load it!
-		string json = (string) Blobfolio::getDataDir("blob-domains.json");
+		string json = (string) \Blobfolio\Blobfolio::getDataDir("blob-domains.json");
 		if (empty json) {
 			throw new \Exception("Missing domain suffix data.");
 		}

@@ -91,7 +91,7 @@ final class IPs {
 		array parts = (array) array_pad(explode("/", cidr), 2, 0);
 
 		// The subnet should always be a number.
-		let parts[1] = Cast::toInt(parts[1], true);
+		let parts[1] = \Blobfolio\Cast::toInt(parts[1], true);
 
 		// IPv4?
 		if (filter_var(parts[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {

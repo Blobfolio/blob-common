@@ -34,7 +34,7 @@ final class Geo {
 	 * @return string Country.
 	 */
 	public static function niceCountry(string country) -> string {
-		let country = Strings::whitespace(country);
+		let country = \Blobfolio\Strings::whitespace(country);
 		if (empty country) {
 			return "";
 		}
@@ -45,7 +45,7 @@ final class Geo {
 		}
 
 		// Uppercase it.
-		let country = Strings::toUpper(country);
+		let country = \Blobfolio\Strings::toUpper(country);
 
 		// A direct hit!
 		if (isset(self::_countries[country])) {
@@ -72,7 +72,7 @@ final class Geo {
 		var k;
 		var v;
 		for k, v in self::_countries {
-			let v["name"] = (string) Strings::toUpper(v["name"]);
+			let v["name"] = (string) \Blobfolio\Strings::toUpper(v["name"]);
 			if (country === v["name"]) {
 				return (string) k;
 			}
@@ -89,7 +89,7 @@ final class Geo {
 	 * @return string State.
 	 */
 	public static function niceAuState(string state) -> string {
-		let state = Strings::whitespace(state);
+		let state = \Blobfolio\Strings::whitespace(state);
 		if (empty state) {
 			return "";
 		}
@@ -150,7 +150,7 @@ final class Geo {
 	 * @return string State.
 	 */
 	public static function niceCaProvince(string state) -> string {
-		let state = Strings::whitespace(state);
+		let state = \Blobfolio\Strings::whitespace(state);
 		if (empty state) {
 			return "";
 		}
@@ -189,7 +189,7 @@ final class Geo {
 	 * @return string State.
 	 */
 	public static function niceUsState(string state) -> string {
-		let state = Strings::whitespace(state);
+		let state = \Blobfolio\Strings::whitespace(state);
 		if (empty state) {
 			return "";
 		}
@@ -376,7 +376,7 @@ final class Geo {
 	 * @throws Exception Error.
 	 */
 	private static function loadData() -> void {
-		string json = (string) Blobfolio::getDataDir("geo.json");
+		string json = (string) \Blobfolio\Blobfolio::getDataDir("geo.json");
 		if (empty json) {
 			throw new \Exception("Missing geo data.");
 		}

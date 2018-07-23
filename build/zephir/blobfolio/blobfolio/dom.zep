@@ -44,14 +44,14 @@ final class Dom {
 		}
 
 		// Build link attributes.
-		let args = (array) Cast::parseArgs(
+		let args = (array) \Blobfolio\Cast::parseArgs(
 			args,
 			["class": [], "rel": "", "target": ""]
 		);
 
 		// Make classes easier to deal with.
 		if (count(args["class"])) {
-			let args["class"] = (array) Arrays::fromList(args["class"], " ");
+			let args["class"] = (array) \Blobfolio\Arrays::fromList(args["class"], " ");
 			let args["class"] = (string) implode(" ", args["class"]);
 		}
 		else {
@@ -186,7 +186,7 @@ final class Dom {
 		}
 
 		// Make sure we have something URL-esque.
-		let link = Domains::parseUrl(raw);
+		let link = \Blobfolio\Domains::parseUrl(raw);
 		if (("array" !== typeof link) || !isset(link["host"])) {
 			return matches[1];
 		}
@@ -202,7 +202,7 @@ final class Dom {
 			let link["scheme"] = "http";
 		}
 
-		let link = (string) Domains::unparseUrl(link);
+		let link = (string) \Blobfolio\Domains::unparseUrl(link);
 		if (filter_var(link, FILTER_SANITIZE_URL) !== link) {
 			return matches[1];
 		}
@@ -231,7 +231,7 @@ final class Dom {
 			let raw = preg_replace("#([^\w]+)$#ui", "", raw);
 		}
 
-		let email = (string) Domains::niceEmail(raw);
+		let email = (string) \Blobfolio\Domains::niceEmail(raw);
 		if (empty email) {
 			return matches[1];
 		}
@@ -260,7 +260,7 @@ final class Dom {
 			let raw = preg_replace("/([^\d]+)$/ui", "", raw);
 		}
 
-		let phone = (string) Phones::nicePhone(raw);
+		let phone = (string) \Blobfolio\Phones::nicePhone(raw);
 		let phone = preg_replace("/[^\d]/", "", phone);
 		if (empty phone) {
 			return matches[1] . matches[2];
@@ -297,7 +297,7 @@ final class Dom {
 	 * @return string String.
 	 */
 	public static function decodeEscapeEntities(string str) -> string {
-		let str = Strings::utf8(str);
+		let str = \Blobfolio\Strings::utf8(str);
 
 		array from = [
 			"\\b",
@@ -326,7 +326,7 @@ final class Dom {
 	 * @return string String.
 	 */
 	public static function decodeUnicodeEntities(string str) -> string {
-		let str = Strings::utf8(str);
+		let str = \Blobfolio\Strings::utf8(str);
 
 		string last = "";
 		while (str !== last) {
@@ -338,7 +338,7 @@ final class Dom {
 				str
 			);
 
-			let str = Strings::utf8(str);
+			let str = \Blobfolio\Strings::utf8(str);
 		}
 
 		return str;
@@ -354,7 +354,7 @@ final class Dom {
 	 * @return void Nothing.
 	 */
 	public static function decodeEntities(string str) -> string {
-		let str = Strings::utf8(str);
+		let str = \Blobfolio\Strings::utf8(str);
 
 		string last = "";
 		while (str !== last) {
@@ -372,7 +372,7 @@ final class Dom {
 				str
 			);
 
-			let str = Strings::utf8(str);
+			let str = \Blobfolio\Strings::utf8(str);
 		}
 
 		return str;
@@ -405,7 +405,7 @@ final class Dom {
 	 * @return string String.
 	 */
 	public static function html(string str) -> string {
-		let str = Strings::utf8(str);
+		let str = \Blobfolio\Strings::utf8(str);
 		return htmlspecialchars(str, ENT_QUOTES | ENT_HTML5, "UTF-8");
 	}
 
@@ -417,8 +417,8 @@ final class Dom {
 	 * @return string JS.
 	 */
 	public static function js(string str, string quote="'") -> string {
-		let str = Strings::whitespace(str);
-		let str = Strings::quotes(str);
+		let str = \Blobfolio\Strings::whitespace(str);
+		let str = \Blobfolio\Strings::quotes(str);
 
 		// Escape slashes.
 		let str = str_replace("/", "\\/", str);
