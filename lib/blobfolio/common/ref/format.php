@@ -897,7 +897,6 @@ class format {
 			}
 			// Odd keys indicate a tag, opening or closing.
 			else {
-				echo "Ignoring is empty: ", $v, "\n";
 				// If we aren't already waiting on a closing tag...
 				if (false === $ignoring) {
 					// Start ignoring if this tag is blacklisted and not self-closing.
