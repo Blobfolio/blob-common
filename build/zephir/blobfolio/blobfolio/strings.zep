@@ -135,6 +135,13 @@ final class Strings {
 			];
 
 			let str = strtr(str, accent_chars);
+
+			// Remove combining accents too.
+			let str = str_replace(
+				["\xCC\x80", "\xCC\x81"],
+				"",
+				str
+			);
 		}
 
 		return str;

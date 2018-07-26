@@ -56,6 +56,16 @@ class sanitize {
 
 			if (preg_match('/[\x80-\xff]/', $str)) {
 				$str = strtr($str, constants::ACCENT_CHARS);
+
+				// Remove combining accents.
+				$str = str_replace(
+					array(
+						"\xCC\x80",
+						"\xCC\x81",
+					),
+					'',
+					$str
+				);
 			}
 		}
 	}
