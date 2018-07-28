@@ -13,8 +13,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class IPs {
 
 	// -----------------------------------------------------------------
@@ -273,7 +271,7 @@ final class IPs {
 				}
 
 				return gmp_strval(gmp_init(bin, 2), 10);
-			} catch Throwable {
+			} catch \Throwable {
 				return false;
 			}
 		}

@@ -11,8 +11,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Blobfolio {
 	private static _data_dir = null;
 

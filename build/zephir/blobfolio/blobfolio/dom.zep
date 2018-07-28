@@ -1,6 +1,6 @@
 //<?php
 /**
- * Blobfolio: Numbers
+ * Blobfolio: DOM
  *
  * Number manipulation.
  *
@@ -15,12 +15,95 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Dom {
+	const SVG_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
+	const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+
+	// User settable.
+	public static $whitelistAttributes;
+	public static $whitelistDomains;
+	public static $whitelistProtocols;
+	public static $whitelistTags;
+
+
+
 	// -----------------------------------------------------------------
 	// Formatting
 	// -----------------------------------------------------------------
+
+	/**
+	 * Nice Attribute Value
+	 *
+	 * Note: this is for decoding entities, stripping control
+	 * characters, etc., NOT for pushing an arbitrary string between
+	 * quotes in HTML. For that, use ::html()
+	 *
+	 * @param string $str String.
+	 * @param bool $trusted Trusted.
+	 * @return string String.
+	 */
+	public static function attributeValue(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = \Blobfolio\Strings::utf8(str);
+		}
+		let str = \Blobfolio\Strings::controlChars(str, true);
+		let str = self::decodeEntities(str);
+		return \Blobfolio\Strings::trim(str, true);
+	}
+
+	/**
+	 * Nice IRI Value
+	 *
+	 * @param string $str String.
+	 * @param bool $trusted Trusted.
+	 * @return string String.
+	 */
+	public static function iriValue(string str, const bool trusted=false) -> string {
+		// Remove vertical whitespace.
+		let str = self::attributeValue(str, trusted);
+		let str = \Blobfolio\Strings::whitespace(str, true);
+
+		// Early abort.
+		if (empty str) {
+			return "";
+		}
+
+		// Assign a protocol if missing.
+		if (0 === strpos(str, "//")) {
+			let str = "https:" . str;
+		}
+
+		// Check protocols.
+		string test = (string) \Blobfolio\Strings::toLower(str, true);
+		let test = preg_replace("/\s/u", "", test);
+		if (strpos(test, ":")) {
+			let test = strstr(test, ":", true);
+			array protocols = (array) self::whitelistProtocols();
+			if (!isset(protocols[test])) {
+				return "";
+			}
+		}
+
+		// Abort if not URLish.
+		if (filter_var(str, FILTER_SANITIZE_URL) !== str) {
+			return "";
+		}
+
+		// Check the domain if applicable.
+		if (preg_match("/^[\w\d]+:\/\//ui", str)) {
+			let test = (string) \Blobfolio\Domains::niceDomain(str);
+			if (empty test) {
+				return "";
+			}
+
+			array domains = (array) self::whitelistDomains();
+			if (!isset(domains[test])) {
+				return "";
+			}
+		}
+
+		return str;
+	}
 
 	/**
 	 * Linkify Text
@@ -56,6 +139,11 @@ final class Dom {
 		}
 		else {
 			let args["class"] = "";
+		}
+
+		// Correct any weird UTF8 issues on the first pass.
+		if (1 === pass) {
+			let str = \Blobfolio\Strings::utf8(str);
 		}
 
 		var atts;
@@ -208,7 +296,7 @@ final class Dom {
 		}
 
 		// Finally, make a link!
-		let link = self::html(link);
+		let link = self::html(link, true);
 		return "<a href=\"" . link . "\"%BLOBCOMMON_ATTS%>" . raw . "</a>" . suffix;
 	}
 
@@ -237,7 +325,7 @@ final class Dom {
 		}
 
 		// Finally, make a link!
-		let email = self::html(email);
+		let email = self::html(email, true);
 		return "<a href=\"mailto:" . email . "\"%BLOBCOMMON_ATTS%>" . raw . "</a>" . suffix;
 	}
 
@@ -402,10 +490,14 @@ final class Dom {
 	 * HTML
 	 *
 	 * @param string $str String.
+	 * @param bool $trusted Trusted.
 	 * @return string String.
 	 */
-	public static function html(string str) -> string {
-		let str = \Blobfolio\Strings::utf8(str);
+	public static function html(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = \Blobfolio\Strings::utf8(str);
+		}
+
 		return htmlspecialchars(str, ENT_QUOTES | ENT_HTML5, "UTF-8");
 	}
 
@@ -414,11 +506,12 @@ final class Dom {
 	 *
 	 * @param string $str String.
 	 * @param string $quote Quote type.
+	 * @param bool $trusted Trusted.
 	 * @return string JS.
 	 */
-	public static function js(string str, string quote="'") -> string {
-		let str = \Blobfolio\Strings::whitespace(str);
-		let str = \Blobfolio\Strings::quotes(str);
+	public static function js(string str, string quote="'", const bool trusted=false) -> string {
+		let str = \Blobfolio\Strings::whitespace(str, 0, trusted);
+		let str = \Blobfolio\Strings::quotes(str, true);
 
 		// Escape slashes.
 		let str = str_replace("/", "\\/", str);
@@ -431,5 +524,839 @@ final class Dom {
 		}
 
 		return str;
+	}
+
+
+
+	// -----------------------------------------------------------------
+	// Conversion and Helpers
+	// -----------------------------------------------------------------
+
+	/**
+	 * SVG to DOM
+	 *
+	 * @param string $svg SVG code.
+	 * @param bool $trusted Trusted.
+	 * @return bool|DOMDocument DOM object or false.
+	 */
+	public static function svgToDom(string svg, const bool trusted=false) -> bool | <\DOMDocument> {
+		if (!trusted) {
+			let svg = \Blobfolio\Strings::utf8(svg);
+		}
+
+		// At the very least we expect tags.
+		var start = mb_stripos(svg, "<svg", 0, "UTF-8");
+		var end = mb_strripos(svg, "</svg>", 0, "UTF-8");
+		if (
+			(false === start) ||
+			(false === end) ||
+			(end < start)
+		) {
+			return false;
+		}
+
+		// Chop it if needed.
+		let svg = mb_substr(svg, start, (end - start + 6), "UTF-8");
+
+		// Get rid of some stupid Illustrator problems.
+		array replace_keys = [
+			"xmlns=\"&ns_svg;\"",
+			"xmlns:xlink=\"&ns_xlink;\"",
+			"id=\"Layer_1\""
+		];
+		array replace_values = [
+			"xmlns=\"http://www.w3.org/2000/svg\"",
+			"xmlns:xlink=\"http://www.w3.org/1999/xlink\"",
+			""
+		];
+		let svg = str_replace(replace_keys, replace_values, svg);
+
+		// Remove XML, PHP, ASP, comments, etc.
+		if (false !== strpos(svg, "<?")) {
+			let svg = preg_replace("/<\?(.*)\?>/Us", "", svg);
+		}
+		if (false !== strpos(svg, "<%")) {
+			let svg = preg_replace("/<\%(.*)\%>/Us", "", svg);
+		}
+		if (false !== strpos(svg, "<!--")) {
+			let svg = preg_replace("/<!--(.*)-->/Us", "", svg);
+		}
+		if (false !== strpos(svg, "/*")) {
+			let svg = preg_replace("/\/\*(.*)\*\//Us", "", svg);
+		}
+
+		// If there are any opening comments still around, we're done.
+		if ((false !== strpos(svg, "<!--")) || (false !== strpos(svg, "/*"))) {
+			return false;
+		}
+
+		// Add the SVG header back to help DOMDocument correctly read
+		// the file.
+		let svg = self::SVG_HEADER . "\n" . svg;
+
+		// Open it.
+		libxml_use_internal_errors(true);
+		libxml_disable_entity_loader(true);
+		var dom;
+		let dom = new \DOMDocument("1.0", "UTF-8");
+		let dom->formatOutput = false;
+		let dom->preserveWhiteSpace = false;
+		dom->loadXML(svg);
+
+		// Make sure there's a tag.
+		if (dom->getElementsByTagName("svg")->length === 0) {
+			return false;
+		}
+
+		return dom;
+	}
+
+	/**
+	 * DOM to SVG
+	 *
+	 * @param DOMDocument $dom Dom.
+	 * @return string SVG.
+	 */
+	public static function domToSvg(<\DOMDocument> dom) -> string {
+		var tags;
+		let tags = <\DOMNodeList> dom->getElementsByTagName("svg");
+		if (tags->length === 0) {
+			return "";
+		}
+
+		string svg = (string) tags->item(0)->ownerDocument->saveXML(
+			tags->item(0),
+			LIBXML_NOBLANKS
+		);
+
+		// Make sure an XMLNS exists and is correct. We can't alter
+		// that in DOMDocument, unfortunately.
+		let svg = preg_replace(
+			"/xmlns\s*=\s*\"[^\"]*\"/",
+			"xmlns=\"" . self::SVG_NAMESPACE . "\"",
+			svg
+		);
+
+		// One more pass to remove scripts and shit.
+		if (false !== strpos(svg, "<?")) {
+			let svg = preg_replace("/<\?(.*)\?>/Us", "", svg);
+		}
+		if (false !== strpos(svg, "<%")) {
+			let svg = preg_replace("/<\%(.*)\%>/Us", "", svg);
+		}
+		if (false !== strpos(svg, "<!--")) {
+			let svg = preg_replace("/<!--(.*)-->/Us", "", svg);
+		}
+		if (false !== strpos(svg, "/*")) {
+			let svg = preg_replace("/\/\*(.*)\*\//Us", "", svg);
+		}
+
+		// If there are any opening comments still around, we're done.
+		if ((false !== strpos(svg, "<!--")) || (false !== strpos(svg, "/*"))) {
+			return "";
+		}
+
+		// Find the start and end tags so we can send what matters.
+		var start = mb_stripos(svg, "<svg", 0, "UTF-8");
+		var end = mb_strripos(svg, "</svg>", 0, "UTF-8");
+		if (
+			(false === start) ||
+			(false === end) ||
+			(end < start)
+		) {
+			return "";
+		}
+
+		// Chop it if needed.
+		return mb_substr(svg, start, (end - start + 6), "UTF-8");
+	}
+
+	/**
+	 * Get Nodes By Class
+	 *
+	 * This will return an array of DOMNode objects containing the
+	 * specified class(es). This does not use DOMXPath.
+	 *
+	 * @param mixed $parent Parent.
+	 * @param mixed $class Classes.
+	 * @param bool $all Must match all rather than any.
+	 * @return array Nodes.
+	 */
+	public static function getNodesByClass(var parent, array classes, const bool all=false) -> array {
+		if (!method_exists(parent, "getElementsByTagName")) {
+			return [];
+		}
+
+		let classes = \Blobfolio\Arrays::flatten(classes);
+		var k;
+		var v;
+		for k, v in classes {
+			let v = ltrim(v, ".");
+			if (empty v) {
+				unset(classes[k]);
+			}
+		}
+
+		int classesLength = (int) count(classes);
+		if (!classesLength) {
+			return [];
+		}
+
+		let classes = array_unique(classes);
+		sort(classes);
+
+		array nodes = [];
+		var tags;
+
+		let tags = parent->getElementsByTagName("*");
+		if (tags->length) {
+			int x = 0;
+			while x < tags->length {
+				if (tags->item(x)->hasAttribute("class")) {
+					// Parse this tag's classes.
+					var class_value;
+					let class_value = tags->item(x)->getAttribute("class");
+					let class_value = \Blobfolio\Strings::whitespace(class_value, 0);
+					let class_value = (array) explode(" ", class_value);
+
+					// Find the intersect.
+					array intersect = (array) array_intersect(classes, class_value);
+					int intersectLength = (int) count(intersect);
+
+					if (
+						intersectLength &&
+						(!all || (intersectLength === classesLength))
+					) {
+						let nodes[] = tags->item(x);
+					}
+				}
+
+				let x++;
+			}
+		}
+
+		return nodes;
+	}
+
+	/**
+	 * InnerHTML
+	 *
+	 * Return the "innerHTML" of a DOMNode or DOMElement.
+	 *
+	 * @param mixed $node Node.
+	 * @param bool $xml Use saveXML instead of saveHTML.
+	 * @param int $flags Additional flags (XML only).
+	 * @return string Content.
+	 */
+	public static function innerHtml(var node, const bool xml=false, var flags=null) -> string {
+		if (
+			!is_a(node, "\\DOMElement") &&
+			!is_a(node, "\\DOMNode")
+		) {
+			return "";
+		}
+
+		string out = "";
+		if (node->childNodes->length) {
+			int x = 0;
+			if (xml) {
+				while x < node->childNodes->length {
+					if (is_int(flags)) {
+						let out .= node->ownerDocument->saveXML(
+							node->childNodes->item(x),
+							flags
+						);
+					}
+					else {
+						let out .= node->ownerDocument->saveXml(node->childNodes->item(x));
+					}
+
+					let x++;
+				}
+			}
+			else {
+				while x < node->childNodes->length {
+					let out .= node->ownerDocument->saveHTML(node->childNodes->item(x));
+					let x++;
+				}
+			}
+		}
+
+		return out;
+	}
+
+	/**
+	 * Remove namespace (and attached nodes) from a DOMDocument
+	 *
+	 * @param \DOMDocument $dom Object.
+	 * @param string $namespace Namespace.
+	 * @return bool True/False.
+	 */
+	public static function removeNamespace(<\DOMDocument> dom, const string ns) -> bool {
+		if (empty ns) {
+			return false;
+		}
+
+		var xpath;
+		let xpath = new \DOMXPath(dom);
+
+		var nodes;
+		let nodes = xpath->query("//*[namespace::" . ns . " and not(../namespace::" . ns . ")]");
+
+		int x = 0;
+		while x < nodes->length {
+			nodes->item(x)->removeAttributeNS(
+				nodes->item(x)->lookupNamespaceURI(ns),
+				ns
+			);
+			let x++;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Remove Nodes
+	 *
+	 * @param \DOMNodeList $nodes Nodes.
+	 * @return bool True/false.
+	 */
+	public static function removeNodes(<\DOMNodeList> nodes) -> bool {
+		while (nodes->length) {
+			self::removeNode(nodes->item(0));
+		}
+
+		return true;
+	}
+
+	/**
+	 * Remove Node
+	 *
+	 * @param mixed $node Node.
+	 * @return bool True/false.
+	 */
+	public static function removeNode(var node) -> bool {
+		if (
+			!is_a(node, "\\DOMNode") &&
+			!is_a(node, "\\DOMElement")
+		) {
+			return false;
+		}
+
+		node->parentNode->removeChild(node);
+		return true;
+	}
+
+
+
+	// -----------------------------------------------------------------
+	// Whitelist
+	// -----------------------------------------------------------------
+
+	/**
+	 * IRI Attributes
+	 *
+	 * Not a whitelist, per se, but IRI is handled along with domains,
+	 * protocols, etc.
+	 *
+	 * @return array Attributes.
+	 */
+	public static function iriAttributes() -> array {
+		return [
+			"href": true,
+			"src": true,
+			"xlink:arcrole": true,
+			"xlink:href": true,
+			"xlink:role": true,
+			"xml:base": true,
+			"xmlns": true,
+			"xmlns:xlink": true
+		];
+	}
+
+	/**
+	 * Whitelisted Domains
+	 *
+	 * For SVGs and other IRI-type fields, these domains are A-OK.
+	 *
+	 * @return array Domains.
+	 */
+	public static function whitelistDomains() -> array {
+		// Our defaults.
+		array out = [
+			"creativecommons.org": true,
+			"inkscape.org": true,
+			"sodipodi.sourceforge.net": true,
+			"w3.org": true
+		];
+
+		// Add user domains.
+		if (
+			("array" === typeof self::$whitelistDomains) &&
+			count(self::$whitelistDomains)
+		) {
+			var v;
+			for v in self::$whitelistDomains {
+				if (("string" === typeof v) && !empty v) {
+					string host = (string) \Blobfolio\Domains::niceDomain(v);
+					if (!empty host) {
+						let out[host] = true;
+					}
+				}
+			}
+
+			ksort(out);
+		}
+
+		return out;
+	}
+
+	/**
+	 * Whitelisted Protocols
+	 *
+	 * For SVGs and other IRI-type fields, these protocols are A-OK.
+	 *
+	 * @return array Protocols.
+	 */
+	public static function whitelistProtocols() -> array {
+		// Our defaults.
+		array out = [
+			"http": true,
+			"https": true
+		];
+
+		// Add user protocols.
+		if (
+			("array" === typeof self::$whitelistProtocols) &&
+			count(self::$whitelistProtocols)
+		) {
+			var v;
+			string protocol;
+			for v in self::$whitelistProtocols {
+				if (("string" === typeof v) && !empty v) {
+					let protocol = (string) rtrim(strtolower(v), ":");
+					let protocol = preg_replace("/[^a-z\d_-]/", "", protocol);
+					if (!empty protocol) {
+						let out[protocol] = true;
+					}
+				}
+			}
+
+			ksort(out);
+		}
+
+		return out;
+	}
+
+	/**
+	 * Whitelisted Attributes
+	 *
+	 * These are the attributes allowed by SVGs.
+	 *
+	 * @return array Attributes.
+	 */
+	public static function whitelistAttributes() -> array {
+		// Our defaults.
+		array out = [
+			"accent-height": true,
+			"accumulate": true,
+			"additive": true,
+			"alignment-baseline": true,
+			"allowreorder": true,
+			"alphabetic": true,
+			"amplitude": true,
+			"arabic-form": true,
+			"ascent": true,
+			"attributename": true,
+			"attributetype": true,
+			"autoreverse": true,
+			"azimuth": true,
+			"basefrequency": true,
+			"baseline-shift": true,
+			"baseprofile": true,
+			"bbox": true,
+			"begin": true,
+			"bias": true,
+			"by": true,
+			"calcmode": true,
+			"cap-height": true,
+			"class": true,
+			"clip": true,
+			"clip-path": true,
+			"clip-rule": true,
+			"clippathunits": true,
+			"color": true,
+			"color-interpolation": true,
+			"color-interpolation-filters": true,
+			"color-profile": true,
+			"color-rendering": true,
+			"contentstyletype": true,
+			"cursor": true,
+			"cx": true,
+			"cy": true,
+			"d": true,
+			"decelerate": true,
+			"descent": true,
+			"diffuseconstant": true,
+			"direction": true,
+			"display": true,
+			"divisor": true,
+			"dominant-baseline": true,
+			"dur": true,
+			"dx": true,
+			"dy": true,
+			"edgemode": true,
+			"elevation": true,
+			"enable-background": true,
+			"end": true,
+			"exponent": true,
+			"externalresourcesrequired": true,
+			"fill": true,
+			"fill-opacity": true,
+			"fill-rule": true,
+			"filter": true,
+			"filterres": true,
+			"filterunits": true,
+			"flood-color": true,
+			"flood-opacity": true,
+			"font-family": true,
+			"font-size": true,
+			"font-size-adjust": true,
+			"font-stretch": true,
+			"font-style": true,
+			"font-variant": true,
+			"font-weight": true,
+			"format": true,
+			"from": true,
+			"fx": true,
+			"fy": true,
+			"g1": true,
+			"g2": true,
+			"glyph-name": true,
+			"glyph-orientation-horizontal": true,
+			"glyph-orientation-vertical": true,
+			"glyphref": true,
+			"gradienttransform": true,
+			"gradientunits": true,
+			"hanging": true,
+			"height": true,
+			"horiz-adv-x": true,
+			"horiz-origin-x": true,
+			"href": true,
+			"id": true,
+			"ideographic": true,
+			"image-rendering": true,
+			"in": true,
+			"in2": true,
+			"intercept": true,
+			"k": true,
+			"k1": true,
+			"k2": true,
+			"k3": true,
+			"k4": true,
+			"kernelmatrix": true,
+			"kernelunitlength": true,
+			"kerning": true,
+			"keypoints": true,
+			"keysplines": true,
+			"keytimes": true,
+			"lang": true,
+			"lengthadjust": true,
+			"letter-spacing": true,
+			"lighting-color": true,
+			"limitingconeangle": true,
+			"local": true,
+			"marker-end": true,
+			"marker-mid": true,
+			"marker-start": true,
+			"markerheight": true,
+			"markerunits": true,
+			"markerwidth": true,
+			"mask": true,
+			"maskcontentunits": true,
+			"maskunits": true,
+			"mathematical": true,
+			"max": true,
+			"media": true,
+			"method": true,
+			"min": true,
+			"mode": true,
+			"name": true,
+			"numoctaves": true,
+			"offset": true,
+			"opacity": true,
+			"operator": true,
+			"order": true,
+			"orient": true,
+			"orientation": true,
+			"origin": true,
+			"overflow": true,
+			"overline-position": true,
+			"overline-thickness": true,
+			"paint-order": true,
+			"panose-1": true,
+			"pathlength": true,
+			"patterncontentunits": true,
+			"patterntransform": true,
+			"patternunits": true,
+			"pointer-events": true,
+			"points": true,
+			"pointsatx": true,
+			"pointsaty": true,
+			"pointsatz": true,
+			"preservealpha": true,
+			"preserveaspectratio": true,
+			"primitiveunits": true,
+			"r": true,
+			"radius": true,
+			"refx": true,
+			"refy": true,
+			"rendering-intent": true,
+			"repeatcount": true,
+			"repeatdur": true,
+			"requiredextensions": true,
+			"requiredfeatures": true,
+			"restart": true,
+			"result": true,
+			"rotate": true,
+			"rx": true,
+			"ry": true,
+			"scale": true,
+			"seed": true,
+			"shape-rendering": true,
+			"slope": true,
+			"spacing": true,
+			"specularconstant": true,
+			"specularexponent": true,
+			"speed": true,
+			"spreadmethod": true,
+			"startoffset": true,
+			"stddeviation": true,
+			"stemh": true,
+			"stemv": true,
+			"stitchtiles": true,
+			"stop-color": true,
+			"stop-opacity": true,
+			"strikethrough-position": true,
+			"strikethrough-thickness": true,
+			"string": true,
+			"stroke": true,
+			"stroke-dasharray": true,
+			"stroke-dashoffset": true,
+			"stroke-linecap": true,
+			"stroke-linejoin": true,
+			"stroke-miterlimit": true,
+			"stroke-opacity": true,
+			"stroke-width": true,
+			"style": true,
+			"surfacescale": true,
+			"systemlanguage": true,
+			"tabindex": true,
+			"tablevalues": true,
+			"target": true,
+			"targetx": true,
+			"targety": true,
+			"text-anchor": true,
+			"text-decoration": true,
+			"text-rendering": true,
+			"textlength": true,
+			"to": true,
+			"transform": true,
+			"type": true,
+			"u1": true,
+			"u2": true,
+			"underline-position": true,
+			"underline-thickness": true,
+			"unicode": true,
+			"unicode-bidi": true,
+			"unicode-range": true,
+			"units-per-em": true,
+			"v-alphabetic": true,
+			"v-hanging": true,
+			"v-ideographic": true,
+			"v-mathematical": true,
+			"values": true,
+			"version": true,
+			"vert-adv-y": true,
+			"vert-origin-x": true,
+			"vert-origin-y": true,
+			"viewbox": true,
+			"viewtarget": true,
+			"visibility": true,
+			"width": true,
+			"widths": true,
+			"word-spacing": true,
+			"writing-mode": true,
+			"x": true,
+			"x-height": true,
+			"x1": true,
+			"x2": true,
+			"xchannelselector": true,
+			"xlink:actuate": true,
+			"xlink:arcrole": true,
+			"xlink:href": true,
+			"xlink:role": true,
+			"xlink:show": true,
+			"xlink:title": true,
+			"xlink:type": true,
+			"xml:base": true,
+			"xml:lang": true,
+			"xml:space": true,
+			"xmlns": true,
+			"xmlns:xlink": true,
+			"xmlns:xml": true,
+			"y": true,
+			"y1": true,
+			"y2": true,
+			"ychannelselector": true,
+			"z": true,
+			"zoomandpan": true
+		];
+
+		// Add user attributes.
+		if (
+			("array" === typeof self::$whitelistAttributes) &&
+			count(self::$whitelistAttributes)
+		) {
+			var v;
+			string attribute;
+			for v in self::$whitelistAttributes {
+				if (("string" === typeof v) && !empty v) {
+					let attribute = (string) trim(strtolower(v));
+					if (!empty attribute) {
+						let out[attribute] = true;
+					}
+				}
+			}
+
+			ksort(out);
+		}
+
+		return out;
+	}
+
+	/**
+	 * Whitelisted Tags
+	 *
+	 * These tags are allowed by SVGs.
+	 *
+	 * @return array Tags.
+	 */
+	public static function whitelistTags() -> array {
+		// Our defaults.
+		array out = [
+			"a": true,
+			"altglyph": true,
+			"altglyphdef": true,
+			"altglyphitem": true,
+			"animate": true,
+			"animatecolor": true,
+			"animatemotion": true,
+			"animatetransform": true,
+			"audio": true,
+			"canvas": true,
+			"circle": true,
+			"clippath": true,
+			"color-profile": true,
+			"cursor": true,
+			"defs": true,
+			"desc": true,
+			"discard": true,
+			"ellipse": true,
+			"feblend": true,
+			"fecolormatrix": true,
+			"fecomponenttransfer": true,
+			"fecomposite": true,
+			"feconvolvematrix": true,
+			"fediffuselighting": true,
+			"fedisplacementmap": true,
+			"fedistantlight": true,
+			"fedropshadow": true,
+			"feflood": true,
+			"fefunca": true,
+			"fefuncb": true,
+			"fefuncg": true,
+			"fefuncr": true,
+			"fegaussianblur": true,
+			"feimage": true,
+			"femerge": true,
+			"femergenode": true,
+			"femorphology": true,
+			"feoffset": true,
+			"fepointlight": true,
+			"fespecularlighting": true,
+			"fespotlight": true,
+			"fetile": true,
+			"feturbulence": true,
+			"filter": true,
+			"font": true,
+			"font-face": true,
+			"font-face-format": true,
+			"font-face-name": true,
+			"font-face-src": true,
+			"font-face-uri": true,
+			"g": true,
+			"glyph": true,
+			"glyphref": true,
+			"hatch": true,
+			"hatchpath": true,
+			"hkern": true,
+			"image": true,
+			"line": true,
+			"lineargradient": true,
+			"marker": true,
+			"mask": true,
+			"mesh": true,
+			"meshgradient": true,
+			"meshpatch": true,
+			"meshrow": true,
+			"metadata": true,
+			"missing-glyph": true,
+			"mpath": true,
+			"path": true,
+			"pattern": true,
+			"polygon": true,
+			"polyline": true,
+			"radialgradient": true,
+			"rect": true,
+			"set": true,
+			"solidcolor": true,
+			"stop": true,
+			"style": true,
+			"svg": true,
+			"switch": true,
+			"symbol": true,
+			"text": true,
+			"textpath": true,
+			"title": true,
+			"tref": true,
+			"tspan": true,
+			"unknown": true,
+			"use": true,
+			"video": true,
+			"view": true,
+			"vkern": true
+		];
+
+		// Add user tags.
+		if (
+			("array" === typeof self::$whitelistTags) &&
+			count(self::$whitelistTags)
+		) {
+			var v;
+			string tag;
+			for v in self::$whitelistTags {
+				if (("string" === typeof v) && !empty v) {
+					let tag = (string) trim(strtolower(v));
+					if (!empty tag) {
+						let out[tag] = true;
+					}
+				}
+			}
+
+			ksort(out);
+		}
+
+		return out;
 	}
 }

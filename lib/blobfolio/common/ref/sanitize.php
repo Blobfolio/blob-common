@@ -83,6 +83,11 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function attribute_value(&$str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Dom::attributeValue($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::attribute_value($str[$k]);
@@ -766,6 +771,13 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function iri_value(&$str='', $protocols=null, $domains=null) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			\Blobfolio\Dom::$whitelistProtocols = (null === $protocols ? $protocols : (array) $protocols);
+			\Blobfolio\Dom::$whitelistDomains = (null === $domains ? $domains : (array) $domains);
+			$str = \Blobfolio\Dom::iriValue($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::iri_value($str[$k], $protocols, $domains);
@@ -1002,6 +1014,11 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function name(&$str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Retail::niceName($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::name($str[$k]);
@@ -1029,6 +1046,11 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function password(&$str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Retail::nicePassword($str);
+			return;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::password($str[$k]);
@@ -1223,6 +1245,15 @@ class sanitize {
 	 * @return string SVG code.
 	 */
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			\Blobfolio\Dom::$whitelistTags = (null === $tags) ? $tags : (array) $tags;
+			\Blobfolio\Dom::$whitelistTags = (null === $attr) ? $attr : (array) $attr;
+			\Blobfolio\Dom::$whitelistTags = (null === $protocols) ? $protocols : (array) $protocols;
+			\Blobfolio\Dom::$whitelistTags = (null === $domains) ? $domains : (array) $domains;
+			$str = \Blobfolio\Images::niceSvg($str);
+			return;
+		}
+
 		// First, sanitize and build out function arguments!
 		cast::string($str, true);
 
@@ -1241,7 +1272,9 @@ class sanitize {
 		$iri_attributes = constants::SVG_IRI_ATTRIBUTES;
 
 		// Load the SVG!
-		$dom = dom::load_svg($str);
+		if (false === ($dom = dom::load_svg($str))) {
+			return false;
+		}
 		$svg = $dom->getElementsByTagName('svg');
 		if (!$svg->length) {
 			$str = '';
@@ -1830,6 +1863,11 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function zip5(&$str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			$str = \Blobfolio\Geo::niceZip5($str);
+			return !!$str;
+		}
+
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::zip5($str[$k]);

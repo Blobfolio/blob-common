@@ -65,6 +65,13 @@ class cli {
 	 * @return string Colorized string.
 	 */
 	public static function colorize($args) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return call_user_func_array(
+				array('Blobfolio\\Cli', 'colorize'),
+				func_get_args()
+			);
+		}
+
 		$args = func_get_args();
 		$out = '';
 

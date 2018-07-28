@@ -11,8 +11,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Geo {
 	private static _au;
 	private static _ca;
@@ -45,7 +43,7 @@ final class Geo {
 		}
 
 		// Uppercase it.
-		let country = \Blobfolio\Strings::toUpper(country);
+		let country = \Blobfolio\Strings::toUpper(country, true);
 
 		// A direct hit!
 		if (isset(self::_countries[country])) {
@@ -72,7 +70,7 @@ final class Geo {
 		var k;
 		var v;
 		for k, v in self::_countries {
-			let v["name"] = (string) \Blobfolio\Strings::toUpper(v["name"]);
+			let v["name"] = (string) \Blobfolio\Strings::toUpper(v["name"], true);
 			if (country === v["name"]) {
 				return (string) k;
 			}
@@ -219,6 +217,28 @@ final class Geo {
 
 		// Sadness.
 		return "";
+	}
+
+	/**
+	 * Nice US ZIP5
+	 *
+	 * @param string $str ZIP.
+	 * @return string ZIP.
+	 */
+	public static function niceZip5(string str) -> string {
+		let str = preg_replace("/[^\d]/", "", str);
+		if (strlen(str) < 5) {
+			let str = sprintf("%05d", str);
+		}
+		elseif (strlen(str) > 5) {
+			let str = substr(str, 0, 5);
+		}
+
+		if ("00000" === str) {
+			return "";
+		}
+
+		return str;
 	}
 
 	/**

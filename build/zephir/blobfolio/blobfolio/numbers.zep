@@ -15,8 +15,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Numbers {
 	// -----------------------------------------------------------------
 	// Rounding
@@ -111,10 +109,10 @@ final class Numbers {
 
 		// Denominator is one.
 		if (1.0 === denominator) {
-			let num = (string) \Blobfolio\Cast::toString(numerator);
+			let num = strval(numerator);
 		}
 		else {
-			let num = (string) \Blobfolio\Cast::toString(numerator) . "/" . \Blobfolio\Cast::toString(denominator);
+			let num = strval(numerator) . "/" . strval(denominator);
 		}
 
 		if (negative) {

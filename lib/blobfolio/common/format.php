@@ -575,6 +575,10 @@ class format {
 	 * @return string CSV content.
 	 */
 	public static function to_csv($data=null, $headers=null, string $delimiter=',', string $eol="\n") {
+		if (BLOBCOMMON_HAS_EXT && is_array($data)) {
+			return \Blobfolio\Arrays::toCsv($data, $headers, $delimiter, $eol);
+		}
+
 		ref\cast::array($data);
 		$data = array_values(array_filter($data, 'is_array'));
 		ref\cast::array($headers);

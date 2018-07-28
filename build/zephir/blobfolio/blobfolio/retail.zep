@@ -1,8 +1,8 @@
 //<?php
 /**
- * Blobfolio: Arrays
+ * Blobfolio: Retail
  *
- * Array helpers.
+ * E-commerce, retail, etc.
  *
  * @see {blobfolio\common\file}
  * @see {blobfolio\common\ref\file}
@@ -12,8 +12,6 @@
  */
 
 namespace Blobfolio;
-
-use \Throwable;
 
 final class Retail {
 	// -----------------------------------------------------------------
@@ -278,6 +276,37 @@ final class Retail {
 		}
 
 		return str;
+	}
+
+	/**
+	 * Nice Name
+	 *
+	 * This helps sanely format a human name.
+	 *
+	 * @param string $str Name.
+	 * @param bool $trusted Trusted.
+	 * @return string Name.
+	 */
+	public static function niceName(string str, const bool trusted=false) -> string {
+		let str = \Blobfolio\Strings::niceText(str, trusted);
+		let str = preg_replace("/[^\p{L}\p{Zs}\p{Pd}\d'\"\,\.]/u", "", str);
+		let str = \Blobfolio\Strings::whitespace(str, 0, true);
+		return \Blobfolio\Strings::toTitle(str, true);
+	}
+
+	/**
+	 * Nice Password
+	 *
+	 * This helps ensure password characters make a kind of sense.
+	 *
+	 * @param string $str Password.
+	 * @param bool $trusted Trusted.
+	 * @return string Password.
+	 */
+	public static function nicePassword(string str, const bool trusted=false) -> string {
+		let str = \Blobfolio\Strings::printable(str, trusted);
+		let str = \Blobfolio\Strings::controlChars(str, true);
+		return \Blobfolio\Strings::whitespace(str, 0, true);
 	}
 
 	/**

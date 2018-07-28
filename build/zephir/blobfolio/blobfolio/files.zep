@@ -13,118 +13,12 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Files {
 	const MIME_DEFAULT = "application/octet-stream";
 	const MIME_EMPTY = "inode/x-empty";
 
 	private static _mimes_by_e;
 	private static _mimes_by_m;
-
-
-
-	// -----------------------------------------------------------------
-	// Images
-	// -----------------------------------------------------------------
-
-	/**
-	 * Determine SVG Dimensions
-	 *
-	 * @param string $svg SVG content or file path.
-	 * @return array|bool Dimensions or false.
-	 */
-	public static function getSvgDimensions(string svg) -> bool | array {
-		let svg = \Blobfolio\Cast::toString(svg, true);
-
-		// Make sure this is SVG-looking.
-		var start = stripos(svg, "<svg");
-		if (false === start) {
-			if (is_file(svg)) {
-				let svg = file_get_contents(svg);
-				let start = stripos(svg, "<svg");
-				if (false === start) {
-					return false;
-				}
-			}
-			else {
-				return false;
-			}
-		}
-
-		// Chop the code to the opening <svg> tag.
-		if (0 !== start) {
-			let svg = substr(svg, start);
-		}
-		var end = strpos(svg, '>');
-		if (false === end) {
-			return false;
-		}
-		let svg = strtolower(substr(svg, 0, end + 1));
-
-		// Hold our values.
-		array out = [
-			"width": null,
-			"height": null
-		];
-		var viewbox = null;
-
-		// Search for width, height, and viewbox.
-		let svg = \Blobfolio\Strings::whitespace(svg, 0);
-		var match;
-		preg_match_all(
-			"/(height|width|viewbox)\s*=\s*([\"'])((?:(?!\2).)*)\2/",
-			svg,
-			match,
-			PREG_SET_ORDER
-		);
-
-		var k, v;
-		if (("array" === typeof match) && count(match)) {
-			for v in match {
-				switch (v[1]) {
-					case "width":
-					case "height":
-						let v[3] = \Blobfolio\Cast::toFloat($v[3], true);
-						if (v[3] > 0.0) {
-							let out[v[1]] = v[3];
-						}
-
-						break;
-					case "viewbox":
-						// Defer processing for later.
-						let viewbox = v[3];
-						break;
-				}
-			}
-		}
-
-		// If we have a width and height, we're done!
-		if (!empty out["width"] && !empty out["height"]) {
-			return out;
-		}
-
-		// Maybe pull from viewbox?
-		if (!empty viewbox) {
-			// Sometimes these are comma-separated.
-			let viewbox = trim(str_replace(",", " ", viewbox));
-			let viewbox = explode(" ", viewbox);
-
-			for k, v in viewbox {
-				let viewbox[k] = \Blobfolio\Cast::toFloat(v, true);
-				if (viewbox[k] < 0.0) {
-					let viewbox[k] = 0.0;
-				}
-			}
-			if ((count(viewbox) === 4) && viewbox[2] > 0.0 && viewbox[3] > 0.0) {
-				let out["width"] = viewbox[2];
-				let out["height"] = viewbox[3];
-				return out;
-			}
-		}
-
-		return false;
-	}
 
 
 
@@ -482,10 +376,11 @@ final class Files {
 	 * Add Leading Slash
 	 *
 	 * @param string $str Path.
+	 * @param bool $trusted Trusted.
 	 * @return string|array Path.
 	 */
-	public static function leadingSlash(string str) -> string {
-		return "/" . self::unleadingSlash(str);
+	public static function leadingSlash(string str, const bool trusted=false) -> string {
+		return "/" . self::unleadingSlash(str, trusted);
 	}
 
 	/**
@@ -493,10 +388,13 @@ final class Files {
 	 *
 	 * @param string $str Path.
 	 * @param bool $validate Require valid file.
+	 * @param bool $trusted Trusted.
 	 * @return bool|string Path or false.
 	 */
-	public static function path(string str, const bool validate=true) -> string | bool {
-		let str = \Blobfolio\Strings::utf8(str);
+	public static function path(string str, const bool validate=true, const bool trusted=false) -> string | bool {
+		if (!trusted) {
+			let str = \Blobfolio\Strings::utf8(str);
+		}
 
 		// This might be a URL rather than something local. We only want
 		// to focus on local ones.
@@ -515,13 +413,13 @@ final class Files {
 		}
 
 		// Fix up slashes.
-		let str = self::unixSlash(str);
+		let str = self::unixSlash(str, true);
 
 		// Is this a real path?
 		string old_str = str;
 		try {
 			let str = stream_resolve_include_path(str);
-		} catch Throwable {
+		} catch \Throwable {
 			let str = "";
 		}
 
@@ -537,16 +435,16 @@ final class Files {
 			try {
 				var dir = stream_resolve_include_path(dirname(str));
 				if (dir) {
-					let str = self::trailingSlash(dir) . basename(str);
+					let str = self::trailingSlash(dir, true) . basename(str);
 				}
-			} catch Throwable {
+			} catch \Throwable {
 				let str = old_str;
 			}
 		}
 
 		// Always trail slashes on directories.
 		if (is_dir(str)) {
-			let str = self::trailingSlash(str);
+			let str = self::trailingSlash(str, true);
 		}
 
 		return str;
@@ -556,20 +454,25 @@ final class Files {
 	 * Add Trailing Slash
 	 *
 	 * @param string $str Path.
+	 * @param bool $trusted Trusted.
 	 * @return string|array Path.
 	 */
-	public static function trailingSlash(string str) -> string {
-		return self::untrailingSlash(str) . "/";
+	public static function trailingSlash(string str, const bool trusted=false) -> string {
+		return self::untrailingSlash(str, trusted) . "/";
 	}
 
 	/**
 	 * Fix Path Slashes
 	 *
 	 * @param string $str Path.
+	 * @param bool $trusted Trusted.
 	 * @return string|array Path.
 	 */
-	public static function unixSlash(var str) -> string {
-		let str = \Blobfolio\Strings::utf8(str);
+	public static function unixSlash(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = \Blobfolio\Strings::utf8(str);
+		}
+
 		let str = str_replace("\\", "/", str);
 		let str = str_replace("/./", "/", str);
 		return preg_replace("#/{2,}#u", "/", str);
@@ -579,10 +482,11 @@ final class Files {
 	 * Strip Leading Slash
 	 *
 	 * @param string $str Path.
+	 * @param bool $trusted Trusted.
 	 * @return string|array Path.
 	 */
-	public static function unleadingSlash(var str) -> string {
-		let str = self::unixSlash(str);
+	public static function unleadingSlash(string str, const bool trusted=false) -> string {
+		let str = self::unixSlash(str, trusted);
 		return ltrim(str, "/");
 	}
 
@@ -590,10 +494,11 @@ final class Files {
 	 * Strip Trailing Slash
 	 *
 	 * @param string $str Path.
+	 * @param bool $trusted Trusted.
 	 * @return string|array Path.
 	 */
-	public static function untrailingSlash(var str) -> string {
-		let str = self::unixSlash(str);
+	public static function untrailingSlash(string str, const bool trusted=false) -> string {
+		let str = self::unixSlash(str, trusted);
 		return rtrim(str, "/");
 	}
 
@@ -624,7 +529,7 @@ final class Files {
 
 		// Recurse directories.
 		if (is_dir(from)) {
-			let to = self::trailingSlash(to);
+			let to = self::trailingSlash(to, true);
 
 			// Make sure the destination root exists.
 			if (is_dir(to)) {
@@ -704,40 +609,25 @@ final class Files {
 	/**
 	 * Hash Directory
 	 *
-	 * Generate a hash of all child files within a directory. Any
-	 * algorithm supported by hash_file() is supported here, but be
-	 * careful not to combine a slow algorithm with a large directory.
+	 * Generate an MD5 hash of all child files within a directory.
 	 *
 	 * @param string $str Directory.
-	 * @param string $dir_algo Result hashing algorithm.
-	 * @param string $file_algo File hashing algorithm.
 	 * @return string|bool Hash or false.
 	 */
-	public static function hashDir(const string str, string dir_algo="md5", string file_algo="") -> string | bool {
-		// We definitely need a valid directory algorithm.
-		if (empty dir_algo || !in_array(dir_algo, hash_algos(), true)) {
-			return false;
-		}
-
-		// If the file algorithm is bad or missing, we can just use the
-		// same method as we are for our result.
-		if (empty file_algo || !in_array(file_algo, hash_algos(), true)) {
-			let file_algo = dir_algo;
-		}
-
+	public static function hashDir(const string str) -> string | bool {
 		array files = (array) self::scandir(str, true, false);
 		if (!count(files)) {
-			return hash(dir_algo, "empty");
+			return md5("empty");
 		}
 
 		// Add up the file hashes.
 		string soup = "";
 		var v;
 		for v in files {
-			let soup .= hash_file(file_algo, v);
+			let soup .= md5_file(v);
 		}
 
-		return hash(dir_algo, soup);
+		return md5(soup);
 	}
 
 	/**
@@ -839,7 +729,7 @@ final class Files {
 
 		// We only need to proceed if the path doesn't exist.
 		if (!is_dir(str)) {
-			let str = self::untrailingSlash(str);
+			let str = self::untrailingSlash(str, true);
 
 			// Figure out where we need to begin.
 			string base = (string) dirname(str);
@@ -873,7 +763,7 @@ final class Files {
 					null,
 					"UTF-8"
 				);
-				let str = self::unleadingSlash(str);
+				let str = self::unleadingSlash(str, true);
 				array parts = (array) explode("/", str);
 				let str = base;
 
@@ -893,6 +783,72 @@ final class Files {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Readfile Chunked
+	 *
+	 * @param string $file File.
+	 * @param bool $retbytes Return bites served.
+	 */
+	public static function readfileChunked(string file, const bool retbytes=true) -> bool | int {
+		if (empty file || !is_file(file)) {
+			return false;
+		}
+
+		bool status;
+		int chunk_size = 1024 * 1024;
+		int count = 0;
+		string buffer = "";
+		var handle;
+
+		let handle = fopen(file, "rb");
+		if (!handle) {
+			return false;
+		}
+
+		while !feof(handle) {
+			let buffer = (string) fread(handle, chunk_size);
+			echo buffer;
+			ob_flush();
+			flush();
+			if (retbytes) {
+				let count += strlen(buffer);
+			}
+		}
+
+		let status = fclose(handle);
+
+		// Return the number of bytes delivered.
+		if (retbytes && status) {
+			return count;
+		}
+
+		return status;
+	}
+
+	/**
+	 * Redirect
+	 *
+	 * @param string $to URL.
+	 * @return void Nothing.
+	 */
+	public static function redirect(string to) -> void {
+		let to = \Blobfolio\Domains::niceUrl(to);
+
+		// Prevent stupid browser RELOAD warnings.
+		let _POST = null;
+		let _GET = null;
+		let _REQUEST = null;
+
+		if (!headers_sent()) {
+			header("Location: " . to);
+		}
+		else {
+			echo "<script>top.location.href='" . str_replace("'", "\'", to) . "';</script>";
+		}
+
+		exit(0);
 	}
 
 	/**
@@ -968,7 +924,7 @@ final class Files {
 		array out = [];
 		var handle = opendir(str);
 		if (handle) {
-			let str = self::trailingSlash(str);
+			let str = self::trailingSlash(str, true);
 			var file = readdir(handle);
 			while (file) {
 				// Always ignore dots.

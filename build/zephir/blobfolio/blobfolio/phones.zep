@@ -11,8 +11,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Phones {
 	const MINLENGTH = 3;
 	const MAXLENGTH = 30;

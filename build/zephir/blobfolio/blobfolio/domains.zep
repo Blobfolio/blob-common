@@ -13,8 +13,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Domains {
 	private static _suffixes;
 
@@ -521,7 +519,7 @@ final class Domains {
 	 */
 	public static function niceEmail(string str) -> string {
 		string str = (string) \Blobfolio\Strings::quotes(str);
-		let str = \Blobfolio\Strings::toLower(str);
+		let str = \Blobfolio\Strings::toLower(str, true);
 
 		// Strip comments.
 		let str = preg_replace("/\([^)]*\)/u", "", str);

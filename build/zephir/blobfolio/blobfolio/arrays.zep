@@ -13,8 +13,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Arrays {
 
 	// -----------------------------------------------------------------
@@ -154,7 +152,7 @@ final class Arrays {
 				// Trimming?
 				if (data["trim"]) {
 					for k2, v2 in list[k] {
-						let list[k][k2] = \Blobfolio\Strings::trim(v2);
+						let list[k][k2] = \Blobfolio\Strings::trim(v2, true);
 					}
 				}
 
@@ -248,6 +246,79 @@ final class Arrays {
 		let out[other] = array_sum(array_slice(arr, length - 1));
 
 		return out;
+	}
+
+	/**
+	 * To CSV
+	 *
+	 * Create a CSV from Data
+	 *
+	 * @param array $data Data.
+	 * @param array $headers Headers.
+	 * @param string $delimiter Delimiter.
+	 * @param string $eol EOL.
+	 * @return string CSV.
+	 */
+	public static function toCsv(array data, var headers=null, string delimiter, const string eol) -> string {
+		let delimiter = "\"" . str_replace("\"", "", delimiter) . "\"";
+
+		// Data should be an array of arrays.
+		let data = (array) array_values(array_filter(data, "is_array"));
+
+		if ("array" === typeof headers) {
+			let headers = self::flatten(headers);
+		}
+		elseif (count(data) && ("associative" === self::getType(data[0]))) {
+			let headers = array_keys(data[0]);
+		}
+		else {
+			let headers = [];
+		}
+
+		array out = [];
+		var k;
+		var v;
+
+		// Fix up headers.
+		if (count(headers)) {
+			for k, v in headers {
+				let headers[k] = self::csvCell(v);
+			}
+
+			let out[] = "\"" . implode(delimiter, headers) . "\"";
+		}
+
+		if (count(data)) {
+			var line;
+			for line in data {
+				for k, v in line {
+					let line[k] = self::csvCell(v);
+				}
+
+				let out[] = "\"" . implode(delimiter, line) . "\"";
+			}
+		}
+
+		return implode(eol, out);
+	}
+
+	/**
+	 * Sanitize CSV Cell
+	 *
+	 * @param mixed $str String.
+	 * @return string String.
+	 */
+	private static function csvCell(var str) -> string {
+		let str = \Blobfolio\Cast::toString(str, true);
+		let str = \Blobfolio\Strings::niceText(str, true);
+
+		// Remove existing double quotes.
+		while (false !== strpos(str, "\"\"")) {
+			let str = str_replace("\"\"", "\"", str);
+		}
+
+		// Redo double quotes.
+		return str_replace("\"", "\"\"", str);
 	}
 
 	/**

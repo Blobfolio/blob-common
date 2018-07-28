@@ -15,8 +15,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Strings {
 	/**
 	 * @var array $case_char_upper Uppercase Unicode.
@@ -74,10 +72,14 @@ final class Strings {
 	 * Convert accented to non-accented characters.
 	 *
 	 * @param string String.
+	 * @param bool $trusted Trusted.
 	 * @return string String.
 	 */
-	public static function accents(string str) -> string {
-		let str = self::utf8(str);
+	public static function accents(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
+
 		if (preg_match("/[\x80-\xff]/", str)) {
 			array accent_chars = [
 				"ª":"a", "º":"o", "À":"A", "Á":"A", "Â":"A", "Ã":"A",
@@ -151,10 +153,14 @@ final class Strings {
 	 * Control Characters
 	 *
 	 * @param string $str String
+	 * @param bool $trusted Trusted.
 	 * @return string String.
 	 */
-	public static function controlChars(string str) -> string {
-		let str = self::utf8(str);
+	public static function controlChars(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
+
 		let str = preg_replace("/[\x00-\x08\x0B\x0C\x0E-\x1F]/", "", str);
 		return preg_replace("/\\\\+0+/", "", str);
 	}
@@ -164,6 +170,7 @@ final class Strings {
 	 *
 	 * @param string $str String.
 	 * @param mixed $args Arguments.
+	 * @param bool $trusted Trusted.
 	 *
 	 * @arg int $length Length limit.
 	 * @arg string $unit Unit to examine, "character" or "word".
@@ -171,8 +178,8 @@ final class Strings {
 	 *
 	 * @return string Excerpt.
 	 */
-	public static function excerpt(string str, var args=null) -> string {
-		let str = self::whitespace(str, 0);
+	public static function excerpt(string str, var args=null, const bool trusted=false) -> string {
+		let str = self::whitespace(str, 0, trusted);
 		let str = strip_tags(str);
 
 		let args = \Blobfolio\Cast::parseArgs(
@@ -217,9 +224,10 @@ final class Strings {
 	 * @param int|array $count Count.
 	 * @param string $single Singular.
 	 * @param string $plural Plural.
+	 * @param bool $trusted Trusted.
 	 * @return string Inflected string.
 	 */
-	public static function inflect(var count, const string single, const string plural) -> string {
+	public static function inflect(var count, const string single, const string plural, const bool trusted=false) -> string {
 		// Use the count() as $count for arrays.
 		if ("array" === typeof count) {
 			let count = (int) count(count);
@@ -232,13 +240,43 @@ final class Strings {
 		// Figure out which phrase to use.
 		string str;
 		if (1 == count) {
-			let str = (string) \Blobfolio\Cast::toString(single, true);
+			if (!trusted) {
+				let str = (string) \Blobfolio\Strings::utf8(single);
+			}
+			else {
+				let str = single;
+			}
 		}
 		else {
-			let str = (string) \Blobfolio\Cast::toString(plural, true);
+			if (!trusted) {
+				let str = (string) \Blobfolio\Strings::utf8(plural);
+			}
+			else {
+				let str = plural;
+			}
 		}
 
 		return sprintf(str, count);
+	}
+
+	/**
+	 * Nice Text
+	 *
+	 * This runs UTF-8, control chars, quotes, printable, and whitespace
+	 * against a string.
+	 *
+	 * @param string $str String.
+	 * @param int $newlines Newlines.
+	 * @param bool $trusted Trusted.
+	 * @return string String.
+	 */
+	public static function niceText(string str, const int newlines=0, const bool trusted=false) -> string {
+		let str = self::printable(str, trusted);
+		let str = self::controlChars(str, true);
+		let str = self::quotes(str, true);
+		let str = self::whitespace(str, newlines, true);
+
+		return str;
 	}
 
 	/**
@@ -247,10 +285,13 @@ final class Strings {
 	 * Remove non-printable characters (except spaces).
 	 *
 	 * @param string $str String.
+	 * @param bool $trusted Trusted.
 	 * @return void Nothing.
 	 */
-	public static function printable(string str) -> string {
-		let str = self::utf8(str);
+	public static function printable(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
 
 		// Stripe zero-width chars.
 		let str = preg_replace("/[\x{200B}-\x{200D}\x{FEFF}]/u", "", str);
@@ -293,10 +334,13 @@ final class Strings {
 	 * Straighten out various forms of curly quotes and apostrophes.
 	 *
 	 * @param array|string $str String.
+	 * @param bool $trusted Trusted.
 	 * @return array|string String.
 	 */
-	public static function quotes(string str) -> string {
-		let str = self::utf8(str);
+	public static function quotes(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
 
 		// Curly quotes.
 		array quote_char_keys = [
@@ -466,12 +510,15 @@ final class Strings {
 	 * Strtolower
 	 *
 	 * @param array|string $str String.
+	 * @param bool $trusted Trusted.
 	 * @param bool $strict Strict.
 	 */
-	public static function toLower(string str) -> string {
+	public static function toLower(string str, const bool trusted=false) -> string {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
-		let str = self::utf8(str);
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
 
 		if (!empty str) {
 			if (unlikely !mb_check_encoding(str, "ASCII")) {
@@ -497,10 +544,13 @@ final class Strings {
 	 * Strtoupper
 	 *
 	 * @param array|string $str String.
+	 * @param bool $trusted Trusted.
 	 * @param bool $strict Strict.
 	 */
-	public static function toUpper(string str) -> string {
-		let str = self::utf8(str);
+	public static function toUpper(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
 
 		if (!empty str) {
 			if (unlikely !mb_check_encoding(str, "ASCII")) {
@@ -549,10 +599,14 @@ final class Strings {
 	 * Trim
 	 *
 	 * @param string $str String.
+	 * @param bool $trusted Trusted.
 	 * @return string String.
 	 */
-	public static function trim(string str) -> string {
-		let str = self::utf8(str);
+	public static function trim(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
+
 		return preg_replace("/(^\s+|\s+$)/u", "", str);
 	}
 
@@ -563,15 +617,18 @@ final class Strings {
 	 * functions.
 	 *
 	 * @param string $str String.
+	 * @param bool $trusted Trusted.
 	 * @return string String.
 	 */
-	public static function toSentence(string str) -> string {
-		let str = self::utf8(str);
+	public static function toSentence(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
 
 		if (str) {
 			if (unlikely !mb_check_encoding(str, "ASCII")) {
 				string first = (string) mb_substr(str, 0, 1, "UTF-8");
-				let first = self::toUpper($first);
+				let first = self::toUpper($first, true);
 				let str = first . mb_substr(str, 1, null, "UTF-8");
 			}
 			else {
@@ -589,11 +646,13 @@ final class Strings {
 	 * functions.
 	 *
 	 * @param string $str String.
-	 * @param bool $strict Strict.
+	 * @param bool $trusted Trusted.
 	 * @return string String.
 	 */
-	public static function toTitle(string str) -> string {
-		let str = self::utf8(str);
+	public static function toTitle(string str, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
 
 		if (str) {
 			// The first letter.
@@ -808,10 +867,13 @@ final class Strings {
 	 *
 	 * @param array|string $str String.
 	 * @param int $newlines Newlines.
+	 * @param bool $trusted Trusted.
 	 * @return array|string String.
 	 */
-	public static function whitespace(string str, const int newlines=0) -> string {
-		let str = self::utf8(str);
+	public static function whitespace(string str, const int newlines=0, const bool trusted=false) -> string {
+		if (!trusted) {
+			let str = self::utf8(str);
+		}
 
 		// If we aren't allowing new lines at all, we can do this
 		// quickly.
@@ -829,7 +891,7 @@ final class Strings {
 			let lines[k] = trim(preg_replace("/\s+/u", " ", v));
 		}
 		let str = (string) implode("\n", lines);
-		let str = self::trim(str);
+		let str = self::trim(str, true);
 
 		// Cap newlines.
 		let str = preg_replace(
@@ -925,7 +987,7 @@ final class Strings {
 			// Is this word hyphenated or dashed?
 			let v = preg_replace("/(\p{Pd})\n/u", "$1", v);
 			let v = preg_replace("/(\p{Pd}+)/u", "$1\n", v);
-			let v = self::trim(v);
+			let v = self::trim(v, true);
 
 			// Loop through word chunks to see what fits where.
 			let tmp = (array) explode("\n", v);
@@ -957,24 +1019,24 @@ final class Strings {
 					continue;
 				}
 				elseif (1 === breakLength) {
-					let out[] = self::trim(ltrim(v, eol));
+					let out[] = self::trim(ltrim(v, eol), true);
 				}
 				else {
 					let out[] = self::trim(preg_replace(
 						"/^" . preg_eol . "/ui",
 						"",
 						v
-					));
+					), true);
 				}
 
 				continue;
 			}
 
-			let out[] = self::trim(v);
+			let out[] = self::trim(v, true);
 		}
 
 		// Finally, join our lines by the delimiter.
-		return self::trim(implode(eol, out));
+		return self::trim(implode(eol, out), true);
 	}
 
 

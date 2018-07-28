@@ -58,6 +58,22 @@ class image {
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
 	public static function clean_svg(string $path, $args=null, string $output='HTML') {
+		// Some options are missing from the extension.
+		if (
+			BLOBCOMMON_HAS_EXT &&
+			(!isset($args['clean_styles']) || !$args['clean_styles']) &&
+			(!isset($args['random_id']) || !$args['random_id']) &&
+			(!isset($args['rewrite_styles']) || !$args['rewrite_styes'])
+		) {
+			\Blobfolio\Dom::$whitelistAttributes = isset($args['whitelist_attr']) ? (array) $args['whitelist_attr'] : null;
+			\Blobfolio\Dom::$whitelistTags = isset($args['whitelist_tags']) ? (array) $args['whitelist_tags'] : null;
+			\Blobfolio\Dom::$whitelistDomains = isset($args['whitelist_domains']) ? (array) $args['whitelist_domains'] : null;
+			\Blobfolio\Dom::$whitelistProtocols = isset($args['whitelist_protocols']) ? (array) $args['whitelist_protocols'] : null;
+
+			$result = \Blobfolio\Images::cleanSvg($path, $args);
+			return $result ? $result : false;
+		}
+
 		try {
 			if (!@is_file($path)) {
 				return false;
@@ -483,19 +499,18 @@ class image {
 	 * @return array|bool Info or false.
 	 */
 	public static function getimagesize(string $file) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Images::size($file);
+		}
+
 		if (!$file || !is_file($file)) {
 			return false;
 		}
 
 		// Do a quick MIME check to make sure this is something image-
 		// like.
-		if (BLOBCOMMON_HAS_EXT) {
-			$mime = \Blobfolio\Files::getMimeType($file);
-		}
-		else {
-			$finfo = mime::finfo($file);
-			$mime = $finfo['mime'];
-		}
+		$finfo = mime::finfo($file);
+		$mime = $finfo['mime'];
 
 		if (0 !== strpos($mime, 'image/')) {
 			return false;
@@ -667,8 +682,8 @@ class image {
 	 * @return array|bool Dimensions or false.
 	 */
 	public static function svg_dimensions($svg) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Files::getSvgDimensions($svg);
+		if (BLOBCOMMON_HAS_EXT && is_string($svg)) {
+			return \Blobfolio\Images::svgSize($svg);
 		}
 
 		ref\cast::string($svg, true);
@@ -817,6 +832,11 @@ class image {
 	 * @return bool True/false.
 	 */
 	public static function to_webp(string $from, $to=null, $cwebp=null, $gif2webp=null, bool $refresh=false) {
+		if (BLOBCOMMON_HAS_EXT) {
+			$to = (string) $to;
+			return \Blobfolio\Images::toWebp($from, $to, $refresh);
+		}
+
 		// Try binaries first, fallback to GD.
 		return (
 			static::to_webp_binary($from, $to, $cwebp, $gif2webp, $refresh) ||

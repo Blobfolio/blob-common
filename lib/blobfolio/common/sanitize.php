@@ -45,6 +45,10 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function attribute_value($str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Dom::attributeValue($str);
+		}
+
 		ref\sanitize::attribute_value($str);
 		return $str;
 	}
@@ -343,6 +347,10 @@ class sanitize {
 	 * @return string Name.
 	 */
 	public static function name($str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Retail::niceName($str);
+		}
+
 		ref\sanitize::name($str);
 		return $str;
 	}
@@ -358,6 +366,10 @@ class sanitize {
 	 * @return string Password.
 	 */
 	public static function password($str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Retail::nicePassword($str);
+		}
+
 		ref\sanitize::password($str);
 		return $str;
 	}
@@ -573,6 +585,10 @@ class sanitize {
 	 * @return string ZIP Code.
 	 */
 	public static function zip5($str='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
+			return \Blobfolio\Geo::niceZip5($str);
+		}
+
 		ref\sanitize::zip5($str);
 		return $str;
 	}

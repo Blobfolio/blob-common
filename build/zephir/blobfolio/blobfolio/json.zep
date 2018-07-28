@@ -14,8 +14,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Json {
 
 	/**
@@ -60,7 +58,7 @@ final class Json {
 		}
 
 		// A lot of the following tests are case-insensitive.
-		let lower = (string) \Blobfolio\Strings::toLower(encoded);
+		let lower = (string) \Blobfolio\Strings::toLower(encoded, true);
 
 		// Bool.
 		if (("true" === lower) || ("false" === lower)) {

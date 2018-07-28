@@ -13,8 +13,6 @@
 
 namespace Blobfolio;
 
-use \Throwable;
-
 final class Cast {
 
 	// -----------------------------------------------------------------
@@ -56,7 +54,7 @@ final class Cast {
 		try {
 			// Zephir doesn't support (array) hinting in this one place.
 			settype(value, "array");
-		} catch Throwable {
+		} catch \Throwable {
 			let value = [];
 		}
 
@@ -99,7 +97,7 @@ final class Cast {
 
 			try {
 				let value = (bool) value;
-			} catch Throwable {
+			} catch \Throwable {
 				let value = false;
 			}
 		}
@@ -259,7 +257,7 @@ final class Cast {
 				FILTER_SANITIZE_NUMBER_FLOAT,
 				FILTER_FLAG_ALLOW_FRACTION
 			);
-		} catch Throwable {
+		} catch \Throwable {
 			let value = 0.0;
 		}
 
@@ -295,7 +293,7 @@ final class Cast {
 
 			try {
 				let value = (string) value;
-			} catch Throwable {
+			} catch \Throwable {
 				return "";
 			}
 

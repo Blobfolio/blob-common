@@ -257,8 +257,12 @@ class file {
 	 * @return string|bool Hash or false.
 	 */
 	public static function hash_dir($path, string $dir_algo='md5', string $file_algo=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Files::hashDir($path, $dir_algo, $file_algo);
+		if (
+			BLOBCOMMON_HAS_EXT &&
+			('md5' === $dir_algo) &&
+			(!$file_algo || ('md5' === $file_algo))
+		) {
+			return \Blobfolio\Files::hashDir($path);
 		}
 
 		// We definitely need a valid directory algorithm.
@@ -477,6 +481,10 @@ class file {
 	 * @return mixed Bytes served or status.
 	 */
 	public static function readfile_chunked(string $file, bool $retbytes=true) {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::readfileChunked($file, $retbytes);
+		}
+
 		if (!$file || !@is_file($file)) {
 			return false;
 		}
@@ -519,6 +527,10 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function redirect(string $to) {
+		if (BLOBCOMMON_HAS_EXT) {
+			\Blobfolio\Files::redirect($to);
+		}
+
 		ref\sanitize::url($to);
 
 		unset($_POST);
