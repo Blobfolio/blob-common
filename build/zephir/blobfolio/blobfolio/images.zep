@@ -24,6 +24,18 @@ final class Images {
 	// -----------------------------------------------------------------
 
 	/**
+	 * Blank Image
+	 *
+	 * A simple transparent GIF that can be shoved into an SRC without
+	 * causing troubles.
+	 *
+	 * @return string URI.
+	 */
+	public static function getBlankImage() {
+		return "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=";
+	}
+
+	/**
 	 * Nice SVG
 	 *
 	 * Sanitize an SVG's attributes, protocols, etc.
@@ -235,7 +247,7 @@ final class Images {
 
 		// If this is an SVG, steal results from our SVG size method.
 		if ("image/svg+xml" === mime) {
-			var tmp = static::svgSize(file);
+			var tmp = self::svgSize(file);
 			if (false === tmp) {
 				return false;
 			}
@@ -260,7 +272,7 @@ final class Images {
 
 		// Manually parse WebP dimensions in case GD couldn't do it.
 		if ("image/webp" === mime) {
-			var tmp = static::webpSize(file);
+			var tmp = self::webpSize(file);
 			if (false === tmp) {
 				return false;
 			}
