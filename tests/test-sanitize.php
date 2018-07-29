@@ -1586,6 +1586,8 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array('Björk Guðmundsdóttir'),
 			array("Hello\nWorld"),
 			array(123),
+			array(file_get_contents(self::ASSETS . 'text-utf8.txt')),
+			array(file_get_contents(self::ASSETS . 'text-latin.txt')),
 		);
 	}
 
