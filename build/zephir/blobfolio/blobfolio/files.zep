@@ -345,7 +345,7 @@ final class Files {
 						(self::MIME_DEFAULT !== out["mime"]) ||
 						(0 !== strpos(magicMime, "text/"))
 					) &&
-					!static::checkExtensionMimePair(out["extension"], magicMime)
+					!self::checkExtensionMimePair(out["extension"], magicMime)
 				) {
 					// Override what we've found so far if the magic is
 					// legit.
