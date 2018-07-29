@@ -294,22 +294,20 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * ::to_csv()
+	 * Test: ::to_csv()
 	 *
-	 * @return void Nothing.
+	 * @dataProvider data_to_csv
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $headers Headers.
+	 * @param string $delimiter Delimiter.
+	 * @param string $eol Eol.
+	 * @param mixed $expected Expected.
 	 */
-	function test_to_csv() {
-		$data = array(array('NAME'=>'John', 'PHONE'=>'+1 201-555-0123'));
-		$headers = array('FIRST NAME', 'PHONE NUMBER');
-
-		$csv = format::to_csv($data);
-		$this->assertSame(true, false !== strpos($csv, 'NAME'));
-
-		$csv = format::to_csv($data, $headers);
-		$this->assertSame(true, false !== strpos($csv, 'FIRST NAME'));
-
-		$csv = format::to_csv($data, $headers, "\t");
-		$this->assertSame(true, false !== strpos($csv, "\t"));
+	function test_to_csv($value, $headers, string $delimiter, string $eol, $expected) {
+		$result = format::to_csv($value, $headers, $delimiter, $eol);
+		$this->assertSame($expected, $result);
+		$this->assertSame('string', gettype($result));
 	}
 
 	/**
@@ -370,6 +368,47 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 					),
 				),
 				array(1, 2, 3, 4),
+			),
+		);
+	}
+
+	/**
+	 * Data for ::to_csv()
+	 *
+	 * @return array Data.
+	 */
+	function data_to_csv() {
+		$data = array(array('NAME'=>'John', 'PHONE'=>'+1 201-555-0123'));
+		$headers = array('FIRST NAME', 'PHONE NUMBER');
+
+		return array(
+			array(
+				$data,
+				null,
+				',',
+				"\n",
+				"\"NAME\",\"PHONE\"\n\"John\",\"+1 201-555-0123\"",
+			),
+			array(
+				$data,
+				$headers,
+				',',
+				"\n",
+				"\"FIRST NAME\",\"PHONE NUMBER\"\n\"John\",\"+1 201-555-0123\"",
+			),
+			array(
+				$data,
+				null,
+				"\t",
+				"\r\n",
+				"\"NAME\"\t\"PHONE\"\r\n\"John\"\t\"+1 201-555-0123\"",
+			),
+			array(
+				array(array('NAME'=>'John "Cool" Dude')),
+				$headers,
+				',',
+				"\n",
+				"\"FIRST NAME\",\"PHONE NUMBER\"\n\"John \"\"Cool\"\" Dude\"",
 			),
 		);
 	}
