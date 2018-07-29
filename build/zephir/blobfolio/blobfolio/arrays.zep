@@ -215,7 +215,7 @@ final class Arrays {
 
 		for k, v in arr {
 			let type = typeof v;
-			if (("int" !== type) && ("double" !== type)) {
+			if (("integer" !== type) && ("double" !== type)) {
 				let arr[k] = \Blobfolio\Cast::toFloat(v, true);
 			}
 		}
@@ -768,7 +768,7 @@ final class Arrays {
 	 * @return mixed Value. False on error.
 	 */
 	public static function popTop(array arr) {
-		if (count(arr)) {
+		if (!count(arr)) {
 			return false;
 		}
 
