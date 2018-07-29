@@ -513,14 +513,19 @@ final class Dom {
 		let str = \Blobfolio\Strings::whitespace(str, 0, trusted);
 		let str = \Blobfolio\Strings::quotes(str, true);
 
-		// Escape slashes.
-		let str = str_replace("/", "\\/", str);
-
 		if ("'" === quote) {
-			let str = str_replace("'", "\\'", str);
+			let str = str_replace(
+				["/", "'"],
+				["\\/", "\\'"],
+				str
+			);
 		}
 		elseif ("\"" === quote) {
-			let str = str_replace("\"", "\\\"", str);
+			let str = str_replace(
+				["/", "\""],
+				["\\/", "\\\""],
+				str
+			);
 		}
 
 		return str;
@@ -1075,7 +1080,7 @@ final class Dom {
 							let tmp["rules"][key] = value;
 						}
 						else {
-							let tmp["rules"]["__NONE__"] = value;
+							let tmp["rules"]["__NONE__"] = (string) v2;
 						}
 					}
 
