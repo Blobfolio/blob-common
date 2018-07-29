@@ -54,6 +54,41 @@ final class Retail {
 	}
 
 	/**
+	 * Shipping Carrier
+	 *
+	 * Use consistent, appropriate casing for shipping carriers.
+	 *
+	 * @param string $carrier Carrier.
+	 * @return void Nothing.
+	 */
+	public static function niceCarrier(string carrier) -> string {
+		switch (preg_replace("/[^a-z]/", "", strtolower(carrier))) {
+			case "abf":
+			case "arcbest":
+			case "arcbestfreight":
+				return "ABF";
+			case "dhl":
+			case "dalseyhillblomandlynn":
+			case "dalseyhillblomlynn":
+			case "dhlexpress":
+			case "dhlworldwide":
+				return "DHL";
+			case "fedex":
+			case "federalexpress":
+				return "FedEx";
+			case "ups":
+			case "unitedparcelservice":
+				return "UPS";
+			case "postoffice":
+			case "unitedstatespostalservice":
+			case "usps":
+				return "USPS";
+		}
+
+		return "Other";
+	}
+
+	/**
 	 * Credit Card
 	 *
 	 * @param string $ccnum Card number.
@@ -279,6 +314,68 @@ final class Retail {
 	}
 
 	/**
+	 * Nice ccBrand
+	 *
+	 * @param string $brand Brand.
+	 * @return string Brand.
+	 */
+	public static function niceCcBrand(string brand) -> string {
+		string test = trim(strtolower(brand));
+		array nice = [
+			"amex": "AMEX",
+			"discover": "Discover",
+			"jcb": "JCB",
+			"mc": "MC",
+			"other": "Other",
+			"visa": "Visa"
+		];
+
+		// Maybe it is already looking good.
+		if (isset(nice[test])) {
+			return nice[test];
+		}
+
+		// Do it the hard way. Haha.
+		if (0 === strpos(test, "american")) {
+			return "AMEX";
+		}
+		elseif (0 === strpos(test, "master")) {
+			return "MC";
+		}
+		elseif (0 === strpos(test, "disc")) {
+			return "Discover";
+		}
+		elseif (0 === strpos(test, "japan")) {
+			return "JCB";
+		}
+
+		return "Other";
+	}
+
+	/**
+	 * Nice ccLast4
+	 *
+	 * @param string $last4 Last4.
+	 * @return string Last4.
+	 */
+	public static function niceCcLast4(string last4) -> string {
+		let last4 = preg_replace("/[^\d]/", "", last4);
+		int length = strlen(last4);
+		if (length > 4) {
+			return "";
+		}
+		elseif (length < 4) {
+			let last4 = str_pad(last4, 4, "0", STR_PAD_LEFT);
+		}
+
+		if ("0000" === last4) {
+			return "";
+		}
+
+		return last4;
+	}
+
+	/**
 	 * Nice Name
 	 *
 	 * This helps sanely format a human name.
@@ -307,6 +404,32 @@ final class Retail {
 		let str = \Blobfolio\Strings::printable(str, trusted);
 		let str = \Blobfolio\Strings::controlChars(str, true);
 		return \Blobfolio\Strings::whitespace(str, 0, true);
+	}
+
+	/**
+	 * Shipping URL
+	 *
+	 * @param string $carrier Carrier.
+	 * @param string $shipping_id Shipping ID.
+	 * @return string|bool URL or false.
+	 */
+	public static function niceShippingUrl(string carrier, string shipping_id) -> string {
+		let carrier = self::niceCarrier(carrier);
+		let shipping_id = preg_replace("/\s/u", "", shipping_id);
+		let shipping_id = urlencode(shipping_id);
+
+		switch (carrier) {
+			case "ABF":
+				return "https://arcb.com/tools/tracking.html#/" . shipping_id;
+			case "FedEx":
+				return "https://www.fedex.com/Tracking?language=english&cntry_code=us&tracknumbers=" . shipping_id;
+			case "UPS":
+				return "https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=" . shipping_id;
+			case "USPS":
+				return "https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=" . shipping_id;
+		}
+
+		return "";
 	}
 
 	/**

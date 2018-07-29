@@ -903,6 +903,34 @@ final class Domains {
 		return null;
 	}
 
+	/**
+	 * Delete a Cookie
+	 *
+	 * A companion to PHP's `setcookie()` function. It attempts to
+	 * remove the cookie. The same path, etc., values should be passed
+	 * as were used to first set it.
+	 *
+	 * @param string $name Name.
+	 * @param string $path Path.
+	 * @param string $domain Domain.
+	 * @param bool $secure SSL only.
+	 * @param bool $httponly HTTP only.
+	 * @return bool True/false.
+	 */
+	public static function unsetcookie(string name, string path="", string domain="", bool secure=false, bool httponly=false) -> bool {
+
+		if (!headers_sent()) {
+			setcookie(name, false, -1, path, domain, secure, httponly);
+			if (isset(_COOKIE[name])) {
+				unset(_COOKIE[name]);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
 
 
 	// -----------------------------------------------------------------

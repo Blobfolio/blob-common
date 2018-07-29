@@ -1504,6 +1504,16 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function to_range(&$value, $min=null, $max=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			if (is_numeric($min) || is_numeric($max)) {
+				$value = \Blobfolio\Numbers::toRange($value, $min, $max);
+				return;
+			}
+			elseif (is_string($value)) {
+				$value = \Blobfolio\Strings::toRange($value, $min, $max);
+				return;
+			}
+		}
 
 		// Make sure min/max are in the right order.
 		if (

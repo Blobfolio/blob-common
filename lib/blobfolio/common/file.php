@@ -113,6 +113,10 @@ class file {
 	 * @return bool|array Headers.
 	 */
 	public static function csv_headers(string $csv, $cols=false, string $delimiter=',') {
+		if (BLOBCOMMON_HAS_EXT) {
+			return \Blobfolio\Files::csvHeaders($csv, $cols, $delimiter);
+		}
+
 		// We definitely need a file.
 		ref\file::path($csv, true);
 		if (!$csv || !@is_file($csv)) {

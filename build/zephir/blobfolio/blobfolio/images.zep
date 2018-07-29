@@ -15,6 +15,10 @@ namespace Blobfolio;
 
 final class Images {
 
+	// Random IDs and classes we've generated for SVGs.
+	private static $_svg_ids = [];
+	private static $_svg_classes = [];
+
 	// -----------------------------------------------------------------
 	// Formatting
 	// -----------------------------------------------------------------
@@ -458,8 +462,11 @@ final class Images {
 	 * @param mixed $args Arguments.
 	 * @param string $output Output format.
 	 *
+	 * @arg bool $clean_styles Fix <style> formatting, combine tags.
 	 * @arg bool $fix_dimensions Fix missing width, height, viewBox.
 	 * @arg bool $namespace Generate an xmlns:svg namespace.
+	 * @arg bool $random_id Randomize IDs.
+	 * @arg bool $rewrite_styles Redo class assignments to group like rules.
 	 * @arg bool $sanitize Sanitize content.
 	 * @arg bool $save Save cleaned file for faster repeat processing.
 	 * @arg bool $strip_data Remove data-x attributes.
@@ -485,8 +492,11 @@ final class Images {
 
 		// Default options.
 		array template = [
+			"clean_styles": false,		// Clean styles.
 			"fix_dimensions": false,	// Fix missing width, height, viewBox.
 			"namespace": false,			// Add an svg: namespace.
+			"random_id": false,			// Randomize IDs.
+			"rewrite_styles": false,	// Merge and rewrite styles.
 			"sanitize": true,			// Remove invalid/dangerous bits.
 			"save": false,				// Replace file with clean copy.
 			"strip_data": false,		// Remove data-X attributes.
@@ -505,7 +515,15 @@ final class Images {
 
 		// Some options imply or override others.
 		if (args["strip_style"]) {
+			let args["clean_styles"] = false;
 			let args["namespace"] = false;
+			let args["rewrite_styles"] = false;
+		}
+		if (args["strip_id"]) {
+			let args["random_id"] = false;
+		}
+		if (args["rewrite_styles"]) {
+			let args["clean_styles"] = true;
 		}
 
 		// Skip the hard stuff maybe.
@@ -575,8 +593,33 @@ final class Images {
 			let svg = self::niceSvg(svg, true);
 		}
 
+		array matches;
 		var k;
 		var v;
+
+		// Randomize IDs?
+		if (args["random_id"]) {
+			preg_match_all("/\sid\s*=\s*\"([^\"]*)\"/i", svg, matches);
+			if (count(matches[0])) {
+				for k, v in matches[0] {
+					string id_string = (string) v;
+					string id_value = (string) matches[1][k];
+					string id_new = "s" . strtolower(\Blobfolio\Strings::random(4));
+					while (isset(self::_svg_ids[id_new])) {
+						let id_new = "s" . strtolower(\Blobfolio\Strings::random(4));
+					}
+					let self::_svg_ids[id_new] = true;
+
+					// Replace just the first occurrence.
+					let svg = preg_replace(
+						"/" . preg_quote(id_string, "/") . "/",
+						" id=\"" . id_new . "\"",
+						svg,
+						1
+					);
+				}
+			}
+		}
 
 		// Fix dimensions?
 		if (args["fix_dimensions"]) {
@@ -689,7 +732,7 @@ final class Images {
 		}
 
 		// Namespacing is a bitch.
-		if (args["namespace"]) {
+		if (args["clean_styles"] || args["namespace"]) {
 			let dom = \Blobfolio\Dom::svgToDom(svg, true);
 			let tags = dom->getElementsByTagName("svg");
 			if (!tags->length) {
@@ -698,17 +741,161 @@ final class Images {
 
 			let x = 0;
 			while x < tags->length {
-				tags->item(x)->setAttribute("xmlns:svg", \Blobfolio\Dom::SVG_NAMESPACE);
+				// Add namespace.
+				if (args["namespace"]) {
+					tags->item(x)->setAttribute("xmlns:svg", \Blobfolio\Dom::SVG_NAMESPACE);
+				}
+
+				// Store a list of classes to rewrite, if any.
+				array classes_old = [];
+				int y;
+				int z;
+				var node;
+				var nodes;
+				var style;
+				var styles;
+				var tmp;
+
+				// TODO clean styles.
+				if (args["clean_styles"]) {
+					// First, combine styles.
+					let styles = tags->item(x)->getElementsByTagName("style");
+					if (styles->length) {
+						var style_parent = styles->item(0)->parentNode;
+						let style = dom->createElement("style");
+						while (styles->length) {
+							// Collect children.
+							let y = 0;
+							while (y < styles->item(0)->childNodes->length) {
+								let node = styles->item(0)->childNodes->item(y);
+								let node->nodeValue .= " ";
+								style->appendChild(node);
+
+								let y++;
+							}
+
+							\Blobfolio\Dom::removeNode(styles->item(0));
+						}
+
+						style_parent->appendChild(style);
+
+						// Now to fix the formatting.
+						let style = tags->item(x)->getElementsByTagName("style")->item(0);
+
+						array parsed = (array) \Blobfolio\Dom::parseCss(style->nodeValue);
+						if (count(parsed)) {
+							array style_new = [];
+
+							// Rewriting.
+							if (args["rewrite_styles"]) {
+								// Try to group rules.
+								array rules = [];
+
+								for v in parsed {
+									// Copy @ rules wholesale.
+									if (false !== v["@"]) {
+										let rules[v["raw"]] = [];
+									}
+									else {
+										var rk, rv;
+										string r;
+										for rk, rv in v["rules"] {
+											let r = rk . ":" . rv;
+
+											if (!isset(rules[r])) {
+												let rules[r] = [];
+											}
+
+											let rules[r] = array_merge(
+												rules[r],
+												array_values(v["selectors"])
+											);
+										}
+									}
+								} // End parsed.
+
+								// Clean up and build output.
+								var rule;
+								var selectors;
+								var selector;
+								for rule, selectors in rules {
+									// Selectorless rules get added as is.
+									if (!count(selectors)) {
+										let style_new[] = rule;
+										continue;
+									}
+
+									// Clean up selectors a touch.
+									let selectors = array_unique(selectors);
+									sort(selectors);
+
+									// Look for selectors.
+									array classes = [];
+									for k, selector in selectors {
+										// A valid class.
+										if (preg_match("/^\.[a-z\d_\-]+$/i", selector)) {
+											let classes[] = selector;
+											unset(selectors[k]);
+										}
+										// A broken Adobe class,
+										// e.g. .\38 ab9678e-54ee-493d-b19f-2215c5549034.
+										else {
+											let selector = str_replace(".\\3", ".", selector);
+											// Fix weird adobe rules.
+											preg_match_all("/^\.([\d]) ([a-z\d\-]+)$/", selector, matches);
+											if (count(matches[0])) {
+												let classes[] = preg_replace("/\s/", "", matches[0][0]);
+												unset(selectors[k]);
+											}
+										}
+									} // Each selector.
+
+									// We have classes!
+									if (count(classes)) {
+										string class_new = strtolower("c" . \Blobfolio\Strings::random(4));
+										while (isset(self::_svg_classes[class_new])) {
+											let class_new = strtolower("c" . \Blobfolio\Strings::random(4));
+										}
+										let selectors[] = "." . class_new;
+
+										// Add the class to all affected nodes.
+										let nodes = \Blobfolio\Dom::getNodesByClass(tags->item(x), classes);
+										for node in nodes {
+											string class_value = (string) node->getAttribute("class");
+											let class_value .= " " . class_new;
+											node->setAttribute("class", class_value);
+										}
+
+										// And note our old classes.
+										for v in classes {
+											let classes_old[] = ltrim(v, ".");
+										}
+									}
+
+									let style_new[] = implode(",", selectors) . "{" . rule . "}";
+								} // Each rule.
+							}
+							// Not rewriting.
+							else {
+								for v in parsed {
+									let style_new[] = v["raw"];
+								}
+							}
+
+							// Push our rules back!
+							let style->nodeValue = implode("", style_new);
+						}
+					}
+				} // End cleaning styles.
 
 				// Fix styles too.
-				if (!args["strip_style"]) {
-					var styles;
+				if (args["namespace"]) {
 					let styles = tags->item(x)->getElementsByTagName("style");
 
-					int y = 0;
+					let y = 0;
 					while y < styles->length {
-						var style = dom->createElement("svg:style");
-						int z = 0;
+						let style = dom->createElement("svg:style");
+						let z = 0;
 						while z < styles->item(y)->childNodes->length {
 							style->appendChild(styles->item(y)->childNodes->item(z)->cloneNode(true));
 							let z++;
@@ -716,6 +903,21 @@ final class Images {
 
 						styles->item(y)->parentNode->appendChild(style);
 						let y++;
+					}
+				}
+
+				if (count(classes_old)) {
+					let classes_old = array_unique(classes_old);
+					sort(classes_old);
+
+					let nodes = \Blobfolio\Dom::getNodesByClass(tags->item(x), classes_old);
+					for node in nodes {
+						let tmp = node->getAttribute("class");
+						let tmp = \Blobfolio\Strings::whitespace(tmp, 0, true);
+						let tmp = (array) explode(" ", tmp);
+						let tmp = array_unique(tmp);
+						let tmp = array_diff(tmp, classes_old);
+						node->setAttribute("class", implode(" ", tmp));
 					}
 				}
 

@@ -589,6 +589,96 @@ final class Files {
 	}
 
 	/**
+	 * CSV Headers
+	 *
+	 * Read the first line of a CSV and locate the indexes of each
+	 * column.
+	 *
+	 * If an array of columns is passed, only the indexes of those
+	 * columns will be returned.
+	 *
+	 * If said argument is an associative array, the return value will
+	 * use the argument keys rather than the CSV headers. This can be
+	 * useful in cases where, e.g., a CSV has a stupid long header
+	 * label.
+	 *
+	 * @param string $csv CSV file path.
+	 * @param mixed $cols Filter columns.
+	 * @param string $delimiter Delimiter.
+	 * @return bool|array Headers.
+	 */
+	public static function csvHeaders(string csv, var cols=false, string delimiter=",") -> bool | array {
+		// We definitely need a file.
+		let csv = (string) self::path(csv, true);
+		if (empty csv || !is_file(csv)) {
+			return false;
+		}
+
+		var k;
+		var v;
+
+		// Are we looking for particular columns?
+		bool assoc = false;
+		if (is_array(cols) && count(cols)) {
+			if ("associative" === \Blobfolio\Arrays::getType(cols)) {
+				let assoc = true;
+			}
+			let cols = array_flip(cols);
+		}
+		else {
+			let cols = false;
+		}
+
+		// Open the CSV and look for the first line with stuff.
+		var handle;
+		let handle = fopen(csv, "r");
+		if (false === handle) {
+			return false;
+		}
+
+		var line;
+		loop {
+			let line = fgetcsv(handle, 0, delimiter);
+
+			// We only need to read one line, but if that fails, we're
+			// done.
+			if (false === line) {
+				return false;
+			}
+
+			// We can skip leading empties though.
+			if (!isset(line[0]) || (null === line[0])) {
+				continue;
+			}
+
+			// Flip the line too.
+			let line = array_flip(line);
+
+			// If we aren't filtering columns, just cast and return.
+			if (!cols) {
+				for k, v in line {
+					let line[k] = (int) v;
+				}
+
+				return line;
+			}
+
+			array out = [];
+			for k, v in cols {
+				var key, value;
+				let key = assoc ? v : k;
+				let value = isset(line[k]) ? (int) line[k] : false;
+				let out[key] = value;
+			}
+
+			return out;
+		}
+
+		// We shouldn't be here.
+		return false;
+	}
+
+	/**
 	 * Get Data URI for File
 	 *
 	 * @param string $path Path.

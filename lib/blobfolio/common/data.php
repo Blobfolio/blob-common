@@ -467,6 +467,14 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function in_range($value, $min=null, $max=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			if (is_numeric($min) || is_numeric($max)) {
+				return \Blobfolio\Numbers::inRange($value, $min, $max);
+			}
+			elseif (is_string($value)) {
+				return \Blobfolio\Strings::inRange($value, $min, $max);
+			}
+		}
 		return sanitize::to_range($value, $min, $max) === $value;
 	}
 

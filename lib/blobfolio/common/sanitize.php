@@ -493,6 +493,15 @@ class sanitize {
 	 * @return mixed Value.
 	 */
 	public static function to_range($value, $min=null, $max=null) {
+		if (BLOBCOMMON_HAS_EXT) {
+			if (is_numeric($min) || is_numeric($max)) {
+				return \Blobfolio\Numbers::toRange($value, $min, $max);
+			}
+			elseif (is_string($value)) {
+				return \Blobfolio\Strings::toRange($value, $min, $max);
+			}
+		}
+
 		ref\sanitize::to_range($value, $min, $max);
 		return $value;
 	}

@@ -786,6 +786,335 @@ final class Dom {
 	}
 
 	/**
+	 * Merge Classes
+	 *
+	 * The HTML "class" attribute frequently requires sanitization and
+	 * merging. This function takes any number of arguments, each either
+	 * a string or array, and returns a single array containing each
+	 * unique class.
+	 *
+	 * @param mixed $classes Classes.
+	 * @return array Classes.
+	 */
+	public static function mergeClasses() -> array {
+		array args = (array) func_get_args();
+		array out = [];
+		var v;
+		var v2;
+
+		// Run through each and add as needed.
+		for v in args {
+			let v = \Blobfolio\Arrays::fromList(v, " ");
+			for v2 in v {
+				// Strip obviously bad characters.
+				let v2 = preg_replace(
+					"/[^a-z\d_:\{\}-]/",
+					"",
+					strtolower(v2)
+				);
+
+				if (!empty v2) {
+					let out[v2] = true;
+				}
+			}
+		}
+
+		return array_keys(out);
+	}
+
+	/**
+	 * Parse Styles
+	 *
+	 * This will convert CSS text (from e.g. a <style> tag) into an
+	 * array broken down by rules and selectors.
+	 *
+	 * Note: This can deal with "proper" CSS, but has trouble with some
+	 * of the new kid shit like using {} in class names.
+	 *
+	 * @param string $styles Styles.
+	 * @param bool $trusted Trusted.
+	 * @return array Parsed styles.
+	 */
+	public static function parseCss(string css, const bool trusted=false) -> array {
+		if (!trusted) {
+			let css = \Blobfolio\Strings::utf8(css);
+		}
+
+		var start;
+
+		// Check for comments.
+		if (false !== strpos(css, "/*")) {
+			let css = preg_replace("/\/\*(.*)\*\//Us", "", css);
+		}
+		let start = mb_strpos(css, "/*", 0, "UTF-8");
+		if (false !== start) {
+			let css = mb_substr(css, 0, start, "UTF-8");
+		}
+
+		// Get rid of non-style sister comments and markers.
+		let css = str_replace(
+			["<!--", "//-->", "//<![CDATA[", "//]]>", "<![CDATA[", "]]>"],
+			"",
+			css
+		);
+
+		// Clean up characters a bit.
+		let css = \Blobfolio\Strings::niceText(css, true);
+
+		// Early bail.
+		if (empty css) {
+			return [];
+		}
+
+		// Substitute braces for unlikely characters to make parsing
+		// easier hopefully nobody's using braille in their
+		// stylesheets...
+		let css = preg_replace(
+			"/\{(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/u",
+			"⠁",
+			css
+		);
+		let css = preg_replace(
+			"/\}(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/u",
+			"⠈",
+			css
+		);
+
+		// Make sure there rae spaces before and after parentheses.
+		let css = preg_replace(
+			"/\s*(\()\s*(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/u",
+			" (",
+			css
+		);
+		let css = preg_replace(
+			"/\s*(\))\s*(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/u",
+			") ",
+			css
+		);
+
+		// Make sure {} have no whitespace on either end.
+		let css = preg_replace("/\s*(⠁|⠈|@)\s*/u", "$1", css);
+
+		// Push @ rules to their own lines.
+		let css = str_replace("@", "\n@", css);
+
+		array styles = (array) explode("\n", css);
+		array tmp;
+		int x;
+		var k;
+		var v;
+
+		for k, v in styles {
+			let styles[k] = trim(v);
+			if (empty styles[k]) {
+				unset(styles[k]);
+				continue;
+			}
+
+			// An @ rule.
+			if (0 === strpos(styles[k], "@")) {
+				// Nested, like @media.
+				if (false !== strpos(styles[k], "⠈⠈")) {
+					let styles[k] = preg_replace(
+						"/(⠈{2,})/u",
+						"$1\n",
+						styles[k]
+					);
+				}
+				// Not nested, but has properties like @font-face.
+				elseif (false !== strpos(styles[k], "⠈")) {
+					let styles[k] = str_replace("⠈", "⠈\n", styles[k]);
+				}
+				// A one-liner, like @import.
+				elseif (preg_match(
+					"/;(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/",
+					styles[k]
+				)) {
+					let styles[k] = preg_replace(
+						"/;(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/u",
+						";\n",
+						styles[k],
+						1
+					);
+				}
+
+				// Clean up what we have.
+				let tmp = (array) explode("\n", styles[k]);
+				let x = 1;
+				while x < count(tmp) {
+					let tmp[x] = str_replace("⠈", "⠈\n", tmp[x]);
+					let x++;
+				}
+				let styles[k] = implode("\n", tmp);
+			}
+			// Just regular stuff.
+			else {
+				let styles[k] = str_replace("⠈", "⠈\n", styles[k]);
+			}
+		}
+
+		// Back to a string.
+		let css = (string) implode("\n", styles);
+
+		// One more quick formatting thing, we can get rid of spaces
+		// between closing) and punctuation.
+		let css = preg_replace(
+			"/\)\s(,|;)(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/u",
+			")$1",
+			css
+		);
+
+		// And between RGB/URL stuff.
+		let css = preg_replace("/(url|rgba?)\s+\(/", "$1(", css);
+
+		// One more time around.
+		array matches;
+		array out = [];
+		array rules;
+		array tmp2;
+		string chunk;
+		string key;
+		string value;
+		var k2;
+		var v2;
+
+		let styles = (array) explode("\n", css);
+		for k, v in styles {
+			let styles[k] = trim(v);
+			if (empty styles[k]) {
+				continue;
+			}
+
+			// Nested rule.
+			if (
+				(0 === strpos(styles[k], "@")) &&
+				(false !== strpos(styles[k], "⠈⠈"))
+			) {
+				let tmp = [
+					"@": false,
+					"nested": true,
+					"selector": "",
+					"nest": [],
+					"raw": ""
+				];
+
+				// What kind of @ is this?
+				preg_match_all("/^@([a-z\-]+)/ui", styles[k], matches);
+				let tmp["@"] = \Blobfolio\Strings::toLower(matches[1][0], true);
+
+				let start = mb_strpos(styles[k], "⠁", 0, "UTF-8");
+				if (false === start) {
+					continue;
+				}
+
+				let tmp["selector"] = \Blobfolio\Strings::toLower(
+					trim(mb_substr(styles[k], 0, start, "UTF-8")),
+					true
+				);
+
+				let chunk = (string) mb_substr(styles[k], start + 1, -1, "UTF-8");
+				let chunk = str_replace(
+					["⠁", "⠈"],
+					["{", "}"],
+					chunk
+				);
+				let tmp["nest"] = self::parseCss(chunk, true);
+
+				// And build the raw.
+				let tmp["raw"] = tmp["selector"] . "{";
+				for v2 in tmp["nest"] {
+					let tmp["raw"] .= v2["raw"];
+				}
+				let tmp["raw"] .= "}";
+			}
+			else {
+				let tmp = [
+					"@": false,
+					"nested": false,
+					"selectors": [],
+					"rules": [],
+					"raw": ""
+				];
+
+				if (0 === strpos(styles[k], "@")) {
+					// What kind of @ is this?
+					preg_match_all("/^@([a-z\-]+)/ui", styles[k], matches);
+					let tmp["@"] = \Blobfolio\Strings::toLower(matches[1][0], true);
+				}
+
+				// A normal {k:v, k:v}
+				preg_match_all("/^([^⠁]+)⠁([^⠈]*)⠈/u", styles[k], matches);
+				if (count(matches[0])) {
+					// Sorting selectors is easy.
+					let tmp["selectors"] = (array) explode(",", matches[1][0]);
+					let tmp["selectors"] = array_map("trim", tmp["selectors"]);
+
+					// Rules are trickier.
+					let rules = (array) explode(";", matches[2][0]);
+					for k2, v2 in rules {
+						let rules[k2] = trim(v2);
+						if (empty rules[k2]) {
+							continue;
+						}
+
+						let rules[k2] = rtrim(rules[k2], ";") . ";";
+						if (preg_match(
+							"/:(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/",
+							rules[k2]
+						)) {
+							let rules[k2] = preg_replace(
+								"/:(?![^\"]*\"(?:(?:[^\"]*\"){2})*[^\"]*$)/u",
+								"\n",
+								rules[k2],
+								1
+							);
+
+							let tmp2 = (array) explode("\n", rules[k2]);
+							let key = (string) \Blobfolio\Strings::toLower(trim(tmp2[0]), true);
+							let value = trim(tmp2[1]);
+							let tmp["rules"][key] = value;
+						}
+						else {
+							let tmp["rules"]["__NONE__"] = value;
+						}
+					}
+
+					// Build the raw.
+					string raw = (string) implode(",", tmp["selectors"]) . "{";
+					for k2, v2 in tmp["rules"] {
+						if ("__NONE__" === k2) {
+							let raw .= v2;
+						}
+						else {
+							let raw .= k2 . ":" . v2;
+						}
+					}
+					let raw .= "}";
+					let tmp["raw"] = raw;
+				}
+				// This is something strange.
+				else {
+					let styles[k] = str_replace(
+						["⠁", "⠈"],
+						["{", "}"],
+						styles[k]
+					);
+					let styles[k] = trim(rtrim(styles[k], ";"));
+					if ("}" !== substr(styles[k], -1)) {
+						let styles[k] .= ";";
+					}
+					let tmp["rules"][] = styles[k];
+					let tmp["raw"] = styles[k];
+				}
+			}
+
+			let out[] = tmp;
+		}
+
+		return out;
+	}
+
+	/**
 	 * Remove namespace (and attached nodes) from a DOMDocument
 	 *
 	 * @param \DOMDocument $dom Object.

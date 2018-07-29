@@ -59,12 +59,7 @@ class image {
 	 */
 	public static function clean_svg(string $path, $args=null, string $output='HTML') {
 		// Some options are missing from the extension.
-		if (
-			BLOBCOMMON_HAS_EXT &&
-			(!isset($args['clean_styles']) || !$args['clean_styles']) &&
-			(!isset($args['random_id']) || !$args['random_id']) &&
-			(!isset($args['rewrite_styles']) || !$args['rewrite_styes'])
-		) {
+		if (BLOBCOMMON_HAS_EXT) {
 			\Blobfolio\Dom::$whitelistAttributes = isset($args['whitelist_attr']) ? (array) $args['whitelist_attr'] : null;
 			\Blobfolio\Dom::$whitelistTags = isset($args['whitelist_tags']) ? (array) $args['whitelist_tags'] : null;
 			\Blobfolio\Dom::$whitelistDomains = isset($args['whitelist_domains']) ? (array) $args['whitelist_domains'] : null;

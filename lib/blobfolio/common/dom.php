@@ -253,6 +253,10 @@ class dom {
 	 * @return array Parsed styles.
 	 */
 	public static function parse_css($styles='') {
+		if (BLOBCOMMON_HAS_EXT && is_string($styles)) {
+			return \Blobfolio\Dom::parseCss($styles);
+		}
+
 		ref\cast::string($styles, true);
 
 		// Remove comments.

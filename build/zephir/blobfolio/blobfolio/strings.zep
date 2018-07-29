@@ -1093,32 +1093,8 @@ final class Strings {
 	 * @return bool True/false.
 	 */
 	public static function lengthInRange(string str, var min=null, var max=null) -> bool {
-		bool minNum = is_numeric(min);
-		bool maxNum = is_numeric(max);
-
-		// Make sure they're in the right order.
-		if (
-			minNum &&
-			maxNum &&
-			min > max
-		) {
-			var tmp;
-			let tmp = min;
-			let min = max;
-			let max = tmp;
-		}
-
 		int length = (int) mb_strlen(str, "UTF-8");
-
-		if (minNum && length < min) {
-			return false;
-		}
-
-		if (maxNum && length > max) {
-			return false;
-		}
-
-		return true;
+		return \Blobfolio\Numbers::inRange(length, min, max);
 	}
 
 	/**

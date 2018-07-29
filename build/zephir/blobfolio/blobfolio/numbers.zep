@@ -121,4 +121,79 @@ final class Numbers {
 
 		return num;
 	}
+
+	/**
+	 * In Range
+	 *
+	 * @param number $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return mixed Num.
+	 */
+	public static function inRange(var value, var min=null, var max=null) -> bool {
+		return (value === self::toRange(value, min, max));
+	}
+
+	/**
+	 * To Range
+	 *
+	 * @param number $value Value.
+	 * @param mixed $min Min.
+	 * @param mixed $max Max.
+	 * @return mixed Num.
+	 */
+	public static function toRange(var value, var min=null, var max=null) -> int | float {
+		string type = "integer";
+		bool minNum = (!empty min && is_numeric(min));
+		bool maxNum = (!empty max && is_numeric(max));
+
+		// Make sure we have the same type all around.
+		if (
+			(minNum && ("integer" !== typeof min)) ||
+			(maxNum && ("integer" !== typeof max))
+		) {
+			let type = "double";
+		}
+
+		// Typecast the trio.
+		if (minNum && (type !== typeof min)) {
+			let min = \Blobfolio\Cast::toType(min, type, true);
+		}
+		if (maxNum && (type !== typeof max)) {
+			let max = \Blobfolio\Cast::toType(max, type, true);
+		}
+		if (type !== typeof value) {
+			let value = \Blobfolio\Cast::toType(value, type, true);
+		}
+
+		// Make sure they're in the right order.
+		if (
+			minNum &&
+			maxNum &&
+			min > max
+		) {
+			if ("integer" === type) {
+				int tmp;
+				let tmp = min;
+				let min = max;
+				let max = tmp;
+			}
+			else {
+				float tmp;
+				let tmp = min;
+				let min = max;
+				let max = tmp;
+			}
+		}
+
+		if (minNum && value < min) {
+			let value = min;
+		}
+
+		if (maxNum && value > max) {
+			let value = max;
+		}
+
+		return value;
+	}
 }
