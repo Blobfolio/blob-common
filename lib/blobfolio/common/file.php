@@ -528,7 +528,7 @@ class file {
 	 */
 	public static function redirect(string $to) {
 		if (BLOBCOMMON_HAS_EXT) {
-			\Blobfolio\Files::redirect($to);
+			\Blobfolio\Domains::redirect($to);
 		}
 
 		ref\sanitize::url($to);

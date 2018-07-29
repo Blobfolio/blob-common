@@ -828,30 +828,6 @@ final class Files {
 	}
 
 	/**
-	 * Redirect
-	 *
-	 * @param string $to URL.
-	 * @return void Nothing.
-	 */
-	public static function redirect(string to) -> void {
-		let to = \Blobfolio\Domains::niceUrl(to);
-
-		// Prevent stupid browser RELOAD warnings.
-		let _POST = null;
-		let _GET = null;
-		let _REQUEST = null;
-
-		if (!headers_sent()) {
-			header("Location: " . to);
-		}
-		else {
-			echo "<script>top.location.href='" . str_replace("'", "\'", to) . "';</script>";
-		}
-
-		exit(0);
-	}
-
-	/**
 	 * Recursively Remove A Directory
 	 *
 	 * @param string $path Path.
