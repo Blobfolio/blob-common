@@ -557,8 +557,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				false,
 			),
 			array(
-				'BAR',
-				array('Foo'=>'Bar'),
+				'BJÖRK',
+				array('Foo'=>'Björk'),
 				true,
 				'Foo',
 			),
