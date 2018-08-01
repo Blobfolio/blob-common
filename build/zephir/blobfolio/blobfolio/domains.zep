@@ -32,7 +32,7 @@ final class Domains {
 	 * @param bool $www Strip www.
 	 * @return void Nothing.
 	 */
-	public function __construct(string host, const bool www=false) -> void {
+	public function __construct(string host) -> void {
 		var parsed = self::parseHostParts(host);
 		if (false === parsed) {
 			return;
@@ -42,10 +42,6 @@ final class Domains {
 		let this->subdomain = parsed["subdomain"];
 		let this->domain = parsed["domain"];
 		let this->suffix = parsed["suffix"];
-
-		if (www) {
-			this->stripWww();
-		}
 	}
 
 
@@ -58,7 +54,7 @@ final class Domains {
 	 * @param string $host Host.
 	 * @return string|bool Host or false.
 	 */
-	public static function parseHost(string host) -> string | bool {
+	private static function parseHost(string host) -> string | bool {
 		// Try to parse it the easy way.
 		var tmp = self::parseUrl(host, PHP_URL_HOST);
 		if (!empty tmp) {
@@ -165,7 +161,7 @@ final class Domains {
 	 * @param string $host Host.
 	 * @return array|bool Parts or false.
 	 */
-	public static function parseHostParts(string host) -> array | bool {
+	private static function parseHostParts(string host) -> array | bool {
 		// Tease out the hostname.
 		let host = self::parseHost(host);
 		if (empty host) {
@@ -250,13 +246,13 @@ final class Domains {
 	/**
 	 * Strip Leading WWW
 	 *
-	 * The www. subdomain is evil. This removes
-	 * it, but only if it is part of the subdomain.
+	 * The www. subdomain is evil. This removes it, but only if it is
+	 * part of the subdomain.
 	 *
 	 * @return void Nothing.
 	 */
 	public function stripWww() -> void {
-		if (!this->isValid() || null === this->subdomain) {
+		if (empty this->subdomain || !this->isValid()) {
 			return;
 		}
 
@@ -273,6 +269,33 @@ final class Domains {
 		}
 	}
 
+	/**
+	 * Add Leading WWW.
+	 *
+	 * This is evil and you shouldn't do it, but you can.
+	 *
+	 * @return void Nothing.
+	 */
+	public function addWww() -> void {
+		if (
+			!this->isValid() ||
+			("www" === this->subdomain) ||
+			(!empty this->subdomain && (0 === strpos(this->subdomain, "www."))) ||
+			this->isIp(true)
+		) {
+			return;
+		}
+
+		if (empty this->subdomain) {
+			let this->subdomain = "www";
+		}
+		else {
+			let this->subdomain = "www." . this->subdomain;
+		}
+
+		let this->host = "www." . this->host;
+	}
+
 
 
 	// -----------------------------------------------------------------
@@ -286,10 +309,7 @@ final class Domains {
 	 * @return bool True/false.
 	 */
 	public function isValid(const bool dns=false) -> bool {
-		return (
-			(null !== this->host) &&
-			(!dns || this->hasDns())
-		);
+		return (!empty this->host && (!dns || this->hasDns()));
 	}
 
 	/**
@@ -300,7 +320,7 @@ final class Domains {
 	public function isFqdn() -> bool {
 		return (
 			this->isValid() &&
-			(("string" === typeof this->suffix) || this->isIp(false))
+			(!empty this->suffix || this->isIp(false))
 		);
 	}
 
@@ -332,6 +352,7 @@ final class Domains {
 	 * @return bool True/false.
 	 */
 	public function hasDns() -> bool {
+		// Have to set it first.
 		if (null === this->dns) {
 			if (!this->isFqdn()) {
 				let this->dns = false;
@@ -370,10 +391,7 @@ final class Domains {
 	 * @return bool True/false.
 	 */
 	public function isUnicode() -> bool {
-		if (
-			!this->isValid() ||
-			this->isIp()
-		) {
+		if (!this->isValid() || this->isIp()) {
 			return false;
 		}
 
@@ -392,7 +410,11 @@ final class Domains {
 	 * @return string Phone number.
 	 */
 	public function __toString() {
-		return this->isValid() ? this->host : "";
+		if (this->isValid()) {
+			return this->host;
+		}
+
+		return "";
 	}
 
 	/**
@@ -421,10 +443,7 @@ final class Domains {
 	 * @return string|null Host.
 	 */
 	public function getHost(const bool unicode=false) -> string | null {
-		if (
-			unicode &&
-			!empty this->host
-		) {
+		if (unicode && !empty this->host) {
 			return self::toUnicode(this->host);
 		}
 
@@ -438,10 +457,7 @@ final class Domains {
 	 * @return string|null Subdomain.
 	 */
 	public function getSubdomain(const bool unicode=false) -> string | null {
-		if (
-			unicode &&
-			!empty this->subdomain
-		) {
+		if (unicode && !empty this->subdomain) {
 			return self::toUnicode(this->subdomain);
 		}
 
@@ -455,10 +471,7 @@ final class Domains {
 	 * @return string|null Domain.
 	 */
 	public function getDomain(const bool unicode=false) -> string | null {
-		if (
-			unicode &&
-			!empty this->domain
-		) {
+		if (unicode && !empty this->domain) {
 			return self::toUnicode(this->domain);
 		}
 
@@ -472,10 +485,7 @@ final class Domains {
 	 * @return string|null Suffix.
 	 */
 	public function getSuffix(const bool unicode=false) -> string | null {
-		if (
-			unicode &&
-			!empty this->suffix
-		) {
+		if (unicode && !empty this->suffix) {
 			return self::toUnicode(this->suffix);
 		}
 
@@ -496,12 +506,13 @@ final class Domains {
 	 *
 	 * @param string $str Domain.
 	 * @param bool $unicode Unicode.
-	 * @return bool True/false.
+	 * @return string Domain.
 	 */
 	public static function niceDomain(const string str, const bool unicode=false) -> string {
 		var host;
-		let host = new self(str, true);
+		let host = new self(str);
 		if (host->isFqdn() && !host->isIp()) {
+			host->stripWww();
 			return host->getHost(unicode);
 		}
 
@@ -515,7 +526,7 @@ final class Domains {
 	 * invalid characters, quotes, and apostrophes.
 	 *
 	 * @param string $str Email.
-	 * @return void Nothing.
+	 * @return string Email.
 	 */
 	public static function niceEmail(string str) -> string {
 		string str = (string) \Blobfolio\Strings::quotes(str);
@@ -566,14 +577,17 @@ final class Domains {
 	 * @param string $str Hostname.
 	 * @param bool $www Strip leading www.
 	 * @param bool $unicode Unicode.
-	 * @return bool True/false.
+	 * @return string|bool Host or false.
 	 */
 	public static function niceHost(const string str, const bool www=true, const bool unicode=false) -> string | bool {
 
 		var host;
-		let host = new self(str, www);
+		let host = new self(str);
 		if (!host->isValid()) {
 			return false;
+		}
+		if (www) {
+			host->stripWww();
 		}
 
 		return host->getHost(unicode);
@@ -585,7 +599,7 @@ final class Domains {
 	 * Validate URLishness and convert // schemas.
 	 *
 	 * @param string $str URL.
-	 * @return bool True/false.
+	 * @return string URL.
 	 */
 	public static function niceUrl(string str) -> string {
 		array tmp = (array) self::parseUrl(str);
