@@ -696,8 +696,8 @@ final class Dom {
 		var k;
 		var v;
 		for k, v in classes {
-			let v = ltrim(v, ".");
-			if (empty v) {
+			let classes[k] = ltrim(v, ".");
+			if (empty classes[k]) {
 				unset(classes[k]);
 			}
 		}
