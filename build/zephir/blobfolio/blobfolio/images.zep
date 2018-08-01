@@ -97,7 +97,10 @@ final class Images {
 			// because XML wants us to fail. Haha.
 			if ("style" === tag_name) {
 				let tmp = tags->item(x);
-				let tmp->textContent = strip_tags(\Blobfolio\Dom::attributeValue(tmp->textContent, true));
+
+				let tmp->textContent = \Blobfolio\Dom::attributeValue(tmp->textContent, true);
+				let tmp->textContent = \Blobfolio\Dom::decodeJsEntities(tmp->textContent);
+				let tmp->textContent = strip_tags(tmp->textContent);
 			}
 
 			// Use XPath for attributes because DOMDocument will skip
@@ -247,7 +250,7 @@ final class Images {
 
 		// If this is an SVG, steal results from our SVG size method.
 		if ("image/svg+xml" === mime) {
-			var tmp = self::svgSize(file);
+			var tmp = self::svgSize(file, true);
 			if (false === tmp) {
 				return false;
 			}
@@ -270,9 +273,10 @@ final class Images {
 			return info;
 		}
 
-		// Manually parse WebP dimensions in case GD couldn't do it.
+		// This shouldn't be needed, but just in case a local PHP is
+		// wonky, we can calculate WebP dimensions manually.
 		if ("image/webp" === mime) {
-			var tmp = self::webpSize(file);
+			var tmp = self::webpSize(file, true);
 			if (false === tmp) {
 				return false;
 			}
@@ -297,10 +301,13 @@ final class Images {
 	 * Determine SVG Dimensions
 	 *
 	 * @param string $svg SVG content or file path.
+	 * @param bool $trusted Trusted.
 	 * @return array|bool Dimensions or false.
 	 */
-	public static function svgSize(string svg) -> bool | array {
-		let svg = \Blobfolio\Strings::utf8(svg);
+	public static function svgSize(string svg, const bool trusted=false) -> bool | array {
+		if (!trusted) {
+			let svg = \Blobfolio\Strings::utf8(svg);
+		}
 
 		// Make sure this is SVG-looking.
 		var start = stripos(svg, "<svg");
@@ -395,16 +402,19 @@ final class Images {
 	 * WebP Size
 	 *
 	 * @param string $webp WebP file path.
+	 * @param bool $trusted Trusted.
 	 * @return array|bool Dimensions or false.
 	 */
-	public static function webpSize(string webp) -> bool | array {
+	public static function webpSize(string webp, const bool trusted=false) -> bool | array {
 		if (!is_file(webp)) {
 			return false;
 		}
 
-		string mime = (string) \Blobfolio\Files::getMimeType(webp);
-		if ("image/webp" !== mime) {
-			return false;
+		if (!trusted) {
+			string mime = (string) \Blobfolio\Files::getMimeType(webp);
+			if ("image/webp" !== mime) {
+				return false;
+			}
 		}
 
 		var handle;
@@ -743,8 +753,13 @@ final class Images {
 			}
 		}
 
+		// This is so big it is pushed off to another function. Haha.
+		if (args["clean_styles"]) {
+			let svg = (string) self::restyleSvg(svg, args["rewrite_styles"]);
+		}
+
 		// Namespacing is a bitch.
-		if (args["clean_styles"] || args["namespace"]) {
+		if (args["namespace"]) {
 			let dom = \Blobfolio\Dom::svgToDom(svg, true);
 			let tags = dom->getElementsByTagName("svg");
 			if (!tags->length) {
@@ -753,184 +768,27 @@ final class Images {
 
 			let x = 0;
 			while x < tags->length {
-				// Add namespace.
-				if (args["namespace"]) {
-					tags->item(x)->setAttribute("xmlns:svg", \Blobfolio\Dom::SVG_NAMESPACE);
-				}
+				// Add the namespace.
+				tags->item(x)->setAttribute("xmlns:svg", \Blobfolio\Dom::SVG_NAMESPACE);
 
-				// Store a list of classes to rewrite, if any.
-				array classes_old = [];
-				int y;
-				int z;
-				var node;
-				var nodes;
-				var style;
 				var styles;
-				var tmp;
+				var style;
+				int y = 0;
+				int z = 0;
 
-				// TODO clean styles.
-				if (args["clean_styles"]) {
-					// First, combine styles.
-					let styles = tags->item(x)->getElementsByTagName("style");
-					if (styles->length) {
-						var style_parent = styles->item(0)->parentNode;
-						let style = dom->createElement("style");
-						while (styles->length) {
-							// Collect children.
-							let y = 0;
-							while (y < styles->item(0)->childNodes->length) {
-								let node = styles->item(0)->childNodes->item(y);
-								let node->nodeValue .= " ";
-								style->appendChild(node);
-
-								let y++;
-							}
-
-							\Blobfolio\Dom::removeNode(styles->item(0));
-						}
-
-						style_parent->appendChild(style);
-
-						// Now to fix the formatting.
-						let style = tags->item(x)->getElementsByTagName("style")->item(0);
-
-						array parsed = (array) \Blobfolio\Dom::parseCss(style->nodeValue);
-						if (count(parsed)) {
-							array style_new = [];
-
-							// Rewriting.
-							if (args["rewrite_styles"]) {
-								// Try to group rules.
-								array rules = [];
-
-								for v in parsed {
-									// Copy @ rules wholesale.
-									if (false !== v["@"]) {
-										let rules[v["raw"]] = [];
-									}
-									else {
-										var rk, rv;
-										string r;
-										for rk, rv in v["rules"] {
-											let r = rk . ":" . rv;
-
-											if (!isset(rules[r])) {
-												let rules[r] = [];
-											}
-
-											let rules[r] = array_merge(
-												rules[r],
-												array_values(v["selectors"])
-											);
-										}
-									}
-								} // End parsed.
-
-								// Clean up and build output.
-								var rule;
-								var selectors;
-								var selector;
-								for rule, selectors in rules {
-									// Selectorless rules get added as is.
-									if (!count(selectors)) {
-										let style_new[] = rule;
-										continue;
-									}
-
-									// Clean up selectors a touch.
-									let selectors = array_unique(selectors);
-									sort(selectors);
-
-									// Look for selectors.
-									array classes = [];
-									for k, selector in selectors {
-										// A valid class.
-										if (preg_match("/^\.[a-z\d_\-]+$/i", selector)) {
-											let classes[] = selector;
-											unset(selectors[k]);
-										}
-										// A broken Adobe class,
-										// e.g. .\38 ab9678e-54ee-493d-b19f-2215c5549034.
-										else {
-											let selector = str_replace(".\\3", ".", selector);
-											// Fix weird adobe rules.
-											preg_match_all("/^\.([\d]) ([a-z\d\-]+)$/", selector, matches);
-											if (count(matches[0])) {
-												let classes[] = preg_replace("/\s/", "", matches[0][0]);
-												unset(selectors[k]);
-											}
-										}
-									} // Each selector.
-
-									// We have classes!
-									if (count(classes)) {
-										string class_new = strtolower("c" . \Blobfolio\Strings::random(4));
-										while (isset(self::_svg_classes[class_new])) {
-											let class_new = strtolower("c" . \Blobfolio\Strings::random(4));
-										}
-										let selectors[] = "." . class_new;
-
-										// Add the class to all affected nodes.
-										let nodes = \Blobfolio\Dom::getNodesByClass(tags->item(x), classes);
-										for node in nodes {
-											string class_value = (string) node->getAttribute("class");
-											let class_value .= " " . class_new;
-											node->setAttribute("class", class_value);
-										}
-
-										// And note our old classes.
-										for v in classes {
-											let classes_old[] = ltrim(v, ".");
-										}
-									}
-
-									let style_new[] = implode(",", selectors) . "{" . rule . "}";
-								} // Each rule.
-							}
-							// Not rewriting.
-							else {
-								for v in parsed {
-									let style_new[] = v["raw"];
-								}
-							}
-
-							// Push our rules back!
-							let style->nodeValue = implode("", style_new);
-						}
+				// Copy style tags to the new namespace.
+				let styles = tags->item(x)->getElementsByTagName("style");
+				let y = 0;
+				while y < styles->length {
+					let style = dom->createElement("svg:style");
+					let z = 0;
+					while z < styles->item(y)->childNodes->length {
+						style->appendChild(styles->item(y)->childNodes->item(z)->cloneNode(true));
+						let z++;
 					}
-				} // End cleaning styles.
 
-				// Fix styles too.
-				if (args["namespace"]) {
-					let styles = tags->item(x)->getElementsByTagName("style");
-
-					let y = 0;
-					while y < styles->length {
-						let style = dom->createElement("svg:style");
-						let z = 0;
-						while z < styles->item(y)->childNodes->length {
-							style->appendChild(styles->item(y)->childNodes->item(z)->cloneNode(true));
-							let z++;
-						}
-
-						styles->item(y)->parentNode->appendChild(style);
-						let y++;
-					}
-				}
-
-				if (count(classes_old)) {
-					let classes_old = array_unique(classes_old);
-					sort(classes_old);
-
-					let nodes = \Blobfolio\Dom::getNodesByClass(tags->item(x), classes_old);
-					for node in nodes {
-						let tmp = node->getAttribute("class");
-						let tmp = \Blobfolio\Strings::whitespace(tmp, 0, true);
-						let tmp = (array) explode(" ", tmp);
-						let tmp = array_unique(tmp);
-						let tmp = array_diff(tmp, classes_old);
-						node->setAttribute("class", implode(" ", tmp));
-					}
+					styles->item(y)->parentNode->appendChild(style);
+					let y++;
 				}
 
 				let x++;
@@ -962,6 +820,200 @@ final class Images {
 		}
 
 		// Finally done!
+		return svg;
+	}
+
+	/**
+	 * Restyle SVGs
+	 *
+	 * This code has been abstracted from cleanSvg due to its
+	 * complexity.
+	 *
+	 * @param string $str SVG.
+	 * @param bool $rewrite Rewrite.
+	 * @return string SVG.
+	 */
+	private static function restyleSvg(string svg, const bool rewrite=false) -> string {
+		// Start by merging styles. This is much easier to achieve with
+		// string matching than DOM match.
+		var styleMatch;
+		preg_match_all(
+			"#<style[^>]*>(.*)</style>#iU",
+			svg,
+			styleMatch
+		);
+
+		// Early abort.
+		if (!is_array(styleMatch) || !count(styleMatch[1])) {
+			return svg;
+		}
+
+		string styleMerged = "";
+		var dom;
+		var k;
+		var tags;
+		var v;
+
+		for v in styleMatch[1] {
+			let styleMerged .= " " . v;
+		}
+
+		// We'll need our DOM at some point.
+		let dom = \Blobfolio\Dom::svgToDom(svg, true);
+		if (false === dom) {
+			return "";
+		}
+
+		// Let's go ahead and nuke style tags. We don't need them any
+		// more.
+		let tags = dom->getElementsByTagName("style");
+		if (tags->length) {
+			\Blobfolio\Dom::removeNodes(tags);
+		}
+
+		// If no styles were parsed, let's quickly remove styles and get
+		// on with life.
+		array parsed = (array) \Blobfolio\Dom::parseCss(styleMerged);
+		if (!count(parsed)) {
+			return (string) \Blobfolio\Dom::domToSvg(dom);
+		}
+
+		array styleCleaned = [];
+		array classesOld = [];
+		var matches;
+		var nodes;
+		var node;
+
+		// Life is so much easier if we aren't rewriting anything.
+		if (!rewrite) {
+			for v in parsed {
+				let styleCleaned[] = v["raw"];
+			}
+		}
+		// Otherwise we have to parse a ton of data. Haha.
+		else {
+			array rules = [];
+			var rule;
+			var selector;
+			var selectors;
+
+			for v in parsed {
+				// Copy @ rules wholesale.
+				if (false !== v["@"]) {
+					let rules[v["raw"]] = [];
+				}
+				else {
+					var rk, rv;
+					string r;
+					for rk, rv in v["rules"] {
+						let r = rk . ":" . rv;
+
+						if (!isset(rules[r])) {
+							let rules[r] = [];
+						}
+
+						let rules[r] = array_merge(
+							rules[r],
+							array_values(v["selectors"])
+						);
+					}
+				}
+			} // End parsed.
+
+			// Clean up and build output.
+			for rule, selectors in rules {
+				// Selectorless rules get added as is.
+				if (!count(selectors)) {
+					let styleCleaned[] = rule;
+					continue;
+				}
+
+				// Clean up selectors a touch.
+				let selectors = array_unique(selectors);
+				sort(selectors);
+
+				// Look for selectors.
+				array classes = [];
+				for k, selector in selectors {
+					// A valid class.
+					if (preg_match("/^\.[a-z\d_\-]+$/i", selector)) {
+						let classes[] = selector;
+						unset(selectors[k]);
+					}
+					// A broken Adobe class,
+					// e.g. .\38 ab9678e-54ee-493d-b19f-2215c5549034.
+					else {
+						let selector = str_replace(".\\3", ".", selector);
+						// Fix weird adobe rules.
+						preg_match_all("/^\.([\d]) ([a-z\d\-]+)$/", selector, matches);
+						if (count(matches[0])) {
+							let classes[] = preg_replace("/\s/", "", matches[0][0]);
+							unset(selectors[k]);
+						}
+					}
+				} // Each selector.
+
+				// We have classes!
+				if (count(classes)) {
+					string classNew = strtolower("c" . \Blobfolio\Strings::random(4));
+					while (isset(self::_svg_classes[classNew])) {
+						let classNew = strtolower("c" . \Blobfolio\Strings::random(4));
+					}
+					let selectors[] = "." . classNew;
+
+					// Add the class to all affected nodes.
+					let nodes = \Blobfolio\Dom::getNodesByClass(dom, classes);
+					for node in nodes {
+						string classValue = (string) node->getAttribute("class");
+						let classValue .= " " . classNew;
+						node->setAttribute("class", classValue);
+					}
+
+					// And note our old classes.
+					for v in classes {
+						let classesOld[] = ltrim(v, ".");
+					}
+				}
+
+				let styleCleaned[] = implode(",", selectors) . "{" . rule . "}";
+			} // Each rule.
+		}
+
+		// We should finally have styles!
+		let styleMerged = (string) implode("", styleCleaned);
+
+		// We need to inject our new style tag.
+		var def;
+		var style;
+		let def = dom->createElement("def");
+		let style = dom->createElement("style");
+		let style->nodeValue = styleMerged;
+		def->appendChild(style);
+
+		// Add it.
+		dom->getElementsByTagName("svg")->item(0)->insertBefore(
+			def,
+			dom->getElementsByTagName("svg")->item(0)->childNodes->item(0)
+		);
+
+		// We have to go through and remove old classes.
+		if (count(classesOld)) {
+			let classesOld = array_unique(classesOld);
+			sort(classesOld);
+
+			let nodes = \Blobfolio\Dom::getNodesByClass(dom, classesOld);
+			for node in nodes {
+				var tmp;
+				let tmp = (string) node->getAttribute("class");
+				let tmp = (string) \Blobfolio\Strings::whitespace(tmp, 0, true);
+				let tmp = (array) explode(" ", tmp);
+				let tmp = array_unique(tmp);
+				let tmp = array_diff(tmp, classesOld);
+				node->setAttribute("class", implode(" ", tmp));
+			}
+		}
+
+		let svg = (string) \Blobfolio\Dom::domToSvg(dom);
 		return svg;
 	}
 
