@@ -35,7 +35,7 @@ final class Files {
 	public static function niceFileExtension(string ext) -> string {
 		let ext = \Blobfolio\Strings::toLower(ext);
 		let ext = preg_replace("/\s/u", "", ext);
-		return ltrim(ext, "*.");
+		return rtrim(ltrim(ext, "*."), "*.");
 	}
 
 	/**
@@ -440,6 +440,10 @@ final class Files {
 			} catch \Throwable {
 				let str = old_str;
 			}
+		}
+
+		if (empty str) {
+			return false;
 		}
 
 		// Always trail slashes on directories.
