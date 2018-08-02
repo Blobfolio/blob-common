@@ -455,7 +455,7 @@ final class Json {
 		let value = json_encode(value, options, depth);
 
 		// Try again with UTF-8 sanitizing if this failed.
-		if (null === value) {
+		if (empty value) {
 			let original = \Blobfolio\Strings::utf8Recursive(original);
 			let value = json_encode(original, options, depth);
 		}
