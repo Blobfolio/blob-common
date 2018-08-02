@@ -1095,63 +1095,29 @@ final class Images {
 			);
 		}
 
-		array descriptors = [
-			0: ["pipe", "w"],
-			1: ["file", error_log, "a"]
-		];
-		array pipes = [];
-		var life;
-		var process;
-		var response;
+		pclose(popen(cmd, "r"));
 
-		try {
-			// Open a process to run our binary.
-			let process = proc_open(
-				cmd,
-				descriptors,
-				pipes,
-				tmp_dir
-			);
-
-			// If we didn't get a resource, something is wrong.
-			if (!is_resource(process)) {
-				return false;
-			}
-
-			// Pull the stream contents.
-			let life = stream_get_contents(pipes[0]);
-			fclose(pipes[0]);
-			let response = proc_close(process);
-
-			// We don't actually want the error log.
-			if (file_exists(error_log)) {
-				unlink(error_log);
-			}
-
-			// If the file didn't end up a thing, we're done.
-			if (!file_exists(to)) {
-				return false;
-			}
-
-			// Try to give it the same permissions as the original.
-			var tmp;
-			let tmp = fileperms(from);
-			if (false !== tmp) {
-				chmod(to, tmp);
-			}
-			let tmp = fileowner(from);
-			if (false !== tmp) {
-				chown(to, tmp);
-			}
-			let tmp = filegroup(from);
-			if (false !== tmp) {
-				chgrp(to, tmp);
-			}
-
-			return true;
+		// If the file didn't end up a thing, we're done.
+		if (!file_exists(to)) {
+			return false;
 		}
 
-		return false;
+		// Try to give it the same permissions as the original.
+		var tmp;
+		let tmp = fileperms(from);
+		if (false !== tmp) {
+			chmod(to, tmp);
+		}
+		let tmp = fileowner(from);
+		if (false !== tmp) {
+			chown(to, tmp);
+		}
+		let tmp = filegroup(from);
+		if (false !== tmp) {
+			chgrp(to, tmp);
+		}
+
+		return true;
 	}
 
 	// -----------------------------------------------------------------
