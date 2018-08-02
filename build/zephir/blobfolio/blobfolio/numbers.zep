@@ -56,7 +56,7 @@ final class Numbers {
 
 		let precision = (int) pow(10, precision);
 
-		let num = (int) floor(num * precision);
+		let num = (int) floor((float) num * precision);
 		return num / precision;
 	}
 
