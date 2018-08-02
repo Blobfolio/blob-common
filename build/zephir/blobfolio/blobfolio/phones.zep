@@ -91,91 +91,109 @@ final class Phones {
 			return false;
 		}
 
-		array keys;
 		array targets;
-		array tests;
 		var outPrefix;
-		var outTypes;
 		var v2;
-		var v3;
 		var v;
 
 		// Build a list of targets.
-		let targets = (array) self::_regions[self::_data[country]["region"]];
-		if (country !== targets[0]) {
-			array_unshift(targets, country);
-			let targets = array_unique(targets);
+		let targets = (array) \Blobfolio\Geo::getNeighborCountries(country, 50);
+		if (!count(targets)) {
+			let targets = (array) self::_regions[self::_data[country]["region"]];
+			if (country !== targets[0]) {
+				array_unshift(targets, country);
+				let targets = array_unique(targets);
+			}
 		}
 
-		// Loop through each target until we find a match!
+		// Pass One: the number as is.
+		for v in targets {
+			let v = self::testPhone(phone, v);
+			if (false !== v) {
+				return v;
+			}
+		}
+
+		// Pass Two: try again without the prefix.
 		for v in targets {
 			let outPrefix = "" . self::_data[v]["prefix"];
-			let outTypes = [];
-
-			// We'll test the phone with and without a prefix.
-			let tests = [phone];
 			let v2 = (string) ltrim(phone, "0");
 			if (0 === strpos(v2, outPrefix)) {
-				let tests [] = (string) substr(v2, strlen(outPrefix));
-			}
-
-			// Run through each test!
-			for v2 in tests {
-				if (!preg_match("#" . self::_data[v]["patterns"] . "#", v2)) {
-					continue;
+				let v2 = (string) substr(v2, strlen(outPrefix));
+				let v = self::testPhone(v2, v);
+				if (false !== v) {
+					return v;
 				}
-
-				// Loop through types.
-				let keys = (array) array_keys(self::_data[v]["types"]);
-				for v3 in keys {
-					if (preg_match("#^(" . v3 . ")$#", v2)) {
-						let outTypes = array_merge(
-							outTypes,
-							self::_data[v]["types"][v3]
-						);
-					}
-				}
-
-				// No types, no go.
-				if (!count(outTypes)) {
-					continue;
-				}
-				elseif (count(outTypes) > 1) {
-					let outTypes = array_unique(outTypes);
-					sort(outTypes);
-				}
-
-				// We found it! Now we just need to format the number.
-				let keys = (array) array_keys(self::_data[v]["formats"]);
-				for v3 in keys {
-					if (preg_match("#^(" . v3 . ")$#", v2)) {
-						let v2 = (string) preg_replace(
-							"#^" . v3 . "$#",
-							self::_data[v]["formats"][v3],
-							v2
-						);
-						return [
-							"country": v,
-							"prefix": (int) outPrefix,
-							"region": self::_data[v]["region"],
-							"types": outTypes,
-							"number": "+" . outPrefix . " " . v2
-						];
-					}
-				}
-
-				// We have to build something generic.
-				return [
-					"country": v,
-					"prefix": (int) outPrefix,
-					"region": self::_data[v]["region"],
-					"types": outTypes,
-					"number": "+" . outPrefix . " " . v2
-				];
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Test a phone against a country.
+	 *
+	 * @param string $phone Phone.
+	 * @param string $country Country.
+	 * @return array|bool Info for false.
+	 */
+	private static function testPhone(string phone, string country) -> array | bool {
+		// Run through each test!
+		if (!preg_match("#" . self::_data[country]["patterns"] . "#", phone)) {
+			return false;
+		}
+
+		string outPrefix = (string) self::_data[country]["prefix"];
+		array outTypes = [];
+		var v3;
+
+		// Loop through types.
+		array keys = (array) array_keys(self::_data[country]["types"]);
+		for v3 in keys {
+			if (preg_match("#^(" . v3 . ")$#", phone)) {
+				let outTypes = array_merge(
+					outTypes,
+					self::_data[country]["types"][v3]
+				);
+			}
+		}
+
+		// No types, no go.
+		if (!count(outTypes)) {
+			return false;
+		}
+		elseif (count(outTypes) > 1) {
+			let outTypes = array_unique(outTypes);
+			sort(outTypes);
+		}
+
+		// We found it! Now we just need to format the number.
+		let keys = (array) array_keys(self::_data[country]["formats"]);
+		for v3 in keys {
+			if (preg_match("#^(" . v3 . ")$#", phone)) {
+				let phone = (string) preg_replace(
+					"#^" . v3 . "$#",
+					self::_data[country]["formats"][v3],
+					phone
+				);
+				return [
+					"country": country,
+					"prefix": (int) outPrefix,
+					"region": self::_data[country]["region"],
+					"types": outTypes,
+					"number": "+" . outPrefix . " " . phone
+				];
+			}
+		}
+
+		// We have to build something generic.
+		return [
+			"country": country,
+			"prefix": (int) outPrefix,
+			"region": self::_data[country]["region"],
+			"types": outTypes,
+			"number": "+" . outPrefix . " " . phone
+		];
 	}
 
 
