@@ -41,12 +41,10 @@ final class Phones {
 		}
 
 		// Maybe restrict by type?
-		if (unlikely ("array" === typeof types) && count(types)) {
-			var v;
-			for v in types {
-				if (in_array(v, parsed["types"], true)) {
-					return parsed["number"];
-				}
+		if (("array" === typeof types) && count(types)) {
+			array intersect = (array) array_intersect(types, parsed["types"]);
+			if (count(intersect)) {
+				return parsed["number"];
 			}
 		}
 		else {
