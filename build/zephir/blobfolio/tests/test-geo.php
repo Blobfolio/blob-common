@@ -187,6 +187,89 @@ class geo_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame('string', gettype($result));
 	}
 
+	/**
+	 * Test: getAuStates
+	 */
+	function test_getAuStates() {
+		$result = \Blobfolio\Geo::getAuStates();
+
+		$this->assertTrue(is_array($result));
+		$this->assertTrue(array_key_exists('NSW', $result));
+	}
+
+	/**
+	 * Test: getCaProvinces
+	 */
+	function test_getCaProvinces() {
+		$result = \Blobfolio\Geo::getCaProvinces();
+
+		$this->assertTrue(is_array($result));
+		$this->assertTrue(array_key_exists('ON', $result));
+	}
+
+	/**
+	 * Test: getCountries
+	 */
+	function test_getCountries() {
+		$result = \Blobfolio\Geo::getCountries();
+
+		$this->assertTrue(is_array($result));
+		$this->assertTrue(array_key_exists('US', $result));
+	}
+
+	/**
+	 * Test: getNeighborCountries
+	 *
+	 * @dataProvider data_getNeighborCountries
+	 *
+	 * @param string $value Value.
+	 * @param int $limit Limit.
+	 * @param array $expected Expected.
+	 */
+	function test_getNeighborCountries(string $value, int $limit, $expected) {
+		$result = \Blobfolio\Geo::getNeighborCountries($value, $limit);
+
+		$this->assertTrue(is_array($result));
+
+		// If limiting, it should be the right size.
+		if ($limit > 0) {
+			$this->assertTrue(count($result) <= $limit);
+		}
+
+		// Rather than bloat the world, let's just check what was
+		// actually passed.
+		foreach ($expected as $k=>$v) {
+			$this->assertTrue(isset($result[$k]));
+			$this->assertSame($v, $result[$k]);
+		}
+	}
+
+	/**
+	 * Test: getUsStates
+	 */
+	function test_getUsStates() {
+		$result = \Blobfolio\Geo::getUsStates();
+
+		$this->assertTrue(is_array($result));
+		$this->assertTrue(array_key_exists('IL', $result));
+		$this->assertTrue(array_key_exists('PR', $result));
+
+		$result = \Blobfolio\Geo::getUsStates(false);
+		$this->assertTrue(is_array($result));
+		$this->assertTrue(array_key_exists('IL', $result));
+		$this->assertFalse(array_key_exists('PR', $result));
+	}
+
+	/**
+	 * Test: getRegions
+	 */
+	function test_getRegions() {
+		$result = \Blobfolio\Geo::getRegions();
+
+		$this->assertTrue(is_array($result));
+		$this->assertTrue(in_array('North America', $result, true));
+	}
+
 
 
 	// -----------------------------------------------------------------
@@ -492,6 +575,47 @@ class geo_tests extends \PHPUnit\Framework\TestCase {
 				'UTC',
 				'America/Los_Angeles',
 				'2015-01-14 17:12:23',
+			),
+		);
+	}
+
+	/**
+	 * Data: getNeighborCountries
+	 *
+	 * @return array Values.
+	 */
+	function data_getNeighborCountries() {
+		return array(
+			array(
+				'US',
+				5,
+				array(
+					'US',
+					'CA',
+					'MX',
+					'BS',
+					'BZ',
+				),
+			),
+			array(
+				'US',
+				0,
+				array(
+					'US',
+					'CA',
+					'MX',
+					'BS',
+					'BZ',
+				),
+			),
+			array(
+				'CA',
+				3,
+				array(
+					'CA',
+					'US',
+					'GL',
+				),
 			),
 		);
 	}
