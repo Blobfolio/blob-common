@@ -321,6 +321,30 @@ final class Geo {
 	// -----------------------------------------------------------------
 
 	/**
+	 * Get Distance
+	 *
+	 * Calculate the distance between two sets of lat/lon in miles.
+	 *
+	 * @param float $lat1 Lat1.
+	 * @param float $lon1 Lon1.
+	 * @param float $lat2 Lat2.
+	 * @param float $lon2 Lon2.
+	 * @return float Miles.
+	 */
+	public static function getDistance(float lat1, float lon1, float lat2, float lon2) -> float {
+		// The same?
+		if ((lat1 === lat2) && (lon1 === lon2)) {
+			return 0.0;
+		}
+
+		float theta = lon1 - lon2;
+		float distance;
+		let distance = sin(deg2rad(lat1)) * sin(deg2rad(lat2)) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * cos(deg2rad(theta));
+		let distance = acos(distance);
+		return distance * 60 * 1.1515;
+	}
+
+	/**
 	 * Days Between Dates
 	 *
 	 * @param string $date1 Date.
@@ -385,6 +409,141 @@ final class Geo {
 	// -----------------------------------------------------------------
 	// Data
 	// -----------------------------------------------------------------
+
+	/**
+	 * Get AU States
+	 *
+	 * @return array States.
+	 */
+	public static function getAuStates() -> array {
+		// Make sure the data is loaded.
+		if (!globals_get("loaded_geo")) {
+			self::loadData();
+		}
+
+		return self::_au;
+	}
+
+	/**
+	 * Get CA Provinces
+	 *
+	 * @return array Provinces.
+	 */
+	public static function getCaProvinces() -> array {
+		// Make sure the data is loaded.
+		if (!globals_get("loaded_geo")) {
+			self::loadData();
+		}
+
+		return self::_ca;
+	}
+
+	/**
+	 * Get Countries
+	 *
+	 * @return array States.
+	 */
+	public static function getCountries() -> array {
+		// Make sure the data is loaded.
+		if (!globals_get("loaded_geo")) {
+			self::loadData();
+		}
+
+		return self::_countries;
+	}
+
+	/**
+	 * Get Neighboring Countries
+	 *
+	 * Sort and return an array of countries by proximity to the target.
+	 *
+	 * @param string $country Country.
+	 * @param int $limit Limit.
+	 * @return array Countries.
+	 */
+	public static function getNeighborCountries(string country, const int limit = -1) -> array {
+		let country = self::niceCountry(country);
+		if (
+			empty country ||
+			(0 === self::_countries[country]["lat"]) ||
+			(0 === self::_countries[country]["lon"])
+		) {
+			return [];
+		}
+
+		array countries = [];
+		var k, v;
+		for k, v in self::_countries {
+			// The target is closest to itself.
+			if (k === country) {
+				let countries[k] = 0.0;
+			}
+			// If a country borders the target, consider that 1.0.
+			elseif (in_array(k, self::_countries[country]["borders"], true)) {
+				let countries[k] = 1.0;
+			}
+			// Otherwise calculate central distances.
+			elseif (v["lat"] && v["lon"]) {
+				let countries[k] = (float) self::getDistance(
+					self::_countries[country]["lat"],
+					self::_countries[country]["lon"],
+					v["lat"],
+					v["lon"]
+				);
+			}
+		}
+
+		// Sort by distance.
+		asort(countries);
+
+		// Chop long results.
+		if (limit > 0 && count(countries) > limit) {
+			array_splice(countries, limit);
+		}
+
+		return array_keys(countries);
+	}
+
+	/**
+	 * Get Regions
+	 *
+	 * @return array Regions.
+	 */
+	public static function getRegions() -> array {
+		return self::_regions;
+	}
+
+	/**
+	 * Get US States
+	 *
+	 * @param bool $extra Extra.
+	 * @return array States.
+	 */
+	public static function getUsStates(const bool extra=true) -> array {
+		// Make sure the data is loaded.
+		if (!globals_get("loaded_geo")) {
+			self::loadData();
+		}
+
+		// Strip the territories and military bases, but keep DC.
+		if (!extra) {
+			array out = (array) self::_us;
+			unset(out["AA"]);
+			unset(out["AE"]);
+			unset(out["AP"]);
+			unset(out["AS"]);
+			unset(out["FM"]);
+			unset(out["GU"]);
+			unset(out["MH"]);
+			unset(out["MP"]);
+			unset(out["PW"]);
+			unset(out["PR"]);
+			unset(out["VI"]);
+			return out;
+		}
+
+		return self::_us;
+	}
 
 	/**
 	 * Load Data
