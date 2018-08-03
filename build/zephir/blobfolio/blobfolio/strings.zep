@@ -16,6 +16,12 @@
 namespace Blobfolio;
 
 final class Strings {
+
+	const EXCERPT_BREAK_CHARACTER = 1;
+	const EXCERPT_BREAK_WORD = 2;
+	const EXCERPT_ELLIPSIS = 4;
+	const EXCERPT_INCLUSIVE = 8;
+
 	/**
 	 * @var array $case_char_upper Uppercase Unicode.
 	 */
@@ -169,7 +175,8 @@ final class Strings {
 	 * Generate Text Excerpt
 	 *
 	 * @param string $str String.
-	 * @param mixed $args Arguments.
+	 * @param int $length Length.
+	 * @param int $flags Flags.
 	 * @param bool $trusted Trusted.
 	 *
 	 * @arg int $length Length limit.
@@ -178,36 +185,37 @@ final class Strings {
 	 *
 	 * @return string Excerpt.
 	 */
-	public static function excerpt(string str, var args=null, const bool trusted=false) -> string {
+	public static function excerpt(string str, int length = 200, const uint flags = 5, const bool trusted=false) -> string {
 		let str = self::whitespace(str, 0, trusted);
 		let str = strip_tags(str);
 
-		let args = \Blobfolio\Cast::parseArgs(
-			args,
-			[
-				"length": 200,
-				"suffix": "…",
-				"unit": "character",
-				"inclusive": false
-			]
-		);
+		bool flagsEllipsis = (flags & self::EXCERPT_ELLIPSIS);
+		bool flagsWord = (flags & self::EXCERPT_BREAK_WORD);
+		bool flagsChar = !flagsWord;
+		bool flagsInclusive = (flags & self::EXCERPT_INCLUSIVE);
 
-		if (args["length"] < 1) {
+		if (flagsInclusive) {
+			let length -= 1;
+		}
+
+		if (length < 1) {
 			return "";
 		}
 
 		// Limit words.
-		if ("word" === strtolower(substr(args["unit"], 0, 4))) {
-			if (substr_count(str, " ") > args["length"] - 1) {
-				array tmp = (array) explode(" ", str);
-				let tmp = array_slice(tmp, 0, args["length"]);
-				return implode(" ", tmp) . args["suffix"];
+		if (flagsWord && substr_count(str, " ") > length - 1) {
+			array tmp = (array) explode(" ", str);
+			let tmp = array_slice(tmp, 0, length);
+			let str = (string) implode(" ", tmp);
+			if (flagsEllipsis) {
+				let str .= "…";
 			}
 		}
 		// Character limit.
-		else {
-			if (mb_strlen(str, "UTF-8") > args["length"]) {
-				return trim(mb_substr(str, 0, args["length"], "UTF-8")) . args["suffix"];
+		elseif (flagsChar && mb_strlen(str, "UTF-8") > length) {
+			let str = (string) trim(mb_substr(str, 0, length, "UTF-8"));
+			if (flagsEllipsis) {
+				let str .= "…";
 			}
 		}
 
