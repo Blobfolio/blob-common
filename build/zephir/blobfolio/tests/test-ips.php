@@ -25,12 +25,11 @@ class ips_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_niceIp
 	 *
 	 * @param string $value Value.
-	 * @param bool $restricted Restricted.
-	 * @param bool $condense Condense.
+	 * @param int $flags Flags.
 	 * @param string $expected.
 	 */
-	function test_niceIp(string $value, bool $restricted, bool $condense, string $expected) {
-		$result = \Blobfolio\Ips::niceIp($value, $restricted, $condense);
+	function test_niceIp(string $value, int $flags, string $expected) {
+		$result = \Blobfolio\Ips::niceIp($value, $flags);
 
 		$this->assertSame($expected, $result);
 	}
@@ -121,62 +120,52 @@ class ips_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2',
-				false,
-				true,
+				\Blobfolio\Ips::IP_CONDENSE,
 				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
-				false,
-				true,
+				\Blobfolio\Ips::IP_CONDENSE,
 				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:ff2',
-				false,
-				false,
+				0,
 				'2600:3c00:0000:0000:f03c:91ff:feae:0ff2',
 			),
 			array(
 				'127.0.0.1',
-				false,
-				true,
+				\Blobfolio\Ips::IP_CONDENSE,
 				'',
 			),
 			array(
 				'127.0.0.1',
-				true,
-				true,
+				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
 				'127.0.0.1',
 			),
 			array(
 				'::127.0.0.1',
-				true,
-				true,
+				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
 				'127.0.0.1',
 			),
 			array(
 				'[::127.0.0.1]',
-				true,
-				true,
+				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
 				'127.0.0.1',
 			),
 			array(
 				'::1',
-				false,
-				true,
+				\Blobfolio\Ips::IP_CONDENSE,
 				'',
 			),
 			array(
 				'[::1]',
-				true,
-				true,
+				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
 				'::1',
 			),
 			array(
 				'[::1]',
-				true,
-				false,
+				\Blobfolio\Ips::IP_RESTRICTED,
 				'0000:0000:0000:0000:0000:0000:0000:0001',
 			),
 		);

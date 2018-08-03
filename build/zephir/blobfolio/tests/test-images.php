@@ -123,12 +123,12 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_cleanSvg
 	 *
 	 * @param string $value Value.
-	 * @param array $args Arguments.
+	 * @param int $flags Flags.
 	 * @param array $expected_true Expected positive bits.
 	 * @param array $expected_false Expected negative bits.
 	 */
-	function test_cleanSvg(string $value, array $args, array $expected_true, array $expected_false) {
-		$result = \Blobfolio\Images::cleanSvg($value, $args);
+	function test_cleanSvg(string $value, int $flags, array $expected_true, array $expected_false) {
+		$result = \Blobfolio\Images::cleanSvg($value, $flags);
 
 		// If we aren't looking for anything, we are looking for
 		// nothing.
@@ -324,7 +324,7 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				array(),
+				\Blobfolio\Images::SVG_SANITIZE,
 				array(
 					'<svg',
 					'.bleerkk3 { fill: currentColor; }',
@@ -336,9 +336,8 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				array(
-					'strip_id'=>true,
-				),
+				\Blobfolio\Images::SVG_SANITIZE |
+				\Blobfolio\Images::SVG_STRIP_ID,
 				array(
 					'<svg',
 					'.bleerkk3 { fill: currentColor; }',
@@ -350,9 +349,8 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				array(
-					'clean_styles'=>true,
-				),
+				\Blobfolio\Images::SVG_SANITIZE |
+				\Blobfolio\Images::SVG_CLEAN_STYLES,
 				array(
 					'<svg',
 					'{fill:currentColor;}',
@@ -364,10 +362,9 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				array(
-					'clean_styles'=>true,
-					'rewrite_styles'=>true,
-				),
+				\Blobfolio\Images::SVG_SANITIZE |
+				\Blobfolio\Images::SVG_CLEAN_STYLES |
+				\Blobfolio\Images::SVG_REWRITE_STYLES,
 				array(
 					'<svg',
 					'{fill:currentColor;}',
@@ -380,10 +377,9 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'minus.svg',
-				array(
-					'clean_styles'=>true,
-					'rewrite_styles'=>true,
-				),
+				\Blobfolio\Images::SVG_SANITIZE |
+				\Blobfolio\Images::SVG_CLEAN_STYLES |
+				\Blobfolio\Images::SVG_REWRITE_STYLES,
 				array(
 					'<svg',
 					'{fill:currentColor;}',

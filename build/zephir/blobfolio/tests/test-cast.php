@@ -116,12 +116,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $default Default.
-	 * @param bool $strict Strict.
-	 * @param bool $recursive Recursive.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_parseArgs($value, $default, bool $strict, bool $recursive, $expected) {
-		$result = \Blobfolio\Cast::parseArgs($value, $default, $strict, $recursive);
+	function test_parseArgs($value, $default, int $flags, $expected) {
+		$result = \Blobfolio\Cast::parseArgs($value, $default, $flags);
 		$this->assertSame($expected, $result);
 		$this->assertSame(gettype($expected), gettype($result));
 	}
@@ -421,15 +420,13 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'',
 				array(''),
-				false,
-				false,
+				0,
 				array(''),
 			),
 			array(
 				null,
 				array('dog'=>'wolf'),
-				false,
-				false,
+				0,
 				array('dog'=>'wolf'),
 			),
 			array(
@@ -438,8 +435,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				false,
-				false,
+				0,
 				array(
 					'animal'=>'dog',
 					'fruit'=>'banana',
@@ -453,8 +449,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				false,
-				false,
+				0,
 				array(
 					'animal'=>array('dog'=>'wolf'),
 					'fruit'=>'banana',
@@ -466,8 +461,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>array('bear'),
 					'fruit'=>'banana',
 				),
-				true,
-				false,
+				\Blobfolio\Cast::PARSE_STRICT,
 				array(
 					'animal'=>array('dog'),
 					'fruit'=>'banana',
@@ -483,8 +477,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 						'fruit'=>15.0,
 					),
 				),
-				true,
-				true,
+				\Blobfolio\Cast::PARSE_STRICT | \Blobfolio\Cast::PARSE_RECURSIVE,
 				array(
 					'price'=>array(
 						'animal'=>.67,

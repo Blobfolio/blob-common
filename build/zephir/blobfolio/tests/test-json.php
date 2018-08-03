@@ -40,12 +40,11 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $default Default.
-	 * @param bool $strict Strict.
-	 * @param bool $recursive Recursive.
+	 * @param int $flags Flags.
 	 * @param mixed $expected.
 	 */
-	function test_decodeArray($value, $default, bool $strict, bool $recursive, $expected) {
-		$result = \Blobfolio\Json::decodeArray($value, $default, $strict, $recursive);
+	function test_decodeArray($value, $default, int $flags, $expected) {
+		$result = \Blobfolio\Json::decodeArray($value, $default, $flags);
 
 		$this->assertSame($expected, $result);
 	}
@@ -166,15 +165,13 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'',
 				null,
-				true,
-				true,
+				0,
 				array(),
 			),
 			array(
 				'{"animal":"dog"}',
 				null,
-				true,
-				true,
+				0,
 				array('animal'=>'dog'),
 			),
 			array(
@@ -183,8 +180,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				true,
-				true,
+				\Blobfolio\Json::DECODE_STRICT | \Blobfolio\Json::DECODE_RECURSIVE,
 				array(
 					'animal'=>'dog',
 					'fruit'=>'banana',
@@ -196,8 +192,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				false,
-				true,
+				\Blobfolio\Json::DECODE_RECURSIVE,
 				array(
 					'animal'=>array('dog'=>'wolf'),
 					'fruit'=>'banana',
@@ -209,8 +204,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>array('bear'),
 					'fruit'=>'banana',
 				),
-				true,
-				true,
+				\Blobfolio\Json::DECODE_STRICT | \Blobfolio\Json::DECODE_RECURSIVE,
 				array(
 					'animal'=>array('dog'),
 					'fruit'=>'banana',
@@ -224,8 +218,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 						'fruit'=>15.0,
 					),
 				),
-				true,
-				true,
+				\Blobfolio\Json::DECODE_STRICT | \Blobfolio\Json::DECODE_RECURSIVE,
 				array(
 					'price'=>array(
 						'animal'=>2.0,
