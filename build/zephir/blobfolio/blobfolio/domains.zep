@@ -84,7 +84,7 @@ final class Domains {
 
 			// Is this an IPv6 address?
 			if (filter_var(host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-				let host = IPs::niceIp(host, true);
+				let host = IPs::niceIp(host, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 			}
 			else {
 				// Pluck an IP out of brackets.
@@ -92,7 +92,7 @@ final class Domains {
 				var end = strpos(host, "]");
 				if ((0 === start) && false !== end) {
 					let host = mb_substr(host, 1, end - 1, "UTF-8");
-					let host = IPs::niceIp(host, true);
+					let host = IPs::niceIp(host, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 				}
 				// Chop off the port, if any.
 				else {
@@ -122,7 +122,7 @@ final class Domains {
 		// Liberate IPv6 from its walls.
 		if (0 === strpos(host, "[")) {
 			let host = str_replace(["[", "]"], "", host);
-			let host = IPs::niceIp(host, true);
+			let host = IPs::niceIp(host, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 		}
 
 		// Is this an IP address? If so, we're done!
@@ -703,7 +703,7 @@ final class Domains {
 				// Standardize IPv6 formatting.
 				if (0 === strpos(parts, "[")) {
 					let parts = str_replace(["[", "]"], "", parts);
-					let parts = IPs::niceIp(parts, true);
+					let parts = IPs::niceIp(parts, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 					let parts = "[" . parts . "]";
 				}
 			}
@@ -738,7 +738,7 @@ final class Domains {
 					// Standardize IPv6 formatting.
 					if (0 === strpos(parts[k], "[")) {
 						let parts[k] = str_replace(["[", "]"], "", parts[k]);
-						let parts[k] = IPs::niceIp(parts[k], true);
+						let parts[k] = IPs::niceIp(parts[k], \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 						let parts[k] = "[" . parts[k] . "]";
 					}
 				}
