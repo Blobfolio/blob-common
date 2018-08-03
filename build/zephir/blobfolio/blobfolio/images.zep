@@ -15,6 +15,18 @@ namespace Blobfolio;
 
 final class Images {
 
+	const SVG_CLEAN_STYLES = 1;
+	const SVG_FIX_DIMENSIONS = 2;
+	const SVG_NAMESPACE = 4;
+	const SVG_RANDOM_ID = 8;
+	const SVG_REWRITE_STYLES = 16;
+	const SVG_SANITIZE = 32;
+	const SVG_SAVE = 64;
+	const SVG_STRIP_DATA = 128;
+	const SVG_STRIP_ID = 256;
+	const SVG_STRIP_STYLE = 512;
+	const SVG_STRIP_TITLE = 1024;
+
 	// Random IDs and classes we've generated for SVGs.
 	private static $_svg_ids = [];
 	private static $_svg_classes = [];
@@ -481,7 +493,7 @@ final class Images {
 	 * Clean SVG for Inline Embedding
 	 *
 	 * @param string $path SVG path.
-	 * @param mixed $args Arguments.
+	 * @param int $flags Flags.
 	 * @param string $output Output format.
 	 *
 	 * @arg bool $clean_styles Fix <style> formatting, combine tags.
@@ -498,7 +510,7 @@ final class Images {
 	 *
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
-	public static function cleanSvg(const string path, var args = null) -> string {
+	public static function cleanSvg(const string path, const uint flags = self::SVG_SANITIZE) -> string {
 		if (!is_file(path)) {
 			return "";
 		}
@@ -512,45 +524,34 @@ final class Images {
 			let svg = substr(svg, start);
 		}
 
-		// Default options.
-		array template = [
-			"clean_styles": false,		// Clean styles.
-			"fix_dimensions": false,	// Fix missing width, height, viewBox.
-			"namespace": false,			// Add an svg: namespace.
-			"random_id": false,			// Randomize IDs.
-			"rewrite_styles": false,	// Merge and rewrite styles.
-			"sanitize": true,			// Remove invalid/dangerous bits.
-			"save": false,				// Replace file with clean copy.
-			"strip_data": false,		// Remove data-X attributes.
-			"strip_id": false,			// Remove all IDs.
-			"strip_style": false,		// Remove all styles.
-			"strip_title": false		// Remove all titles.
-		];
-
-		// Deprecated $strip_js is now sanitize.
-		if (isset(args["strip_js"]) && !isset(args["sanitize"])) {
-			let args["sanitize"] = args["strip_js"];
-		}
-
-		// Crunch the rest.
-		let args = \Blobfolio\Cast::parseArgs(args, template);
+		// Parse flags.
+		bool flagCleanStyles = (flags & self::SVG_CLEAN_STYLES);
+		bool flagFixDimensions = (flags & self::SVG_FIX_DIMENSIONS);
+		bool flagNamespace = (flags & self::SVG_NAMESPACE);
+		bool flagRandomId = (flags & self::SVG_RANDOM_ID);
+		bool flagRewriteStyles = (flags & self::SVG_REWRITE_STYLES);
+		bool flagSanitize = (flags & self::SVG_SANITIZE);
+		bool flagSave = (flags & self::SVG_SAVE);
+		bool flagStripData = (flags & self::SVG_STRIP_DATA);
+		bool flagStripId = (flags & self::SVG_STRIP_ID);
+		bool flagStripStyle = (flags & self::SVG_STRIP_STYLE);
+		bool flagStripTitle = (flags & self::SVG_STRIP_TITLE);
 
 		// Some options imply or override others.
-		if (args["strip_style"]) {
-			let args["clean_styles"] = false;
-			let args["namespace"] = false;
-			let args["rewrite_styles"] = false;
+		if (flagStripStyle) {
+			let flagCleanStyles = false;
+			let flagNamespace = false;
+			let flagRewriteStyles = false;
 		}
-		if (args["strip_id"]) {
-			let args["random_id"] = false;
+		if (flagStripId) {
+			let flagRandomId = false;
 		}
-		if (args["rewrite_styles"]) {
-			let args["clean_styles"] = true;
+		if (flagRewriteStyles) {
+			let flagCleanStyles = true;
 		}
 
 		// Skip the hard stuff maybe.
-		string passthrough_key = (string) crc32(json_encode(args));
-		if (false !== strpos(svg, "data-cleaned=\"" . passthrough_key . "\"")) {
+		if (false !== strpos(svg, "data-cleaned=\"" . strval(flags) . "\"")) {
 			return svg;
 		}
 
@@ -575,10 +576,10 @@ final class Images {
 		}
 
 		// Strip title or style?
-		if (args["strip_style"]) {
+		if (flagStripStyle) {
 			\Blobfolio\Dom::removeNodes(dom->getElementsByTagName("style"));
 		}
-		if (args["strip_title"]) {
+		if (flagStripTitle) {
 			\Blobfolio\Dom::removeNodes(dom->getElementsByTagName("title"));
 		}
 
@@ -589,21 +590,21 @@ final class Images {
 		}
 
 		// Strip some more things.
-		if (args["strip_data"]) {
+		if (flagStripData) {
 			let svg = preg_replace(
 				"/(\sdata\-[a-z\d_\-]+\s*=\s*\"[^\"]*\")/i",
 				"",
 				svg
 			);
 		}
-		if (args["strip_id"]) {
+		if (flagStripId) {
 			let svg = preg_replace(
 			"/(\sid\s*=\s*\"[^\"]*\")/i",
 				"",
 				svg
 			);
 		}
-		if (args["strip_style"]) {
+		if (flagStripStyle) {
 			let svg = preg_replace(
 				"/(\s(style|class)\s*=\s*\"[^\"]*\")/i",
 				"",
@@ -611,7 +612,7 @@ final class Images {
 			);
 		}
 
-		if (args["sanitize"]) {
+		if (flagSanitize) {
 			let svg = self::niceSvg(svg, true);
 		}
 
@@ -620,7 +621,7 @@ final class Images {
 		var v;
 
 		// Randomize IDs?
-		if (args["random_id"]) {
+		if (flagRandomId) {
 			preg_match_all("/\sid\s*=\s*\"([^\"]*)\"/i", svg, matches);
 			if (count(matches[0])) {
 				for k, v in matches[0] {
@@ -644,7 +645,7 @@ final class Images {
 		}
 
 		// Fix dimensions?
-		if (args["fix_dimensions"]) {
+		if (flagFixDimensions) {
 			// Before we dive in, let's fix viewbox values.
 			array matches;
 			array parts;
@@ -754,12 +755,12 @@ final class Images {
 		}
 
 		// This is so big it is pushed off to another function. Haha.
-		if (args["clean_styles"]) {
-			let svg = (string) self::restyleSvg(svg, args["rewrite_styles"]);
+		if (flagCleanStyles) {
+			let svg = (string) self::restyleSvg(svg, flagRewriteStyles);
 		}
 
 		// Namespacing is a bitch.
-		if (args["namespace"]) {
+		if (flagNamespace) {
 			let dom = \Blobfolio\Dom::svgToDom(svg, true);
 			let tags = dom->getElementsByTagName("svg");
 			if (!tags->length) {
@@ -801,11 +802,11 @@ final class Images {
 		}
 
 		// Save it?
-		if (args["save"]) {
+		if (flagSave) {
 			// Add/update our passthrough key.
 			let dom = \Blobfolio\Dom::svgToDom(svg, true);
 			let tags = dom->getElementsByTagName("svg");
-			tags->item(0)->setAttribute("data-cleaned", passthrough_key);
+			tags->item(0)->setAttribute("data-cleaned", flags);
 			let svg = (string) \Blobfolio\Dom::domToSvg(dom);
 
 			string path_old = path . ".dirty." . microtime(true);
