@@ -10,11 +10,6 @@
 
 namespace blobfolio\common;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class sanitize {
 
 	/**
@@ -24,10 +19,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function accents($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::accents($str);
-		}
-
 		ref\sanitize::accents($str);
 		return $str;
 	}
@@ -45,10 +36,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function attribute_value($str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Dom::attributeValue($str);
-		}
-
 		ref\sanitize::attribute_value($str);
 		return $str;
 	}
@@ -60,10 +47,6 @@ class sanitize {
 	 * @return string Postal Code.
 	 */
 	public static function ca_postal_code($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceCaPostalCode($str);
-		}
-
 		ref\sanitize::ca_postal_code($str);
 		return $str;
 	}
@@ -75,11 +58,6 @@ class sanitize {
 	 * @return string|bool Card number or false.
 	 */
 	public static function cc($ccnum) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$ccnum = \Blobfolio\Retail::niceCc($ccnum);
-			return $ccnum ? $ccnum : false;
-		}
-
 		ref\sanitize::cc($ccnum);
 		return $ccnum;
 	}
@@ -91,10 +69,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function control_characters($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::controlChars($str);
-		}
-
 		ref\sanitize::control_characters($str);
 		return $str;
 	}
@@ -106,10 +80,6 @@ class sanitize {
 	 * @return string ISO country code.
 	 */
 	public static function country($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceCountry($str);
-		}
-
 		ref\sanitize::country($str);
 		return $str;
 	}
@@ -132,10 +102,6 @@ class sanitize {
 	 * @return string Date.
 	 */
 	public static function datetime($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceDatetime($str);
-		}
-
 		ref\sanitize::datetime($str);
 		return $str;
 	}
@@ -147,10 +113,6 @@ class sanitize {
 	 * @return string Date.
 	 */
 	public static function date($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceDate($str);
-		}
-
 		ref\sanitize::date($str);
 		return $str;
 	}
@@ -167,10 +129,6 @@ class sanitize {
 	 * @return string Domain.
 	 */
 	public static function domain($str='', bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Domains::niceDomain($str, $unicode);
-		}
-
 		ref\sanitize::domain($str, $unicode);
 		return $str;
 	}
@@ -185,10 +143,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function ean($str, bool $formatted=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Retail::niceEan($str, $formatted);
-		}
-
 		ref\sanitize::ean($str, $formatted);
 		return $str;
 	}
@@ -203,10 +157,6 @@ class sanitize {
 	 * @return string Email.
 	 */
 	public static function email($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Domains::niceEmail($str);
-		}
-
 		ref\sanitize::email($str);
 		return $str;
 	}
@@ -218,10 +168,6 @@ class sanitize {
 	 * @return string Extension.
 	 */
 	public static function file_extension($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Files::niceFileExtension($str);
-		}
-
 		ref\sanitize::file_extension($str);
 		return $str;
 	}
@@ -235,10 +181,6 @@ class sanitize {
 	 * @return string|bool Hostname or false.
 	 */
 	public static function hostname($domain, bool $www=false, bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($domain)) {
-			return \Blobfolio\Domains::niceHost($domain, !$www, $unicode);
-		}
-
 		ref\sanitize::hostname($domain, $www, $unicode);
 		return $domain;
 	}
@@ -250,10 +192,6 @@ class sanitize {
 	 * @return string HTML.
 	 */
 	public static function html($str=null) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Dom::html($str);
-		}
-
 		ref\sanitize::html($str);
 		return $str;
 	}
@@ -267,10 +205,6 @@ class sanitize {
 	 * @return string IP.
 	 */
 	public static function ip($str='', bool $restricted=false, bool $condense=true) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\IPs::niceIp($str, $restricted, $condense);
-		}
-
 		ref\sanitize::ip($str, $restricted, $condense);
 		return $str;
 	}
@@ -297,10 +231,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function isbn($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Retail::niceIsbn($str);
-		}
-
 		ref\sanitize::isbn($str);
 		return $str;
 	}
@@ -313,10 +243,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function js($str='', $quote="'") {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Dom::js($str, $quote);
-		}
-
 		ref\sanitize::js($str, $quote);
 		return $str;
 	}
@@ -328,10 +254,6 @@ class sanitize {
 	 * @return string MIME.
 	 */
 	public static function mime($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Files::niceMime($str);
-		}
-
 		ref\sanitize::mime($str);
 		return $str;
 	}
@@ -347,10 +269,6 @@ class sanitize {
 	 * @return string Name.
 	 */
 	public static function name($str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Retail::niceName($str);
-		}
-
 		ref\sanitize::name($str);
 		return $str;
 	}
@@ -366,10 +284,6 @@ class sanitize {
 	 * @return string Password.
 	 */
 	public static function password($str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Retail::nicePassword($str);
-		}
-
 		ref\sanitize::password($str);
 		return $str;
 	}
@@ -383,10 +297,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function printable($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::printable($str);
-		}
-
 		ref\sanitize::printable($str);
 		return $str;
 	}
@@ -398,10 +308,6 @@ class sanitize {
 	 * @return string Province.
 	 */
 	public static function province($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceCaProvince($str);
-		}
-
 		ref\sanitize::province($str);
 		return $str;
 	}
@@ -416,10 +322,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function quotes($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::quotes($str);
-		}
-
 		ref\sanitize::quotes($str);
 		return $str;
 	}
@@ -431,10 +333,6 @@ class sanitize {
 	 * @return string State.
 	 */
 	public static function state($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceUsState($str);
-		}
-
 		ref\sanitize::state($str);
 		return $str;
 	}
@@ -446,10 +344,6 @@ class sanitize {
 	 * @return string State.
 	 */
 	public static function au_state($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceAuState($str);
-		}
-
 		ref\sanitize::au_state($str);
 		return $str;
 	}
@@ -476,10 +370,6 @@ class sanitize {
 	 * @return string Timezone or UTC on failure.
 	 */
 	public static function timezone($str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceTimezone($str);
-		}
-
 		ref\sanitize::timezone($str);
 		return $str;
 	}
@@ -493,15 +383,6 @@ class sanitize {
 	 * @return mixed Value.
 	 */
 	public static function to_range($value, $min=null, $max=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			if (is_numeric($min) || is_numeric($max)) {
-				return \Blobfolio\Numbers::toRange($value, $min, $max);
-			}
-			elseif (is_string($value)) {
-				return \Blobfolio\Strings::toRange($value, $min, $max);
-			}
-		}
-
 		ref\sanitize::to_range($value, $min, $max);
 		return $value;
 	}
@@ -514,10 +395,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function upc($str, bool $formatted=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Retail::niceUpc($str, $formatted);
-		}
-
 		ref\sanitize::upc($str, $formatted);
 		return $str;
 	}
@@ -531,10 +408,6 @@ class sanitize {
 	 * @return string URL.
 	 */
 	public static function url($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Domains::niceUrl($str);
-		}
-
 		ref\sanitize::url($str);
 		return $str;
 	}
@@ -548,10 +421,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function utf8($str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::utf8Recursive($str);
-		}
-
 		ref\sanitize::utf8($str);
 		return $str;
 	}
@@ -567,10 +436,6 @@ class sanitize {
 	 * @return string String.
 	 */
 	public static function whitespace($str='', int $newlines=0) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::whitespace($str, $newlines);
-		}
-
 		ref\sanitize::whitespace($str, $newlines);
 		return $str;
 	}
@@ -594,10 +459,6 @@ class sanitize {
 	 * @return string ZIP Code.
 	 */
 	public static function zip5($str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Geo::niceZip5($str);
-		}
-
 		ref\sanitize::zip5($str);
 		return $str;
 	}

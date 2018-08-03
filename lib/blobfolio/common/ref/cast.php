@@ -14,11 +14,6 @@ namespace blobfolio\common\ref;
 use \blobfolio\common\data;
 use \blobfolio\common\constants;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class cast {
 
 	/**
@@ -30,11 +25,6 @@ class cast {
 	public static function array(&$value=null) {
 		// Short circuit.
 		if (is_array($value)) {
-			return;
-		}
-
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toArray($value);
 			return;
 		}
 
@@ -65,11 +55,6 @@ class cast {
 	public static function bool(&$value=false, bool $flatten=false) {
 		// Short circuit.
 		if (is_bool($value)) {
-			return;
-		}
-
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toBool($value, $flatten);
 			return;
 		}
 
@@ -138,11 +123,6 @@ class cast {
 			return;
 		}
 
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toFloat($value, $flatten);
-			return;
-		}
-
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::float($value[$k]);
@@ -190,11 +170,6 @@ class cast {
 	public static function int(&$value=0, bool $flatten=false) {
 		// Short circuit.
 		if (is_int($value)) {
-			return;
-		}
-
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toInt($value, $flatten);
 			return;
 		}
 
@@ -259,11 +234,6 @@ class cast {
 	public static function number(&$value=0, bool $flatten=false) {
 		// Short circuit.
 		if (is_float($value)) {
-			return;
-		}
-
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toNumber($value, $flatten);
 			return;
 		}
 
@@ -333,11 +303,6 @@ class cast {
 	 * @return void Nothing.
 	 */
 	public static function string(&$value='', bool $flatten=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toString($value, $flatten);
-			return;
-		}
-
 		if (!$flatten && is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::string($value[$k]);
@@ -386,11 +351,6 @@ class cast {
 	 * @return void Nothing.
 	 */
 	public static function to_type(&$value, string $type='', bool $flatten=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Cast::toType($value, $type, $flatten);
-			return;
-		}
-
 		switch (strtolower($type)) {
 			case 'string':
 				static::string($value, $flatten);

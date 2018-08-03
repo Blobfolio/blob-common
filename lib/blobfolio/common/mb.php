@@ -10,11 +10,6 @@
 
 namespace blobfolio\common;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class mb {
 
 	/**
@@ -28,10 +23,6 @@ class mb {
 	 * @return mixed Array, Component, or Null.
 	 */
 	public static function parse_url($url, int $component = -1) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Domains::parseUrl($url, $component);
-		}
-
 		ref\cast::string($url, true);
 		ref\mb::trim($url, true);
 
@@ -166,10 +157,6 @@ class mb {
 	 * @return string Padded string.
 	 */
 	public static function str_pad($str, int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::pad($str, $pad_length, $pad_string, $pad_type);
-		}
-
 		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
 		return $str;
 	}
@@ -182,10 +169,6 @@ class mb {
 	 * @return array|bool Split string or false.
 	 */
 	public static function str_split($str, int $split_length=1) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::split($str, $split_length);
-		}
-
 		ref\mb::str_split($str, $split_length);
 		return $str;
 	}
@@ -227,10 +210,6 @@ class mb {
 	 * @return string Reversed string.
 	 */
 	public static function strrev($str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::strrev($str);
-		}
-
 		ref\mb::strrev($str);
 		return $str;
 	}
@@ -263,10 +242,6 @@ class mb {
 	 * @return string String.
 	 */
 	public static function strtolower($str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::toLower($str);
-		}
-
 		ref\mb::strtolower($str, $strict);
 		return $str;
 	}
@@ -282,10 +257,6 @@ class mb {
 	 * @return string String.
 	 */
 	public static function strtoupper($str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::toUpper($str);
-		}
-
 		ref\mb::strtoupper($str, $strict);
 		return $str;
 	}
@@ -331,10 +302,6 @@ class mb {
 	 * @return bool True.
 	 */
 	public static function trim($str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::trim($str);
-		}
-
 		ref\mb::trim($str);
 		return $str;
 	}
@@ -350,10 +317,6 @@ class mb {
 	 * @return string String.
 	 */
 	public static function ucfirst($str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::toSentence($str);
-		}
-
 		ref\mb::ucfirst($str, $strict);
 		return $str;
 	}
@@ -369,10 +332,6 @@ class mb {
 	 * @return string String.
 	 */
 	public static function ucwords($str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			return \Blobfolio\Strings::toTitle($str);
-		}
-
 		ref\mb::ucwords($str, $strict);
 		return $str;
 	}
@@ -391,10 +350,6 @@ class mb {
 	 * @return string String.
 	 */
 	public static function wordwrap($str, int $width=75, $break="\n", bool $cut=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::wordwrap($str, $width, $break, $cut);
-		}
-
 		ref\mb::wordwrap($str, $width, $break, $cut);
 		return $str;
 	}

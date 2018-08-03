@@ -10,11 +10,6 @@
 
 namespace blobfolio\common;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class cli {
 
 	/**
@@ -65,13 +60,6 @@ class cli {
 	 * @return string Colorized string.
 	 */
 	public static function colorize($args) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return call_user_func_array(
-				array('Blobfolio\\Cli', 'colorize'),
-				func_get_args()
-			);
-		}
-
 		$args = func_get_args();
 		$out = '';
 

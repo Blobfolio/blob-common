@@ -20,11 +20,6 @@ use \blobfolio\common\sanitize as v_sanitize;
 use \blobfolio\domain\domain;
 use \blobfolio\phone\phone;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class format {
 
 	/**
@@ -37,11 +32,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function array_flatten(&$arr) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$arr = \Blobfolio\Arrays::flatten($arr);
-			return;
-		}
-
 		$out = array();
 
 		cast::array($arr);
@@ -73,11 +63,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function array_to_indexed(&$arr) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$arr = \Blobfolio\Arrays::toIndexed($arr);
-			return;
-		}
-
 		cast::array($arr);
 		if (count($arr)) {
 			$out = array();
@@ -99,11 +84,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function ceil(&$num, int $precision=0) {
-		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
-			$num = \Blobfolio\Numbers::ceil($num, $precision);
-			return;
-		}
-
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::ceil($num[$k], $precision);
@@ -127,11 +107,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_js_entities(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Dom::decodeJsEntities($str);
-			return;
-		}
-
 		static::decode_unicode_entities($str);
 		static::decode_escape_entities($str);
 	}
@@ -145,11 +120,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_escape_entities(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Dom::decodeEscapeEntities($str);
-			return;
-		}
-
 		cast::string($str, true);
 
 		$replacements = array(
@@ -175,11 +145,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_unicode_entities(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Dom::decodeUnicodeEntities($str);
-			return;
-		}
-
 		cast::string($str, true);
 
 		$last = '';
@@ -207,11 +172,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function decode_entities(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Dom::decodeEntities($str);
-			return;
-		}
-
 		cast::string($str, true);
 
 		$last = '';
@@ -254,11 +214,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function floor(&$num, int $precision=0) {
-		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
-			$num = \Blobfolio\Numbers::floor($num, $precision);
-			return;
-		}
-
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::floor($num[$k], $precision);
@@ -285,11 +240,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function fraction(&$num, float $precision=0.0001) {
-		if (BLOBCOMMON_HAS_EXT && is_numeric($num)) {
-			$num = \Blobfolio\Numbers::fraction($num, $precision);
-			return;
-		}
-
 		if (is_array($num)) {
 			foreach ($num as $k=>$v) {
 				static::fraction($num[$k], $precision);
@@ -353,11 +303,6 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function ip_to_number(&$ip) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$ip = \Blobfolio\IPs::toNumber($ip);
-			return $ip ? true : false;
-		}
-
 		// Don't need to fancy cast.
 		if (!is_string($ip)) {
 			$ip = false;
@@ -412,11 +357,6 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function ip_to_subnet(&$ip) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$ip = \Blobfolio\IPs::toSubnet($ip);
-			return $ip ? true : false;
-		}
-
 		sanitize::ip($ip, true, false);
 
 		// Not an IP.
@@ -454,11 +394,6 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function json(&$str, $pretty=true) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Json::fix($str, $pretty);
-			return;
-		}
-
 		if (!is_string($str)) {
 			static::json_encode($str);
 		}
@@ -488,11 +423,6 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function json_decode(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Json::decode($str);
-			return;
-		}
-
 		cast::string($str, true);
 
 		// Remove comments.
@@ -710,11 +640,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function json_encode(&$value, $options=0, $depth=512) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$value = \Blobfolio\Json::encode($value, $options, $depth);
-			return;
-		}
-
 		// Simple values don't require a lot of thought.
 		if (!$value || is_numeric($value) || is_bool($value)) {
 			$value = json_encode($value, $options, $depth);
@@ -747,11 +672,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function links(&$str, $args=null, int $pass=1) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Dom::linkify($str, $args);
-			return;
-		}
-
 		cast::string($str, true);
 
 		// Build link attributes from our arguments, if any.
@@ -942,11 +862,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function list_to_array(&$list, $args=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$list = \Blobfolio\Arrays::fromList($list, $args);
-			return;
-		}
-
 		$out = array();
 
 		// If the arguments are a string, we'll assume the delimiter was
@@ -1040,11 +955,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function money(&$value=0, bool $cents=false, string $separator='', bool $no00=false) {
-		if (BLOBCOMMON_HAS_EXT && !is_array($value)) {
-			$value = \Blobfolio\Retail::usd($value, $separator, $cents, $no00);
-			return;
-		}
-
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::money($value[$k], $cents, $separator, $no00);
@@ -1078,11 +988,6 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function number_to_ip(&$ip) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$ip = \Blobfolio\IPs::fromNumber($ip);
-			return $ip ? true : false;
-		}
-
 		if (!is_string($ip)) {
 			if (is_numeric($ip)) {
 				$ip = (string) $ip;
@@ -1132,11 +1037,6 @@ class format {
 	 * @return bool True.
 	 */
 	public static function phone(&$str, $country='', $types=array()) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str) && is_string($country)) {
-			$str = \Blobfolio\Phones::nicePhone($str, $country, $types);
-			return $str ? true : false;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::phone($str[$k], $country, $types);
@@ -1213,11 +1113,6 @@ class format {
 	 * @return void Nothing.
 	 */
 	public static function to_timezone(string &$date, $from='UTC', $to='UTC') {
-		if (BLOBCOMMON_HAS_EXT) {
-			$date = \Blobfolio\Geo::toTimezone($date, $from, $to);
-			return;
-		}
-
 		sanitize::datetime($date);
 		if ('UTC' !== $from) {
 			sanitize::timezone($from);

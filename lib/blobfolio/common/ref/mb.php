@@ -13,11 +13,6 @@ namespace blobfolio\common\ref;
 use \blobfolio\common\constants;
 use \blobfolio\common\mb as v_mb;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class mb {
 
 	/**
@@ -30,11 +25,6 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function str_pad(&$str, int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::pad($str, $pad_length, $pad_string, $pad_type);
-			return;
-		}
-
 		cast::string($str, true);
 		cast::string($pad_string, true);
 
@@ -94,11 +84,6 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function str_split(&$str, int $split_length=1) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::split($str, $split_length);
-			return;
-		}
-
 		if ($split_length < 1) {
 			$str = false;
 			return false;
@@ -124,11 +109,6 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function strrev(&$str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::strrev($str);
-			return;
-		}
-
 		cast::string($str, true);
 
 		if (!$str) {
@@ -152,11 +132,6 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function strtolower(&$str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::toLower($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::strtolower($str[$k], $strict);
@@ -198,11 +173,6 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function strtoupper(&$str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::toUpper($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::strtoupper($str[$k], $strict);
@@ -242,11 +212,6 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function trim(&$str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::trim($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::trim($str[$k]);
@@ -269,11 +234,6 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function ucfirst(&$str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::toSentence($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ucfirst($str[$k], $strict);
@@ -312,11 +272,6 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function ucwords(&$str, bool $strict=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::toTitle($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ucwords($str[$k], $strict);
@@ -355,11 +310,6 @@ class mb {
 	 * @return void Nothing.
 	 */
 	public static function wordwrap(&$str, int $width=75, $break="\n", bool $cut=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::wordwrap($str, $width, $break, $cut);
-			return;
-		}
-
 		cast::string($str, true);
 		cast::string($break, true);
 

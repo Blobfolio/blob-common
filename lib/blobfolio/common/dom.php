@@ -10,11 +10,6 @@
 
 namespace blobfolio\common;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class dom {
 
 	/**
@@ -26,10 +21,6 @@ class dom {
 	 * @return bool|DOMDocument DOM object or false.
 	 */
 	public static function load_svg($svg='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($svg)) {
-			return \Blobfolio\Dom::svgToDom($svg);
-		}
-
 		ref\cast::string($svg, true);
 
 		// First thing first, lowercase all tags.
@@ -95,10 +86,6 @@ class dom {
 	 * @return string SVG.
 	 */
 	public static function save_svg(\DOMDocument $dom) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Dom::domToSvg($dom);
-		}
-
 		$svgs = $dom->getElementsByTagName('svg');
 		if (!$svgs->length) {
 			return '';
@@ -156,11 +143,6 @@ class dom {
 	 * @return array Nodes.
 	 */
 	public static function get_nodes_by_class($parent, $class=null, bool $all=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			ref\cast::array($class);
-			return \Blobfolio\Dom::getNodesByClass($parent, $class, $all);
-		}
-
 		$nodes = array();
 
 		if (!method_exists($parent, 'getElementsByTagName')) {
@@ -209,10 +191,6 @@ class dom {
 	 * @return string Content.
 	 */
 	public static function innerhtml($node, bool $xml=false, int $flags=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Dom::innerHtml($node, $xml, $flags);
-		}
-
 		if (
 			!is_a($node, 'DOMElement') &&
 			!is_a($node, 'DOMNode')
@@ -253,10 +231,6 @@ class dom {
 	 * @return array Parsed styles.
 	 */
 	public static function parse_css($styles='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($styles)) {
-			return \Blobfolio\Dom::parseCss($styles);
-		}
-
 		ref\cast::string($styles, true);
 
 		// Remove comments.
@@ -490,10 +464,6 @@ class dom {
 	 * @return bool True/False.
 	 */
 	public static function remove_namespace(\DOMDocument $dom, string $namespace) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Dom::removeNamespace($dom, $namespace);
-		}
-
 		if (!$namespace) {
 			return false;
 		}
@@ -518,10 +488,6 @@ class dom {
 	 * @return bool True/false.
 	 */
 	public static function remove_nodes(\DOMNodeList $nodes) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Dom::removeNodes($nodes);
-		}
-
 		while ($nodes->length) {
 			static::remove_node($nodes->item(0));
 		}
@@ -536,10 +502,6 @@ class dom {
 	 * @return bool True/false.
 	 */
 	public static function remove_node($node) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Dom::removeNode($node);
-		}
-
 		if (
 			!is_a($node, 'DOMElement') &&
 			!is_a($node, 'DOMNode')

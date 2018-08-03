@@ -10,11 +10,6 @@
 
 namespace blobfolio\common\ref;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class file {
 
 	/**
@@ -92,11 +87,6 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function leadingslash(&$path) {
-		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
-			$path = \Blobfolio\Files::leadingSlash($path);
-			return;
-		}
-
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::leadingslash($path[$k]);
@@ -118,11 +108,6 @@ class file {
 	 * @return bool True/false.
 	 */
 	public static function path(&$path, bool $validate=true) {
-		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
-			$path = \Blobfolio\Files::path($path, $validate);
-			return;
-		}
-
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::path($path[$k], $validate);
@@ -192,11 +177,6 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function trailingslash(&$path) {
-		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
-			$path = \Blobfolio\Files::trailingSlash($path);
-			return;
-		}
-
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::trailingslash($path[$k]);
@@ -217,11 +197,6 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function unixslash(&$path) {
-		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
-			$path = \Blobfolio\Files::unixSlash($path);
-			return;
-		}
-
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unixslash($path[$k]);
@@ -243,11 +218,6 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function unleadingslash(&$path) {
-		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
-			$path = \Blobfolio\Files::unleadingSlash($path);
-			return;
-		}
-
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::unleadingslash($path[$k]);
@@ -268,11 +238,6 @@ class file {
 	 * @return void Nothing.
 	 */
 	public static function untrailingslash(&$path) {
-		if (BLOBCOMMON_HAS_EXT && is_string($path)) {
-			$path = \Blobfolio\Files::untrailingSlash($path);
-			return;
-		}
-
 		if (is_array($path)) {
 			foreach ($path as $k=>$v) {
 				static::untrailingslash($path[$k]);

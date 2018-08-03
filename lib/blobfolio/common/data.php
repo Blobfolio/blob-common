@@ -10,11 +10,6 @@
 
 namespace blobfolio\common;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 class data {
 
 	/**
@@ -28,10 +23,6 @@ class data {
 		// Obviously bad data.
 		if (!is_array($arr1) || !is_array($arr2)) {
 			return false;
-		}
-
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Arrays::compare($arr1, $arr2);
 		}
 
 		$length = count($arr1);
@@ -84,13 +75,6 @@ class data {
 	 * @return array Difference.
 	 */
 	public static function array_idiff($arr1, $arr2) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return call_user_func_array(
-				array('Blobfolio\\Arrays', 'iDiff'),
-				func_get_args()
-			);
-		}
-
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
@@ -143,13 +127,6 @@ class data {
 	 * @return array Intersection.
 	 */
 	public static function array_iintersect($arr1, $arr2) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return call_user_func_array(
-				array('Blobfolio\\Arrays', 'iIntersect'),
-				func_get_args()
-			);
-		}
-
 		// First off, a variable number of arguments can be passed.
 		// Let's take a look and see what we have.
 		$arrays = func_get_args();
@@ -196,10 +173,6 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function array_ikey_exists($needle, $haystack) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Arrays::iKeyExists($needle, $haystack);
-		}
-
 		if (!is_array($haystack) || !count($haystack)) {
 			return false;
 		}
@@ -217,10 +190,6 @@ class data {
 	 * @return mixed Key or false.
 	 */
 	public static function array_isearch($needle, array $haystack, bool $strict=true) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Arrays::iSearch($needle, $haystack, $strict);
-		}
-
 		if (!count($haystack)) {
 			return false;
 		}
@@ -258,10 +227,6 @@ class data {
 	 * @return array|bool Array or false.
 	 */
 	public static function array_otherize(array $arr, int $length=5, $other='Other') {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Arrays::otherize($arr, $length, $other);
-		}
-
 		if ('associative' !== cast::array_type($arr)) {
 			return false;
 		}
@@ -308,10 +273,6 @@ class data {
 	 * @return mixed Value. False on error.
 	 */
 	public static function array_pop(array &$arr) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Arrays::pop($arr);
-		}
-
 		if (!count($arr)) {
 			return false;
 		}
@@ -327,10 +288,6 @@ class data {
 	 * @return mixed Value. False on error.
 	 */
 	public static function array_pop_rand(array &$arr) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Arrays::popRand($arr);
-		}
-
 		$length = count($arr);
 
 		if (!$length) {
@@ -370,10 +327,6 @@ class data {
 	 * @return array Months.
 	 */
 	public static function cc_exp_months(string $format='m - M') {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Retail::ccExpMonths($format);
-		}
-
 		$months = array();
 		for ($x = 1; $x <= 12; ++$x) {
 			$months[$x] = date($format, strtotime('2000-' . sprintf('%02d', $x) . '-01'));
@@ -388,10 +341,6 @@ class data {
 	 * @return array Years.
 	 */
 	public static function cc_exp_years(int $length=10) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Retail::ccExpYears($length);
-		}
-
 		if ($length < 1) {
 			$length = 10;
 		}
@@ -413,10 +362,6 @@ class data {
 	 * @return int Difference in Days.
 	 */
 	public static function datediff($date1, $date2) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Geo::dateDiff($date1, $date2);
-		}
-
 		ref\sanitize::date($date1);
 		ref\sanitize::date($date2);
 
@@ -467,14 +412,6 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function in_range($value, $min=null, $max=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			if (is_numeric($min) || is_numeric($max)) {
-				return \Blobfolio\Numbers::inRange($value, $min, $max);
-			}
-			elseif (is_string($value)) {
-				return \Blobfolio\Strings::inRange($value, $min, $max);
-			}
-		}
 		return sanitize::to_range($value, $min, $max) === $value;
 	}
 
@@ -491,10 +428,6 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function ip_in_range(string $ip, $min, $max=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\IPs::inRange($ip, $min, $max);
-		}
-
 		ref\sanitize::ip($ip, true);
 		if (!is_string($min)) {
 			return false;
@@ -542,10 +475,6 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function is_json($str, bool $empty=false) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Json::isJson($str, $empty);
-		}
-
 		if (!is_string($str) || (!$empty && !$str)) {
 			return false;
 		}
@@ -589,10 +518,6 @@ class data {
 	 * @return array Data.
 	 */
 	public static function json_decode_array($json, $defaults=null, bool $strict=true, bool $recursive=true) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Json::decodeArray($json, $defaults, $strict, $recursive);
-		}
-
 		ref\format::json_decode($json);
 
 		if ((null === $json) || (is_string($json) && !$json)) {
@@ -621,10 +546,6 @@ class data {
 	 * @return bool True/false.
 	 */
 	public static function length_in_range(string $str, $min=null, $max=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::lengthInRange($str, $min, $max);
-		}
-
 		if ((null !== $min) && !is_int($min)) {
 			ref\cast::int($min, true);
 		}
@@ -662,15 +583,6 @@ class data {
 	 * @return array Parsed arguments.
 	 */
 	public static function parse_args($args, $defaults, bool $strict=true, bool $recursive=true) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Cast::parseArgs(
-				$args,
-				$defaults,
-				$strict,
-				$recursive
-			);
-		}
-
 		ref\cast::array($defaults);
 		if (!count($defaults)) {
 			return array();
@@ -734,10 +646,6 @@ class data {
 	 * @return string Random string.
 	 */
 	public static function random_string(int $length=10, $soup=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Strings::random($length, $soup);
-		}
-
 		if ($length < 1) {
 			return '';
 		}

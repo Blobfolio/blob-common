@@ -18,11 +18,6 @@ use \blobfolio\common\mb as v_mb;
 use \blobfolio\common\sanitize as v_sanitize;
 use \blobfolio\domain\domain;
 
-// The PHP module is faster.
-if (!defined('BLOBCOMMON_HAS_EXT')) {
-	define('BLOBCOMMON_HAS_EXT', extension_loaded('blobfolio'));
-}
-
 // Check for MB functions once.
 define(
 	'BLOBCOMMON_SANITIZE_HAS_MB',
@@ -41,11 +36,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function accents(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::accents($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::accents($str[$k]);
@@ -83,11 +73,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function attribute_value(&$str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Dom::attributeValue($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::attribute_value($str[$k]);
@@ -111,11 +96,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function ca_postal_code(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceCaPostalCode($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ca_postal_code($str[$k]);
@@ -152,14 +132,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function cc(&$ccnum) {
-		if (BLOBCOMMON_HAS_EXT) {
-			$ccnum = \Blobfolio\Retail::niceCc($ccnum);
-			if (!$ccnum) {
-				$ccnum = false;
-			}
-			return $ccnum ? true : false;
-		}
-
 		if (!is_string($ccnum)) {
 			if (is_numeric($ccnum)) {
 				$ccnum = (string) $ccnum;
@@ -256,11 +228,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function control_characters(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::controlChars($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::control_characters($str[$k]);
@@ -281,11 +248,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function country(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceCountry($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::country($str[$k]);
@@ -368,11 +330,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function datetime(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceDatetime($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::datetime($str[$k]);
@@ -418,11 +375,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function date(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceDate($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::date($str[$k]);
@@ -446,11 +398,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function domain(&$str='', bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Domains::niceDomain($str, $unicode);
-			return $str ? true : false;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::domain($str[$k], $unicode);
@@ -480,11 +427,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function ean(&$str, bool $formatted=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Retail::niceEan($str, $formatted);
-			return $str ? true : false;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ean($str[$k], $formatted);
@@ -541,11 +483,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function email(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Domains::niceEmail($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::email($str[$k]);
@@ -601,11 +538,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function file_extension(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Files::niceFileExtension($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::file_extension($str[$k]);
@@ -630,10 +562,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	protected static function gtin(string $str) {
-		if (BLOBCOMMON_HAS_EXT) {
-			return \Blobfolio\Retail::checkGtin($str);
-		}
-
 		$str = preg_replace('/[^\d]/', '', $str);
 		$code = str_split(substr($str, 0, -1));
 		$check = (int) substr($str, -1);
@@ -654,11 +582,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function html(&$str=null) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Dom::html($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::html($str[$k]);
@@ -680,11 +603,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function hostname(&$domain, bool $www=false, bool $unicode=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($domain)) {
-			$domain = \Blobfolio\Domains::niceHost($domain, !$www, $unicode);
-			return $domain ? true : false;
-		}
-
 		cast::string($domain, true);
 
 		$host = new domain($domain, !$www);
@@ -706,11 +624,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function ip(&$str='', bool $restricted=false, bool $condense=true) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\IPs::niceIp($str, $restricted, $condense);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::ip($str[$k], $restricted, $condense);
@@ -771,13 +684,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function iri_value(&$str='', $protocols=null, $domains=null) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			\Blobfolio\Dom::$whitelistProtocols = (null === $protocols ? $protocols : (array) $protocols);
-			\Blobfolio\Dom::$whitelistDomains = (null === $domains ? $domains : (array) $domains);
-			$str = \Blobfolio\Dom::iriValue($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::iri_value($str[$k], $protocols, $domains);
@@ -847,11 +753,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function isbn(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Retail::niceIsbn($str);
-			return $str ? true : false;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::isbn($str[$k]);
@@ -939,11 +840,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function js(&$str='', $quote="'") {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Dom::js($str, $quote);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::js($str[$k], $quote);
@@ -974,11 +870,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function mime(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Files::niceMime($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::mime($str[$k]);
@@ -1014,11 +905,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function name(&$str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Retail::niceName($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::name($str[$k]);
@@ -1046,11 +932,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function password(&$str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Retail::nicePassword($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::password($str[$k]);
@@ -1073,11 +954,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function printable(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::printable($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::printable($str[$k]);
@@ -1119,11 +995,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function province(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceCaProvince($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::province($str[$k]);
@@ -1153,11 +1024,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function quotes(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Strings::quotes($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::quotes($str[$k]);
@@ -1179,11 +1045,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function state(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceUsState($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::state($str[$k]);
@@ -1210,11 +1071,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function au_state(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceAuState($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::au_state($str[$k]);
@@ -1245,15 +1101,6 @@ class sanitize {
 	 * @return string SVG code.
 	 */
 	public static function svg(&$str='', $tags=null, $attr=null, $protocols=null, $domains=null) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			\Blobfolio\Dom::$whitelistTags = (null === $tags) ? $tags : (array) $tags;
-			\Blobfolio\Dom::$whitelistTags = (null === $attr) ? $attr : (array) $attr;
-			\Blobfolio\Dom::$whitelistTags = (null === $protocols) ? $protocols : (array) $protocols;
-			\Blobfolio\Dom::$whitelistTags = (null === $domains) ? $domains : (array) $domains;
-			$str = \Blobfolio\Images::niceSvg($str);
-			return;
-		}
-
 		// First, sanitize and build out function arguments!
 		cast::string($str, true);
 
@@ -1466,11 +1313,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function timezone(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceTimezone($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::timezone($str[$k]);
@@ -1504,17 +1346,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function to_range(&$value, $min=null, $max=null) {
-		if (BLOBCOMMON_HAS_EXT) {
-			if (is_numeric($min) || is_numeric($max)) {
-				$value = \Blobfolio\Numbers::toRange($value, $min, $max);
-				return;
-			}
-			elseif (is_string($value)) {
-				$value = \Blobfolio\Strings::toRange($value, $min, $max);
-				return;
-			}
-		}
-
 		// Make sure min/max are in the right order.
 		if (
 			(null !== $min) &&
@@ -1554,11 +1385,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function upc(&$str, bool $formatted=false) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Retail::niceUpc($str, $formatted);
-			return $str ? true : false;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::upc($str[$k], $formatted);
@@ -1617,11 +1443,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function url(&$str) {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Domains::niceUrl($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::url($str[$k]);
@@ -1677,11 +1498,6 @@ class sanitize {
 	 * @return void Nothing.
 	 */
 	public static function utf8(&$str='') {
-		if (BLOBCOMMON_HAS_EXT) {
-			$str = \Blobfolio\Strings::utf8Recursive($str);
-			return;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::utf8($str[$k]);
@@ -1820,11 +1636,6 @@ class sanitize {
 			}
 		}
 		else {
-			if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-				$str = \Blobfolio\Strings::whitespace($str, $newlines);
-				return;
-			}
-
 			// If there are no spaces, we're done.
 			if (is_string($str) && !preg_match('/\s/u', $str)) {
 				return;
@@ -1873,11 +1684,6 @@ class sanitize {
 	 * @return bool True/false.
 	 */
 	public static function zip5(&$str='') {
-		if (BLOBCOMMON_HAS_EXT && is_string($str)) {
-			$str = \Blobfolio\Geo::niceZip5($str);
-			return !!$str;
-		}
-
 		if (is_array($str)) {
 			foreach ($str as $k=>$v) {
 				static::zip5($str[$k]);
