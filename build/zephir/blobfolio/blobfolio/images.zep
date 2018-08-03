@@ -223,6 +223,33 @@ final class Images {
 		return "url('" . str . "')";
 	}
 
+	/**
+	 * RGB to Brightness
+	 *
+	 * @param int $r Red.
+	 * @param int $g Green.
+	 * @param int $b Blue.
+	 * @return float Brightness.
+	 */
+	public static function rgbToBrightness(uint r, uint g, uint b) -> float {
+		// Make sure everything is in range.
+		if (r > 255) {
+			let r = 255;
+		}
+		if (g > 255) {
+			let g = 255;
+		}
+		if (b > 255) {
+			let b = 255;
+		}
+
+		return (float) sqrt(
+			0.241 * r * r +
+			0.691 * g * g +
+			0.068 * b * b
+		);
+	}
+
 
 	// -----------------------------------------------------------------
 	// Dimensions
@@ -469,6 +496,130 @@ final class Images {
 
 	// -----------------------------------------------------------------
 	// End dimensions.
+
+
+
+	// -----------------------------------------------------------------
+	// Misc Helpers
+	// -----------------------------------------------------------------
+
+	/**
+	 * Apparent Brightness
+	 *
+	 * This attempts to identify the apparent brightness of an image.
+	 *
+	 * @param string $str Image path.
+	 * @param float $coverage Coverage.
+	 * @return float Luminosity.
+	 */
+	public static function niceBrightness(string file, float coverage = 0.05) -> float {
+		// First things first, open a resource.
+		string mime = (string) \Blobfolio\Files::getMimeType(file);
+		var source;
+		switch (mime) {
+			case "image/jpeg":
+				let source = imagecreatefromjpeg(file);
+				break;
+			case "image/png":
+				let source = imagecreatefrompng(file);
+				break;
+			case "image/gif":
+				let source = imagecreatefromgif(file);
+				break;
+			case "image/webp":
+				let source = imagecreatefromwebp(file);
+				break;
+			default:
+				return 0.0;
+		}
+
+		// Abort if we don't have a valid image resource.
+		if (false === source) {
+			return 0.0;
+		}
+
+		// Make sure coverage is adequate.
+		if (coverage <= 0) {
+			let coverage = 0.01;
+		}
+		elseif (coverage >= 1.0) {
+			let coverage = 1.0;
+		}
+
+		// The image dimensions.
+		int width = (int) imagesx(source);
+		int height = (int) imagesy(source);
+
+		// Calculate
+		int step = floor(1 / coverage);
+
+		// Make sure the source is True Color.
+		if (!imageistruecolor(source)) {
+			imagepalettetotruecolor(source);
+		}
+
+		// Since we're only looking at brightness, we can convert to
+		// greyscale early to have fewer colors to check later.
+		imagefilter(source, IMG_FILTER_GRAYSCALE);
+
+		array indexes = [];
+		int x = 0;
+		int y = 0;
+		int tick = -1;
+		var tmp;
+
+		// Pixel by pixel, row by row.
+		while y < height {
+			let x = 0;
+			while x < width {
+				let tick++;
+
+				// If we're at a coverage tick, grab the color index.
+				if (tick === step) {
+					let tick = -1;
+
+					let tmp = imagecolorat(source, x, y);
+					if (!empty tmp) {
+						int index = (int) tmp;
+
+						if (!isset(indexes[index])) {
+							let indexes[index] = 1;
+						}
+						else {
+							let indexes[index] = indexes[index] + 1;
+						}
+					}
+				}
+
+				let x++;
+			}
+
+			let y++;
+		}
+
+		// Find the RGB and brightness for each index.
+		float brightness = 0.0;
+		var k;
+		var v;
+		for k, v in indexes {
+			array colors = (array) imagecolorsforindex(source, k);
+			float line = (float) self::rgbToBrightness(
+				colors["red"],
+				colors["green"],
+				colors["blue"]
+			);
+			let brightness += (line * v);
+		}
+
+		// Clear the working image.
+		imagedestroy(source);
+
+		// Return the average.
+		return (float) (brightness / array_sum(indexes));
+	}
+
+	// -----------------------------------------------------------------
+	// End misc.
 
 
 
