@@ -4,8 +4,7 @@
  *
  * Command line helpers.
  *
- * @see {blobfolio\common\file}
- * @see {blobfolio\common\ref\file}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -70,7 +69,7 @@ final class Cli {
 
 			// The string comes first.
 			let tmp = array_shift(v);
-			string str = (string) \Blobfolio\Cast::toString(tmp, true);
+			string str = (string) \Blobfolio\Cast::toString(tmp, globals_get("flag_flatten"));
 
 			// Deal with codes.
 			let v = \Blobfolio\Arrays::flatten(v);

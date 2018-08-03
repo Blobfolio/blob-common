@@ -254,7 +254,7 @@ class geo_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertTrue(array_key_exists('IL', $result));
 		$this->assertTrue(array_key_exists('PR', $result));
 
-		$result = \Blobfolio\Geo::getUsStates(false);
+		$result = \Blobfolio\Geo::getUsStates(0);
 		$this->assertTrue(is_array($result));
 		$this->assertTrue(array_key_exists('IL', $result));
 		$this->assertFalse(array_key_exists('PR', $result));

@@ -2,10 +2,7 @@
 /**
  * Blobfolio: Files
  *
- * Filepath helpers.
- *
- * @see {blobfolio\common\file}
- * @see {blobfolio\common\ref\file}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -30,10 +27,11 @@ final class Files {
 	 * Nice File Extension
 	 *
 	 * @param string $ext Extension.
+	 * @param int $flags Flags.
 	 * @return string Extension.
 	 */
-	public static function niceFileExtension(string ext) -> string {
-		let ext = \Blobfolio\Strings::toLower(ext);
+	public static function niceFileExtension(string ext, const uint flags=0) -> string {
+		let ext = \Blobfolio\Strings::toLower(ext, (flags & globals_get("flag_trusted")));
 		let ext = preg_replace("/\s/u", "", ext);
 		return rtrim(ltrim(ext, "*."), "*.");
 	}
@@ -276,7 +274,7 @@ final class Files {
 		}
 
 		// This should be a path of some sort.
-		let path = self::path(path, false);
+		let path = self::path(path);
 		let out["path"] = path;
 		let out = \Blobfolio\Cast::parseArgs(pathinfo(path), out);
 
@@ -376,25 +374,27 @@ final class Files {
 	 * Add Leading Slash
 	 *
 	 * @param string $str Path.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string|array Path.
 	 */
-	public static function leadingSlash(string str, const bool trusted=false) -> string {
-		return "/" . self::unleadingSlash(str, trusted);
+	public static function leadingSlash(string str, const uint flags=0) -> string {
+		return "/" . self::unleadingSlash(str, (flags & globals_get("flag_trusted")));
 	}
 
 	/**
 	 * Fix Path Formatting
 	 *
 	 * @param string $str Path.
-	 * @param bool $validate Require valid file.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return bool|string Path or false.
 	 */
-	public static function path(string str, const bool validate=true, const bool trusted=false) -> string | bool {
+	public static function path(string str, const uint flags=0) -> string | bool {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = \Blobfolio\Strings::utf8(str);
 		}
+
+		bool validate = (flags & globals_get("flag_path_validate"));
 
 		// This might be a URL rather than something local. We only want
 		// to focus on local ones.
@@ -413,7 +413,7 @@ final class Files {
 		}
 
 		// Fix up slashes.
-		let str = self::unixSlash(str, true);
+		let str = self::unixSlash(str, globals_get("flag_trusted"));
 
 		// Is this a real path?
 		string old_str = str;
@@ -435,7 +435,7 @@ final class Files {
 			try {
 				var dir = stream_resolve_include_path(dirname(str));
 				if (dir) {
-					let str = self::trailingSlash(dir, true) . basename(str);
+					let str = self::trailingSlash(dir, globals_get("flag_trusted")) . basename(str);
 				}
 			} catch \Throwable {
 				let str = old_str;
@@ -448,7 +448,7 @@ final class Files {
 
 		// Always trail slashes on directories.
 		if (is_dir(str)) {
-			let str = self::trailingSlash(str, true);
+			let str = self::trailingSlash(str, globals_get("flag_trusted"));
 		}
 
 		return str;
@@ -458,21 +458,22 @@ final class Files {
 	 * Add Trailing Slash
 	 *
 	 * @param string $str Path.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string|array Path.
 	 */
-	public static function trailingSlash(string str, const bool trusted=false) -> string {
-		return self::untrailingSlash(str, trusted) . "/";
+	public static function trailingSlash(string str, const uint flags=0) -> string {
+		return self::untrailingSlash(str, (flags & globals_get("flag_trusted"))) . "/";
 	}
 
 	/**
 	 * Fix Path Slashes
 	 *
 	 * @param string $str Path.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string|array Path.
 	 */
-	public static function unixSlash(string str, const bool trusted=false) -> string {
+	public static function unixSlash(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = \Blobfolio\Strings::utf8(str);
 		}
@@ -486,11 +487,11 @@ final class Files {
 	 * Strip Leading Slash
 	 *
 	 * @param string $str Path.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string|array Path.
 	 */
-	public static function unleadingSlash(string str, const bool trusted=false) -> string {
-		let str = self::unixSlash(str, trusted);
+	public static function unleadingSlash(string str, const uint flags=0) -> string {
+		let str = self::unixSlash(str, (flags & globals_get("flag_trusted")));
 		return ltrim(str, "/");
 	}
 
@@ -498,11 +499,11 @@ final class Files {
 	 * Strip Trailing Slash
 	 *
 	 * @param string $str Path.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string|array Path.
 	 */
-	public static function untrailingSlash(string str, const bool trusted=false) -> string {
-		let str = self::unixSlash(str, trusted);
+	public static function untrailingSlash(string str, const uint flags=0) -> string {
+		let str = self::unixSlash(str, (flags & globals_get("flag_trusted")));
 		return rtrim(str, "/");
 	}
 
@@ -521,19 +522,19 @@ final class Files {
 	 */
 	public static function copy(string from, string to) -> bool {
 		// Double-check the from.
-		let from = self::path(from, true);
+		let from = self::path(from, globals_get("flag_path_validate"));
 		if (empty from) {
 			return false;
 		}
 
-		let to = self::path(to, false);
+		let to = self::path(to);
 		if (empty to || (from === to)) {
 			return false;
 		}
 
 		// Recurse directories.
 		if (is_dir(from)) {
-			let to = self::trailingSlash(to, true);
+			let to = self::trailingSlash(to, globals_get("flag_trusted"));
 
 			// Make sure the destination root exists.
 			if (is_dir(to)) {
@@ -613,7 +614,7 @@ final class Files {
 	 */
 	public static function csvHeaders(string csv, var cols=false, string delimiter=",") -> bool | array {
 		// We definitely need a file.
-		let csv = (string) self::path(csv, true);
+		let csv = (string) self::path(csv, globals_get("flag_path_validate"));
 		if (empty csv || !is_file(csv)) {
 			return false;
 		}
@@ -689,7 +690,7 @@ final class Files {
 	 * @return string URI.
 	 */
 	public static function dataUri(string path) -> string {
-		let path = self::path(path, true);
+		let path = self::path(path, globals_get("flag_path_validate"));
 		if (empty path || !is_file(path)) {
 			return "";
 		}
@@ -816,14 +817,14 @@ final class Files {
 		}
 
 		// Sanitize the path.
-		let str = (string) self::path(str, false);
+		let str = (string) self::path(str);
 		if (empty str || (false !== strpos(str, "://"))) {
 			return false;
 		}
 
 		// We only need to proceed if the path doesn't exist.
 		if (!is_dir(str)) {
-			let str = self::untrailingSlash(str, true);
+			let str = self::untrailingSlash(str, globals_get("flag_trusted"));
 
 			// Figure out where we need to begin.
 			string base = (string) dirname(str);
@@ -857,7 +858,7 @@ final class Files {
 					null,
 					"UTF-8"
 				);
-				let str = self::unleadingSlash(str, true);
+				let str = self::unleadingSlash(str, globals_get("flag_trusted"));
 				array parts = (array) explode("/", str);
 				let str = base;
 
@@ -928,7 +929,7 @@ final class Files {
 	 * @return bool True/false.
 	 */
 	public static function rmdir(string str) -> bool {
-		let str = self::path(str, true);
+		let str = self::path(str, globals_get("flag_path_validate"));
 		if (empty str || !is_readable(str) || !is_dir(str)) {
 			return false;
 		}
@@ -977,7 +978,7 @@ final class Files {
 	 * @return array Path(s).
 	 */
 	public static function scandir(string str, const bool show_files=true, const bool show_dirs=true, const int depth=-1) -> array {
-		let str = self::path(str, true);
+		let str = self::path(str, globals_get("flag_path_validate"));
 		if (empty str || !is_dir(str) || (!show_files && !show_dirs)) {
 			return [];
 		}
@@ -994,7 +995,7 @@ final class Files {
 		array out = [];
 		var handle = opendir(str);
 		if (handle) {
-			let str = self::trailingSlash(str, true);
+			let str = self::trailingSlash(str, globals_get("flag_trusted"));
 			var file = readdir(handle);
 			while (file) {
 				// Always ignore dots.

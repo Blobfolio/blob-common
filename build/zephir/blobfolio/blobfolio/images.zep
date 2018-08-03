@@ -2,10 +2,7 @@
 /**
  * Blobfolio: Images
  *
- * Image helpers.
- *
- * @see {blobfolio\common\file}
- * @see {blobfolio\common\ref\file}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -14,19 +11,6 @@
 namespace Blobfolio;
 
 final class Images {
-
-	const SVG_CLEAN_STYLES = 1;
-	const SVG_FIX_DIMENSIONS = 2;
-	const SVG_NAMESPACE = 4;
-	const SVG_RANDOM_ID = 8;
-	const SVG_REWRITE_STYLES = 16;
-	const SVG_SANITIZE = 32;
-	const SVG_SAVE = 64;
-	const SVG_STRIP_DATA = 128;
-	const SVG_STRIP_ID = 256;
-	const SVG_STRIP_STYLE = 512;
-	const SVG_STRIP_TITLE = 1024;
-
 	// Random IDs and classes we've generated for SVGs.
 	private static $_svg_ids = [];
 	private static $_svg_classes = [];
@@ -53,17 +37,18 @@ final class Images {
 	 * Sanitize an SVG's attributes, protocols, etc.
 	 *
 	 * @param string $svg SVG.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string SVG.
 	 */
-	public static function niceSvg(string svg, const bool trusted=false) -> string {
+	public static function niceSvg(string svg, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let svg = \Blobfolio\Strings::utf8(svg);
 		}
 
 		// This should validate.
 		var dom;
-		let dom = \Blobfolio\Dom::svgToDom(svg, true);
+		let dom = \Blobfolio\Dom::svgToDom(svg, globals_get("flag_trusted"));
 		if (false === dom) {
 			return "";
 		}
@@ -110,7 +95,7 @@ final class Images {
 			if ("style" === tag_name) {
 				let tmp = tags->item(x);
 
-				let tmp->textContent = \Blobfolio\Dom::attributeValue(tmp->textContent, true);
+				let tmp->textContent = \Blobfolio\Dom::attributeValue(tmp->textContent, globals_get("flag_trusted"));
 				let tmp->textContent = \Blobfolio\Dom::decodeJsEntities(tmp->textContent);
 				let tmp->textContent = strip_tags(tmp->textContent);
 			}
@@ -134,13 +119,13 @@ final class Images {
 					continue;
 				}
 
-				string attr_value = (string) \Blobfolio\Dom::attributeValue(attr->item(y)->value, true);
+				string attr_value = (string) \Blobfolio\Dom::attributeValue(attr->item(y)->value, globals_get("flag_trusted"));
 
 				// Validate protocols.
 				let found = false;
 				if (isset(wIri[attr_name])) {
 					let found = true;
-					let attr_value = \Blobfolio\Dom::iriValue(attr_value, true);
+					let attr_value = \Blobfolio\Dom::iriValue(attr_value, globals_get("flag_trusted"));
 				}
 				// For the rest, we're specifically interested in scripty
 				// things.
@@ -186,7 +171,7 @@ final class Images {
 
 				// Validate values as the first pass would have missed
 				// them.
-				string node_value = (string) \Blobfolio\Dom::iriValue(nodes->item(y)->nodeValue, true);
+				string node_value = (string) \Blobfolio\Dom::iriValue(nodes->item(y)->nodeValue, globals_get("flag_trusted"));
 
 				// Remove empties.
 				if (empty node_value) {
@@ -227,9 +212,9 @@ final class Images {
 	 * @return string Replacement.
 	 */
 	private static function niceSvgCallback(array match) -> string {
-		string str = (string) \Blobfolio\Strings::quotes(match[1], true);
+		string str = (string) \Blobfolio\Strings::quotes(match[1], globals_get("flag_trusted"));
 		let str = str_replace(["'", "\""], "", str);
-		let str = (string) \Blobfolio\Dom::iriValue(str, true);
+		let str = (string) \Blobfolio\Dom::iriValue(str, globals_get("flag_trusted"));
 
 		if (empty str) {
 			return "none";
@@ -262,7 +247,7 @@ final class Images {
 
 		// If this is an SVG, steal results from our SVG size method.
 		if ("image/svg+xml" === mime) {
-			var tmp = self::svgSize(file, true);
+			var tmp = self::svgSize(file, globals_get("flag_trusted"));
 			if (false === tmp) {
 				return false;
 			}
@@ -288,7 +273,7 @@ final class Images {
 		// This shouldn't be needed, but just in case a local PHP is
 		// wonky, we can calculate WebP dimensions manually.
 		if ("image/webp" === mime) {
-			var tmp = self::webpSize(file, true);
+			var tmp = self::webpSize(file, globals_get("flag_trusted"));
 			if (false === tmp) {
 				return false;
 			}
@@ -313,10 +298,11 @@ final class Images {
 	 * Determine SVG Dimensions
 	 *
 	 * @param string $svg SVG content or file path.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return array|bool Dimensions or false.
 	 */
-	public static function svgSize(string svg, const bool trusted=false) -> bool | array {
+	public static function svgSize(string svg, const uint flags=0) -> bool | array {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let svg = \Blobfolio\Strings::utf8(svg);
 		}
@@ -354,7 +340,7 @@ final class Images {
 		var viewbox = null;
 
 		// Search for width, height, and viewbox.
-		let svg = \Blobfolio\Strings::whitespace(svg, 0, true);
+		let svg = \Blobfolio\Strings::whitespace(svg, 0, globals_get("flag_trusted"));
 		var match;
 		preg_match_all(
 			"/(height|width|viewbox)\s*=\s*([\"'])((?:(?!\2).)*)\2/",
@@ -369,7 +355,7 @@ final class Images {
 				switch (v[1]) {
 					case "width":
 					case "height":
-						let v[3] = \Blobfolio\Cast::toFloat($v[3], true);
+						let v[3] = \Blobfolio\Cast::toFloat($v[3], globals_get("flag_flatten"));
 						if (v[3] > 0.0) {
 							let out[v[1]] = v[3];
 						}
@@ -395,7 +381,7 @@ final class Images {
 			let viewbox = explode(" ", viewbox);
 
 			for k, v in viewbox {
-				let viewbox[k] = \Blobfolio\Cast::toFloat(v, true);
+				let viewbox[k] = \Blobfolio\Cast::toFloat(v, globals_get("flag_flatten"));
 				if (viewbox[k] < 0.0) {
 					let viewbox[k] = 0.0;
 				}
@@ -414,14 +400,15 @@ final class Images {
 	 * WebP Size
 	 *
 	 * @param string $webp WebP file path.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return array|bool Dimensions or false.
 	 */
-	public static function webpSize(string webp, const bool trusted=false) -> bool | array {
+	public static function webpSize(string webp, const uint flags=0) -> bool | array {
 		if (!is_file(webp)) {
 			return false;
 		}
 
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			string mime = (string) \Blobfolio\Files::getMimeType(webp);
 			if ("image/webp" !== mime) {
@@ -510,7 +497,7 @@ final class Images {
 	 *
 	 * @return string|bool Clean SVG code. False on failure.
 	 */
-	public static function cleanSvg(const string path, const uint flags = self::SVG_SANITIZE) -> string {
+	public static function cleanSvg(const string path, const uint flags=64) -> string {
 		if (!is_file(path)) {
 			return "";
 		}
@@ -525,17 +512,17 @@ final class Images {
 		}
 
 		// Parse flags.
-		bool flagCleanStyles = (flags & self::SVG_CLEAN_STYLES);
-		bool flagFixDimensions = (flags & self::SVG_FIX_DIMENSIONS);
-		bool flagNamespace = (flags & self::SVG_NAMESPACE);
-		bool flagRandomId = (flags & self::SVG_RANDOM_ID);
-		bool flagRewriteStyles = (flags & self::SVG_REWRITE_STYLES);
-		bool flagSanitize = (flags & self::SVG_SANITIZE);
-		bool flagSave = (flags & self::SVG_SAVE);
-		bool flagStripData = (flags & self::SVG_STRIP_DATA);
-		bool flagStripId = (flags & self::SVG_STRIP_ID);
-		bool flagStripStyle = (flags & self::SVG_STRIP_STYLE);
-		bool flagStripTitle = (flags & self::SVG_STRIP_TITLE);
+		bool flagCleanStyles = (flags & globals_get("flag_svg_clean_styles"));
+		bool flagFixDimensions = (flags & globals_get("flag_svg_fix_dimensions"));
+		bool flagNamespace = (flags & globals_get("flag_svg_namespace"));
+		bool flagRandomId = (flags & globals_get("flag_svg_random_id"));
+		bool flagRewriteStyles = (flags & globals_get("flag_svg_rewrite_styles"));
+		bool flagSanitize = (flags & globals_get("flag_svg_sanitize"));
+		bool flagSave = (flags & globals_get("flag_svg_save"));
+		bool flagStripData = (flags & globals_get("flag_svg_strip_data"));
+		bool flagStripId = (flags & globals_get("flag_svg_strip_id"));
+		bool flagStripStyle = (flags & globals_get("flag_svg_strip_style"));
+		bool flagStripTitle = (flags & globals_get("flag_svg_strip_title"));
 
 		// Some options imply or override others.
 		if (flagStripStyle) {
@@ -613,7 +600,7 @@ final class Images {
 		}
 
 		if (flagSanitize) {
-			let svg = self::niceSvg(svg, true);
+			let svg = self::niceSvg(svg, globals_get("flag_trusted"));
 		}
 
 		array matches;
@@ -690,7 +677,7 @@ final class Images {
 			}
 
 			// Back to a DOM.
-			let dom = \Blobfolio\Dom::svgToDom(svg, true);
+			let dom = \Blobfolio\Dom::svgToDom(svg, globals_get("flag_trusted"));
 			for v in ["svg", "pattern"] {
 				let tags = dom->getElementsByTagName(v);
 				if (!tags->length) {
@@ -761,7 +748,7 @@ final class Images {
 
 		// Namespacing is a bitch.
 		if (flagNamespace) {
-			let dom = \Blobfolio\Dom::svgToDom(svg, true);
+			let dom = \Blobfolio\Dom::svgToDom(svg, globals_get("flag_trusted"));
 			let tags = dom->getElementsByTagName("svg");
 			if (!tags->length) {
 				return "";
@@ -804,7 +791,7 @@ final class Images {
 		// Save it?
 		if (flagSave) {
 			// Add/update our passthrough key.
-			let dom = \Blobfolio\Dom::svgToDom(svg, true);
+			let dom = \Blobfolio\Dom::svgToDom(svg, globals_get("flag_trusted"));
 			let tags = dom->getElementsByTagName("svg");
 			tags->item(0)->setAttribute("data-cleaned", flags);
 			let svg = (string) \Blobfolio\Dom::domToSvg(dom);
@@ -860,7 +847,7 @@ final class Images {
 		}
 
 		// We'll need our DOM at some point.
-		let dom = \Blobfolio\Dom::svgToDom(svg, true);
+		let dom = \Blobfolio\Dom::svgToDom(svg, globals_get("flag_trusted"));
 		if (false === dom) {
 			return "";
 		}
@@ -1006,7 +993,7 @@ final class Images {
 			for node in nodes {
 				var tmp;
 				let tmp = (string) node->getAttribute("class");
-				let tmp = (string) \Blobfolio\Strings::whitespace(tmp, 0, true);
+				let tmp = (string) \Blobfolio\Strings::whitespace(tmp, 0, globals_get("flag_trusted"));
 				let tmp = (array) explode(" ", tmp);
 				let tmp = array_unique(tmp);
 				let tmp = array_diff(tmp, classesOld);
@@ -1023,11 +1010,11 @@ final class Images {
 	 *
 	 * @param string $from From.
 	 * @param string $to To.
-	 * @param bool $refresh Refresh.
+	 * @param int $flags Flags.
 	 * @return bool True/false.
 	 */
-	public static function toWebp(string from, string to="", const bool refresh=false) -> bool {
-		let from = \Blobfolio\Files::path(from, true);
+	public static function toWebp(string from, string to="", const uint flags=0) -> bool {
+		let from = \Blobfolio\Files::path(from, globals_get("flag_path_validate"));
 		if (empty from) {
 			return false;
 		}
@@ -1047,7 +1034,7 @@ final class Images {
 			let to = finfo["dirname"] . "/" . finfo["filename"] . ".webp";
 		}
 		else {
-			let to = \Blobfolio\Files::path(to, false);
+			let to = \Blobfolio\Files::path(to);
 
 			// If only a file name was passed, throw it in the dir.
 			if (false === strpos(to, "/")) {
@@ -1059,6 +1046,7 @@ final class Images {
 		}
 
 		// Early abort.
+		bool refresh = (flags & globals_get("flag_refresh"));
 		if (!refresh && file_exists(to)) {
 			return true;
 		}

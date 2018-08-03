@@ -4,10 +4,7 @@
  *
  * String manipulation.
  *
- * @see {blobfolio\common\mb}
- * @see {blobfolio\common\ref\mb}
- * @see {blobfolio\common\ref\sanitize}
- * @see {blobfolio\common\sanitize}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -16,12 +13,6 @@
 namespace Blobfolio;
 
 final class Strings {
-
-	const EXCERPT_BREAK_CHARACTER = 1;
-	const EXCERPT_BREAK_WORD = 2;
-	const EXCERPT_ELLIPSIS = 4;
-	const EXCERPT_INCLUSIVE = 8;
-
 	/**
 	 * @var array $case_char_upper Uppercase Unicode.
 	 */
@@ -78,10 +69,11 @@ final class Strings {
 	 * Convert accented to non-accented characters.
 	 *
 	 * @param string String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function accents(string str, const bool trusted=false) -> string {
+	public static function accents(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -159,10 +151,11 @@ final class Strings {
 	 * Control Characters
 	 *
 	 * @param string $str String
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function controlChars(string str, const bool trusted=false) -> string {
+	public static function controlChars(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -185,14 +178,14 @@ final class Strings {
 	 *
 	 * @return string Excerpt.
 	 */
-	public static function excerpt(string str, int length = 200, const uint flags = 5, const bool trusted=false) -> string {
-		let str = self::whitespace(str, 0, trusted);
+	public static function excerpt(string str, int length = 200, const uint flags = 5) -> string {
+		let str = self::whitespace(str, 0, (flags & globals_get("flag_trusted")));
 		let str = strip_tags(str);
 
-		bool flagsEllipsis = (flags & self::EXCERPT_ELLIPSIS);
-		bool flagsWord = (flags & self::EXCERPT_BREAK_WORD);
+		bool flagsEllipsis = (flags & globals_get("flag_excerpt_ellipsis"));
+		bool flagsWord = (flags & globals_get("flag_excerpt_break_word"));
 		bool flagsChar = !flagsWord;
-		bool flagsInclusive = (flags & self::EXCERPT_INCLUSIVE);
+		bool flagsInclusive = (flags & globals_get("flag_excerpt_inclusive"));
 
 		if (flagsInclusive) {
 			let length -= 1;
@@ -232,10 +225,10 @@ final class Strings {
 	 * @param int|array $count Count.
 	 * @param string $single Singular.
 	 * @param string $plural Plural.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string Inflected string.
 	 */
-	public static function inflect(var count, const string single, const string plural, const bool trusted=false) -> string {
+	public static function inflect(var count, const string single, const string plural, const uint flags=0) -> string {
 		// Use the count() as $count for arrays.
 		if ("array" === typeof count) {
 			let count = (int) count(count);
@@ -247,6 +240,7 @@ final class Strings {
 
 		// Figure out which phrase to use.
 		string str;
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (1 == count) {
 			if (!trusted) {
 				let str = (string) \Blobfolio\Strings::utf8(single);
@@ -275,14 +269,14 @@ final class Strings {
 	 *
 	 * @param string $str String.
 	 * @param int $newlines Newlines.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function niceText(string str, const int newlines=0, const bool trusted=false) -> string {
-		let str = self::printable(str, trusted);
-		let str = self::controlChars(str, true);
-		let str = self::quotes(str, true);
-		let str = self::whitespace(str, newlines, true);
+	public static function niceText(string str, const int newlines=0, const uint flags=0) -> string {
+		let str = self::printable(str, (flags & globals_get("flag_trusted")));
+		let str = self::controlChars(str, globals_get("flag_trusted"));
+		let str = self::quotes(str, globals_get("flag_trusted"));
+		let str = self::whitespace(str, newlines, globals_get("flag_trusted"));
 
 		return str;
 	}
@@ -293,10 +287,11 @@ final class Strings {
 	 * Remove non-printable characters (except spaces).
 	 *
 	 * @param string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return void Nothing.
 	 */
-	public static function printable(string str, const bool trusted=false) -> string {
+	public static function printable(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -342,10 +337,11 @@ final class Strings {
 	 * Straighten out various forms of curly quotes and apostrophes.
 	 *
 	 * @param array|string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return array|string String.
 	 */
-	public static function quotes(string str, const bool trusted=false) -> string {
+	public static function quotes(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -518,12 +514,13 @@ final class Strings {
 	 * Strtolower
 	 *
 	 * @param array|string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @param bool $strict Strict.
 	 */
-	public static function toLower(string str, const bool trusted=false) -> string {
+	public static function toLower(string str, const uint flags=0) -> string {
 		// Proceed if we have a string, or don't care about type
 		// conversion.
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -552,10 +549,10 @@ final class Strings {
 	 * Strtoupper
 	 *
 	 * @param array|string $str String.
-	 * @param bool $trusted Trusted.
-	 * @param bool $strict Strict.
+	 * @param int $flags Flags.
 	 */
-	public static function toUpper(string str, const bool trusted=false) -> string {
+	public static function toUpper(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -607,10 +604,11 @@ final class Strings {
 	 * Trim
 	 *
 	 * @param string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function trim(string str, const bool trusted=false) -> string {
+	public static function trim(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -625,10 +623,11 @@ final class Strings {
 	 * functions.
 	 *
 	 * @param string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function toSentence(string str, const bool trusted=false) -> string {
+	public static function toSentence(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -636,7 +635,7 @@ final class Strings {
 		if (str) {
 			if (unlikely !mb_check_encoding(str, "ASCII")) {
 				string first = (string) mb_substr(str, 0, 1, "UTF-8");
-				let first = self::toUpper($first, true);
+				let first = self::toUpper($first, globals_get("flag_trusted"));
 				let str = first . mb_substr(str, 1, null, "UTF-8");
 			}
 			else {
@@ -654,10 +653,11 @@ final class Strings {
 	 * functions.
 	 *
 	 * @param string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function toTitle(string str, const bool trusted=false) -> string {
+	public static function toTitle(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -875,10 +875,11 @@ final class Strings {
 	 *
 	 * @param array|string $str String.
 	 * @param int $newlines Newlines.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return array|string String.
 	 */
-	public static function whitespace(string str, const int newlines=0, const bool trusted=false) -> string {
+	public static function whitespace(string str, const int newlines=0, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = self::utf8(str);
 		}
@@ -899,7 +900,7 @@ final class Strings {
 			let lines[k] = trim(preg_replace("/\s+/u", " ", v));
 		}
 		let str = (string) implode("\n", lines);
-		let str = self::trim(str, true);
+		let str = self::trim(str, globals_get("flag_trusted"));
 
 		// Cap newlines.
 		let str = preg_replace(
@@ -995,7 +996,7 @@ final class Strings {
 			// Is this word hyphenated or dashed?
 			let v = preg_replace("/(\p{Pd})\n/u", "$1", v);
 			let v = preg_replace("/(\p{Pd}+)/u", "$1\n", v);
-			let v = self::trim(v, true);
+			let v = self::trim(v, globals_get("flag_trusted"));
 
 			// Loop through word chunks to see what fits where.
 			let tmp = (array) explode("\n", v);
@@ -1027,24 +1028,24 @@ final class Strings {
 					continue;
 				}
 				elseif (1 === breakLength) {
-					let out[] = self::trim(ltrim(v, eol), true);
+					let out[] = self::trim(ltrim(v, eol), globals_get("flag_trusted"));
 				}
 				else {
 					let out[] = self::trim(preg_replace(
 						"/^" . preg_eol . "/ui",
 						"",
 						v
-					), true);
+					), globals_get("flag_trusted"));
 				}
 
 				continue;
 			}
 
-			let out[] = self::trim(v, true);
+			let out[] = self::trim(v, globals_get("flag_trusted"));
 		}
 
 		// Finally, join our lines by the delimiter.
-		return self::trim(implode(eol, out), true);
+		return self::trim(implode(eol, out), globals_get("flag_trusted"));
 	}
 
 

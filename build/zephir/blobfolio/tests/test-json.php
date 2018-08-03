@@ -180,7 +180,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				\Blobfolio\Json::DECODE_STRICT | \Blobfolio\Json::DECODE_RECURSIVE,
+				\Blobfolio\Blobfolio::PARSE_STRICT | \Blobfolio\Blobfolio::PARSE_RECURSIVE,
 				array(
 					'animal'=>'dog',
 					'fruit'=>'banana',
@@ -192,7 +192,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>'bear',
 					'fruit'=>'banana',
 				),
-				\Blobfolio\Json::DECODE_RECURSIVE,
+				\Blobfolio\Blobfolio::PARSE_RECURSIVE,
 				array(
 					'animal'=>array('dog'=>'wolf'),
 					'fruit'=>'banana',
@@ -204,7 +204,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>array('bear'),
 					'fruit'=>'banana',
 				),
-				\Blobfolio\Json::DECODE_STRICT | \Blobfolio\Json::DECODE_RECURSIVE,
+				\Blobfolio\Blobfolio::PARSE_STRICT | \Blobfolio\Blobfolio::PARSE_RECURSIVE,
 				array(
 					'animal'=>array('dog'),
 					'fruit'=>'banana',
@@ -218,7 +218,7 @@ class json_tests extends \PHPUnit\Framework\TestCase {
 						'fruit'=>15.0,
 					),
 				),
-				\Blobfolio\Json::DECODE_STRICT | \Blobfolio\Json::DECODE_RECURSIVE,
+				\Blobfolio\Blobfolio::PARSE_STRICT | \Blobfolio\Blobfolio::PARSE_RECURSIVE,
 				array(
 					'price'=>array(
 						'animal'=>2.0,

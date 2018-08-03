@@ -4,10 +4,7 @@
  *
  * Number manipulation.
  *
- * @see {blobfolio\common\mb}
- * @see {blobfolio\common\ref\mb}
- * @see {blobfolio\common\ref\sanitize}
- * @see {blobfolio\common\sanitize}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -28,7 +25,7 @@ final class Numbers {
 	 * @return float Number.
 	 */
 	public static function ceil(var num, int precision=0) -> float {
-		let num = (float) \Blobfolio\Cast::toFloat(num, true);
+		let num = (float) \Blobfolio\Cast::toFloat(num, globals_get("flag_flatten"));
 		if (precision < 0) {
 			let precision = 0;
 		}
@@ -49,7 +46,7 @@ final class Numbers {
 	 * @return float Number.
 	 */
 	public static function floor(var num, int precision=0) -> float {
-		let num = (float) \Blobfolio\Cast::toFloat(num, true);
+		let num = (float) \Blobfolio\Cast::toFloat(num, globals_get("flag_flatten"));
 		if (precision < 0) {
 			let precision = 0;
 		}
@@ -68,7 +65,7 @@ final class Numbers {
 	 * @return string Fraction.
 	 */
 	public static function fraction(var num, float precision=0.0001) -> string {
-		let num = (float) \Blobfolio\Cast::toFloat(num, true);
+		let num = (float) \Blobfolio\Cast::toFloat(num, globals_get("flag_flatten"));
 
 		// We need a tolerable tolerance.
 		if (precision <= 0 || precision >= 1) {
@@ -157,13 +154,13 @@ final class Numbers {
 
 		// Typecast the trio.
 		if (minNum && (type !== typeof min)) {
-			let min = \Blobfolio\Cast::toType(min, type, true);
+			let min = \Blobfolio\Cast::toType(min, type, globals_get("flag_flatten"));
 		}
 		if (maxNum && (type !== typeof max)) {
-			let max = \Blobfolio\Cast::toType(max, type, true);
+			let max = \Blobfolio\Cast::toType(max, type, globals_get("flag_flatten"));
 		}
 		if (type !== typeof value) {
-			let value = \Blobfolio\Cast::toType(value, type, true);
+			let value = \Blobfolio\Cast::toType(value, type, globals_get("flag_flatten"));
 		}
 
 		// Make sure they're in the right order.

@@ -120,12 +120,12 @@ class ips_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2',
-				\Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_CONDENSE,
 				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
-				\Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_CONDENSE,
 				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
@@ -135,37 +135,37 @@ class ips_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				'127.0.0.1',
-				\Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_CONDENSE,
 				'',
 			),
 			array(
 				'127.0.0.1',
-				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_RESTRICTED | \Blobfolio\Blobfolio::IP_CONDENSE,
 				'127.0.0.1',
 			),
 			array(
 				'::127.0.0.1',
-				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_RESTRICTED | \Blobfolio\Blobfolio::IP_CONDENSE,
 				'127.0.0.1',
 			),
 			array(
 				'[::127.0.0.1]',
-				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_RESTRICTED | \Blobfolio\Blobfolio::IP_CONDENSE,
 				'127.0.0.1',
 			),
 			array(
 				'::1',
-				\Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_CONDENSE,
 				'',
 			),
 			array(
 				'[::1]',
-				\Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE,
+				\Blobfolio\Blobfolio::IP_RESTRICTED | \Blobfolio\Blobfolio::IP_CONDENSE,
 				'::1',
 			),
 			array(
 				'[::1]',
-				\Blobfolio\Ips::IP_RESTRICTED,
+				\Blobfolio\Blobfolio::IP_RESTRICTED,
 				'0000:0000:0000:0000:0000:0000:0000:0001',
 			),
 		);

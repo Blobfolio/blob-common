@@ -2,8 +2,7 @@
 /**
  * Blobfolio: International Phone Formatting
  *
- * @see {blobfolio\common\cast}
- * @see {blobfolio\common\ref\cast}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>

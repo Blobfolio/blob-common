@@ -613,32 +613,32 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				"What's up, doc?",
-				"'",
+				\Blobfolio\Blobfolio::JS_FOR_APOSTROPHES,
 				'What\\\'s up, doc?',
 			),
 			array(
 				"What's up, doc?",
-				'"',
+				\Blobfolio\Blobfolio::JS_FOR_QUOTES,
 				"What's up, doc?",
 			),
 			array(
 				'"Hello"',
-				'"',
+				\Blobfolio\Blobfolio::JS_FOR_QUOTES,
 				'\"Hello\"',
 			),
 			array(
 				'"Hello"',
-				"'",
+				\Blobfolio\Blobfolio::JS_FOR_APOSTROPHES,
 				'"Hello"',
 			),
 			array(
 				'"Hello"' . "\n\n",
-				'"',
+				\Blobfolio\Blobfolio::JS_FOR_QUOTES,
 				'\"Hello\"',
 			),
 			array(
 				'</script>><script>prompt(1)</script>',
-				"'",
+				\Blobfolio\Blobfolio::JS_FOR_APOSTROPHES,
 				'<\/script>><script>prompt(1)<\/script>',
 			),
 		);

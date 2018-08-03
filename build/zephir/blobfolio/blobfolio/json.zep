@@ -4,9 +4,7 @@
  *
  * Improved JSON support for PHP.
  *
- * @see {blobfolio\common\data}
- * @see {blobfolio\common\format}
- * @see {blobfolio\common\ref\format}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -15,10 +13,6 @@
 namespace Blobfolio;
 
 final class Json {
-
-	const DECODE_STRICT = 1;
-	const DECODE_RECURSIVE = 2;
-
 	/**
 	 * JSON Decode
 	 *
@@ -37,7 +31,7 @@ final class Json {
 
 		// Copy str over to our typed variable.
 		if (!recursed) {
-			let encoded = (string) \Blobfolio\Cast::toString(str, true);
+			let encoded = (string) \Blobfolio\Cast::toString(str, globals_get("flag_flatten"));
 		}
 		else {
 			let encoded = (string) str;
@@ -61,11 +55,11 @@ final class Json {
 		}
 
 		// A lot of the following tests are case-insensitive.
-		let lower = (string) \Blobfolio\Strings::toLower(encoded, true);
+		let lower = (string) \Blobfolio\Strings::toLower(encoded, globals_get("flag_trusted"));
 
 		// Bool.
 		if (("true" === lower) || ("false" === lower)) {
-			return \Blobfolio\Cast::toBool(encoded, true);
+			return \Blobfolio\Cast::toBool(encoded, globals_get("flag_flatten"));
 		}
 		// Null.
 		elseif ("null" === lower) {

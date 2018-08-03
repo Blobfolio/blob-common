@@ -4,8 +4,7 @@
  *
  * Array helpers.
  *
- * @see {blobfolio\common\file}
- * @see {blobfolio\common\ref\file}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -140,7 +139,7 @@ final class Arrays {
 			}
 			else {
 				// We need to work with strings.
-				let list[k] = \Blobfolio\Cast::toString(v, true);
+				let list[k] = \Blobfolio\Cast::toString(v, globals_get("flag_flatten"));
 
 				if (data["delimiter"]) {
 					let list[k] = (array) explode(data["delimiter"], list[k]);
@@ -152,7 +151,7 @@ final class Arrays {
 				// Trimming?
 				if (data["trim"]) {
 					for k2, v2 in list[k] {
-						let list[k][k2] = \Blobfolio\Strings::trim(v2, true);
+						let list[k][k2] = \Blobfolio\Strings::trim(v2, globals_get("flag_trusted"));
 					}
 				}
 
@@ -216,7 +215,7 @@ final class Arrays {
 		for k, v in arr {
 			let type = typeof v;
 			if (("integer" !== type) && ("double" !== type)) {
-				let arr[k] = \Blobfolio\Cast::toFloat(v, true);
+				let arr[k] = \Blobfolio\Cast::toFloat(v, globals_get("flag_flatten"));
 			}
 		}
 
@@ -309,8 +308,8 @@ final class Arrays {
 	 * @return string String.
 	 */
 	private static function csvCell(var str) -> string {
-		let str = \Blobfolio\Cast::toString(str, true);
-		let str = \Blobfolio\Strings::niceText(str, true);
+		let str = \Blobfolio\Cast::toString(str, globals_get("flag_flatten"));
+		let str = \Blobfolio\Strings::niceText(str, 0, globals_get("flag_trusted"));
 
 		// Remove existing double quotes.
 		while (false !== strpos(str, "\"\"")) {

@@ -39,11 +39,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_toBool
 	 *
 	 * @param mixed $value Value.
-	 * @param mixed $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_toBool($value, $flatten, $expected) {
-		$result = \Blobfolio\Cast::toBool($value, $flatten);
+	function test_toBool($value, $flags, $expected) {
+		$result = \Blobfolio\Cast::toBool($value, $flags);
 		$this->assertSame($expected, $result);
 		$this->assertSame(gettype($expected), gettype($result));
 	}
@@ -54,11 +54,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_toFloat
 	 *
 	 * @param mixed $value Value.
-	 * @param mixed $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_toFloat($value, $flatten, $expected) {
-		$result = \Blobfolio\Cast::toFloat($value, $flatten);
+	function test_toFloat($value, $flags, $expected) {
+		$result = \Blobfolio\Cast::toFloat($value, $flags);
 		$this->assertSame($expected, $result);
 		$this->assertSame(gettype($expected), gettype($result));
 	}
@@ -69,11 +69,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_toInt
 	 *
 	 * @param mixed $value Value.
-	 * @param mixed $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_toInt($value, $flatten, $expected) {
-		$result = \Blobfolio\Cast::toInt($value, $flatten);
+	function test_toInt($value, $flags, $expected) {
+		$result = \Blobfolio\Cast::toInt($value, $flags);
 		$this->assertSame($expected, $result);
 		$this->assertSame(gettype($expected), gettype($result));
 	}
@@ -84,11 +84,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_toString
 	 *
 	 * @param mixed $value Value.
-	 * @param mixed $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_toString($value, $flatten, $expected) {
-		$result = \Blobfolio\Cast::toString($value, $flatten);
+	function test_toString($value, $flags, $expected) {
+		$result = \Blobfolio\Cast::toString($value, $flags);
 		$this->assertSame($expected, $result);
 		$this->assertSame(gettype($expected), gettype($result));
 	}
@@ -100,11 +100,11 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param mixed $value Value.
 	 * @param string $type Type.
-	 * @param mixed $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_toType($value, string $type, $flatten, $expected) {
-		$result = \Blobfolio\Cast::toType($value, $type, $flatten);
+	function test_toType($value, string $type, $flags, $expected) {
+		$result = \Blobfolio\Cast::toType($value, $type, $flags);
 		$this->assertSame($expected, $result);
 		$this->assertSame(gettype($expected), gettype($result));
 	}
@@ -166,37 +166,37 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'string',
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				true,
 			),
 			array(
 				'string',
-				false,
+				0,
 				true,
 			),
 			array(
 				'off',
-				false,
+				0,
 				false,
 			),
 			array(
 				'FALSE',
-				false,
+				0,
 				false,
 			),
 			array(
 				1,
-				false,
+				0,
 				true,
 			),
 			array(
 				array(1, 'Off', false),
-				false,
+				0,
 				array(true, false, false),
 			),
 			array(
 				array(1, 'Off', false),
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				true,
 			),
 		);
@@ -211,47 +211,47 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'string',
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				0.0,
 			),
 			array(
 				'$2.50',
-				false,
+				0,
 				2.5,
 			),
 			array(
 				1,
-				false,
+				0,
 				1.0,
 			),
 			array(
 				'50%',
-				false,
+				0,
 				.5,
 			),
 			array(
 				'67¢',
-				false,
+				0,
 				.67,
 			),
 			array(
 				array(1, '2.5', false),
-				false,
+				0,
 				array(1.0, 2.5, 0.0),
 			),
 			array(
 				array(1, '2.5', false),
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				0.0,
 			),
 			array(
 				array(500),
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				500.0,
 			),
 			array(
 				array(500),
-				false,
+				0,
 				array(500.0),
 			),
 		);
@@ -266,42 +266,42 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'string',
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				0,
 			),
 			array(
 				'$2.50',
-				false,
+				0,
 				2,
 			),
 			array(
 				'on',
-				false,
+				0,
 				1,
 			),
 			array(
 				'50%',
-				false,
+				0,
 				0,
 			),
 			array(
 				array(1, '2.5', false),
-				false,
+				0,
 				array(1, 2, 0),
 			),
 			array(
 				array(1, '2.5', false),
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				0,
 			),
 			array(
 				array(500),
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				500,
 			),
 			array(
 				array(500),
-				false,
+				0,
 				array(500),
 			),
 		);
@@ -316,37 +316,37 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				"Hello\nWorld",
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				"Hello\nWorld",
 			),
 			array(
 				2,
-				false,
+				0,
 				'2',
 			),
 			array(
 				null,
-				false,
+				0,
 				'',
 			),
 			array(
 				array(1, '2.5', false),
-				false,
+				0,
 				array('1', '2.5', ''),
 			),
 			array(
 				array(1, '2.5', false),
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				'',
 			),
 			array(
 				array('Hi Judy'),
-				true,
+				\Blobfolio\Blobfolio::FLATTEN,
 				'Hi Judy',
 			),
 			array(
 				array(500),
-				false,
+				0,
 				array('500'),
 			),
 		);
@@ -362,49 +362,49 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				null,
 				'array',
-				false,
+				0,
 				array(),
 			),
 			array(
 				array('off'),
 				'bool',
-				false,
+				0,
 				array(false),
 			),
 			array(
 				'off',
 				'boolean',
-				false,
+				0,
 				false,
 			),
 			array(
 				2,
 				'double',
-				false,
+				0,
 				2.0,
 			),
 			array(
 				array(2),
 				'float',
-				false,
+				0,
 				array(2.0),
 			),
 			array(
 				'500',
 				'int',
-				false,
+				0,
 				500,
 			),
 			array(
 				array('2', 3),
 				'integer',
-				false,
+				0,
 				array(2, 3),
 			),
 			array(
 				2.3,
 				'string',
-				false,
+				0,
 				'2.3',
 			),
 		);
@@ -461,7 +461,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 					'animal'=>array('bear'),
 					'fruit'=>'banana',
 				),
-				\Blobfolio\Cast::PARSE_STRICT,
+				\Blobfolio\Blobfolio::PARSE_STRICT,
 				array(
 					'animal'=>array('dog'),
 					'fruit'=>'banana',
@@ -477,7 +477,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 						'fruit'=>15.0,
 					),
 				),
-				\Blobfolio\Cast::PARSE_STRICT | \Blobfolio\Cast::PARSE_RECURSIVE,
+				\Blobfolio\Blobfolio::PARSE_STRICT | \Blobfolio\Blobfolio::PARSE_RECURSIVE,
 				array(
 					'price'=>array(
 						'animal'=>.67,

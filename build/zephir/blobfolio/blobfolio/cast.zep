@@ -4,8 +4,7 @@
  *
  * Type juggling is the best juggling.
  *
- * @see {blobfolio\common\cast}
- * @see {blobfolio\common\ref\cast}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -14,10 +13,6 @@
 namespace Blobfolio;
 
 final class Cast {
-
-	const PARSE_STRICT = 1;
-	const PARSE_RECURSIVE = 2;
-
 	// -----------------------------------------------------------------
 	// Properties
 	// -----------------------------------------------------------------
@@ -68,10 +63,12 @@ final class Cast {
 	 * To Bool
 	 *
 	 * @param mixed $value Value.
-	 * @param bool $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @return bool Bool.
 	 */
-	public static function toBool(var value, const bool flatten=false) -> boolean | array {
+	public static function toBool(var value, const uint flags=0) -> boolean | array {
+		bool flatten = (flags & globals_get("flag_flatten"));
+
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -112,10 +109,12 @@ final class Cast {
 	 * To Float
 	 *
 	 * @param mixed $value Value.
-	 * @param bool $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @return float Float.
 	 */
-	public static function toFloat(var value, const bool flatten=false) -> float | array {
+	public static function toFloat(var value, const uint flags=0) -> float | array {
+		bool flatten = (flags & globals_get("flag_flatten"));
+
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -129,7 +128,7 @@ final class Cast {
 			return value;
 		}
 		else {
-			let value = self::toNumber(value, true);
+			let value = self::toNumber(value, globals_get("flag_flatten"));
 		}
 
 		return value;
@@ -139,10 +138,12 @@ final class Cast {
 	 * To Integer
 	 *
 	 * @param mixed $value Value.
-	 * @param bool $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @return int Integer.
 	 */
-	public static function toInt(var value, const bool flatten=false) -> int | array {
+	public static function toInt(var value, const uint flags=0) -> int | array {
+		bool flatten = (flags & globals_get("flag_flatten"));
+
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -156,7 +157,7 @@ final class Cast {
 				case "array":
 					if (1 === count(value)) {
 						reset(value);
-						return self::toInt(value[key(value)], true);
+						return self::toInt(value[key(value)], globals_get("flag_flatten"));
 					}
 
 					return 0;
@@ -174,7 +175,7 @@ final class Cast {
 			}
 		}
 
-		let value = (int) self::toNumber(value, true);
+		let value = (int) self::toNumber(value, globals_get("flag_flatten"));
 		return value;
 	}
 
@@ -185,10 +186,12 @@ final class Cast {
 	 * manipulation along the way to try to get the sanest result.
 	 *
 	 * @param mixed $value Value.
-	 * @param bool $flatten Do not recurse.
+	 * @param int $flags Flags.
 	 * @return float Number.
 	 */
-	public static function toNumber(var value, const bool flatten=false) -> float | array {
+	public static function toNumber(var value, const uint flags=0) -> float | array {
+		bool flatten = (flags & globals_get("flag_flatten"));
+
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -202,7 +205,7 @@ final class Cast {
 				case "array":
 					if (1 === count(value)) {
 						reset(value);
-						return self::toNumber(value[key(value)], true);
+						return self::toNumber(value[key(value)], globals_get("flag_flatten"));
 					}
 
 					return 0.0;
@@ -271,10 +274,12 @@ final class Cast {
 	 * To String
 	 *
 	 * @param mixed $value Value.
-	 * @param bool $flatten Flatten.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function toString(var value, const bool flatten=false) -> string | array {
+	public static function toString(var value, const uint flags=0) -> string | array {
+		bool flatten = (flags & globals_get("flag_flatten"));
+
 		// Recurse.
 		if (unlikely !flatten && ("array" === typeof value)) {
 			var k, v;
@@ -288,7 +293,7 @@ final class Cast {
 			if (("array" === typeof value)) {
 				if (1 === count(value)) {
 					reset(value);
-					return self::toString(value[key(value)], true);
+					return self::toString(value[key(value)], globals_get("flag_flatten"));
 				}
 
 				return "";
@@ -314,24 +319,24 @@ final class Cast {
 	 *
 	 * @param mixed $value Variable.
 	 * @param string $type Type.
-	 * @param bool $flatten Do not recurse.
+	 * @param int $flags Flags.
 	 * @return void Nothing.
 	 */
-	public static function toType(var value, string type, const bool flatten=false) {
+	public static function toType(var value, string type, const uint flags=0) {
 		switch (strtolower(type)) {
 			case "string":
-				return self::toString(value, flatten);
+				return self::toString(value, flags);
 			case "int":
 			case "integer":
 			case "long":
-				return self::toInt(value, flatten);
+				return self::toInt(value, flags);
 			case "double":
 			case "float":
 			case "number":
-				return self::toFloat(value, flatten);
+				return self::toFloat(value, flags);
 			case "bool":
 			case "boolean":
-				return self::toBool(value, flatten);
+				return self::toBool(value, flags);
 			case "array":
 				return self::toArray(value);
 		}
@@ -369,8 +374,8 @@ final class Cast {
 			return defaults;
 		}
 
-		bool strict = (flags & self::PARSE_STRICT);
-		bool recursive = (flags & self::PARSE_RECURSIVE);
+		bool strict = (flags & globals_get("flag_parse_strict"));
+		bool recursive = (flags & globals_get("flag_parse_strict"));
 
 		// Rebuild with user args!
 		var k, v;
@@ -400,7 +405,7 @@ final class Cast {
 							let defaults[k] = self::toType(
 								defaults[k],
 								d_type,
-								true
+								globals_get("flag_flatten")
 							);
 						}
 					}

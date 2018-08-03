@@ -1,9 +1,8 @@
 //<?php
 /**
- * Blobfolio: Miscellaneous Geo Data
+ * Blobfolio: Spacetime Helpers
  *
- * @see {blobfolio\common\cast}
- * @see {blobfolio\common\ref\cast}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -43,7 +42,7 @@ final class Geo {
 		}
 
 		// Uppercase it.
-		let country = \Blobfolio\Strings::toUpper(country, true);
+		let country = \Blobfolio\Strings::toUpper(country, globals_get("flag_trusted"));
 
 		// A direct hit!
 		if (isset(self::_countries[country])) {
@@ -70,7 +69,7 @@ final class Geo {
 		var k;
 		var v;
 		for k, v in self::_countries {
-			let v["name"] = (string) \Blobfolio\Strings::toUpper(v["name"], true);
+			let v["name"] = (string) \Blobfolio\Strings::toUpper(v["name"], globals_get("flag_trusted"));
 			if (country === v["name"]) {
 				return (string) k;
 			}
@@ -516,16 +515,17 @@ final class Geo {
 	/**
 	 * Get US States
 	 *
-	 * @param bool $extra Extra.
+	 * @param int $flags Flags.
 	 * @return array States.
 	 */
-	public static function getUsStates(const bool extra=true) -> array {
+	public static function getUsStates(const uint flags=1) -> array {
 		// Make sure the data is loaded.
 		if (!globals_get("loaded_geo")) {
 			self::loadData();
 		}
 
 		// Strip the territories and military bases, but keep DC.
+		bool extra = (flags & globals_get("flag_us_territories"));
 		if (!extra) {
 			array out = (array) self::_us;
 			unset(out["AA"]);

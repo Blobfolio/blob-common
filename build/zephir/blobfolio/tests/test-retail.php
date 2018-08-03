@@ -71,11 +71,11 @@ class retail_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_niceEan
 	 *
 	 * @param mixed $value Value.
-	 * @param bool $formatted Formatted.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_niceEan($value, bool $formatted, $expected) {
-		$result = \Blobfolio\Retail::niceEan($value, $formatted);
+	function test_niceEan($value, int $flags, $expected) {
+		$result = \Blobfolio\Retail::niceEan($value, $flags);
 
 		$this->assertSame($expected, $result);
 		$this->assertSame('string', gettype($result));
@@ -178,11 +178,11 @@ class retail_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_niceUpc
 	 *
 	 * @param mixed $value Value.
-	 * @param bool $formatted Formatted.
+	 * @param int $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_niceUpc($value, $formatted, $expected) {
-		$result = \Blobfolio\Retail::niceUpc($value, $formatted);
+	function test_niceUpc($value, int $flags, $expected) {
+		$result = \Blobfolio\Retail::niceUpc($value, $flags);
 
 		$this->assertSame($expected, $result);
 		$this->assertSame('string', gettype($result));
@@ -230,9 +230,9 @@ class retail_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Values.
 	 */
 	function data_usd() {
-		$thousands = \Blobfolio\Retail::USD_THOUSANDS;
-		$cents = \Blobfolio\Retail::USD_CENTS;
-		$trim = \Blobfolio\Retail::USD_TRIM;
+		$thousands = \Blobfolio\Blobfolio::USD_THOUSANDS;
+		$cents = \Blobfolio\Blobfolio::USD_CENTS;
+		$trim = \Blobfolio\Blobfolio::USD_TRIM;
 
 		return array(
 			array(
@@ -359,37 +359,37 @@ class retail_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'0',
-				false,
+				0,
 				'',
 			),
 			array(
 				'074299160691',
-				false,
+				0,
 				'0074299160691',
 			),
 			array(
 				'00709077260149',
-				false,
+				0,
 				'0709077260149',
 			),
 			array(
 				'709077260149',
-				false,
+				0,
 				'0709077260149',
 			),
 			array(
 				'0709077260555',
-				false,
+				0,
 				'',
 			),
 			array(
 				'0709077260149',
-				true,
+				\Blobfolio\Blobfolio::PRETTY,
 				'0-709077-260149',
 			),
 			array(
 				'0051511500275',
-				true,
+				\Blobfolio\Blobfolio::PRETTY,
 				'0-051511-500275',
 			),
 		);
@@ -575,32 +575,32 @@ class retail_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'0',
-				false,
+				0,
 				'',
 			),
 			array(
 				'089218545992',
-				false,
+				0,
 				'089218545992',
 			),
 			array(
 				'0089218545992',
-				false,
+				0,
 				'089218545992',
 			),
 			array(
 				'89218545992',
-				false,
+				0,
 				'089218545992',
 			),
 			array(
 				'089218545555',
-				false,
+				0,
 				'',
 			),
 			array(
 				'075597996524',
-				true,
+				\Blobfolio\Blobfolio::PRETTY,
 				'0-75597-99652-4',
 			),
 		);

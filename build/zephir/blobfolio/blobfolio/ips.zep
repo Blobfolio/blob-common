@@ -1,11 +1,8 @@
 //<?php
 /**
- * Blobfolio: Domain Suffixes
+ * Blobfolio: IP Addresses
  *
- * Make Domain Validation Great Again.
- *
- * @see {blobfolio\common\cast}
- * @see {blobfolio\common\ref\cast}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -14,14 +11,6 @@
 namespace Blobfolio;
 
 final class IPs {
-
-	/**
-	 * Flags: niceIp
-	 */
-	const IP_RESTRICTED = 1;
-	const IP_CONDENSE = 2;
-
-
 	// -----------------------------------------------------------------
 	// Formatting
 	// -----------------------------------------------------------------
@@ -34,7 +23,7 @@ final class IPs {
 	 * @param bool $condense Condense IPv6.
 	 * @return void Nothing.
 	 */
-	public static function niceIp(string str, const uint flags = self::IP_CONDENSE) -> string {
+	public static function niceIp(string str, const uint flags=2) -> string {
 		// Start by getting rid of obviously bad data.
 		let str = (string) preg_replace("/[^\d\.\:a-f]/", "", strtolower(str));
 
@@ -48,8 +37,8 @@ final class IPs {
 			let str = substr(str, 2);
 		}
 
-		bool condense = (flags & self::IP_CONDENSE);
-		bool restricted = (flags & self::IP_RESTRICTED);
+		bool condense = (flags & globals_get("flag_ip_condense"));
+		bool restricted = (flags & globals_get("flag_ip_restricted"));
 
 		// IPv6.
 		if (filter_var(str, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
@@ -98,7 +87,7 @@ final class IPs {
 		array parts = (array) array_pad(explode("/", cidr), 2, 0);
 
 		// The subnet should always be a number.
-		let parts[1] = \Blobfolio\Cast::toInt(parts[1], true);
+		let parts[1] = \Blobfolio\Cast::toInt(parts[1], globals_get("flag_flatten"));
 
 		// IPv4?
 		if (filter_var(parts[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
@@ -131,7 +120,7 @@ final class IPs {
 		}
 
 		if (0 === parts[1]) {
-			let range["min"] = self::niceIp(parts[0], \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
+			let range["min"] = self::niceIp(parts[0], globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
 			let range["max"] = range["min"];
 			return range;
 		}
@@ -169,7 +158,7 @@ final class IPs {
 		}
 
 		if (0 === parts[1]) {
-			let range["min"] = self::niceIp(parts[0], \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
+			let range["min"] = self::niceIp(parts[0], globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
 			let range["max"] = range["min"];
 			return range;
 		}
@@ -246,7 +235,7 @@ final class IPs {
 			return "0.0.0.0";
 		}
 
-		return self::niceIp(ip, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
+		return self::niceIp(ip, globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
 	}
 
 	/**
@@ -297,7 +286,7 @@ final class IPs {
 	 * @return bool True/false.
 	 */
 	public static function toSubnet(string ip) -> string | bool {
-		let ip = self::niceIp(ip, \Blobfolio\Ips::IP_RESTRICTED);
+		let ip = self::niceIp(ip, globals_get("flag_ip_restricted"));
 		if (empty ip) {
 			return false;
 		}
@@ -321,7 +310,7 @@ final class IPs {
 			let x++;
 		}
 
-		let ip = (string) self::niceIp(implode(":", bits), \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
+		let ip = (string) self::niceIp(implode(":", bits), globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
 		return ip . "/64";
 	}
 
@@ -344,7 +333,7 @@ final class IPs {
 	 * @return bool True/false.
 	 */
 	public static function inRange(var ip, var min, var max=null) -> bool {
-		let ip = (string) self::niceIp(ip, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
+		let ip = (string) self::niceIp(ip, globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
 		if (empty ip || empty min || ("string" !== typeof min)) {
 			return false;
 		}

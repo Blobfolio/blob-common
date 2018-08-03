@@ -4,8 +4,7 @@
  *
  * E-commerce, retail, etc.
  *
- * @see {blobfolio\common\file}
- * @see {blobfolio\common\ref\file}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -14,14 +13,6 @@
 namespace Blobfolio;
 
 final class Retail {
-
-	/**
-	 * Flags: usd
-	 */
-	const USD_THOUSANDS = 1;
-	const USD_CENTS = 2;
-	const USD_TRIM = 4;
-
 	// -----------------------------------------------------------------
 	// Formatting
 	// -----------------------------------------------------------------
@@ -33,8 +24,8 @@ final class Retail {
 	 * @param int $flags Flags.
 	 * @return string Value.
 	 */
-	public static function usd(var value, const uint flags = self::USD_THOUSANDS) -> string {
-		float money = (float) \Blobfolio\Cast::toFloat(value);
+	public static function usd(var value, const uint flags=1) -> string {
+		float money = (float) \Blobfolio\Cast::toFloat(value, globals_get("flag_flatten"));
 		let money = round(money, 2);
 
 		string out = "";
@@ -44,9 +35,9 @@ final class Retail {
 		}
 
 		// Parse flags.
-		bool flagsThousands = (flags & self::USD_THOUSANDS);
-		bool flagsCents = (flags & self::USD_CENTS);
-		bool flagsTrim = (flags & self::USD_TRIM);
+		bool flagsThousands = (flags & globals_get("flag_usd_thousands"));
+		bool flagsCents = (flags & globals_get("flag_usd_cents"));
+		bool flagsTrim = (flags & globals_get("flag_usd_trim"));
 
 		// Fancy cents.
 		if (flagsCents && money < 1) {
@@ -212,10 +203,10 @@ final class Retail {
 	 * Almost exactly like UPC, but not quite.
 	 *
 	 * @param string $str String.
-	 * @param bool $formatted Formatted.
+	 * @param int $flags Flags.
 	 * @return string EAN.
 	 */
-	public static function niceEan(string str, const bool formatted=false) -> string {
+	public static function niceEan(string str, const uint flags=0) -> string {
 		// Numbers only.
 		let str = preg_replace("/[^\d]/", "", str);
 		let str = str_pad(str, 13, "0", STR_PAD_LEFT);
@@ -239,6 +230,7 @@ final class Retail {
 		}
 
 		// Last thing, format?
+		bool formatted = (flags & globals_get("flag_pretty"));
 		if (formatted) {
 			let str = preg_replace("/^(\d{1})(\d{6})(\d{6})$/", "$1-$2-$3", str);
 		}
@@ -389,14 +381,14 @@ final class Retail {
 	 * This helps sanely format a human name.
 	 *
 	 * @param string $str Name.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string Name.
 	 */
-	public static function niceName(string str, const bool trusted=false) -> string {
-		let str = \Blobfolio\Strings::niceText(str, trusted);
+	public static function niceName(string str, const uint flags=0) -> string {
+		let str = \Blobfolio\Strings::niceText(str, 0, (flags & globals_get("flag_trusted")));
 		let str = preg_replace("/[^\p{L}\p{Zs}\p{Pd}\d'\"\,\.]/u", "", str);
-		let str = \Blobfolio\Strings::whitespace(str, 0, true);
-		return \Blobfolio\Strings::toTitle(str, true);
+		let str = \Blobfolio\Strings::whitespace(str, 0, globals_get("flag_trusted"));
+		return \Blobfolio\Strings::toTitle(str, globals_get("flag_trusted"));
 	}
 
 	/**
@@ -405,13 +397,13 @@ final class Retail {
 	 * This helps ensure password characters make a kind of sense.
 	 *
 	 * @param string $str Password.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string Password.
 	 */
-	public static function nicePassword(string str, const bool trusted=false) -> string {
-		let str = \Blobfolio\Strings::printable(str, trusted);
-		let str = \Blobfolio\Strings::controlChars(str, true);
-		return \Blobfolio\Strings::whitespace(str, 0, true);
+	public static function nicePassword(string str, const uint flags=0) -> string {
+		let str = \Blobfolio\Strings::printable(str, (flags & globals_get("flag_trusted")));
+		let str = \Blobfolio\Strings::controlChars(str, globals_get("flag_trusted"));
+		return \Blobfolio\Strings::whitespace(str, 0, globals_get("flag_trusted"));
 	}
 
 	/**
@@ -443,10 +435,10 @@ final class Retail {
 	 * UPC-A
 	 *
 	 * @param string $str String.
-	 * @param bool $formatted Formatted.
+	 * @param int $flags Flags.
 	 * @return string UPC.
 	 */
-	public static function niceUpc(string str, const bool formatted=false) -> string {
+	public static function niceUpc(string str, const uint flags=0) -> string {
 		let str = preg_replace("/[^\d]/", "", str);
 		let str = str_pad(str, 12, "0", STR_PAD_LEFT);
 
@@ -469,6 +461,7 @@ final class Retail {
 		}
 
 		// Last thing, format?
+		bool formatted = (flags & globals_get("flag_pretty"));
 		if (formatted) {
 			let str = preg_replace(
 				"/^(\d)(\d{5})(\d{5})(\d)$/",

@@ -135,11 +135,11 @@ class files_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_path
 	 *
 	 * @param string $value Value.
-	 * @param bool $exists Must exist.
+	 * @param int $flags Must exist.
 	 * @param string $expected Expected.
 	 */
-	function test_path(string $value, bool $exists, $expected) {
-		$result = \Blobfolio\Files::path($value, $exists);
+	function test_path(string $value, int $flags, $expected) {
+		$result = \Blobfolio\Files::path($value, $flags);
 
 		$this->assertSame($expected, $result);
 	}
@@ -614,42 +614,42 @@ class files_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'/file/here',
-				false,
+				0,
 				'/file/here',
 			),
 			array(
 				'/file/here',
-				true,
+				\Blobfolio\Blobfolio::PATH_VALIDATE,
 				false,
 			),
 			array(
 				'\\file\\here',
-				false,
+				0,
 				'/file/here',
 			),
 			array(
 				static::ASSETS,
-				true,
+				\Blobfolio\Blobfolio::PATH_VALIDATE,
 				static::ASSETS,
 			),
 			array(
 				rtrim(static::ASSETS, '/'),
-				true,
+				\Blobfolio\Blobfolio::PATH_VALIDATE,
 				static::ASSETS,
 			),
 			array(
 				static::ASSETS . '/pi.svg',
-				true,
+				\Blobfolio\Blobfolio::PATH_VALIDATE,
 				static::ASSETS . 'pi.svg',
 			),
 			array(
 				'file://' . static::ASSETS,
-				true,
+				\Blobfolio\Blobfolio::PATH_VALIDATE,
 				static::ASSETS,
 			),
 			array(
 				'htTps://google.com/',
-				true,
+				\Blobfolio\Blobfolio::PATH_VALIDATE,
 				'https://google.com/',
 			),
 		);

@@ -324,7 +324,7 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				\Blobfolio\Images::SVG_SANITIZE,
+				\Blobfolio\Blobfolio::SVG_SANITIZE,
 				array(
 					'<svg',
 					'.bleerkk3 { fill: currentColor; }',
@@ -336,8 +336,8 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				\Blobfolio\Images::SVG_SANITIZE |
-				\Blobfolio\Images::SVG_STRIP_ID,
+				\Blobfolio\Blobfolio::SVG_SANITIZE |
+				\Blobfolio\Blobfolio::SVG_STRIP_ID,
 				array(
 					'<svg',
 					'.bleerkk3 { fill: currentColor; }',
@@ -349,8 +349,8 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				\Blobfolio\Images::SVG_SANITIZE |
-				\Blobfolio\Images::SVG_CLEAN_STYLES,
+				\Blobfolio\Blobfolio::SVG_SANITIZE |
+				\Blobfolio\Blobfolio::SVG_CLEAN_STYLES,
 				array(
 					'<svg',
 					'{fill:currentColor;}',
@@ -362,9 +362,9 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
-				\Blobfolio\Images::SVG_SANITIZE |
-				\Blobfolio\Images::SVG_CLEAN_STYLES |
-				\Blobfolio\Images::SVG_REWRITE_STYLES,
+				\Blobfolio\Blobfolio::SVG_SANITIZE |
+				\Blobfolio\Blobfolio::SVG_CLEAN_STYLES |
+				\Blobfolio\Blobfolio::SVG_REWRITE_STYLES,
 				array(
 					'<svg',
 					'{fill:currentColor;}',
@@ -377,9 +377,9 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				self::ASSETS . 'minus.svg',
-				\Blobfolio\Images::SVG_SANITIZE |
-				\Blobfolio\Images::SVG_CLEAN_STYLES |
-				\Blobfolio\Images::SVG_REWRITE_STYLES,
+				\Blobfolio\Blobfolio::SVG_SANITIZE |
+				\Blobfolio\Blobfolio::SVG_CLEAN_STYLES |
+				\Blobfolio\Blobfolio::SVG_REWRITE_STYLES,
 				array(
 					'<svg',
 					'{fill:currentColor;}',

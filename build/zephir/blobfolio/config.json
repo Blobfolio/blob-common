@@ -87,6 +87,156 @@
         "loaded_geo": {
             "type": "bool",
             "default": false
+        },
+        "flag_pretty": {
+            "type": "uint",
+            "default": 2147483648,
+            "module": true
+        },
+        "flag_trusted": {
+            "type": "uint",
+            "default": 1073741824,
+            "module": true
+        },
+        "flag_flatten": {
+            "type": "uint",
+            "default": 536870912,
+            "module": true
+        },
+        "flag_refresh": {
+            "type": "uint",
+            "default": 268435456,
+            "module": true
+        },
+        "flag_svg_clean_styles": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+        "flag_svg_fix_dimensions": {
+            "type": "uint",
+            "default": 2,
+            "module": true
+        },
+        "flag_svg_namespace": {
+            "type": "uint",
+            "default": 4,
+            "module": true
+        },
+        "flag_svg_random_id": {
+            "type": "uint",
+            "default": 8,
+            "module": true
+        },
+        "flag_svg_rewrite_styles": {
+            "type": "uint",
+            "default": 16,
+            "module": true
+        },
+        "flag_svg_sanitize": {
+            "type": "uint",
+            "default": 32,
+            "module": true
+        },
+        "flag_svg_save": {
+            "type": "uint",
+            "default": 64,
+            "module": true
+        },
+        "flag_svg_strip_data": {
+            "type": "uint",
+            "default": 128,
+            "module": true
+        },
+        "flag_svg_strip_id": {
+            "type": "uint",
+            "default": 256,
+            "module": true
+        },
+        "flag_svg_strip_style": {
+            "type": "uint",
+            "default": 512,
+            "module": true
+        },
+        "flag_svg_strip_title": {
+            "type": "uint",
+            "default": 1024,
+            "module": true
+        },
+        "flag_parse_strict": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+         "flag_parse_recursive": {
+            "type": "uint",
+            "default": 2,
+            "module": true
+        },
+        "flag_js_for_quotes": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+         "flag_js_for_apostrophes": {
+            "type": "uint",
+            "default": 2,
+            "module": true
+        },
+        "flag_path_validate": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+        "flag_us_territories": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+        "flag_ip_restricted": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+         "flag_ip_condense": {
+            "type": "uint",
+            "default": 2,
+            "module": true
+        },
+        "flag_usd_thousands": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+        "flag_usd_cents": {
+            "type": "uint",
+            "default": 2,
+            "module": true
+        },
+        "flag_usd_trim": {
+            "type": "uint",
+            "default": 4,
+            "module": true
+        },
+        "flag_excerpt_break_character": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+        "flag_excerpt_break_word": {
+            "type": "uint",
+            "default": 2,
+            "module": true
+        },
+        "flag_excerpt_ellipsis": {
+            "type": "uint",
+            "default": 4,
+            "module": true
+        },
+        "flag_excerpt_inclusive": {
+            "type": "uint",
+            "default": 8,
+            "module": true
         }
     },
     "info": [

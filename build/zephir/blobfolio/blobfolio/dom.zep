@@ -4,10 +4,7 @@
  *
  * Number manipulation.
  *
- * @see {blobfolio\common\mb}
- * @see {blobfolio\common\ref\mb}
- * @see {blobfolio\common\ref\sanitize}
- * @see {blobfolio\common\sanitize}
+ * @see {https://github.com/Blobfolio/blob-common}
  *
  * @package Blobfolio/Common
  * @author Blobfolio, LLC <hello@blobfolio.com>
@@ -18,6 +15,8 @@ namespace Blobfolio;
 final class Dom {
 	const SVG_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
 	const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+
+
 
 	// User settable.
 	public static $whitelistAttributes;
@@ -39,29 +38,33 @@ final class Dom {
 	 * quotes in HTML. For that, use ::html()
 	 *
 	 * @param string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function attributeValue(string str, const bool trusted=false) -> string {
+	public static function attributeValue(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let str = \Blobfolio\Strings::utf8(str);
 		}
-		let str = \Blobfolio\Strings::controlChars(str, true);
+		let str = \Blobfolio\Strings::controlChars(str, globals_get("flag_trusted"));
 		let str = self::decodeEntities(str);
-		return \Blobfolio\Strings::trim(str, true);
+		return \Blobfolio\Strings::trim(str, globals_get("flag_trusted"));
 	}
 
 	/**
 	 * Nice IRI Value
 	 *
 	 * @param string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function iriValue(string str, const bool trusted=false) -> string {
+	public static function iriValue(string str, const uint flags=0) -> string {
 		// Remove vertical whitespace.
-		let str = self::attributeValue(str, trusted);
-		let str = \Blobfolio\Strings::whitespace(str, true);
+		let str = self::attributeValue(
+			str,
+			(flags & globals_get("flag_trusted"))
+		);
+		let str = \Blobfolio\Strings::whitespace(str, 0, globals_get("flag_trusted"));
 
 		// Early abort.
 		if (empty str) {
@@ -74,7 +77,7 @@ final class Dom {
 		}
 
 		// Check protocols.
-		string test = (string) \Blobfolio\Strings::toLower(str, true);
+		string test = (string) \Blobfolio\Strings::toLower(str, globals_get("flag_trusted"));
 		let test = preg_replace("/\s/u", "", test);
 		if (strpos(test, ":")) {
 			let test = strstr(test, ":", true);
@@ -120,7 +123,7 @@ final class Dom {
 	 *
 	 * @return void Nothing.
 	 */
-	public static function linkify(string str, var args=null, const int pass=1) -> string {
+	public static function linkify(string str, var args=null, const uint pass=1) -> string {
 		// Ignore bad values.
 		if (pass < 1 || pass > 3) {
 			return str;
@@ -296,7 +299,7 @@ final class Dom {
 		}
 
 		// Finally, make a link!
-		let link = self::html(link, true);
+		let link = self::html(link, globals_get("flag_trusted"));
 		return "<a href=\"" . link . "\"%BLOBCOMMON_ATTS%>" . raw . "</a>" . suffix;
 	}
 
@@ -325,7 +328,7 @@ final class Dom {
 		}
 
 		// Finally, make a link!
-		let email = self::html(email, true);
+		let email = self::html(email, globals_get("flag_trusted"));
 		return "<a href=\"mailto:" . email . "\"%BLOBCOMMON_ATTS%>" . raw . "</a>" . suffix;
 	}
 
@@ -490,10 +493,12 @@ final class Dom {
 	 * HTML
 	 *
 	 * @param string $str String.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string String.
 	 */
-	public static function html(string str, const bool trusted=false) -> string {
+	public static function html(string str, const uint flags=0) -> string {
+		bool trusted = (flags & globals_get("flag_trusted"));
+
 		if (!trusted) {
 			let str = \Blobfolio\Strings::utf8(str);
 		}
@@ -506,21 +511,28 @@ final class Dom {
 	 *
 	 * @param string $str String.
 	 * @param string $quote Quote type.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return string JS.
 	 */
-	public static function js(string str, string quote="'", const bool trusted=false) -> string {
-		let str = \Blobfolio\Strings::whitespace(str, 0, trusted);
-		let str = \Blobfolio\Strings::quotes(str, true);
+	public static function js(string str, const uint flags=2) -> string {
+		bool flagsApostrophes = (flags & globals_get("flag_js_for_apostrophes"));
+		bool flagsQuotes = !flagsApostrophes;
 
-		if ("'" === quote) {
+		let str = \Blobfolio\Strings::whitespace(
+			str,
+			0,
+			(flags & globals_get("flag_trusted"))
+		);
+		let str = \Blobfolio\Strings::quotes(str, globals_get("flag_trusted"));
+
+		if (flagsApostrophes) {
 			let str = str_replace(
 				["/", "'"],
 				["\\/", "\\'"],
 				str
 			);
 		}
-		elseif ("\"" === quote) {
+		elseif (flagsQuotes) {
 			let str = str_replace(
 				["/", "\""],
 				["\\/", "\\\""],
@@ -541,10 +553,11 @@ final class Dom {
 	 * SVG to DOM
 	 *
 	 * @param string $svg SVG code.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return bool|DOMDocument DOM object or false.
 	 */
-	public static function svgToDom(string svg, const bool trusted=false) -> bool | <\DOMDocument> {
+	public static function svgToDom(string svg, const uint flags=0) -> bool | <\DOMDocument> {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let svg = \Blobfolio\Strings::utf8(svg);
 		}
@@ -721,7 +734,7 @@ final class Dom {
 					// Parse this tag's classes.
 					var class_value;
 					let class_value = tags->item(x)->getAttribute("class");
-					let class_value = \Blobfolio\Strings::whitespace(class_value, 0);
+					let class_value = \Blobfolio\Strings::whitespace(class_value, 0, globals_get("flag_trusted"));
 					let class_value = (array) explode(" ", class_value);
 
 					// Find the intersect.
@@ -837,10 +850,11 @@ final class Dom {
 	 * of the new kid shit like using {} in class names.
 	 *
 	 * @param string $styles Styles.
-	 * @param bool $trusted Trusted.
+	 * @param int $flags Flags.
 	 * @return array Parsed styles.
 	 */
-	public static function parseCss(string css, const bool trusted=false) -> array {
+	public static function parseCss(string css, const uint flags=0) -> array {
+		bool trusted = (flags & globals_get("flag_trusted"));
 		if (!trusted) {
 			let css = \Blobfolio\Strings::utf8(css);
 		}
@@ -864,7 +878,7 @@ final class Dom {
 		);
 
 		// Clean up characters a bit.
-		let css = \Blobfolio\Strings::niceText(css, true);
+		let css = \Blobfolio\Strings::niceText(css, 0, globals_get("flag_trusted"));
 
 		// Early bail.
 		if (empty css) {
@@ -1005,7 +1019,10 @@ final class Dom {
 
 				// What kind of @ is this?
 				preg_match_all("/^@([a-z\-]+)/ui", styles[k], matches);
-				let tmp["@"] = \Blobfolio\Strings::toLower(matches[1][0], true);
+				let tmp["@"] = \Blobfolio\Strings::toLower(
+					matches[1][0],
+					globals_get("flag_trusted")
+				);
 
 				let start = mb_strpos(styles[k], "⠁", 0, "UTF-8");
 				if (false === start) {
@@ -1014,7 +1031,7 @@ final class Dom {
 
 				let tmp["selector"] = \Blobfolio\Strings::toLower(
 					trim(mb_substr(styles[k], 0, start, "UTF-8")),
-					true
+					globals_get("flag_js_for_apostrophes")
 				);
 
 				let chunk = (string) mb_substr(styles[k], start + 1, -1, "UTF-8");
@@ -1023,7 +1040,7 @@ final class Dom {
 					["{", "}"],
 					chunk
 				);
-				let tmp["nest"] = self::parseCss(chunk, true);
+				let tmp["nest"] = self::parseCss(chunk, globals_get("flag_trusted"));
 
 				// And build the raw.
 				let tmp["raw"] = tmp["selector"] . "{";
@@ -1044,7 +1061,10 @@ final class Dom {
 				if (0 === strpos(styles[k], "@")) {
 					// What kind of @ is this?
 					preg_match_all("/^@([a-z\-]+)/ui", styles[k], matches);
-					let tmp["@"] = \Blobfolio\Strings::toLower(matches[1][0], true);
+					let tmp["@"] = \Blobfolio\Strings::toLower(
+						matches[1][0],
+						globals_get("flag_trusted")
+					);
 				}
 
 				// A normal {k:v, k:v}
@@ -1075,7 +1095,10 @@ final class Dom {
 							);
 
 							let tmp2 = (array) explode("\n", rules[k2]);
-							let key = (string) \Blobfolio\Strings::toLower(trim(tmp2[0]), true);
+							let key = (string) \Blobfolio\Strings::toLower(
+								trim(tmp2[0]),
+								globals_get("flag_trusted")
+							);
 							let value = trim(tmp2[1]);
 							let tmp["rules"][key] = value;
 						}
