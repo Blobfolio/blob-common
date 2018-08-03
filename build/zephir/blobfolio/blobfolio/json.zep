@@ -16,6 +16,9 @@ namespace Blobfolio;
 
 final class Json {
 
+	const DECODE_STRICT = 1;
+	const DECODE_RECURSIVE = 2;
+
 	/**
 	 * JSON Decode
 	 *
@@ -411,11 +414,10 @@ final class Json {
 	 *
 	 * @param string $json JSON.
 	 * @param array $defaults Defaults.
-	 * @param bool $strict Strict.
-	 * @param bool $recursive Recursive.
+	 * @param int $flags Flags.
 	 * @return array Data.
 	 */
-	public static function decodeArray(var json, const var defaults=null, const bool strict=true, const bool recursive=true) -> array {
+	public static function decodeArray(var json, const var defaults=null, const uint flags = 3) -> array {
 		let json = self::decode(json);
 
 		if ((null === json) || (("string" === typeof json && empty json))) {
@@ -427,7 +429,7 @@ final class Json {
 
 		// Parse args?
 		if ("array" === typeof defaults) {
-			return \Blobfolio\Cast::parseArgs(json, defaults, strict, recursive);
+			return \Blobfolio\Cast::parseArgs(json, defaults, flags);
 		}
 
 		return json;

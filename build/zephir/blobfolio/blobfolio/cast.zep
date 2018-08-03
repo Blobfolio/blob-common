@@ -15,6 +15,9 @@ namespace Blobfolio;
 
 final class Cast {
 
+	const PARSE_STRICT = 1;
+	const PARSE_RECURSIVE = 2;
+
 	// -----------------------------------------------------------------
 	// Properties
 	// -----------------------------------------------------------------
@@ -351,11 +354,10 @@ final class Cast {
 	 *
 	 * @param mixed $args User arguments.
 	 * @param mixed $defaults Default values/format.
-	 * @param bool $strict Strict type enforcement.
-	 * @param bool $recursive Recursively apply formatting if inner values are also arrays.
+	 * @param int $flags Flags.
 	 * @return array Parsed arguments.
 	 */
-	public static function parseArgs(var args, var defaults, const bool strict=true, const bool recursive=true) -> array {
+	public static function parseArgs(var args, var defaults, const uint flags = 3) -> array {
 		// Nothing to crunch if the template isn't set.
 		if ("array" !== typeof defaults || !count(defaults)) {
 			return [];
@@ -366,6 +368,9 @@ final class Cast {
 		if (!count(args)) {
 			return defaults;
 		}
+
+		bool strict = (flags & self::PARSE_STRICT);
+		bool recursive = (flags & self::PARSE_RECURSIVE);
 
 		// Rebuild with user args!
 		var k, v;
@@ -381,8 +386,7 @@ final class Cast {
 					let defaults[k] = self::parseArgs(
 						args[k],
 						defaults[k],
-						strict,
-						recursive
+						flags
 					);
 				}
 				// Otherwise just replace.
