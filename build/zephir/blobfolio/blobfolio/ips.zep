@@ -15,6 +15,13 @@ namespace Blobfolio;
 
 final class IPs {
 
+	/**
+	 * Flags: niceIp
+	 */
+	const IP_RESTRICTED = 1;
+	const IP_CONDENSE = 2;
+
+
 	// -----------------------------------------------------------------
 	// Formatting
 	// -----------------------------------------------------------------
@@ -27,8 +34,7 @@ final class IPs {
 	 * @param bool $condense Condense IPv6.
 	 * @return void Nothing.
 	 */
-	public static function niceIp(string str, const bool restricted=false, const bool condense=true) -> string {
-
+	public static function niceIp(string str, const uint flags = self::IP_CONDENSE) -> string {
 		// Start by getting rid of obviously bad data.
 		let str = (string) preg_replace("/[^\d\.\:a-f]/", "", strtolower(str));
 
@@ -41,6 +47,9 @@ final class IPs {
 		if ((0 === strpos(str, "::")) && (false !== strpos(str, "."))) {
 			let str = substr(str, 2);
 		}
+
+		bool condense = (flags & self::IP_CONDENSE);
+		bool restricted = (flags & self::IP_RESTRICTED);
 
 		// IPv6.
 		if (filter_var(str, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
@@ -64,7 +73,7 @@ final class IPs {
 
 		if (
 			!restricted &&
-			str &&
+			!empty str &&
 			!filter_var(
 				str,
 				FILTER_VALIDATE_IP,
@@ -122,7 +131,7 @@ final class IPs {
 		}
 
 		if (0 === parts[1]) {
-			let range["min"] = self::niceIp(parts[0], true);
+			let range["min"] = self::niceIp(parts[0], \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 			let range["max"] = range["min"];
 			return range;
 		}
@@ -160,7 +169,7 @@ final class IPs {
 		}
 
 		if (0 === parts[1]) {
-			let range["min"] = self::niceIp(parts[0], true);
+			let range["min"] = self::niceIp(parts[0], \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 			let range["max"] = range["min"];
 			return range;
 		}
@@ -237,7 +246,7 @@ final class IPs {
 			return "0.0.0.0";
 		}
 
-		return self::niceIp(ip, true);
+		return self::niceIp(ip, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 	}
 
 	/**
@@ -288,7 +297,7 @@ final class IPs {
 	 * @return bool True/false.
 	 */
 	public static function toSubnet(string ip) -> string | bool {
-		let ip = self::niceIp(ip, true, false);
+		let ip = self::niceIp(ip, \Blobfolio\Ips::IP_RESTRICTED);
 		if (empty ip) {
 			return false;
 		}
@@ -312,7 +321,7 @@ final class IPs {
 			let x++;
 		}
 
-		let ip = (string) self::niceIp(implode(":", bits), true);
+		let ip = (string) self::niceIp(implode(":", bits), \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 		return ip . "/64";
 	}
 
@@ -335,7 +344,7 @@ final class IPs {
 	 * @return bool True/false.
 	 */
 	public static function inRange(var ip, var min, var max=null) -> bool {
-		let ip = (string) self::niceIp(ip, true);
+		let ip = (string) self::niceIp(ip, \Blobfolio\Ips::IP_RESTRICTED | \Blobfolio\Ips::IP_CONDENSE);
 		if (empty ip || empty min || ("string" !== typeof min)) {
 			return false;
 		}
