@@ -14,6 +14,14 @@
 namespace Blobfolio;
 
 final class Retail {
+
+	/**
+	 * Flags: usd
+	 */
+	const USD_THOUSANDS = 1;
+	const USD_CENTS = 2;
+	const USD_TRIM = 4;
+
 	// -----------------------------------------------------------------
 	// Formatting
 	// -----------------------------------------------------------------
@@ -22,28 +30,38 @@ final class Retail {
 	 * USD
 	 *
 	 * @param float $value Value.
-	 * @param string $separator Separator.
-	 * @param bool $cents Cents.
-	 * @param bool $trim Trim.
+	 * @param int $flags Flags.
 	 * @return string Value.
 	 */
-	public static function usd(var value, const string separator=",", const bool cents=false, const bool trim=false) -> string {
+	public static function usd(var value, const uint flags = self::USD_THOUSANDS) -> string {
 		float money = (float) \Blobfolio\Cast::toFloat(value);
 		let money = round(money, 2);
+
 		string out = "";
 		if (money < 0) {
 			let out .= "-";
 			let money = (float) abs(money);
 		}
 
+		// Parse flags.
+		bool flagsThousands = (flags & self::USD_THOUSANDS);
+		bool flagsCents = (flags & self::USD_CENTS);
+		bool flagsTrim = (flags & self::USD_TRIM);
+
 		// Fancy cents.
-		if (unlikely cents && money < 1) {
+		if (flagsCents && money < 1) {
 			let out .= strval(100 * money) . "¢";
 		}
 		else {
+			string separator = ",";
+			if (!flagsThousands) {
+				let separator = "";
+			}
+
 			let out .= "$" . number_format(money, 2, ".", separator);
+
 			if (
-				trim &&
+				flagsTrim &&
 				(".00" === substr(out, -3))
 			) {
 				let out = substr(out, 0, -3);
@@ -117,6 +135,11 @@ final class Retail {
 				}
 				break;
 			// MC.
+			case "2":
+				if (ccLength !== 16) {
+					return "";
+				}
+				break;
 			case "5":
 				if ((ccLength !== 16) || !preg_match("/^5[1-5]/", ccnum)) {
 					return "";
@@ -131,9 +154,6 @@ final class Retail {
 					return "";
 				}
 				break;
-			// There is nothing else...
-			default:
-				return "";
 		}
 
 		array add;
@@ -320,33 +340,21 @@ final class Retail {
 	 * @return string Brand.
 	 */
 	public static function niceCcBrand(string brand) -> string {
-		string test = trim(strtolower(brand));
-		array nice = [
-			"amex": "AMEX",
-			"discover": "Discover",
-			"jcb": "JCB",
-			"mc": "MC",
-			"other": "Other",
-			"visa": "Visa"
-		];
-
-		// Maybe it is already looking good.
-		if (isset(nice[test])) {
-			return nice[test];
-		}
-
 		// Do it the hard way. Haha.
-		if (0 === strpos(test, "american")) {
-			return "AMEX";
-		}
-		elseif (0 === strpos(test, "master")) {
-			return "MC";
-		}
-		elseif (0 === strpos(test, "disc")) {
-			return "Discover";
-		}
-		elseif (0 === strpos(test, "japan")) {
-			return "JCB";
+		switch (substr(trim(strtolower(brand)), 0, 4)) {
+			case "visa":
+				return "Visa";
+			case "mast":
+			case "mc":
+				return "MC";
+			case "amer":
+			case "amex":
+				return "AMEX";
+			case "disc":
+				return "Discover";
+			case "japa":
+			case "jcb":
+				return "JCB";
 		}
 
 		return "Other";
@@ -362,7 +370,7 @@ final class Retail {
 		let last4 = preg_replace("/[^\d]/", "", last4);
 		int length = strlen(last4);
 		if (length > 4) {
-			return "";
+			let last4 = (string) substr(last4, -4);
 		}
 		elseif (length < 4) {
 			let last4 = str_pad(last4, 4, "0", STR_PAD_LEFT);
@@ -411,14 +419,13 @@ final class Retail {
 	 *
 	 * @param string $carrier Carrier.
 	 * @param string $shipping_id Shipping ID.
-	 * @return string|bool URL or false.
+	 * @return string URL.
 	 */
 	public static function niceShippingUrl(string carrier, string shipping_id) -> string {
-		let carrier = self::niceCarrier(carrier);
 		let shipping_id = preg_replace("/\s/u", "", shipping_id);
 		let shipping_id = urlencode(shipping_id);
 
-		switch (carrier) {
+		switch (self::niceCarrier(carrier)) {
 			case "ABF":
 				return "https://arcb.com/tools/tracking.html#/" . shipping_id;
 			case "FedEx":
