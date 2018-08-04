@@ -181,6 +181,43 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 		unlink($out);
 	}
 
+	/**
+	 * Test: rgbToBrightness
+	 *
+	 * @dataProvider data_rgbToBrightness
+	 *
+	 * @param int $red Red.
+	 * @param int $green Green.
+	 * @param int $blue Blue.
+	 * @param float Brightness.
+	 */
+	function test_rgbToBrightness(int $red, int $green, int $blue, float $expected) {
+		$result = \Blobfolio\Images::rgbToBrightness($red, $green, $blue);
+
+		// Float precision will vary, so let's just check it is within
+		// ±1 of what we expect.
+		$this->assertSame('double', gettype($result));
+		$this->assertTrue(1 > abs($result - $expected));
+	}
+
+	/**
+	 * Test: niceBrightness
+	 *
+	 * @dataProvider data_niceBrightness
+	 *
+	 * @param string $value File.
+	 * @param float $coverage Coverage.
+	 * @param float $expected Expected.
+	 */
+	function test_niceBrightness(string $file, float $coverage, float $expected) {
+		$result = \Blobfolio\Images::niceBrightness($file, $coverage);
+
+		// Float precision will vary, so let's just check it is within
+		// ±1 of what we expect.
+		$this->assertSame('double', gettype($result));
+		$this->assertTrue(1 > abs($result - $expected));
+	}
+
 
 
 	// -----------------------------------------------------------------
@@ -326,6 +363,7 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 				self::ASSETS . 'monogram-inkscape.svg',
 				\Blobfolio\Blobfolio::SVG_SANITIZE,
 				array(
+					'<title>',
 					'<svg',
 					'.bleerkk3 { fill: currentColor; }',
 					'id="',
@@ -337,12 +375,14 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				self::ASSETS . 'monogram-inkscape.svg',
 				\Blobfolio\Blobfolio::SVG_SANITIZE |
-				\Blobfolio\Blobfolio::SVG_STRIP_ID,
+				\Blobfolio\Blobfolio::SVG_STRIP_ID |
+				\Blobfolio\Blobfolio::SVG_STRIP_TITLE,
 				array(
 					'<svg',
 					'.bleerkk3 { fill: currentColor; }',
 				),
 				array(
+					'<title>',
 					'id="',
 					'<sodipodi',
 				),
@@ -379,16 +419,92 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 				self::ASSETS . 'minus.svg',
 				\Blobfolio\Blobfolio::SVG_SANITIZE |
 				\Blobfolio\Blobfolio::SVG_CLEAN_STYLES |
-				\Blobfolio\Blobfolio::SVG_REWRITE_STYLES,
+				\Blobfolio\Blobfolio::SVG_REWRITE_STYLES |
+				\Blobfolio\Blobfolio::SVG_NAMESPACE,
 				array(
 					'<svg',
 					'{fill:currentColor;}',
 					'{fill:red;}',
+					'<svg:style',
 				),
 				array(
 					'.abc',
 					'&#109;',
 				),
+			),
+		);
+	}
+
+	/**
+	 * Data: rgbToBrightness
+	 *
+	 * @return array Values.
+	 */
+	function data_rgbToBrightness() {
+		return array(
+			array(
+				52,
+				152,
+				219,
+				140.98892,
+			),
+			array(
+				231,
+				76,
+				60,
+				130.75173,
+			),
+			array(
+				236,
+				240,
+				241,
+				239.11052,
+			),
+			array(
+				44,
+				62,
+				80,
+				59.64880,
+			),
+		);
+	}
+
+	/**
+	 * Data: niceBrightness
+	 *
+	 * @return array Values.
+	 */
+	function data_niceBrightness() {
+		return array(
+			array(
+				self::ASSETS . 'dark01.jpg',
+				0.05,
+				19.53126,
+			),
+			array(
+				self::ASSETS . 'dark02.png',
+				0.05,
+				28.99066,
+			),
+			array(
+				self::ASSETS . 'dark03.gif',
+				0.05,
+				15.24070,
+			),
+			array(
+				self::ASSETS . 'light01.jpg',
+				0.05,
+				232.5487,
+			),
+			array(
+				self::ASSETS . 'light02.png',
+				0.05,
+				174.60534,
+			),
+			array(
+				self::ASSETS . 'light03.webp',
+				0.05,
+				230.63383,
 			),
 		);
 	}
