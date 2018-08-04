@@ -53,6 +53,7 @@ final class Blobfolio {
 	const TRUSTED = 1073741824;
 	const FLATTEN = 536870912;
 	const REFRESH = 268435456;
+	const UNICODE = 134217728;
 
 	/**
 	 * Flags: Address::niceAddress
@@ -74,6 +75,12 @@ final class Blobfolio {
 	 */
 	const JS_FOR_QUOTES = 1;
 	const JS_FOR_APOSTROPHES = 2;
+
+	/**
+	 * Flags: Domains::niceHost
+	 */
+	const HOST_STRIP_WWW = 1;
+	const HOST_UNICODE = 134217728;
 
 	/**
 	 * Flags: Files::path

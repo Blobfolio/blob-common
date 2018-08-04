@@ -108,6 +108,11 @@
             "default": 268435456,
             "module": true
         },
+        "flag_unicode": {
+            "type": "uint",
+            "default": 134217728,
+            "module": true
+        },
         "flag_svg_clean_styles": {
             "type": "uint",
             "default": 1,
@@ -256,6 +261,11 @@
         "flag_address_field_company": {
             "type": "uint",
             "default": 4,
+            "module": true
+        },
+        "flag_host_strip_www": {
+            "type": "uint",
+            "default": 1,
             "module": true
         }
     },

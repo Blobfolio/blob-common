@@ -419,29 +419,30 @@ final class Domains {
 	/**
 	 * Get Data
 	 *
-	 * @param bool $unicode Unicode.
+	 * @param int $flags Flags.
 	 * @return array|bool Host data or false.
 	 */
-	public function getData(const bool unicode=false) -> array | bool {
+	public function getData(const uint flags=0) -> array | bool {
 		if (!this->isValid()) {
 			return false;
 		}
 
 		return [
-			"host": this->getHost(unicode),
-			"subdomain": this->getSubdomain(unicode),
-			"domain": this->getDomain(unicode),
-			"suffix": this->getSuffix(unicode)
+			"host": this->getHost(flags),
+			"subdomain": this->getSubdomain(flags),
+			"domain": this->getDomain(flags),
+			"suffix": this->getSuffix(flags)
 		];
 	}
 
 	/**
 	 * Get Host
 	 *
-	 * @param bool $unicode Unicode.
+	 * @param int $flags Flags.
 	 * @return string|null Host.
 	 */
-	public function getHost(const bool unicode=false) -> string | null {
+	public function getHost(const uint flags=0) -> string | null {
+		bool unicode = (flags & globals_get("flag_unicode"));
 		if (unicode && !empty this->host) {
 			return self::toUnicode(this->host);
 		}
@@ -452,10 +453,11 @@ final class Domains {
 	/**
 	 * Get Subdomain
 	 *
-	 * @param bool $unicode Unicode.
+	 * @param int $flags Flags.
 	 * @return string|null Subdomain.
 	 */
-	public function getSubdomain(const bool unicode=false) -> string | null {
+	public function getSubdomain(const uint flags=0) -> string | null {
+		bool unicode = (flags & globals_get("flag_unicode"));
 		if (unicode && !empty this->subdomain) {
 			return self::toUnicode(this->subdomain);
 		}
@@ -466,10 +468,11 @@ final class Domains {
 	/**
 	 * Get Domain
 	 *
-	 * @param bool $unicode Unicode.
+	 * @param int $flags Flags.
 	 * @return string|null Domain.
 	 */
-	public function getDomain(const bool unicode=false) -> string | null {
+	public function getDomain(const uint flags=0) -> string | null {
+		bool unicode = (flags & globals_get("flag_unicode"));
 		if (unicode && !empty this->domain) {
 			return self::toUnicode(this->domain);
 		}
@@ -480,10 +483,11 @@ final class Domains {
 	/**
 	 * Get Suffix
 	 *
-	 * @param bool $unicode Unicode.
+	 * @param int $flags Flags.
 	 * @return string|null Suffix.
 	 */
-	public function getSuffix(const bool unicode=false) -> string | null {
+	public function getSuffix(const uint flags=0) -> string | null {
+		bool unicode = (flags & globals_get("flag_unicode"));
 		if (unicode && !empty this->suffix) {
 			return self::toUnicode(this->suffix);
 		}
@@ -504,15 +508,15 @@ final class Domains {
 	 * "www" subdomains, and ignores IP addresses.
 	 *
 	 * @param string $str Domain.
-	 * @param bool $unicode Unicode.
+	 * @param int $flags Flags.
 	 * @return string Domain.
 	 */
-	public static function niceDomain(const string str, const bool unicode=false) -> string {
+	public static function niceDomain(const string str, const uint flags=0) -> string {
 		var host;
 		let host = new self(str);
 		if (host->isFqdn() && !host->isIp()) {
 			host->stripWww();
-			return host->getHost(unicode);
+			return host->getHost(flags);
 		}
 
 		return "";
@@ -575,22 +579,22 @@ final class Domains {
 	 * Hostname
 	 *
 	 * @param string $str Hostname.
-	 * @param bool $www Strip leading www.
-	 * @param bool $unicode Unicode.
+	 * @param int $flags Flags.
 	 * @return string|bool Host or false.
 	 */
-	public static function niceHost(const string str, const bool www=true, const bool unicode=false) -> string | bool {
-
+	public static function niceHost(const string str, const uint flags=1) -> string | bool {
 		var host;
 		let host = new self(str);
 		if (!host->isValid()) {
 			return false;
 		}
-		if (www) {
+
+		bool stripWww = (flags & globals_get("flag_host_strip_www"));
+		if (stripWww) {
 			host->stripWww();
 		}
 
-		return host->getHost(unicode);
+		return host->getHost((flags & globals_get("flag_unicode")));
 	}
 
 	/**

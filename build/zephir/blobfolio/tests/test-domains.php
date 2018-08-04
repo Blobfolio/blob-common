@@ -33,19 +33,19 @@ class domains_tests extends \PHPUnit\Framework\TestCase {
 		$result = new \Blobfolio\Domains($value);
 
 		// Check the ASCII versions.
-		$this->assertSame($ascii, $result->getData(false));
-		$this->assertSame($ascii['host'], $result->getHost(false));
-		$this->assertSame($ascii['subdomain'], $result->getSubdomain(false));
-		$this->assertSame($ascii['domain'], $result->getDomain(false));
-		$this->assertSame($ascii['suffix'], $result->getSuffix(false));
+		$this->assertSame($ascii, $result->getData(0));
+		$this->assertSame($ascii['host'], $result->getHost(0));
+		$this->assertSame($ascii['subdomain'], $result->getSubdomain(0));
+		$this->assertSame($ascii['domain'], $result->getDomain(0));
+		$this->assertSame($ascii['suffix'], $result->getSuffix(0));
 
 		// Now check the Unicode.
 		if (function_exists('idn_to_ascii')) {
-			$this->assertSame($unicode, $result->getData(true));
-			$this->assertSame($unicode['host'], $result->getHost(true));
-			$this->assertSame($unicode['subdomain'], $result->getSubdomain(true));
-			$this->assertSame($unicode['domain'], $result->getDomain(true));
-			$this->assertSame($unicode['suffix'], $result->getSuffix(true));
+			$this->assertSame($unicode, $result->getData(\Blobfolio\Blobfolio::UNICODE));
+			$this->assertSame($unicode['host'], $result->getHost(\Blobfolio\Blobfolio::UNICODE));
+			$this->assertSame($unicode['subdomain'], $result->getSubdomain(\Blobfolio\Blobfolio::UNICODE));
+			$this->assertSame($unicode['domain'], $result->getDomain(\Blobfolio\Blobfolio::UNICODE));
+			$this->assertSame($unicode['suffix'], $result->getSuffix(\Blobfolio\Blobfolio::UNICODE));
 		}
 
 		// And check toString.
@@ -221,8 +221,8 @@ class domains_tests extends \PHPUnit\Framework\TestCase {
 	 * @param bool $unicode Unicode.
 	 * @param string $expected Expected.
 	 */
-	function test_niceDomain(string $value, bool $unicode, string $expected) {
-		$result = \Blobfolio\Domains::niceDomain($value, $unicode);
+	function test_niceDomain(string $value, int $flags, string $expected) {
+		$result = \Blobfolio\Domains::niceDomain($value, $flags);
 
 		$this->assertSame($expected, $result);
 		$this->assertSame('string', gettype($result));
@@ -253,8 +253,8 @@ class domains_tests extends \PHPUnit\Framework\TestCase {
 	 * @param bool $unicode Unicode.
 	 * @param string|bool $expected Expected.
 	 */
-	function test_niceHost(string $value, bool $www, bool $unicode, $expected) {
-		$result = \Blobfolio\Domains::niceHost($value, $www, $unicode);
+	function test_niceHost(string $value, int $flags, $expected) {
+		$result = \Blobfolio\Domains::niceHost($value, $flags);
 
 		$this->assertSame($expected, $result);
 		$this->assertSame(gettype($expected), gettype($result));
@@ -414,27 +414,27 @@ class domains_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'https://www.Google.com',
-				false,
+				0,
 				'google.com',
 			),
 			array(
 				'www.Google.com',
-				false,
+				0,
 				'google.com',
 			),
 			array(
 				'☺.com',
-				true,
+				\Blobfolio\Blobfolio::UNICODE,
 				'☺.com',
 			),
 			array(
 				'50.116.18.174',
-				false,
+				0,
 				'',
 			),
 			array(
 				'//☺.com',
-				false,
+				0,
 				$smiley_host,
 			),
 		);
@@ -487,50 +487,42 @@ class domains_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'https://www.Google.com',
-				true,
-				false,
+				\Blobfolio\Blobfolio::HOST_STRIP_WWW,
 				'google.com',
 			),
 			array(
 				'www.Google.com',
-				true,
-				false,
+				\Blobfolio\Blobfolio::HOST_STRIP_WWW,
 				'google.com',
 			),
 			array(
 				'www.☺.com',
-				true,
-				true,
+				\Blobfolio\Blobfolio::HOST_STRIP_WWW | \Blobfolio\Blobfolio::UNICODE,
 				'☺.com',
 			),
 			array(
 				'http://www.☺.com',
-				false,
-				true,
+				\Blobfolio\Blobfolio::UNICODE,
 				'www.☺.com',
 			),
 			array(
 				'50.116.18.174',
-				false,
-				false,
+				0,
 				'50.116.18.174',
 			),
 			array(
 				'//☺.com',
-				false,
-				false,
+				0,
 				$smiley_host,
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
-				false,
-				false,
+				0,
 				'2600:3c00::f03c:91ff:feae:ff2',
 			),
 			array(
 				'localhost',
-				true,
-				true,
+				\Blobfolio\Blobfolio::HOST_STRIP_WWW | \Blobfolio\Blobfolio::UNICODE,
 				'localhost',
 			),
 		);
