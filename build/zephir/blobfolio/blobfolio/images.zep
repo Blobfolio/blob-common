@@ -558,10 +558,6 @@ final class Images {
 			imagepalettetotruecolor(source);
 		}
 
-		// Since we're only looking at brightness, we can convert to
-		// greyscale early to have fewer colors to check later.
-		imagefilter(source, IMG_FILTER_GRAYSCALE);
-
 		array indexes = [];
 		int x = 0;
 		int y = 0;
@@ -1122,16 +1118,16 @@ final class Images {
 		let styleMerged = (string) implode("", styleCleaned);
 
 		// We need to inject our new style tag.
-		var def;
+		var defs;
 		var style;
-		let def = dom->createElement("def");
+		let defs = dom->createElement("defs");
 		let style = dom->createElement("style");
 		let style->nodeValue = styleMerged;
-		def->appendChild(style);
+		defs->appendChild(style);
 
 		// Add it.
 		dom->getElementsByTagName("svg")->item(0)->insertBefore(
-			def,
+			defs,
 			dom->getElementsByTagName("svg")->item(0)->childNodes->item(0)
 		);
 
