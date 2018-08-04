@@ -87,8 +87,37 @@ final class Geo {
 			elseif (isset(parts["address_1"]) && isset(parts["address_2"])) {
 				let parts["street"] = trim(parts["address_1"] . " " . parts["address_2"]);
 			}
+			elseif (isset(parts["address_line1"]) && isset(parts["address_line2"])) {
+				let parts["street"] = trim(parts["address_line1"] . " " . parts["address_line2"]);
+			}
+			elseif (isset(parts["address_line_1"]) && isset(parts["address_line_2"])) {
+				let parts["street"] = trim(parts["address_line_1"] . " " . parts["address_line_2"]);
+			}
 			elseif (isset(parts["address"])) {
 				let parts["street"] = parts["address"];
+			}
+			elseif (isset(parts["address_line"])) {
+				let parts["street"] = parts["address_line"];
+			}
+		}
+
+		// Company aliases.
+		if (!isset(parts["company"]) && isset(parts["business"])) {
+			let parts["company"] = parts["business"];
+		}
+
+		// Email alias.
+		if (!isset(parts["email"]) && isset(parts["email_address"])) {
+			let parts["email"] = parts["email_address"];
+		}
+
+		// Phone alias.
+		if (!isset(parts["phone"])) {
+			if (isset(parts["telephone"])) {
+				let parts["phone"] = parts["telephone"];
+			}
+			elseif (isset(parts["tel"])) {
+				let parts["phone"] = parts["tel"];
 			}
 		}
 
