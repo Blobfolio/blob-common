@@ -142,6 +142,20 @@ class retail_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Test: splitName
+	 *
+	 * @dataProvider data_splitName
+	 *
+	 * @param string $value Value.
+	 * @param array $expected Expected.
+	 */
+	function test_splitName(string $value, $expected) {
+		$result = \Blobfolio\Retail::splitName($value);
+
+		$this->assertSame($expected, $result);
+	}
+
+	/**
 	 * Test: nicePassword
 	 *
 	 * @dataProvider data_nicePassword
@@ -507,6 +521,37 @@ class retail_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'john   doe',
 				'John Doe',
+			),
+		);
+	}
+
+	/**
+	 * Data: splitName
+	 *
+	 * @return array Values.
+	 */
+	function data_splitName() {
+		return array(
+			array(
+				"åsa-britt\nkjellén",
+				array(
+					'firstname'=>'Åsa-Britt',
+					'lastname'=>'Kjellén',
+				),
+			),
+			array(
+				'john   doe',
+				array(
+					'firstname'=>'John',
+					'lastname'=>'Doe',
+				),
+			),
+			array(
+				'heather',
+				array(
+					'firstname'=>'Heather',
+					'lastname'=>'',
+				),
 			),
 		);
 	}

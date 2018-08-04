@@ -392,6 +392,33 @@ final class Retail {
 	}
 
 	/**
+	 * Split Name
+	 *
+	 * Splits a single name into first/last components.
+	 *
+	 * @param string $str Name.
+	 * @param int $flags Flags.
+	 * @return array Parts.
+	 */
+	public static function splitName(string str, const uint flags=0) -> array {
+		let str = self::niceName(str, (flags & globals_get("flag_trusted")));
+
+		array out = [
+			"firstname": str,
+			"lastname": ""
+		];
+
+		// Split on space.
+		if (false !== strpos(str, " ")) {
+			array parts = (array) explode(" ", str);
+			let out["firstname"] = (string) array_shift(parts);
+			let out["lastname"] = (string) implode(" ", parts);
+		}
+
+		return out;
+	}
+
+	/**
 	 * Nice Password
 	 *
 	 * This helps ensure password characters make a kind of sense.
