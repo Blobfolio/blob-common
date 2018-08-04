@@ -231,7 +231,7 @@ final class Images {
 	 * @param int $b Blue.
 	 * @return float Brightness.
 	 */
-	public static function rgbToBrightness(uint r, uint g, uint b) -> float {
+	public static function rgbToBrightness(uint r, uint g, uint b) -> int {
 		// Make sure everything is in range.
 		if (r > 255) {
 			let r = 255;
@@ -243,11 +243,11 @@ final class Images {
 			let b = 255;
 		}
 
-		return (float) sqrt(
+		return (int) ceil(sqrt(
 			0.241 * r * r +
 			0.691 * g * g +
 			0.068 * b * b
-		);
+		));
 	}
 
 
@@ -512,7 +512,7 @@ final class Images {
 	 * @param float $coverage Coverage.
 	 * @return float Luminosity.
 	 */
-	public static function niceBrightness(string file, float coverage = 0.05) -> float {
+	public static function niceBrightness(string file, float coverage = 0.05) -> int {
 		// First things first, open a resource.
 		string mime = (string) \Blobfolio\Files::getMimeType(file);
 		var source;
@@ -530,12 +530,12 @@ final class Images {
 				let source = imagecreatefromwebp(file);
 				break;
 			default:
-				return 0.0;
+				return 0;
 		}
 
 		// Abort if we don't have a valid image resource.
 		if (false === source) {
-			return 0.0;
+			return 0;
 		}
 
 		// Make sure coverage is adequate.
@@ -594,15 +594,14 @@ final class Images {
 		}
 
 		// Find the RGB and brightness for each index.
-		float brightness = 0.0;
+		int brightness = 0;
 		var k;
 		var v;
 		for k, v in indexes {
-			array colors = (array) imagecolorsforindex(source, k);
-			float line = (float) self::rgbToBrightness(
-				colors["red"],
-				colors["green"],
-				colors["blue"]
+			int line = (int) self::rgbToBrightness(
+				((k >> 16) & 0xFF),
+				((k >> 8) & 0xFF),
+				(k & 0xFF)
 			);
 			let brightness += (line * v);
 		}
@@ -611,7 +610,29 @@ final class Images {
 		imagedestroy(source);
 
 		// Return the average.
-		return (float) (brightness / array_sum(indexes));
+		return (int) ceil(brightness / array_sum(indexes));
+	}
+
+	/**
+	 * Is Dark?
+	 *
+	 * @param int $luminosity Luminosity.
+	 * @param int $threshold Threshold.
+	 * @return bool True/false.
+	 */
+	public static function isDark(const uint luminosity, const uint threshold=140) {
+		return (luminosity < threshold);
+	}
+
+	/**
+	 * Is Light?
+	 *
+	 * @param int $luminosity Luminosity.
+	 * @param int $threshold Threshold.
+	 * @return bool True/false.
+	 */
+	public static function isLight(const uint luminosity, const uint threshold=140) {
+		return (luminosity >= threshold);
 	}
 
 	// -----------------------------------------------------------------

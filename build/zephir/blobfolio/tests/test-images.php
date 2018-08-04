@@ -189,15 +189,13 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 	 * @param int $red Red.
 	 * @param int $green Green.
 	 * @param int $blue Blue.
-	 * @param float Brightness.
+	 * @param int Brightness.
 	 */
-	function test_rgbToBrightness(int $red, int $green, int $blue, float $expected) {
+	function test_rgbToBrightness(int $red, int $green, int $blue, int $expected) {
 		$result = \Blobfolio\Images::rgbToBrightness($red, $green, $blue);
 
-		// Float precision will vary, so let's just check it is within
-		// ±1 of what we expect.
-		$this->assertSame('double', gettype($result));
-		$this->assertTrue(1 > abs($result - $expected));
+		$this->assertSame('integer', gettype($result));
+		$this->assertSame($expected, $result);
 	}
 
 	/**
@@ -207,15 +205,43 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param string $value File.
 	 * @param float $coverage Coverage.
-	 * @param float $expected Expected.
+	 * @param int $expected Expected.
 	 */
-	function test_niceBrightness(string $file, float $coverage, float $expected) {
+	function test_niceBrightness(string $file, float $coverage, int $expected) {
 		$result = \Blobfolio\Images::niceBrightness($file, $coverage);
 
-		// Float precision will vary, so let's just check it is within
-		// ±1 of what we expect.
-		$this->assertSame('double', gettype($result));
-		$this->assertTrue(1 > abs($result - $expected));
+		$this->assertSame('integer', gettype($result));
+		$this->assertSame($expected, $result);
+	}
+
+	/**
+	 * Test: isDark
+	 *
+	 * @dataProvider data_isDark
+	 *
+	 * @param int $value Value.
+	 * @param int $threshold Threshold.
+	 * @param bool $expected Expected.
+	 */
+	function test_isDark(int $value, int $threshold, bool $expected) {
+		$result = \Blobfolio\Images::isDark($value, $threshold);
+
+		$this->assertSame($expected, $result);
+	}
+
+	/**
+	 * Test: isLight
+	 *
+	 * @dataProvider data_isLight
+	 *
+	 * @param int $value Value.
+	 * @param int $threshold Threshold.
+	 * @param bool $expected Expected.
+	 */
+	function test_isLight(int $value, int $threshold, bool $expected) {
+		$result = \Blobfolio\Images::isLight($value, $threshold);
+
+		$this->assertSame($expected, $result);
 	}
 
 
@@ -446,25 +472,25 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 				52,
 				152,
 				219,
-				140.98892,
+				141,
 			),
 			array(
 				231,
 				76,
 				60,
-				130.75173,
+				131,
 			),
 			array(
 				236,
 				240,
 				241,
-				239.11052,
+				240,
 			),
 			array(
 				44,
 				62,
 				80,
-				59.64880,
+				60,
 			),
 		);
 	}
@@ -479,32 +505,104 @@ class images_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				self::ASSETS . 'dark01.jpg',
 				0.05,
-				19.53126,
+				20,
 			),
 			array(
 				self::ASSETS . 'dark02.png',
 				0.05,
-				28.99066,
+				30,
 			),
 			array(
 				self::ASSETS . 'dark03.gif',
 				0.05,
-				15.24070,
+				16,
 			),
 			array(
 				self::ASSETS . 'light01.jpg',
 				0.05,
-				232.5487,
+				233,
 			),
 			array(
 				self::ASSETS . 'light02.png',
 				0.05,
-				174.60534,
+				176,
 			),
 			array(
 				self::ASSETS . 'light03.webp',
 				0.05,
-				230.63383,
+				231,
+			),
+		);
+	}
+
+	/**
+	 * Data: isDark
+	 *
+	 * @return array Values.
+	 */
+	function data_isDark() {
+		return array(
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'dark01.jpg'),
+				140,
+				true,
+			),
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'dark02.png'),
+				140,
+				true,
+			),
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'light01.jpg'),
+				140,
+				false,
+			),
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'light02.png'),
+				140,
+				false,
+			),
+			// Try it with an unpassable threshold.
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'light03.webp'),
+				255,
+				true,
+			),
+		);
+	}
+
+	/**
+	 * Data: isLight
+	 *
+	 * @return array Values.
+	 */
+	function data_isLight() {
+		return array(
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'dark01.jpg'),
+				140,
+				false,
+			),
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'dark02.png'),
+				140,
+				false,
+			),
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'light01.jpg'),
+				140,
+				true,
+			),
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'light02.png'),
+				140,
+				true,
+			),
+			// Try it with an unpassable threshold.
+			array(
+				\Blobfolio\Images::niceBrightness(self::ASSETS . 'light03.webp'),
+				255,
+				false,
 			),
 		);
 	}
