@@ -55,19 +55,12 @@ final class Blobfolio {
 	const REFRESH = 268435456;
 
 	/**
-	 * Flags: Images::cleanSvg
+	 * Flags: Address::niceAddress
 	 */
-	const SVG_CLEAN_STYLES = 1;
-	const SVG_FIX_DIMENSIONS = 2;
-	const SVG_NAMESPACE = 4;
-	const SVG_RANDOM_ID = 8;
-	const SVG_REWRITE_STYLES = 16;
-	const SVG_SANITIZE = 32;
-	const SVG_SAVE = 64;
-	const SVG_STRIP_DATA = 128;
-	const SVG_STRIP_ID = 256;
-	const SVG_STRIP_STYLE = 512;
-	const SVG_STRIP_TITLE = 1024;
+	const ADDRESS_FIELD_ALL = 7;
+	const ADDRESS_FIELD_EMAIL = 1;
+	const ADDRESS_FIELD_PHONE = 2;
+	const ADDRESS_FIELD_COMPANY = 4;
 
 	/**
 	 * Flags: Cast::parseArgs
@@ -91,6 +84,21 @@ final class Blobfolio {
 	 * Flags: Geo::getUsStates
 	 */
 	const US_TERRITORIES = 1;
+
+	/**
+	 * Flags: Images::cleanSvg
+	 */
+	const SVG_CLEAN_STYLES = 1;
+	const SVG_FIX_DIMENSIONS = 2;
+	const SVG_NAMESPACE = 4;
+	const SVG_RANDOM_ID = 8;
+	const SVG_REWRITE_STYLES = 16;
+	const SVG_SANITIZE = 32;
+	const SVG_SAVE = 64;
+	const SVG_STRIP_DATA = 128;
+	const SVG_STRIP_ID = 256;
+	const SVG_STRIP_STYLE = 512;
+	const SVG_STRIP_TITLE = 1024;
 
 	/**
 	 * Flags: Ips::niceIp

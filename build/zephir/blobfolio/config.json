@@ -237,6 +237,26 @@
             "type": "uint",
             "default": 8,
             "module": true
+        },
+        "flag_address_field_all": {
+            "type": "uint",
+            "default": 7,
+            "module": true
+        },
+        "flag_address_field_email": {
+            "type": "uint",
+            "default": 1,
+            "module": true
+        },
+        "flag_address_field_phone": {
+            "type": "uint",
+            "default": 2,
+            "module": true
+        },
+        "flag_address_field_company": {
+            "type": "uint",
+            "default": 4,
+            "module": true
         }
     },
     "info": [

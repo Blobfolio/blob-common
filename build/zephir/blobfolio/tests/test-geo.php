@@ -20,6 +20,20 @@ class geo_tests extends \PHPUnit\Framework\TestCase {
 	// -----------------------------------------------------------------
 
 	/**
+	 * Test: niceAddress
+	 *
+	 * @dataProvider data_niceAddress
+	 *
+	 * @param array $value Value.
+	 * @param array $expected Expected.
+	 */
+	function test_niceAddress(array $value, int $flags, array $expected) {
+		$result = \Blobfolio\Geo::niceAddress($value, $flags);
+
+		$this->assertSame($expected, $result);
+	}
+
+	/**
 	 * Test: niceCountry
 	 *
 	 * @dataProvider data_niceCountry
@@ -275,6 +289,106 @@ class geo_tests extends \PHPUnit\Framework\TestCase {
 	// -----------------------------------------------------------------
 	// Data
 	// -----------------------------------------------------------------
+
+	/**
+	 * Data: niceAddress
+	 *
+	 * @return array Values.
+	 */
+	function data_niceAddress() {
+		return array(
+			array(
+				array(),
+				0,
+				array(
+					'name'=>'',
+					'street'=>'',
+					'city'=>'',
+					'state'=>'',
+					'zip'=>'',
+					'country'=>'US',
+				),
+			),
+			array(
+				array(),
+				\Blobfolio\Blobfolio::ADDRESS_FIELD_ALL,
+				array(
+					'name'=>'',
+					'street'=>'',
+					'city'=>'',
+					'state'=>'',
+					'zip'=>'',
+					'country'=>'US',
+					'company'=>'',
+					'phone'=>'',
+					'email'=>'',
+				),
+			),
+			array(
+				array(),
+				\Blobfolio\Blobfolio::ADDRESS_FIELD_EMAIL,
+				array(
+					'name'=>'',
+					'street'=>'',
+					'city'=>'',
+					'state'=>'',
+					'zip'=>'',
+					'country'=>'US',
+					'email'=>'',
+				),
+			),
+			array(
+				array(),
+				\Blobfolio\Blobfolio::ADDRESS_FIELD_PHONE,
+				array(
+					'name'=>'',
+					'street'=>'',
+					'city'=>'',
+					'state'=>'',
+					'zip'=>'',
+					'country'=>'US',
+					'phone'=>'',
+				),
+			),
+			array(
+				array(),
+				\Blobfolio\Blobfolio::ADDRESS_FIELD_COMPANY,
+				array(
+					'name'=>'',
+					'street'=>'',
+					'city'=>'',
+					'state'=>'',
+					'zip'=>'',
+					'country'=>'US',
+					'company'=>'',
+				),
+			),
+			array(
+				array(
+					'firstname'=>'Josh',
+					'lastname'=>'stoik',
+					'zip'=>'123',
+					'address'=>'123 candy cane lane',
+					'city'=>' bögland',
+					'state'=>'Puerto Rico',
+					'email'=>'Foo+bAr@gmail.com',
+					'phone'=>'(702) 405-0001',
+				),
+				\Blobfolio\Blobfolio::ADDRESS_FIELD_ALL,
+				array(
+					'name'=>'Josh Stoik',
+					'street'=>'123 CANDY CANE LANE',
+					'city'=>'BÖGLAND',
+					'state'=>'PR',
+					'zip'=>'00123',
+					'country'=>'US',
+					'company'=>'',
+					'phone'=>'+1 702-405-0001',
+					'email'=>'foo+bar@gmail.com',
+				),
+			),
+		);
+	}
 
 	/**
 	 * Data: niceCountry

@@ -13,6 +13,7 @@ namespace Blobfolio;
 final class Geo {
 	private static _au;
 	private static _ca;
+	private static _country;
 	private static _countries;
 	private static _regions = ["Africa", "Asia", "Australia", "Europe", "North America", "South America"];
 	private static _timezones;
@@ -23,6 +24,147 @@ final class Geo {
 	// -----------------------------------------------------------------
 	// Formatting
 	// -----------------------------------------------------------------
+
+	/**
+	 * Nice Address
+	 *
+	 * @param mixed $parts Parts.
+	 * @param int $flags Flags.
+	 * @return array Parts.
+	 */
+	public static function niceAddress(array parts, const uint flags=7) -> array {
+		// Make sure the data is loaded.
+		if (!globals_get("loaded_geo")) {
+			self::loadData();
+		}
+
+		// First figure out what fields we should be including.
+		bool flagsEmail = (flags & globals_get("flag_address_field_email"));
+		bool flagsPhone = (flags & globals_get("flag_address_field_phone"));
+		bool flagsCompany = (flags & globals_get("flag_address_field_company"));
+
+		array template = [
+			"name": "",
+			"street": "",
+			"city": "",
+			"state": "",
+			"zip": "",
+			"country": ""
+		];
+
+		// Add extra fields.
+		if (flagsCompany) {
+			let template["company"] = "";
+		}
+		if (flagsPhone) {
+			let template["phone"] = "";
+		}
+		if (flagsEmail) {
+			let template["email"] = "";
+		}
+
+		// Pre-clean: Name.
+		if (!isset(parts["name"])) {
+			if (isset(parts["firstname"]) && isset(parts["lastname"])) {
+				let parts["name"] = trim(parts["firstname"] . " " . parts["lastname"]);
+			}
+			elseif (isset(parts["first_name"]) && isset(parts["last_name"])) {
+				let parts["name"] = trim(parts["first_name"] . " " . parts["last_name"]);
+			}
+			elseif (isset(parts["first"]) && isset(parts["last"])) {
+				let parts["name"] = trim(parts["first"] . " " . parts["last"]);
+			}
+		}
+
+		// Pre-clean: Address.
+		if (!isset(parts["street"])) {
+			if (isset(parts["street1"]) && isset(parts["street2"])) {
+				let parts["street"] = trim(parts["street1"] . " " . parts["street2"]);
+			}
+			elseif (isset(parts["address1"]) && isset(parts["address2"])) {
+				let parts["street"] = trim(parts["address1"] . " " . parts["address2"]);
+			}
+			elseif (isset(parts["address_1"]) && isset(parts["address_2"])) {
+				let parts["street"] = trim(parts["address_1"] . " " . parts["address_2"]);
+			}
+			elseif (isset(parts["address"])) {
+				let parts["street"] = parts["address"];
+			}
+		}
+
+		// Crunch the template.
+		array out = (array) \Blobfolio\Cast::parseArgs(parts, template);
+
+		// Some formatting can be applied en masse.
+		var k, v;
+		for k, v in out {
+			// Everything should be nice.
+			let out[k] = (string) \Blobfolio\Strings::niceText(
+				v,
+				0,
+				globals_get("flag_trusted")
+			);
+
+			// Move on if we have nothing.
+			if (empty out[k]) {
+				// We can always set a country.
+				if ("country" === k) {
+					let out["country"] = (string) self::_country;
+				}
+				continue;
+			}
+
+			// Key-based changes.
+			switch (k) {
+				case "name":
+					let out[k] = (string) \Blobfolio\Retail::niceName(out[k]);
+					break;
+				case "country":
+					let out["country"] = self::niceCountry(out[k]);
+					if (empty out["country"]) {
+						let out["country"] = (string) self::_country;;
+					}
+					break;
+				case "email":
+					let out[k] = (string) \Blobfolio\Domains::niceEmail(
+						out[k],
+						globals_get("flag_trusted")
+					);
+					break;
+				case "phone":
+					let out[k] = (string) \Blobfolio\Phones::nicePhone(
+						out[k],
+						out["country"]
+					);
+					break;
+				case "company":
+					break;
+				default:
+					// Uppercase everything else.
+					let out[k] = (string) \Blobfolio\Strings::toUpper(
+						out[k],
+						globals_get("flag_trusted")
+					);
+			}
+		}
+
+		// US.
+		if ("US" === out["country"]) {
+			let out["state"] = (string) self::niceUsState(out["state"]);
+			let out["zip"] = (string) self::niceZip5(out["zip"]);
+		}
+		// Canada.
+		elseif ("CA" === out["country"]) {
+			let out["state"] = (string) self::niceCaProvince(out["state"]);
+			let out["zip"] = (string) self::niceCaPostalCode(out["zip"]);
+		}
+		// Australia.
+		elseif ("AU" === out["country"]) {
+			let out["state"] = (string) self::niceAuState(out["state"]);
+		}
+
+		return out;
+	}
 
 	/**
 	 * Nice Country
@@ -571,6 +713,13 @@ final class Geo {
 		let self::_countries = (array) tmp["countries"];
 		let self::_timezones = (array) tmp["timezones"];
 		let self::_us = (array) tmp["us"];
+
+		// While we're here, let's also set the default country.
+		let self::_country = (string) ini_get("blobfolio.country");
+		let self::_country = \Blobfolio\Geo::niceCountry(self::_country);
+		if (empty self::_country) {
+			let self::_country = "US";
+		}
 
 		globals_set("loaded_geo", true);
 	}
