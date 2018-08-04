@@ -409,10 +409,11 @@ final class Retail {
 		];
 
 		// Split on space.
-		if (false !== strpos(str, " ")) {
-			array parts = (array) explode(" ", str);
-			let out["firstname"] = (string) array_shift(parts);
-			let out["lastname"] = (string) implode(" ", parts);
+		var start;
+		let start = mb_strpos(str, " ", 0, "UTF-8");
+		if (false !== start) {
+			let out["firstname"] = trim(mb_substr(str, 0, start, "UTF-8"));
+			let out["lastname"] = trim(mb_substr(str, start, null, "UTF-8"));
 		}
 
 		return out;
