@@ -185,7 +185,7 @@ final class Strings {
 		bool flagsEllipsis = (flags & globals_get("flag_excerpt_ellipsis"));
 		bool flagsWord = (flags & globals_get("flag_excerpt_break_word"));
 		bool flagsChar = !flagsWord;
-		bool flagsInclusive = (flags & globals_get("flag_excerpt_inclusive"));
+		bool flagsInclusive = flagsEllipsis && flagsChar && (flags & globals_get("flag_excerpt_inclusive"));
 
 		if (flagsInclusive) {
 			let length -= 1;
@@ -195,18 +195,18 @@ final class Strings {
 			return "";
 		}
 
-		// Limit words.
-		if (flagsWord && substr_count(str, " ") > length - 1) {
-			array tmp = (array) explode(" ", str);
-			let tmp = array_slice(tmp, 0, length);
-			let str = (string) implode(" ", tmp);
+		// Character limit.
+		if (flagsChar && mb_strlen(str, "UTF-8") > length) {
+			let str = (string) trim(mb_substr(str, 0, length, "UTF-8"));
 			if (flagsEllipsis) {
 				let str .= "…";
 			}
 		}
-		// Character limit.
-		elseif (flagsChar && mb_strlen(str, "UTF-8") > length) {
-			let str = (string) trim(mb_substr(str, 0, length, "UTF-8"));
+		// Limit words.
+		elseif (flagsWord && substr_count(str, " ") > length - 1) {
+			array tmp = (array) explode(" ", str);
+			let tmp = array_slice(tmp, 0, length);
+			let str = (string) implode(" ", tmp);
 			if (flagsEllipsis) {
 				let str .= "…";
 			}
@@ -499,7 +499,7 @@ final class Strings {
 	}
 
 	/**
-	 * Wrapper For strpos()
+	 * Wrapper For strrpos()
 	 *
 	 * @param string $haystack Haystack.
 	 * @param string $needle Needle.
@@ -857,7 +857,7 @@ final class Strings {
 	 */
 	public static function utf8Recursive(var value) {
 		// Recurse.
-		if (unlikely "array" === typeof value) {
+		if ("array" === typeof value) {
 			var k, v;
 			for k, v in value {
 				let value[k] = self::utf8Recursive(v);
@@ -1163,26 +1163,32 @@ final class Strings {
 	 * Get Random String
 	 *
 	 * @param int $length Length.
-	 * @param array $soup Alternate alphabet.
+	 * @param string $custom Alternate alphabet.
 	 * @return string Random string.
 	 */
-	public static function random(int length=10, var soup=null) -> string {
+	public static function random(uint length=10, string custom="") -> string {
 		if (length < 1) {
 			return "";
 		}
 
+		array soup;
+		int max;
+
 		// Build a custom soup.
-		if (("array" === typeof soup) && count(soup)) {
-			let soup = (array) \Blobfolio\Arrays::flatten(soup);
-			let soup = (string) implode("", soup);
-			let soup = self::printable(soup);
-			let soup = preg_replace("/\s/", "", soup);
-			let soup = (array) self::split(soup);
+		if (!empty custom) {
+			let custom = self::printable(custom);
+			let custom = preg_replace("/\s/", "", custom);
+			let soup = (array) self::split(custom);
 			let soup = array_unique(soup);
 			let soup = array_values(soup);
 
-			if (!count(soup)) {
+			let max = count(soup) - 1;
+			if (max < 0) {
 				return "";
+			}
+			elseif (!max) {
+				// One does not random make.
+				return str_repeat(soup[0], length);
 			}
 		}
 		else {
@@ -1191,13 +1197,8 @@ final class Strings {
 				"M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
 				"Y", "Z", "2", "3", "4", "5", "6", "7", "8", "9"
 			];
-		}
 
-		int max = count(soup) - 1;
-
-		// Save time if we can't produce anything random.
-		if (!max) {
-			return str_repeat(soup[0], length);
+			let max = 31;
 		}
 
 		string out = "";
