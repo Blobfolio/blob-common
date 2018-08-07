@@ -103,6 +103,18 @@ final class Phones {
 			}
 		}
 
+		// If the number begins with the target country's prefix, strip
+		// it.
+		let outPrefix = "" . self::_data[country]["prefix"];
+		let v2 = (string) ltrim(phone, 0);
+		if (0 === strpos(v2, outPrefix)) {
+			let v2 = (string) substr(v2, strlen(outPrefix));
+			let v = self::testPhone(v2, country);
+			if (false !== v) {
+				return v;
+			}
+		}
+
 		// Pass One: the number as is.
 		for v in targets {
 			let v = self::testPhone(phone, v);

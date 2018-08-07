@@ -76,6 +76,18 @@ class phones_tests extends \PHPUnit\Framework\TestCase {
 				'+1 201-555-0123',
 			),
 			array(
+				'(775) 990-3138',
+				'US',
+				array(),
+				'+1 775-990-3138',
+			),
+			array(
+				'+1 775-990-3138',
+				'US',
+				array(),
+				'+1 775-990-3138',
+			),
+			array(
 				'(201) 555-0123',
 				'US',
 				array('voip'),
