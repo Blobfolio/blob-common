@@ -63,61 +63,101 @@ final class Geo {
 			let template["email"] = "";
 		}
 
+		var k, v;
+
 		// Pre-clean: Name.
-		if (!isset(parts["name"])) {
-			if (isset(parts["firstname"]) && isset(parts["lastname"])) {
-				let parts["name"] = trim(parts["firstname"] . " " . parts["lastname"]);
-			}
-			elseif (isset(parts["first_name"]) && isset(parts["last_name"])) {
-				let parts["name"] = trim(parts["first_name"] . " " . parts["last_name"]);
-			}
-			elseif (isset(parts["first"]) && isset(parts["last"])) {
-				let parts["name"] = trim(parts["first"] . " " . parts["last"]);
+		array aliases;
+		if (!isset(parts["name"]) || empty parts["name"]) {
+			let aliases = [
+				["firstname", "lastname"],
+				["first_name", "last_name"],
+				["first", "last"]
+			];
+
+			for v in aliases {
+				if (
+					isset(parts[v[0]]) &&
+					isset(parts[v[1]]) &&
+					(!empty parts[v[0]] || !empty parts[v[1]])
+				) {
+					let parts["name"] = trim(
+						parts[v[0]] . " " . parts[v[1]]
+					);
+					break;
+				}
 			}
 		}
 
 		// Pre-clean: Address.
-		if (!isset(parts["street"])) {
-			if (isset(parts["street1"]) && isset(parts["street2"])) {
-				let parts["street"] = trim(parts["street1"] . " " . parts["street2"]);
-			}
-			elseif (isset(parts["address1"]) && isset(parts["address2"])) {
-				let parts["street"] = trim(parts["address1"] . " " . parts["address2"]);
-			}
-			elseif (isset(parts["address_1"]) && isset(parts["address_2"])) {
-				let parts["street"] = trim(parts["address_1"] . " " . parts["address_2"]);
-			}
-			elseif (isset(parts["address_line1"]) && isset(parts["address_line2"])) {
-				let parts["street"] = trim(parts["address_line1"] . " " . parts["address_line2"]);
-			}
-			elseif (isset(parts["address_line_1"]) && isset(parts["address_line_2"])) {
-				let parts["street"] = trim(parts["address_line_1"] . " " . parts["address_line_2"]);
-			}
-			elseif (isset(parts["address"])) {
-				let parts["street"] = parts["address"];
-			}
-			elseif (isset(parts["address_line"])) {
-				let parts["street"] = parts["address_line"];
+		if (!isset(parts["street"]) || empty parts["street"]) {
+			let aliases = [
+				"street",
+				"address",
+				"address_line"
+			];
+
+			for v in aliases {
+				if (
+					isset(parts[v . "1"]) &&
+					isset(parts[v . "2"]) &&
+					(!empty parts[v . "1"] || !empty parts[v . "2"])
+				) {
+					let parts["street"] = trim(
+						parts[v . "1"] . " " . parts[v . "2"]
+					);
+					break;
+				}
+				elseif (
+					isset(parts[v . "_1"]) &&
+					isset(parts[v . "_2"]) &&
+					(!empty parts[v . "1"] || !empty parts[v . "2"])
+				) {
+					let parts["street"] = trim(
+						parts[v . "1"] . " " . parts[v . "2"]
+					);
+					break;
+				}
+				elseif (
+					("street" !== v) &&
+					isset(parts[v]) &&
+					!empty parts[v]
+				) {
+					let parts["street"] = trim(parts[v]);
+					break;
+				}
 			}
 		}
 
 		// Company aliases.
-		if (!isset(parts["company"]) && isset(parts["business"])) {
-			let parts["company"] = parts["business"];
+		if (!isset(parts["company"]) || empty parts["company"]) {
+			if (isset(parts["business"]) && !empty parts["business"]) {
+				let parts["company"] = parts["business"];
+			}
 		}
 
 		// Email alias.
-		if (!isset(parts["email"]) && isset(parts["email_address"])) {
-			let parts["email"] = parts["email_address"];
+		if (!isset(parts["email"]) || empty parts["email"]) {
+			if (isset(parts["email_address"]) && !empty parts["email_address"]) {
+				let parts["email"] = parts["email_address"];
+			}
 		}
 
 		// Phone alias.
-		if (!isset(parts["phone"])) {
-			if (isset(parts["telephone"])) {
-				let parts["phone"] = parts["telephone"];
-			}
-			elseif (isset(parts["tel"])) {
-				let parts["phone"] = parts["tel"];
+		if (!isset(parts["phone"]) || empty parts["phone"]) {
+			let aliases = [
+				"telephone",
+				"tel",
+				"phone_number"
+			];
+
+			for v in aliases {
+				if (
+					isset(parts[v]) &&
+					!empty parts[v]
+				) {
+					let parts["phone"] = trim(parts[v]);
+					break;
+				}
 			}
 		}
 
@@ -125,7 +165,6 @@ final class Geo {
 		array out = (array) \Blobfolio\Cast::parseArgs(parts, template);
 
 		// Some formatting can be applied en masse.
-		var k, v;
 		for k, v in out {
 			// Everything should be nice.
 			let out[k] = (string) \Blobfolio\Strings::niceText(

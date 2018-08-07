@@ -387,6 +387,31 @@ class geo_tests extends \PHPUnit\Framework\TestCase {
 					'email'=>'foo+bar@gmail.com',
 				),
 			),
+			array(
+				array(
+					'name'=>'',
+					'firstname'=>'Josh',
+					'lastname'=>'stoik',
+					'zip'=>'123',
+					'address'=>'123 candy cane lane',
+					'city'=>' bögland',
+					'state'=>'Puerto Rico',
+					'email'=>'Foo+bAr@gmail.com',
+					'phone'=>'(702) 405-0001',
+				),
+				\Blobfolio\Blobfolio::ADDRESS_FIELD_ALL,
+				array(
+					'name'=>'Josh Stoik',
+					'street'=>'123 CANDY CANE LANE',
+					'city'=>'BÖGLAND',
+					'state'=>'PR',
+					'zip'=>'00123',
+					'country'=>'US',
+					'company'=>'',
+					'phone'=>'+1 702-405-0001',
+					'email'=>'foo+bar@gmail.com',
+				),
+			),
 		);
 	}
 
