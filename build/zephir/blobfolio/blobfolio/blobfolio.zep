@@ -54,6 +54,8 @@ final class Blobfolio {
 	const FLATTEN = 536870912;
 	const REFRESH = 268435456;
 	const UNICODE = 134217728;
+	const UNIQUE = 67108864;
+	const SORT = 33554432;
 
 	/**
 	 * Flags: Address::niceAddress
@@ -62,6 +64,12 @@ final class Blobfolio {
 	const ADDRESS_FIELD_EMAIL = 1;
 	const ADDRESS_FIELD_PHONE = 2;
 	const ADDRESS_FIELD_COMPANY = 4;
+
+	/**
+	 * Flags: Arrays::flatten
+	 */
+	const FLATTEN_UNIQUE = 67108864;
+	const FLATTEN_SORT = 33554432;
 
 	/**
 	 * Flags: Cast::parseArgs
