@@ -98,23 +98,29 @@ final class Geo {
 
 			for v in aliases {
 				if (
-					isset(parts[v . "1"]) &&
-					isset(parts[v . "2"]) &&
-					(!empty parts[v . "1"] || !empty parts[v . "2"])
+					(isset(parts[v . "1"]) && !empty(parts[v . "1"])) ||
+					(isset(parts[v . "2"]) && !empty(parts[v . "2"]))
 				) {
-					let parts["street"] = trim(
-						parts[v . "1"] . " " . parts[v . "2"]
-					);
+					if (isset(parts[v . "1"])) {
+						let parts["street"] = parts[v . "1"];
+					}
+					if (isset(parts[v . "2"])) {
+						let parts["street"] .= " " . parts[v . "2"];
+					}
+					let parts["street"] = trim(parts["street"]);
 					break;
 				}
 				elseif (
-					isset(parts[v . "_1"]) &&
-					isset(parts[v . "_2"]) &&
-					(!empty parts[v . "1"] || !empty parts[v . "2"])
+					(isset(parts[v . "_1"]) && !empty(parts[v . "_1"])) ||
+					(isset(parts[v . "_2"]) && !empty(parts[v . "_2"]))
 				) {
-					let parts["street"] = trim(
-						parts[v . "1"] . " " . parts[v . "2"]
-					);
+					if (isset(parts[v . "_1"])) {
+						let parts["street"] = parts[v . "_1"];
+					}
+					if (isset(parts[v . "_2"])) {
+						let parts["street"] .= " " . parts[v . "_2"];
+					}
+					let parts["street"] = trim(parts["street"]);
 					break;
 				}
 				elseif (
