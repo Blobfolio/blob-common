@@ -25,27 +25,44 @@ final class Arrays {
 	 * level.
 	 *
 	 * @param array $arr Array.
+	 * @param int $flags Flags.
 	 * @return array Array.
 	 */
-	public static function flatten(array arr) -> array {
-		array out = [];
-
+	public static function flatten(array arr, const uint flags=0) -> array {
 		if (!count(arr)) {
-			return out;
+			return [];
 		}
 
+		array out = [];
 		var v;
 		for v in arr {
 			// Recurse arrays.
-			if ("array" === typeof v) {
-				let v = self::flatten(v);
-				var v2;
-				for v2 in v {
-					let out[] = v2;
+			if (is_array(v)) {
+				if (count(v)) {
+					let out = array_merge(out, self::flatten(v, flags));
 				}
 			}
 			else {
 				let out[] = v;
+			}
+		}
+
+		if (count(out)) {
+			bool sort = (flags & globals_get("flag_sort"));
+			bool unique = (flags & globals_get("flag_unique"));
+			if (sort || unique) {
+				if (unique) {
+					let out = (array) array_unique(out);
+				}
+				if (sort) {
+					sort(out);
+				}
+				else {
+					let out = array_values(out);
+				}
+			}
+			else {
+				let out = array_values(out);
 			}
 		}
 
@@ -258,7 +275,7 @@ final class Arrays {
 	 * @param string $eol EOL.
 	 * @return string CSV.
 	 */
-	public static function toCsv(array data, var headers=null, string delimiter, const string eol) -> string {
+	public static function toCsv(array data, var headers=null, string delimiter=",", const string eol="\n") -> string {
 		let delimiter = "\"" . str_replace("\"", "", delimiter) . "\"";
 
 		// Data should be an array of arrays.
