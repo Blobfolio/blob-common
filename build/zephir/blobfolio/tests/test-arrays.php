@@ -25,10 +25,11 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider data_flatten
 	 *
 	 * @param mixed $value Value.
+	 * @param mixed $flags Flags.
 	 * @param mixed $expected Expected.
 	 */
-	function test_flatten($value, $expected) {
-		$result = \Blobfolio\Arrays::flatten($value);
+	function test_flatten($value, int $flags, $expected) {
+		$result = \Blobfolio\Arrays::flatten($value, $flags);
 		$this->assertSame($expected, $result);
 		$this->assertSame('array', gettype($result));
 	}
@@ -296,6 +297,7 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				array(1, 2, 3, 4),
+				0,
 				array(1, 2, 3, 4),
 			),
 			array(
@@ -306,7 +308,44 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 						array(3, 4),
 					),
 				),
+				0,
 				array(1, 2, 3, 4),
+			),
+			array(
+				array(
+					array('hi'),
+					array('there'),
+					array('hello', 'world'),
+				),
+				0,
+				array('hi', 'there', 'hello', 'world'),
+			),
+			array(
+				json_decode(
+					file_get_contents(self::ASSETS . 'flatten.json'),
+					true
+				),
+				\Blobfolio\Blobfolio::UNIQUE | \Blobfolio\Blobfolio::SORT,
+				array(
+					'absinthe', 'agave', 'aged', 'ale', 'amantillado',
+					'amaro', 'american', 'aperitif', 'apple', 'aromatic',
+					'beer', 'bitters', 'black lemon', 'boubon', 'bourbon',
+					'brandy', 'calvados', 'cardamom', 'celery',
+					'cherry bark vanilla', 'cider', 'citrate', 'cocktail',
+					'cognac', 'cream', 'creole', 'dry', 'eau de vie',
+					'elderflower', 'fino', 'firewater', 'flavored', 'french',
+					'gin', 'grapefruit', 'grappa', 'herbal', 'ipa', 'irish',
+					'jamaican #2', 'kit', 'lager', 'lime', 'liqueur',
+					'london dry', 'manzanilla', 'mezcal', 'mixer',
+					'moonshine', 'neutral grain spirit', 'orange',
+					'orange cream', 'peychaud\'s', 'pisco', 'plymouth',
+					'product', 'red', 'red - sparkling', 'red clover',
+					'rhum agricole', 'rosé', 'rosé - sparkling', 'rum',
+					'rum - spiced', 'rye', 'scotch', 'sherry', 'sloe',
+					'sparkling', 'spiced', 'stout', 'sweet', 'syrup',
+					'tennessee', 'tequila', 'umeshu', 'vermouth',
+					'vodka', 'whiskey', 'whisky', 'white', 'wine',
+				),
 			),
 		);
 	}

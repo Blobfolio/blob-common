@@ -113,6 +113,16 @@
             "default": 134217728,
             "module": true
         },
+        "flag_unique": {
+            "type": "uint",
+            "default": 67108864,
+            "module": true
+        },
+        "flag_sort": {
+            "type": "uint",
+            "default": 33554432,
+            "module": true
+        },
         "flag_svg_clean_styles": {
             "type": "uint",
             "default": 1,
