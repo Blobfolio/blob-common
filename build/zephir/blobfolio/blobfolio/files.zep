@@ -514,6 +514,20 @@ final class Files {
 	// -----------------------------------------------------------------
 
 	/**
+	 * Add BOM
+	 *
+	 * Place a BOM at the start of a string.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function addBom(string str) -> string {
+		string bom = chr(239) . chr(187) . chr(191);
+		let str = (string) str_replace(bom, "", str);
+		return bom . str;
+	}
+
+	/**
 	 * Recursive Copy
 	 *
 	 * @param string $from Source.
@@ -1038,6 +1052,19 @@ final class Files {
 
 		sort(out);
 		return out;
+	}
+
+	/**
+	 * Strip BOM
+	 *
+	 * Remove BOM from the start of a string.
+	 *
+	 * @param string $str String.
+	 * @return string String.
+	 */
+	public static function stripBom(string str) -> string {
+		string bom = chr(239) . chr(187) . chr(191);
+		return (string) str_replace(bom, "", str);
 	}
 
 

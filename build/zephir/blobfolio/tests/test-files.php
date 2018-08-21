@@ -201,6 +201,82 @@ class files_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Test: addBom
+	 *
+	 * @dataProvider data_addBom
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
+	 */
+	function test_addBom(string $value, $expected) {
+		$result = \Blobfolio\Files::addBom($value);
+
+		$this->assertSame($expected, $result);
+	}
+
+	/**
+	 * Test: stripBom
+	 *
+	 * @dataProvider data_stripBom
+	 *
+	 * @param string $value Value.
+	 * @param string $expected Expected.
+	 */
+	function test_stripBom(string $value, $expected) {
+		$result = \Blobfolio\Files::stripBom($value);
+
+		$this->assertSame($expected, $result);
+	}
+
+	/**
+	 * Data: addBom
+	 *
+	 * @return array Values.
+	 */
+	function data_addBom() {
+		$bom = chr(239) . chr(187) . chr(191);
+
+		return array(
+			array(
+				'Hello World',
+				"{$bom}Hello World",
+			),
+			array(
+				"{$bom}Hello World",
+				"{$bom}Hello World",
+			),
+			array(
+				"Hello {$bom}World",
+				"{$bom}Hello World",
+			),
+		);
+	}
+
+	/**
+	 * Data: stripBom
+	 *
+	 * @return array Values.
+	 */
+	function data_stripBom() {
+		$bom = chr(239) . chr(187) . chr(191);
+
+		return array(
+			array(
+				'Hello World',
+				'Hello World',
+			),
+			array(
+				"{$bom}Hello World",
+				'Hello World',
+			),
+			array(
+				"Hello {$bom}World",
+				'Hello World',
+			),
+		);
+	}
+
+	/**
 	 * Test: copy
 	 */
 	function test_copy() {
