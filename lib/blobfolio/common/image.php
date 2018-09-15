@@ -157,9 +157,9 @@ class image {
 					foreach ($matches[0] as $k=>$v) {
 						$id_string = $v;
 						$id_value = $matches[1][$k];
-						$id_new = 's' . mb::strtolower(data::random_string(4), false, true);
+						$id_new = 's' . mb::strtolower(data::random_string(4), false);
 						while (in_array($id_new, static::$svg_ids, true)) {
-							$id_new = 's' . mb::strtolower(data::random_string(4), false, true);
+							$id_new = 's' . mb::strtolower(data::random_string(4), false);
 						}
 						static::$svg_ids[] = $id_new;
 
@@ -354,9 +354,9 @@ class image {
 											}
 
 											if (count($classes)) {
-												$class_new = mb::strtolower('c' . data::random_string(4), false, true);
+												$class_new = mb::strtolower('c' . data::random_string(4), false);
 												while (in_array($class_new, static::$svg_classes, true)) {
-													$class_new = mb::strtolower('c' . data::random_string(4), false, true);
+													$class_new = mb::strtolower('c' . data::random_string(4), false);
 												}
 												$selectors[] = '.' . $class_new;
 
@@ -415,7 +415,7 @@ class image {
 							$nodes = dom::get_nodes_by_class($s, $classes_old);
 							foreach ($nodes as $node) {
 								$classes = $node->getAttribute('class');
-								ref\sanitize::whitespace($classes, 0, true);
+								ref\sanitize::whitespace($classes, 0);
 								$classes = explode(' ', $classes);
 								$classes = array_unique($classes);
 								$classes = array_diff($classes, $classes_old);
@@ -628,8 +628,8 @@ class image {
 					$gif2webp = (string) $gif2webp;
 				}
 
-				ref\file::path($cwebp, true, true);
-				ref\file::path($gif2webp, true, true);
+				ref\file::path($cwebp, true);
+				ref\file::path($gif2webp, true);
 
 				if (
 					$cwebp &&
@@ -687,7 +687,7 @@ class image {
 		$viewbox = null;
 
 		// Search for width, height, and viewbox.
-		ref\sanitize::whitespace($svg, 0, true);
+		ref\sanitize::whitespace($svg, 0);
 
 		preg_match_all(
 			'/(height|width|viewbox)\s*=\s*(["\'])((?:(?!\2).)*)\2/',
@@ -772,7 +772,7 @@ class image {
 			if (false === strpos($to, '/')) {
 				$to = "{$info['dirname']}/$to";
 			}
-			ref\file::path($to, false, true);
+			ref\file::path($to, false);
 			if ('.webp' !== substr(strtolower($to), -5)) {
 				$to = '';
 				return false;

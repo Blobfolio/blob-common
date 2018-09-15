@@ -24,7 +24,7 @@ class mb {
 	 */
 	public static function parse_url($url, int $component = -1) {
 		ref\cast::string($url, true);
-		ref\mb::trim($url, true);
+		ref\mb::trim($url);
 
 		// Before we start, let's fix scheme-agnostic URLs.
 		$url = preg_replace('/^:?\/\//', 'https://', $url);
@@ -73,7 +73,7 @@ class mb {
 				}
 
 				// Lowercase it.
-				ref\mb::strtolower($parts, false, true);
+				ref\mb::strtolower($parts, false);
 
 				// Get rid of trailing periods.
 				$parts = ltrim($parts, '.');
@@ -111,7 +111,7 @@ class mb {
 					}
 
 					// Lowercase it.
-					ref\mb::strtolower($parts[$k], false, true);
+					ref\mb::strtolower($parts[$k], false);
 
 					// Get rid of trailing periods.
 					$parts[$k] = ltrim($parts[$k], '.');

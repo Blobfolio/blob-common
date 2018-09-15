@@ -28,8 +28,8 @@ class mb {
 		cast::string($str, true);
 		cast::string($pad_string, true);
 
-		$current_length = v_mb::strlen($str, true);
-		$pad_string_length = v_mb::strlen($pad_string, true);
+		$current_length = v_mb::strlen($str);
+		$pad_string_length = v_mb::strlen($pad_string);
 
 		if ($pad_length <= $current_length || !$pad_string_length) {
 			return;
@@ -38,15 +38,15 @@ class mb {
 		// Pad left.
 		if (STR_PAD_LEFT === $pad_type) {
 			$str = str_repeat($pad_string, ceil(($pad_length - $current_length) / $pad_string_length)) . $str;
-			$new_length = v_mb::strlen($str, true);
+			$new_length = v_mb::strlen($str);
 			if ($new_length > $pad_length) {
-				$str = v_mb::substr($str, $new_length - $pad_length, null, true);
+				$str = v_mb::substr($str, $new_length - $pad_length, null);
 			}
 		}
 		// Pad both.
 		elseif (STR_PAD_BOTH === $pad_type) {
 			$leftright = 'right';
-			while (v_mb::strlen($str, true) < $pad_length) {
+			while (v_mb::strlen($str) < $pad_length) {
 				$leftright = 'left' === $leftright ? 'right' : 'left';
 				if ('left' === $leftright) {
 					$str = "{$pad_string}{$str}";
@@ -56,22 +56,22 @@ class mb {
 				}
 			}
 
-			$new_length = v_mb::strlen($str, true);
+			$new_length = v_mb::strlen($str);
 			if ($new_length > $pad_length) {
 				if ('left' === $leftright) {
-					$str = v_mb::substr($str, $new_length - $pad_length, null, true);
+					$str = v_mb::substr($str, $new_length - $pad_length, null);
 				}
 				else {
-					$str = v_mb::substr($str, 0, $pad_length, true);
+					$str = v_mb::substr($str, 0, $pad_length);
 				}
 			}
 		}
 		// Pad right.
 		else {
 			$str .= str_repeat($pad_string, ceil(($pad_length - $current_length) / $pad_string_length));
-			$new_length = v_mb::strlen($str, true);
+			$new_length = v_mb::strlen($str);
 			if ($new_length > $pad_length) {
-				$str = v_mb::substr($str, 0, $pad_length, true);
+				$str = v_mb::substr($str, 0, $pad_length);
 			}
 		}
 	}
@@ -91,11 +91,11 @@ class mb {
 
 		cast::string($str, true);
 
-		$str_length = v_mb::strlen($str, true);
+		$str_length = v_mb::strlen($str);
 		$out = array();
 
 		for ($i = 0; $i < $str_length; $i += $split_length) {
-			$out[] = v_mb::substr($str, $i, $split_length, true);
+			$out[] = v_mb::substr($str, $i, $split_length);
 		}
 
 		$str = $out;
@@ -347,14 +347,14 @@ class mb {
 			}
 
 			// Start a new line?
-			$line_length = v_mb::strlen($lines[$line], true);
+			$line_length = v_mb::strlen($lines[$line]);
 			if ($line_length >= $width) {
 				$line++;
 				$lines[$line] = '';
 				$line_length = 0;
 			}
 
-			$word_length = v_mb::strlen($v, true);
+			$word_length = v_mb::strlen($v);
 
 			// We can just add it.
 			if ($word_length + $line_length <= $width) {
@@ -376,8 +376,8 @@ class mb {
 			// Loop through word chunks to see what fits where.
 			$v = explode("\n", $v);
 			foreach ($v as $v2) {
-				$word_length = v_mb::strlen($v2, true);
-				$line_length = v_mb::strlen($lines[$line], true);
+				$word_length = v_mb::strlen($v2);
+				$line_length = v_mb::strlen($lines[$line]);
 
 				// New line?
 				if ($word_length + $line_length > $width) {
@@ -401,11 +401,11 @@ class mb {
 				continue;
 			}
 
-			static::trim($lines[$k], true);
+			static::trim($lines[$k]);
 		}
 
 		// Finally, join our lines by the delimiter.
 		$str = implode($break, $lines);
-		static::trim($str, true);
+		static::trim($str);
 	}
 }

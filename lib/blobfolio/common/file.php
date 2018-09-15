@@ -32,8 +32,8 @@ class file {
 
 		// Recurse directories.
 		if (@is_dir($from)) {
-			ref\file::trailingslash($from, true);
-			ref\file::trailingslash($to, true);
+			ref\file::trailingslash($from);
+			ref\file::trailingslash($to);
 
 			if (!@is_dir($to)) {
 				$dir_chmod = (@fileperms($from) & 0777 | 0755);
@@ -169,7 +169,7 @@ class file {
 	 */
 	public static function data_uri(string $path) {
 		ref\cast::string($path, true);
-		ref\file::path($path, true, true);
+		ref\file::path($path, true);
 
 		if ((false !== $path) && @is_file($path)) {
 			$content = base64_encode(@file_get_contents($path));
@@ -363,7 +363,7 @@ class file {
 
 		// We only need to proceed if the path doesn't exist.
 		if (!@is_dir($path)) {
-			ref\file::untrailingslash($path, true);
+			ref\file::untrailingslash($path);
 
 			// Figure out where we need to begin.
 			$base = dirname($path);
@@ -390,8 +390,8 @@ class file {
 					return true;
 				}
 
-				$path = mb::substr($path, mb::strlen($base), null, true);
-				ref\file::unleadingslash($path, true);
+				$path = mb::substr($path, mb::strlen($base), null);
+				ref\file::unleadingslash($path);
 				$parts = explode('/', $path);
 				$path = $base;
 
@@ -561,7 +561,7 @@ class file {
 
 		$out = array();
 		if ($handle = @opendir($path)) {
-			ref\file::trailingslash($path, true);
+			ref\file::trailingslash($path);
 			while (false !== ($file = @readdir($handle))) {
 				// Always ignore dots.
 				if (('.' === $file) || ('..' === $file)) {
@@ -635,7 +635,7 @@ class file {
 		$parsed = data::parse_args($parsed, constants::URL_PARTS);
 
 		// To simplify, unset anything without length.
-		ref\mb::trim($parsed, true);
+		ref\mb::trim($parsed);
 		$parsed = array_filter($parsed, 'strlen');
 
 		// We don't really care about validating url integrity,

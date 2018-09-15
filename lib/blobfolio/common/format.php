@@ -213,7 +213,7 @@ class format {
 	 */
 	public static function excerpt($str='', $args=null) {
 		ref\cast::string($str, true);
-		ref\sanitize::whitespace($str, 0, true);
+		ref\sanitize::whitespace($str, 0);
 		$str = strip_tags($str);
 
 		$options = data::parse_args($args, constants::EXCERPT);
@@ -234,9 +234,9 @@ class format {
 		// Character limit.
 		if (
 			('character' === $options['unit']) &&
-			mb::strlen($str, true) > $options['length']
+			mb::strlen($str) > $options['length']
 		) {
-			$str = trim(mb::substr($str, 0, $options['length'], true)) . $options['suffix'];
+			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
 		}
 		// Word limit.
 		elseif (
@@ -503,7 +503,7 @@ class format {
 				ref\cast::string($headers[$k], true);
 			}
 
-			ref\sanitize::csv($headers, true);
+			ref\sanitize::csv($headers);
 
 			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
 		}
@@ -515,7 +515,7 @@ class format {
 					ref\cast::string($line[$k], true);
 				}
 
-				ref\sanitize::csv($line, true);
+				ref\sanitize::csv($line);
 
 				$out[] = '"' . implode('"' . $delimiter . '"', $line) . '"';
 			}
@@ -601,7 +601,7 @@ class format {
 				$cell = htmlspecialchars(
 					strip_tags(
 						sanitize::quotes(
-							sanitize::whitespace($cell, 0, true),
+							sanitize::whitespace($cell, 0),
 							true
 						)
 					),
@@ -632,7 +632,7 @@ class format {
 					}
 					else {
 						ref\cast::string($cell, true);
-						ref\sanitize::whitespace($cell, 2, true);
+						ref\sanitize::whitespace($cell, 2);
 
 						// Date and time.
 						if (preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {
@@ -672,7 +672,7 @@ class format {
 							$type = 'String';
 							$cell = htmlspecialchars(
 								strip_tags(
-									sanitize::quotes($cell, true)
+									sanitize::quotes($cell)
 								),
 								ENT_XML1 | ENT_NOQUOTES,
 								'UTF-8'

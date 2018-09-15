@@ -34,7 +34,7 @@ class dom {
 		) {
 			return false;
 		}
-		$svg = mb::substr($svg, $start, ($end - $start + 6), true);
+		$svg = mb::substr($svg, $start, ($end - $start + 6));
 
 		// Bugs from old versions of Illustrator.
 		$svg = str_replace(
@@ -237,13 +237,13 @@ class dom {
 		while (false !== ($start = mb::strpos($styles, '/*'))) {
 			if (false !== ($end = mb::strpos($styles, '*/'))) {
 				$styles = str_replace(
-					mb::substr($styles, $start, ($end - $start + 2), true),
+					mb::substr($styles, $start, ($end - $start + 2)),
 					'',
 					$styles
 				);
 			}
 			else {
-				$styles = mb::substr($styles, 0, $start, true);
+				$styles = mb::substr($styles, 0, $start);
 			}
 		}
 
@@ -255,11 +255,11 @@ class dom {
 		);
 
 		// Standardize quoting.
-		ref\sanitize::quotes($styles, true);
+		ref\sanitize::quotes($styles);
 		$styles = str_replace("'", '"', $styles);
 
 		// Whitespace.
-		ref\sanitize::whitespace($styles, 0, true);
+		ref\sanitize::whitespace($styles, 0);
 
 		// Early bail.
 		if (!$styles) {
@@ -364,12 +364,12 @@ class dom {
 
 				$tmp['selector'] = mb::strtolower(
 					trim(
-						mb::substr($styles[$k], 0, $start, true)
+						mb::substr($styles[$k], 0, $start)
 					),
 					false,
 					true
 				);
-				$chunk = mb::substr($styles[$k], $start + 1, -1, true);
+				$chunk = mb::substr($styles[$k], $start + 1, -1);
 				$chunk = str_replace(array('⠁', '⠈'), array('{', '}'), $chunk);
 				$tmp['nest'] = static::parse_css($chunk);
 
@@ -386,7 +386,7 @@ class dom {
 				if (0 === strpos($styles[$k], '@')) {
 					// What kind of @ is this?
 					preg_match_all('/^@([a-z\-]+)/ui', $styles[$k], $matches);
-					$tmp['@'] = mb::strtolower($matches[1][0], false, true);
+					$tmp['@'] = mb::strtolower($matches[1][0], false);
 				}
 
 				// A normal {k:v, k:v}.
@@ -417,7 +417,7 @@ class dom {
 								1
 							);
 							list($key, $value) = explode("\n", $rules[$k2]);
-							$key = mb::strtolower(trim($key), false, true);
+							$key = mb::strtolower(trim($key), false);
 							$value = trim($value);
 							$tmp['rules'][$key] = $value;
 						}

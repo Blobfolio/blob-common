@@ -95,7 +95,7 @@ class file {
 		else {
 			cast::string($path, true);
 
-			static::unleadingslash($path, true);
+			static::unleadingslash($path);
 			$path = "/$path";
 		}
 	}
@@ -119,7 +119,7 @@ class file {
 			// This might be a URL rather than something local.
 			// Only focus on the main ones.
 			if (preg_match('/^(https?|ftps?|sftp)/iu', $path)) {
-				sanitize::url($path, true);
+				sanitize::url($path);
 				return true;
 			}
 
@@ -128,7 +128,7 @@ class file {
 				$path = substr($path, 7);
 			}
 
-			static::unixslash($path, true);
+			static::unixslash($path);
 
 			$original = $path;
 			try {
@@ -146,7 +146,7 @@ class file {
 				try {
 					$path = $original;
 					if (false !== $dir = @realpath(dirname($path))) {
-						static::trailingslash($dir, true);
+						static::trailingslash($dir);
 						$path = $dir . basename($path);
 					}
 					else {
@@ -160,7 +160,7 @@ class file {
 			$original = $path;
 			try {
 				if (@is_dir($path)) {
-					static::trailingslash($path, true);
+					static::trailingslash($path);
 				}
 			} catch (\Throwable $e) {
 				$path = $original;
@@ -185,7 +185,7 @@ class file {
 		else {
 			cast::string($path, true);
 
-			static::untrailingslash($path, true);
+			static::untrailingslash($path);
 			$path .= '/';
 		}
 	}
@@ -226,7 +226,7 @@ class file {
 		else {
 			cast::string($path, true);
 
-			static::unixslash($path, true);
+			static::unixslash($path);
 			$path = ltrim($path, '/');
 		}
 	}
@@ -246,7 +246,7 @@ class file {
 		else {
 			cast::string($path, true);
 
-			static::unixslash($path, true);
+			static::unixslash($path);
 			$path = rtrim($path, '/');
 		}
 	}

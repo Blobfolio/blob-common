@@ -439,7 +439,7 @@ class format {
 		);
 
 		// Trim it.
-		mb::trim($str, true);
+		mb::trim($str);
 
 		// Is it empty?
 		if (!$str || ("''" === $str) || ('""' === $str)) {
@@ -454,7 +454,7 @@ class format {
 			return true;
 		}
 
-		$lower = v_mb::strtolower($str, false, true);
+		$lower = v_mb::strtolower($str, false);
 		// Bool.
 		if ('true' === $lower || 'false' === $lower) {
 			cast::bool($str, true);
@@ -502,18 +502,18 @@ class format {
 		else {
 			$type = 'object';
 		}
-		$chunk = v_mb::substr($str, 1, -1, true);
-		$length = v_mb::strlen($chunk, true);
+		$chunk = v_mb::substr($str, 1, -1);
+		$length = v_mb::strlen($chunk);
 		for ($x = 0; $x <= $length; ++$x) {
 			$last = end($slices);
-			$subchunk = v_mb::substr($chunk, $x, 2, true);
+			$subchunk = v_mb::substr($chunk, $x, 2);
 
 			// A comma or the end.
 			if (
 				($x === $length) ||
 				((',' === $chunk{$x}) && 'slice' === $last['type'])
 			) {
-				$slice = v_mb::substr($chunk, $last['from'], ($x - $last['from']), true);
+				$slice = v_mb::substr($chunk, $last['from'], ($x - $last['from']));
 				$slices[] = array(
 					'type'=>'slice',
 					'from'=>$x + 1,
@@ -682,7 +682,7 @@ class format {
 		);
 		$data = data::parse_args($args, $defaults);
 		$data['class'] = implode(' ', $data['class']);
-		sanitize::html($data, true);
+		sanitize::html($data);
 		$data = array_filter($data, 'strlen');
 		$atts = array();
 		foreach ($data as $k=>$v) {
@@ -748,7 +748,7 @@ class format {
 								}
 
 								// Finally, make a link!
-								sanitize::html($link, true);
+								sanitize::html($link);
 								return '<a href="' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
 							},
 							$str[$k]
@@ -771,13 +771,13 @@ class format {
 									$suffix = '';
 								}
 
-								$link = v_sanitize::email($raw, true);
+								$link = v_sanitize::email($raw);
 								if (!$link) {
 									return $matches[1];
 								}
 
 								// Finally, make a link!
-								sanitize::html($link, true);
+								sanitize::html($link);
 
 								return '<a href="mailto:' . $link . '"' . ($atts ? " $atts" : '') . '>' . $raw . '</a>' . $suffix;
 							},
@@ -836,10 +836,10 @@ class format {
 		// Pass #1 is for URL-like bits, pass #2 for email addresses,
 		// pass #3 for phone numbers.
 		if (1 === $pass) {
-			static::links($str, $args, 2, true);
+			static::links($str, $args, 2);
 		}
 		elseif (2 === $pass) {
-			static::links($str, $args, 3, true);
+			static::links($str, $args, 3);
 		}
 	}
 
@@ -904,12 +904,12 @@ class format {
 					$list[$k] = explode($args['delimiter'], $list[$k]);
 				}
 				else {
-					$list[$k] = mb::str_split($list[$k], 1, true);
+					$list[$k] = mb::str_split($list[$k], 1);
 				}
 
 				// Trimming?
 				if ($args['trim']) {
-					mb::trim($list[$k], true);
+					mb::trim($list[$k]);
 				}
 
 				// Get rid of empties.
@@ -1052,7 +1052,7 @@ class format {
 					return false;
 				}
 			}
-			sanitize::whitespace($str, 0, true);
+			sanitize::whitespace($str, 0);
 
 			if (!$str) {
 				$str = '';

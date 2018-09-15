@@ -553,7 +553,7 @@ class data {
 			ref\cast::int($max, true);
 		}
 
-		$length = mb::strlen($str, true);
+		$length = mb::strlen($str);
 		if ((null !== $min) && (null !== $max) && $min > $max) {
 			static::switcheroo($min, $max);
 		}

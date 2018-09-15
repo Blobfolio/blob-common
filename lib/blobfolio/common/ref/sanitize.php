@@ -81,11 +81,11 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::control_characters($str, true);
+			static::control_characters($str);
 			format::decode_entities($str);
 
 			// And trim the edges while we're here.
-			mb::trim($str, true);
+			mb::trim($str);
 		}
 	}
 
@@ -256,8 +256,8 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::whitespace($str, 0, true);
-			mb::strtoupper($str, false, true);
+			static::whitespace($str, 0);
+			mb::strtoupper($str, false);
 			if (!isset(constants::COUNTRIES[$str])) {
 				// Maybe a name?
 				$found = false;
@@ -310,8 +310,8 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::quotes($str, true);
-			static::whitespace($str, 0, true);
+			static::quotes($str);
+			static::whitespace($str, 0);
 
 			// Strip existing double quotes.
 			while (false !== strpos($str, '""')) {
@@ -491,8 +491,8 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::quotes($str, true);
-			mb::strtolower($str, false, true);
+			static::quotes($str);
+			mb::strtolower($str, false);
 
 			// Strip comments.
 			$str = preg_replace('/\([^)]*\)/u', '', $str);
@@ -546,7 +546,7 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			mb::strtolower($str, false, true);
+			mb::strtolower($str, false);
 			$str = preg_replace('/\s/u', '', $str);
 			$str = ltrim($str, '*.');
 		}
@@ -694,10 +694,10 @@ class sanitize {
 			cast::array($protocols);
 			cast::array($domains);
 
-			static::attribute_value($str, true);
+			static::attribute_value($str);
 
 			$allowed_protocols = array_merge(constants::SVG_WHITELIST_PROTOCOLS, $protocols);
-			mb::strtolower($allowed_protocols, false, true);
+			mb::strtolower($allowed_protocols, false);
 			$allowed_protocols = array_map('trim', $allowed_protocols);
 			$allowed_protocols = array_filter($allowed_protocols, 'strlen');
 			$allowed_protocols = array_unique($allowed_protocols);
@@ -848,8 +848,8 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			sanitize::quotes($str, true);
-			sanitize::whitespace($str, 0, true);
+			sanitize::quotes($str);
+			sanitize::whitespace($str, 0);
 
 			// Escape slashes, e.g. </script> -> <\/script>.
 			$str = str_replace('/', '\\/', $str);
@@ -913,11 +913,11 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::quotes($str, true);
-			static::whitespace($str, 0, true);
+			static::quotes($str);
+			static::whitespace($str, 0);
 			$str = preg_replace('/[^\p{L}\p{Zs}\p{Pd}\d\'\"\,\.]/u', '', $str);
-			static::whitespace($str, 0, true);
-			mb::ucwords($str, false, true);
+			static::whitespace($str, 0);
+			mb::ucwords($str, false);
 		}
 	}
 
@@ -940,8 +940,8 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::printable($str, true);
-			static::whitespace($str, 0, true);
+			static::printable($str);
+			static::whitespace($str, 0);
 		}
 	}
 
@@ -1003,7 +1003,7 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::whitespace($str, 0, true);
+			static::whitespace($str, 0);
 			$str = strtoupper($str);
 
 			if (!isset(constants::PROVINCES[$str])) {
@@ -1053,7 +1053,7 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::whitespace($str, 0, true);
+			static::whitespace($str, 0);
 			$str = strtoupper($str);
 
 			if (!isset(constants::STATES[$str])) {
@@ -1079,7 +1079,7 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			static::whitespace($str, 0, true);
+			static::whitespace($str, 0);
 			$str = strtoupper($str);
 
 			if (!isset(constants::STATES_AU[$str])) {
@@ -1133,7 +1133,7 @@ class sanitize {
 		$tags = $dom->getElementsByTagName('*');
 		for ($x = $tags->length - 1; $x >= 0; $x--) {
 			$tag = $tags->item($x);
-			$tag_name = v_mb::strtolower($tag->tagName, false, true);
+			$tag_name = v_mb::strtolower($tag->tagName, false);
 
 			// The tag might be namespaced (ns:tag). We'll allow it if
 			// the tag is allowed.
@@ -1154,7 +1154,7 @@ class sanitize {
 			// If this is a <style> tag, we need to make sure all
 			// entities are decoded. Thanks a lot, XML!
 			if ('style' === $tag_name) {
-				$style = strip_tags(v_sanitize::attribute_value($tag->textContent, true));
+				$style = strip_tags(v_sanitize::attribute_value($tag->textContent));
 				$tag->textContent = $style;
 			}
 
@@ -1165,14 +1165,14 @@ class sanitize {
 			for ($y = $attributes->length - 1; $y >= 0; $y--) {
 				$attribute = $attributes->item($y);
 
-				$attribute_name = v_mb::strtolower($attribute->nodeName, false, true);
+				$attribute_name = v_mb::strtolower($attribute->nodeName, false);
 
 				// Could be namespaced.
 				if (
 					!in_array($attribute_name, $allowed_attributes, true) &&
 					(false !== ($start = v_mb::strpos($attribute_name, ':')))
 				) {
-					$attribute_name = v_mb::substr($attribute_name, $start + 1, null, true);
+					$attribute_name = v_mb::substr($attribute_name, $start + 1, null);
 				}
 
 				// Bad attribute: not whitelisted. data-* is implicitly
@@ -1186,14 +1186,14 @@ class sanitize {
 				}
 
 				// Validate values.
-				$attribute_value = v_sanitize::attribute_value($attribute->value, true);
+				$attribute_value = v_sanitize::attribute_value($attribute->value);
 
 				// Validate protocols.
 				// IRI attributes get the full treatment.
 				$iri = false;
 				if (in_array($attribute_name, $iri_attributes, true)) {
 					$iri = true;
-					static::iri_value($attribute_value, $allowed_protocols, $allowed_domains, true);
+					static::iri_value($attribute_value, $allowed_protocols, $allowed_domains);
 				}
 				// For others, we are specifically interested in removing scripty bits.
 				elseif (preg_match('/(?:\w+script):/xi', $attribute_value)) {
@@ -1219,7 +1219,7 @@ class sanitize {
 			for ($y = 0; $y < $nodes->length; ++$y) {
 				$node = $nodes->item($y);
 
-				$node_name = v_mb::strtolower($node->nodeName, false, true);
+				$node_name = v_mb::strtolower($node->nodeName, false);
 
 				// Not xmlns?
 				if (0 !== strpos($node_name, 'xmlns:')) {
@@ -1228,7 +1228,7 @@ class sanitize {
 				}
 
 				// Validate values.
-				$node_value = v_sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains, true);
+				$node_value = v_sanitize::iri_value($node->nodeValue, $allowed_protocols, $allowed_domains);
 
 				// Remove invalid.
 				if (!$node_value) {
@@ -1244,13 +1244,13 @@ class sanitize {
 		$svg = preg_replace_callback(
 			'/url\s*\((.*)\s*\)/Ui',
 			function($match) use($allowed_protocols, $allowed_domains) {
-				$str = v_sanitize::attribute_value($match[1], true);
+				$str = v_sanitize::attribute_value($match[1]);
 
 				// Strip quotes.
 				$str = ltrim($str, "'\"");
 				$str = rtrim($str, "'\"");
 
-				static::iri_value($str, $allowed_protocols, $allowed_domains, true);
+				static::iri_value($str, $allowed_protocols, $allowed_domains);
 
 				if ($str) {
 					return "url('$str')";
@@ -1455,7 +1455,7 @@ class sanitize {
 
 			// Schemes can be lowercase.
 			if (isset($tmp['scheme'])) {
-				mb::strtolower($tmp['scheme'], false, true);
+				mb::strtolower($tmp['scheme'], false);
 			}
 
 			// Validate the host, and ASCIIfy international bits
@@ -1646,18 +1646,18 @@ class sanitize {
 
 			if (!$newlines) {
 				$str = preg_replace('/\s+/u', ' ', $str);
-				mb::trim($str, true);
+				mb::trim($str);
 				return;
 			}
 
 			// Sanitize newlines.
-			mb::trim($str, true);
+			mb::trim($str);
 			$str = str_replace("\r\n", "\n", $str);
 			$str = preg_replace('/\v/u', "\n", $str);
 
 			// Now go through line by line.
 			$str = explode("\n", $str);
-			static::whitespace($str, 0, true);
+			static::whitespace($str, 0);
 			$str = implode("\n", $str);
 
 			$str = preg_replace('/\n{' . ($newlines + 1) . ',}/', str_repeat("\n", $newlines), $str);
