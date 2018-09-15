@@ -148,31 +148,28 @@ class blobcommon {
 	 * @return void Nothing.
 	 */
 	protected static function init_plugin() {
-		// No sense calling this a bunch.
-		$class = static::class;
-
 		// Plugin updates.
 		if (\BLOBCOMMON_MUST_USE) {
 			// Must-Use doesn't have normal version management, but we
 			// can add filters for Musty in case someone's using that.
 			\add_filter(
 				'musty_download_version_blob-common/index.php',
-				array($class, 'musty_download_version')
+				array(static::class, 'musty_download_version')
 			);
 			\add_filter(
 				'musty_download_uri_blob-common/index.php',
-				array($class, 'musty_download_uri')
+				array(static::class, 'musty_download_uri')
 			);
 		}
 		else {
 			// Normal plugins are... more normal.
 			\add_filter(
 				'transient_update_plugins',
-				array($class, 'update_plugins')
+				array(static::class, 'update_plugins')
 			);
 			\add_filter(
 				'site_transient_update_plugins',
-				array($class, 'update_plugins')
+				array(static::class, 'update_plugins')
 			);
 		}
 	}
