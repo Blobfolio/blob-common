@@ -19,6 +19,9 @@ use blobfolio\common\ref\sanitize as r_sanitize;
 use stdClass;
 
 class blobcommon {
+	// What WP calls this.
+	const PLUGIN_PATH = 'blob-common/index.php';
+
 	// What the phar release file looks like.
 	const PHAR_TEMPLATE = array(
 		'checksum'=>'',
