@@ -11,9 +11,8 @@
 
 namespace blobfolio\dev;
 
-use \blobfolio\bob\io;
-use \blobfolio\bob\log;
-use \blobfolio\common\file as v_file;
+use blobfolio\bob\io;
+use blobfolio\bob\log;
 
 class plugin extends \blobfolio\bob\base\mike_wp {
 	// Project Name.
@@ -37,19 +36,19 @@ class plugin extends \blobfolio\bob\base\mike_wp {
 	 */
 	protected static function build_update_source() {
 		// We need to copy the latest version of our Phar files.
-		$bin_dir = dirname(BOB_ROOT_DIR) . '/bin/';
+		$bin_dir = \dirname(\BOB_ROOT_DIR) . '/bin/';
 		$out_dir = static::get_plugin_dir() . 'lib/';
 
 		log::print('Copying Phar archives…');
 
 		// TODO: add 'blob-common.phar' to the list below.
 		foreach (array('test.phar') as $file) {
-			if (is_file("{$out_dir}{$file}")) {
-				unlink("{$out_dir}{$file}");
+			if (\is_file("{$out_dir}{$file}")) {
+				\unlink("{$out_dir}{$file}");
 			}
 
-			copy("{$bin_dir}{$file}", "{$out_dir}{$file}");
-			chmod("{$out_dir}{$file}", 0644);
+			\copy("{$bin_dir}{$file}", "{$out_dir}{$file}");
+			\chmod("{$out_dir}{$file}", 0644);
 		}
 	}
 
@@ -75,7 +74,7 @@ class plugin extends \blobfolio\bob\base\mike_wp {
 	 * @return string Source.
 	 */
 	protected static function get_plugin_dir() {
-		return dirname(BOB_ROOT_DIR) . '/wp/';
+		return \dirname(\BOB_ROOT_DIR) . '/wp/';
 	}
 
 	/**
@@ -87,6 +86,6 @@ class plugin extends \blobfolio\bob\base\mike_wp {
 	 * @return string Source.
 	 */
 	protected static function get_release_path() {
-		return dirname(BOB_ROOT_DIR) . '/release/' . static::SLUG . '.zip';
+		return \dirname(\BOB_ROOT_DIR) . '/release/' . static::SLUG . '.zip';
 	}
 }

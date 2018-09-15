@@ -8,44 +8,12 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\data;
+use blobfolio\common\data;
 
 /**
  * Test Suite
  */
 class data_tests extends \PHPUnit\Framework\TestCase {
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
-
-
-
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
@@ -72,13 +40,13 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_array_idiff($expected) {
 		// This takes a variable number of arguments.
-		$arrays = func_get_args();
-		if (!is_array($arrays) || count($arrays) < 2) {
+		$arrays = \func_get_args();
+		if (! \is_array($arrays) || \count($arrays) < 2) {
 			return;
 		}
 		unset($arrays[0]);
 
-		$result = call_user_func_array(array('\\blobfolio\\common\\data', 'array_idiff'), $arrays);
+		$result = \call_user_func_array(array('\\blobfolio\\common\\data', 'array_idiff'), $arrays);
 		$this->assertSame($expected, $result);
 	}
 
@@ -91,13 +59,13 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_array_iintersect($expected) {
 		// This takes a variable number of arguments.
-		$arrays = func_get_args();
-		if (!is_array($arrays) || count($arrays) < 2) {
+		$arrays = \func_get_args();
+		if (! \is_array($arrays) || \count($arrays) < 2) {
 			return;
 		}
 		unset($arrays[0]);
 
-		$result = call_user_func_array(array('\\blobfolio\\common\\data', 'array_iintersect'), $arrays);
+		$result = \call_user_func_array(array('\\blobfolio\\common\\data', 'array_iintersect'), $arrays);
 		$this->assertSame($expected, $result);
 	}
 
@@ -175,10 +143,10 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 * @param array $arr Array.
 	 */
 	function test_array_pop_rand($arr) {
-		if (!count($arr)) {
+		if (! \count($arr)) {
 			$this->assertSame(false, data::array_pop_rand($arr));
 		}
-		elseif (1 === count($arr)) {
+		elseif (1 === \count($arr)) {
 			$this->assertSame(data::array_pop_top($arr), data::array_pop_rand($arr));
 		}
 		else {
@@ -186,7 +154,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			// case where the previous value is not the same as the last.
 			$different = false;
 			$last = data::array_pop_rand($arr);
-			while (!$different) {
+			while (! $different) {
 				$v = data::array_pop_rand($arr);
 				if ($last !== $v) {
 					$different = true;
@@ -370,8 +338,8 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			$thing[] = data::random_int(0, 10);
 		}
 
-		$this->assertSame(true, count($thing) === 20);
-		$this->assertSame(true, count(array_unique($thing)) > 1);
+		$this->assertSame(true, \count($thing) === 20);
+		$this->assertSame(true, \count(\array_unique($thing)) > 1);
 
 		$thing2 = array();
 		foreach ($thing as $t) {
@@ -380,7 +348,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			}
 		}
 
-		$this->assertSame(true, count($thing) === count($thing2));
+		$this->assertSame(true, \count($thing) === \count($thing2));
 	}
 
 	/**
@@ -394,23 +362,23 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 			$thing[] = data::random_string(10);
 		}
 
-		$this->assertSame(true, count($thing) === 20);
-		$this->assertSame(true, count(array_unique($thing)) > 1);
+		$this->assertSame(true, \count($thing) === 20);
+		$this->assertSame(true, \count(\array_unique($thing)) > 1);
 
 		$thing2 = array();
 		foreach ($thing as $t) {
-			if (strlen($t) === 10) {
+			if (\strlen($t) === 10) {
 				$thing2[] = $t;
 			}
 		}
 
-		$this->assertSame(true, count($thing) === count($thing2));
+		$this->assertSame(true, \count($thing) === \count($thing2));
 
 		// Test a custom soup.
 		$thing = array('a', 'b', 'c', 'd', 'e');
 		for ($x = 0; $x < 20; $x++) {
 			$result = data::random_string(10, $thing);
-			$this->assertSame(true, !!preg_match('/^[a-e]{10}$/', $result));
+			$this->assertSame(true, !! \preg_match('/^[a-e]{10}$/', $result));
 		}
 	}
 
@@ -789,7 +757,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_cc_exp_years() {
-		$year = (int) date('Y');
+		$year = (int) \date('Y');
 
 		$arr1 = array();
 		for ($x = 0; $x < 5; $x++) {
@@ -838,7 +806,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 				2,
 			),
 			array(
-				strtotime('2015-01-03'),
+				\strtotime('2015-01-03'),
 				'2015-01-01',
 				2,
 			),

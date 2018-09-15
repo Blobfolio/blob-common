@@ -8,44 +8,12 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\mb;
+use blobfolio\common\mb;
 
 /**
  * Test Suite
  */
 class mb_tests extends \PHPUnit\Framework\TestCase {
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
-
-
-
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
@@ -276,47 +244,47 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_parse_url() {
-		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
 			array(
 				'http://☺.com',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				$smiley_host,
 			),
 			array(
 				'//☺.com',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				$smiley_host,
 			),
 			array(
 				'☺.com',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				$smiley_host,
 			),
 			array(
 				'google.com',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				'google.com',
 			),
 			array(
 				'//google.com',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				'google.com',
 			),
 			array(
 				'http://google.com',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				'google.com',
 			),
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				'[2600:3c00::f03c:91ff:feae:ff2]',
 			),
 			array(
 				'[2600:3c00::f03c:91ff:feae:0ff2]',
-				PHP_URL_HOST,
+				\PHP_URL_HOST,
 				'[2600:3c00::f03c:91ff:feae:ff2]',
 			),
 			array(
@@ -405,35 +373,35 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				'Björk',
 				10,
 				'~',
-				STR_PAD_LEFT,
+				\STR_PAD_LEFT,
 				'~~~~~Björk',
 			),
 			array(
 				'Björk',
 				10,
 				'~',
-				STR_PAD_BOTH,
+				\STR_PAD_BOTH,
 				'~~~Björk~~',
 			),
 			array(
 				'Björk',
 				10,
 				'~',
-				STR_PAD_RIGHT,
+				\STR_PAD_RIGHT,
 				'Björk~~~~~',
 			),
 			array(
 				'Björk',
 				3,
 				'~',
-				STR_PAD_RIGHT,
+				\STR_PAD_RIGHT,
 				'Björk',
 			),
 			array(
 				'Björk',
 				10,
 				'',
-				STR_PAD_RIGHT,
+				\STR_PAD_RIGHT,
 				'Björk',
 			),
 		);
@@ -684,7 +652,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 				'töast',
 			),
 			array(
-				chr(0xA0) . ' test' . chr(0xA0),
+				\chr(0xA0) . ' test' . \chr(0xA0),
 				'test',
 			),
 			array(

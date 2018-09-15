@@ -8,45 +8,13 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\cast as v_cast;
-use \blobfolio\common\ref\cast as r_cast;
+use blobfolio\common\cast as v_cast;
+use blobfolio\common\ref\cast as r_cast;
 
 /**
  * Test Suite
  */
 class cast_tests extends \PHPUnit\Framework\TestCase {
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
-
-
-
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
@@ -61,7 +29,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_array($value, $expected) {
 		$this->assertEquals($expected, v_cast::to_array($value));
-		$this->assertEquals('array', gettype(v_cast::to_array($value)));
+		$this->assertEquals('array', \gettype(v_cast::to_array($value)));
 	}
 
 	/**
@@ -73,7 +41,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @param array $expected Expected.
 	 */
 	function test_array_alias($value, $expected) {
-		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
 
@@ -123,7 +91,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $expected Expected.
 	 */
 	function test_bool_alias($value, $flatten, $expected) {
-		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
 
@@ -162,7 +130,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $expected Expected.
 	 */
 	function test_float_alias($value, $flatten, $expected) {
-		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
 
@@ -201,7 +169,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $expected Expected.
 	 */
 	function test_int_alias($value, $flatten, $expected) {
-		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
 
@@ -240,7 +208,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $expected Expected.
 	 */
 	function test_string_alias($value, $flatten, $expected) {
-		if (version_compare(PHP_VERSION, '7.0.0') < 0) {
+		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
 

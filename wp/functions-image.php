@@ -9,25 +9,25 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
-use \blobfolio\common\constants;
-use \blobfolio\common\image;
-use \blobfolio\common\ref\cast as r_cast;
-use \blobfolio\common\ref\format as r_format;
-use \blobfolio\common\ref\sanitize as r_sanitize;
-use \blobfolio\common\sanitize as v_sanitize;
+use blobfolio\common\constants;
+use blobfolio\common\image;
+use blobfolio\common\ref\cast as r_cast;
+use blobfolio\common\ref\format as r_format;
+use blobfolio\common\ref\sanitize as r_sanitize;
+use blobfolio\common\sanitize as v_sanitize;
 
 // JIT images is split off into its own file.
-if (defined('WP_JIT_IMAGES') && WP_JIT_IMAGES) {
-	require(BLOBCOMMON_PLUGIN_DIR . '/functions-jit.php');
+if (\defined('WP_JIT_IMAGES') && \WP_JIT_IMAGES) {
+	require \BLOBCOMMON_PLUGIN_DIR . '/functions-jit.php';
 }
 
 // WebP is likewise in its own file.
-if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
-	require(BLOBCOMMON_PLUGIN_DIR . '/functions-webp.php');
+if (\defined('WP_WEBP_IMAGES') && \WP_WEBP_IMAGES) {
+	require \BLOBCOMMON_PLUGIN_DIR . '/functions-webp.php';
 }
 
 
@@ -49,7 +49,7 @@ if (defined('WP_WEBP_IMAGES') && WP_WEBP_IMAGES) {
  */
 function _wp_get_attachment_image_src_svg($image, $attachment_id=0) {
 	static $_cache;
-	if (is_null($_cache)) {
+	if (\is_null($_cache)) {
 		$_cache = array();
 	}
 
@@ -64,8 +64,8 @@ function _wp_get_attachment_image_src_svg($image, $attachment_id=0) {
 	elseif (
 		$attachment_id &&
 		isset($image[0]) &&
-		('.svg' === strtolower(substr($image[0], -4))) &&
-		(false !== ($svg = get_attached_file($attachment_id))) &&
+		('.svg' === \strtolower(\substr($image[0], -4))) &&
+		(false !== ($svg = \get_attached_file($attachment_id))) &&
 		(false !== ($dimensions = image::svg_dimensions($svg)))
 	) {
 		r_cast::to_int($dimensions);
@@ -79,7 +79,7 @@ function _wp_get_attachment_image_src_svg($image, $attachment_id=0) {
 
 	return $image;
 }
-add_filter('wp_get_attachment_image_src', '_wp_get_attachment_image_src_svg', 500, 2);
+\add_filter('wp_get_attachment_image_src', '_wp_get_attachment_image_src_svg', 500, 2);
 
 /**
  * Ignore SVG SrcSet
@@ -91,15 +91,15 @@ add_filter('wp_get_attachment_image_src', '_wp_get_attachment_image_src_svg', 50
  */
 function _wp_calculate_image_srcset_meta_svg($image_meta, $sizes, $image_src) {
 	// Short circuit srcset calculations.
-	if ('.svg' === strtolower(substr($image_src, -4))) {
+	if ('.svg' === \strtolower(\substr($image_src, -4))) {
 		return false;
 	}
 
 	return $image_meta;
 }
-add_filter('wp_calculate_image_srcset_meta', '_wp_calculate_image_srcset_meta_svg', 5, 3);
+\add_filter('wp_calculate_image_srcset_meta', '_wp_calculate_image_srcset_meta_svg', 5, 3);
 
-if (!function_exists('common_get_clean_svg')) {
+if (! \function_exists('common_get_clean_svg')) {
 	/**
 	 * Clean SVG for Inline Embedding
 	 *
@@ -127,32 +127,32 @@ if (!function_exists('common_get_clean_svg')) {
 	function common_get_clean_svg($path, $args=null) {
 		// For historical reasons, $args used to just be one arg: random_id.
 		// If a bool, we'll assume that's what was meant.
-		if (is_bool($args)) {
+		if (\is_bool($args)) {
 			$args = array('random_id'=>$args);
 		}
 		elseif (
-			(is_null($args) || (is_array($args) && !count($args))) &&
-			defined('WP_CLEAN_SVG')
+			(\is_null($args) || (\is_array($args) && ! \count($args))) &&
+			\defined('WP_CLEAN_SVG')
 		) {
-			$args = WP_CLEAN_SVG;
+			$args = \WP_CLEAN_SVG;
 		}
 
 		r_cast::to_array($args);
 
 		// Make sure the site URL is whitelisted.
-		if (!isset($args['whitelist_domains'])) {
+		if (! isset($args['whitelist_domains'])) {
 			$args['whitelist_domains'] = array();
 		}
 		else {
 			r_cast::to_array($args['whitelist_domains']);
 		}
-		$args['whitelist_domains'][] = common_get_site_hostname();
+		$args['whitelist_domains'][] = \common_get_site_hostname();
 
 		return image::clean_svg($path, $args);
 	}
 }
 
-if (!function_exists('common_shortcode_clean_svg')) {
+if (! \function_exists('common_shortcode_clean_svg')) {
 	/**
 	 * Shortcode for clean SVG insertion. It accepts
 	 * all the same arguments, but with the addition
@@ -176,8 +176,8 @@ if (!function_exists('common_shortcode_clean_svg')) {
 
 		// Get the SVG first, in case it fails.
 		if (
-			!isset($args['attachment_id']) ||
-			false === ($svg = get_attached_file($args['attachment_id']))
+			! isset($args['attachment_id']) ||
+			false === ($svg = \get_attached_file($args['attachment_id']))
 		) {
 			return false;
 		}
@@ -189,28 +189,28 @@ if (!function_exists('common_shortcode_clean_svg')) {
 			unset($svgargs['classes']);
 		}
 
-		$svg = common_get_clean_svg($svg, $svgargs);
-		if (!is_string($svg) || !$svg) {
+		$svg = \common_get_clean_svg($svg, $svgargs);
+		if (! \is_string($svg) || ! $svg) {
 			return false;
 		}
 
-		$classes = isset($args['classes']) ? $args['classes'] : array();
+		$classes = $args['classes'] ?? array();
 
-		ob_start();
+		\ob_start();
 		?>
-		<figure class="wp-caption <?=esc_attr(implode(' ', $classes))?>">
+		<figure class="wp-caption <?=\esc_attr(\implode(' ', $classes))?>">
 			<?=$svg?>
 			<?php if ($content) { ?>
 				<figcaption class="wp-caption-text"><?=$content?></figcaption>
 			<?php } ?>
 		</figure>
 		<?php
-		return ob_get_clean();
+		return \ob_get_clean();
 	}
-	add_shortcode('common-clean-svg', 'common_shortcode_clean_svg');
+	\add_shortcode('common-clean-svg', 'common_shortcode_clean_svg');
 }
 
-if (!function_exists('common_get_svg_dimensions')) {
+if (! \function_exists('common_get_svg_dimensions')) {
 	/**
 	 * Determine SVG Dimensions
 	 *
@@ -233,7 +233,7 @@ if (!function_exists('common_get_svg_dimensions')) {
 // Misc
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_get_featured_image_src')) {
+if (! \function_exists('common_get_featured_image_src')) {
 	/**
 	 * Get Featured Image SRC
 	 *
@@ -248,22 +248,22 @@ if (!function_exists('common_get_featured_image_src')) {
 	 */
 	function common_get_featured_image_src($id=0, $size=null, $attributes=false, $fallback=0) {
 		$id = (int) $id;
-		if (!$id) {
-			$id = (int) get_the_ID();
+		if (! $id) {
+			$id = (int) \get_the_ID();
 		}
 		$tmp = 0;
 		if ($id) {
-			$tmp = (int) get_post_thumbnail_id($id);
+			$tmp = (int) \get_post_thumbnail_id($id);
 		}
 
 		// Using a fallback?
-		if (!$tmp && $fallback > 0) {
+		if (! $tmp && $fallback > 0) {
 			$tmp = $fallback;
 		}
 
 		if ($tmp) {
-			$tmp2 = wp_get_attachment_image_src($tmp, $size);
-			if (is_array($tmp2) && filter_var($tmp2[0], FILTER_VALIDATE_URL)) {
+			$tmp2 = \wp_get_attachment_image_src($tmp, $size);
+			if (\is_array($tmp2) && \filter_var($tmp2[0], \FILTER_VALIDATE_URL)) {
 				return true === $attributes ? $tmp2 : $tmp2[0];
 			}
 		}
@@ -272,7 +272,7 @@ if (!function_exists('common_get_featured_image_src')) {
 	}
 }
 
-if (!function_exists('_common_sort_srcset')) {
+if (! \function_exists('_common_sort_srcset')) {
 	/**
 	 * Sort SRCSET by Size
 	 *
@@ -284,16 +284,16 @@ if (!function_exists('_common_sort_srcset')) {
 	 * @return int Order: -1, 0, 1.
 	 */
 	function _common_sort_srcset($a, $b) {
-		$a1 = explode(' ', v_sanitize::whitespace($a));
-		$b1 = explode(' ', v_sanitize::whitespace($b));
+		$a1 = \explode(' ', v_sanitize::whitespace($a));
+		$b1 = \explode(' ', v_sanitize::whitespace($b));
 
 		// Can't compute, leave it alone.
-		if ((count($a1) !== 2) || (count($b1) !== 2)) {
+		if ((\count($a1) !== 2) || (\count($b1) !== 2)) {
 			return 0;
 		}
 
-		$a2 = round(preg_replace('/[^\d\.]/', '', $a1[1]));
-		$b2 = round(preg_replace('/[^\d\.]/', '', $b1[1]));
+		$a2 = \round(\preg_replace('/[^\d\.]/', '', $a1[1]));
+		$b2 = \round(\preg_replace('/[^\d\.]/', '', $b1[1]));
 
 		if ($a2 === $b2) {
 			return 0;
@@ -303,7 +303,7 @@ if (!function_exists('_common_sort_srcset')) {
 	}
 }
 
-if (!function_exists('common_get_image_srcset')) {
+if (! \function_exists('common_get_image_srcset')) {
 	/**
 	 * SRCSET Wrapper
 	 *
@@ -323,49 +323,49 @@ if (!function_exists('common_get_image_srcset')) {
 
 		r_cast::to_array($size);
 		r_sanitize::whitespace($size);
-		$size = array_unique($size);
-		$size = array_filter($size, 'strlen');
-		$size = array_values($size);
+		$size = \array_unique($size);
+		$size = \array_filter($size, 'strlen');
+		$size = \array_values($size);
 
 		// No size or bad attachment.
-		if (!count($size)) {
+		if (! \count($size)) {
 			$size[] = 'full';
 		}
 
 		// If there's just one, try to let WP do it.
 		$srcset = false;
-		if (count($size) === 1) {
-			$srcset = wp_get_attachment_image_srcset($attachment_id, $size[0]);
+		if (\count($size) === 1) {
+			$srcset = \wp_get_attachment_image_srcset($attachment_id, $size[0]);
 		}
 
 		// No srcset yet?
 		if (false === $srcset) {
 			$srcset = array();
 			foreach ($size as $s) {
-				if (false !== $tmp = wp_get_attachment_image_src($attachment_id, $s)) {
+				if (false !== $tmp = \wp_get_attachment_image_src($attachment_id, $s)) {
 					$srcset[] = "{$tmp[0]} {$tmp[1]}w";
 				}
 			}
 
-			if (!count($srcset)) {
+			if (! \count($srcset)) {
 				return false;
 			}
 		}
 		// Convert WP's answer to an array.
 		else {
-			$srcset = explode(',', $srcset);
+			$srcset = \explode(',', $srcset);
 			r_sanitize::whitespace($srcset);
 		}
 
 		// Sort.
-		usort($srcset, '_common_sort_srcset');
+		\usort($srcset, '_common_sort_srcset');
 
 		// Return.
-		return implode(', ', $srcset);
+		return \implode(', ', $srcset);
 	}
 }
 
-if (!function_exists('common_get_featured_image_path')) {
+if (! \function_exists('common_get_featured_image_path')) {
 	/**
 	 * Get Featured Image Path
 	 *
@@ -379,15 +379,15 @@ if (!function_exists('common_get_featured_image_path')) {
 	function common_get_featured_image_path($id=0, $size=null) {
 		// Surprisingly, there isn't a built-in function for this, so
 		// let's just convert the URL back into the path.
-		if (false === ($url = common_get_featured_image_src($id, $size))) {
+		if (false === ($url = \common_get_featured_image_src($id, $size))) {
 			return false;
 		}
 
-		return common_get_path_by_url($url);
+		return \common_get_path_by_url($url);
 	}
 }
 
-if (!function_exists('common_get_blank_image')) {
+if (! \function_exists('common_get_blank_image')) {
 	/**
 	 * Blank Image
 	 *

@@ -15,11 +15,11 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
-use \blobfolio\common\mb as v_mb;
+use blobfolio\common\mb as v_mb;
 
 /**
  * Disable All But Stock Sizes
@@ -34,7 +34,7 @@ function _common_intermediate_image_sizes_advanced($sizes) {
 		'large'=>$sizes['large'],
 	);
 }
-add_filter('intermediate_image_sizes_advanced', '_common_intermediate_image_sizes_advanced');
+\add_filter('intermediate_image_sizes_advanced', '_common_intermediate_image_sizes_advanced');
 
 /**
  * Generate Missing Size
@@ -47,21 +47,21 @@ add_filter('intermediate_image_sizes_advanced', '_common_intermediate_image_size
 function _common_image_downsize($downsize, $attachment_id, $size) {
 
 	// If the size is already set, exit.
-	$image_meta = wp_get_attachment_metadata($attachment_id);
+	$image_meta = \wp_get_attachment_metadata($attachment_id);
 
 	// Let WP handle fake sizes (e.g. favicons).
-	if (is_array($size)) {
+	if (\is_array($size)) {
 		return false;
 	}
 
 	// Already exists.
-	if (is_array($image_meta) && isset($size) && isset($image_meta['sizes'][$size])) {
+	if (\is_array($image_meta) && isset($size) && isset($image_meta['sizes'][$size])) {
 		return false;
 	}
 
 	// If the size exists, exit.
 	global $_wp_additional_image_sizes;
-	if (!isset($_wp_additional_image_sizes[$size])) {
+	if (! isset($_wp_additional_image_sizes[$size])) {
 		return false;
 	}
 
@@ -70,23 +70,23 @@ function _common_image_downsize($downsize, $attachment_id, $size) {
 	// image meta.
 	$made = false;
 
-	$src_path = get_attached_file($attachment_id);
-	$src_mime = common_get_mime_type($src_path);
+	$src_path = \get_attached_file($attachment_id);
+	$src_mime = \common_get_mime_type($src_path);
 
 	// Ignore SVGs.
 	if ('image/svg+xml' === $src_mime) {
 		return false;
 	}
 
-	$src_info = pathinfo($src_path);
-	if (!isset($src_info['dirname']) || !isset($src_info['extension'])) {
+	$src_info = \pathinfo($src_path);
+	if (! isset($src_info['dirname']) || ! isset($src_info['extension'])) {
 		return false;
 	}
 
-	$src_root = trailingslashit($src_info['dirname']);
+	$src_root = \trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
-	$src_base = wp_basename($src_path, ".$src_ext");
-	$new_size = image_resize_dimensions(
+	$src_base = \wp_basename($src_path, ".$src_ext");
+	$new_size = \image_resize_dimensions(
 		$image_meta['width'],
 		$image_meta['height'],
 		$_wp_additional_image_sizes[$size]['width'],
@@ -96,15 +96,15 @@ function _common_image_downsize($downsize, $attachment_id, $size) {
 	if ($new_size) {
 		$new_w = (int) $new_size[4];
 		$new_h = (int) $new_size[5];
-		$new_f = wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . v_mb::strtolower($src_ext));
-		if (file_exists("{$src_root}{$new_f}")) {
+		$new_f = \wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . v_mb::strtolower($src_ext));
+		if (\file_exists("{$src_root}{$new_f}")) {
 			$made = true;
 		}
 	}
 
 	// Make it!
-	if (!$made) {
-		if (!$resized = image_make_intermediate_size(
+	if (! $made) {
+		if (! $resized = \image_make_intermediate_size(
 			$src_path,
 			$_wp_additional_image_sizes[$size]['width'],
 			$_wp_additional_image_sizes[$size]['height'],
@@ -124,13 +124,13 @@ function _common_image_downsize($downsize, $attachment_id, $size) {
 
 	// Update the metadata accordingly.
 	$image_meta['sizes'][$size] = $resized;
-	wp_update_attachment_metadata($attachment_id, $image_meta);
+	\wp_update_attachment_metadata($attachment_id, $image_meta);
 
 	// Return the info.
-	$src_url = wp_get_attachment_url($attachment_id);
-	return array(dirname($src_url) . '/' . $resized['file'], $resized['width'], $resized['height'], true);
+	$src_url = \wp_get_attachment_url($attachment_id);
+	return array(\dirname($src_url) . '/' . $resized['file'], $resized['width'], $resized['height'], true);
 }
-add_filter('image_downsize', '_common_image_downsize', 10, 3);
+\add_filter('image_downsize', '_common_image_downsize', 10, 3);
 
 /**
  * Add Missing Sizes to SRCSET Pool
@@ -153,53 +153,53 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 	global $_wp_additional_image_sizes;
 
 	// Ignore non-image things.
-	if (!isset($image_meta['width']) || !isset($image_meta['height'])) {
+	if (! isset($image_meta['width']) || ! isset($image_meta['height'])) {
 		return false;
 	}
 
 	// Some source file specs we'll use a lot.
-	$src_path = get_attached_file($attachment_id);
-	$src_mime = common_get_mime_type($src_path);
+	$src_path = \get_attached_file($attachment_id);
+	$src_mime = \common_get_mime_type($src_path);
 
 	// Ignore SVGs.
 	if ('image/svg+xml' === $src_mime) {
 		return false;
 	}
 
-	$src_info = pathinfo($src_path);
-	if (!isset($src_info['dirname']) || !isset($src_info['extension'])) {
+	$src_info = \pathinfo($src_path);
+	if (! isset($src_info['dirname']) || ! isset($src_info['extension'])) {
 		return false;
 	}
 
-	$src_root = trailingslashit($src_info['dirname']);
+	$src_root = \trailingslashit($src_info['dirname']);
 	$src_ext = $src_info['extension'];
-	$src_base = wp_basename($src_path, ".$src_ext");
+	$src_base = \wp_basename($src_path, ".$src_ext");
 
 	// Find what's missing.
 	foreach ($_wp_additional_image_sizes as $k=>$v) {
-		if (!isset($image_meta['sizes'][$k])) {
+		if (! isset($image_meta['sizes'][$k])) {
 
 			// First, let's find out how things would play out dimensionally.
-			$new_size = image_resize_dimensions(
+			$new_size = \image_resize_dimensions(
 				$image_meta['width'],
 				$image_meta['height'],
 				$v['width'],
 				$v['height'],
 				$v['crop']
 			);
-			if (!$new_size) {
+			if (! $new_size) {
 				continue;
 			}
 			$new_w = (int) $new_size[4];
 			$new_h = (int) $new_size[5];
 
 			// Bad values.
-			if (!$new_h || !$new_w) {
+			if (! $new_h || ! $new_w) {
 				continue;
 			}
 
 			// Generate a filename the same way WP_Image_Editor would.
-			$new_f = wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . v_mb::strtolower($src_ext));
+			$new_f = \wp_basename("{$src_root}{$src_base}-{$new_w}x{$new_h}." . v_mb::strtolower($src_ext));
 
 			// Finally, add it!
 			$image_meta['sizes'][$k] = array(
@@ -213,7 +213,7 @@ function _common_wp_calculate_image_srcset_meta($image_meta, $size_array, $image
 
 	return $image_meta;
 }
-add_filter('wp_calculate_image_srcset_meta', '_common_wp_calculate_image_srcset_meta', 10, 4);
+\add_filter('wp_calculate_image_srcset_meta', '_common_wp_calculate_image_srcset_meta', 10, 4);
 
 /**
  * Generate Matched SRCSET sources
@@ -230,17 +230,17 @@ function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $i
 	global $_wp_additional_image_sizes;
 
 	// Get some source info.
-	$src_path = get_attached_file($attachment_id);
+	$src_path = \get_attached_file($attachment_id);
 
 	// Ignore SVGs.
-	if (common_get_mime_type($src_path) === 'image/svg+xml') {
+	if (\common_get_mime_type($src_path) === 'image/svg+xml') {
 		return false;
 	}
 
-	$src_root = trailingslashit(pathinfo($src_path, PATHINFO_DIRNAME));
+	$src_root = \trailingslashit(\pathinfo($src_path, \PATHINFO_DIRNAME));
 
 	// The actual image metadata (which might be altered here).
-	$src_meta = wp_get_attachment_metadata($attachment_id);
+	$src_meta = \wp_get_attachment_metadata($attachment_id);
 
 	// An array of possible sizes to search through.
 	$sizes = $image_meta['sizes'];
@@ -252,14 +252,14 @@ function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $i
 
 	// Loop through sources.
 	foreach ($sources as $k=>$v) {
-		$name = wp_basename($v['url']);
-		if (!file_exists("{$src_root}{$name}")) {
+		$name = \wp_basename($v['url']);
+		if (! \file_exists("{$src_root}{$name}")) {
 			// Find the corresponding size.
 			foreach ($sizes as $k2=>$v2) {
 				// We have a match!
 				if ($v2['file'] === $name) {
 					// Make it.
-					if ($resized = image_make_intermediate_size(
+					if ($resized = \image_make_intermediate_size(
 						$src_path,
 						$v2['width'],
 						$v2['height'],
@@ -281,10 +281,10 @@ function _common_wp_calculate_image_srcset($sources, $size_array, $image_src, $i
 
 	// If we generated something, update the attachment meta.
 	if ($new) {
-		wp_update_attachment_metadata($attachment_id, $src_meta);
+		\wp_update_attachment_metadata($attachment_id, $src_meta);
 	}
 
 	return $sources;
 }
-add_filter('wp_calculate_image_srcset', '_common_wp_calculate_image_srcset', 10, 5);
+\add_filter('wp_calculate_image_srcset', '_common_wp_calculate_image_srcset', 10, 5);
 

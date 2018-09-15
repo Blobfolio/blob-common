@@ -8,44 +8,12 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\cli;
-use \blobfolio\common\constants;
+use blobfolio\common\cli;
 
 /**
  * Test Suite
  */
 class cli_tests extends \PHPUnit\Framework\TestCase {
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
-
-
-
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
@@ -59,7 +27,7 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 	 * @param array $expected Expected.
 	 */
 	function test_colorize($value, $expected) {
-		$result = call_user_func_array(
+		$result = \call_user_func_array(
 			array('\\blobfolio\\common\\cli', 'colorize'),
 			$value
 		);
@@ -77,11 +45,11 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 	 * ::is_root()
 	 */
 	function test_is_root() {
-		if (!function_exists('posix_getuid')) {
+		if (! \function_exists('posix_getuid')) {
 			$this->markTestSkipped('POSIX functions are missing.');
 		}
 
-		$root = (0 === posix_getuid());
+		$root = (0 === \posix_getuid());
 		$this->assertSame($root, cli::is_root());
 	}
 

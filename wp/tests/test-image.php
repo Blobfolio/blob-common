@@ -21,33 +21,33 @@ class ImageTests extends WP_UnitTestCase {
 		$file = static::ASSETS . 'monogram.svg';
 
 		// Original.
-		$svg = file_get_contents($file);
+		$svg = \file_get_contents($file);
 
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(true, false !== strpos($svg, 'id="svg2"'));
-		$this->assertEquals(true, false !== strpos($svg, '<style'));
-		$this->assertEquals(true, false === strpos($svg, 'svg:style'));
-		$this->assertEquals(true, false !== strpos($svg, 'bleerkk3'));
+		$this->assertEquals(true, false !== \strpos($svg, '<svg'));
+		$this->assertEquals(true, false !== \strpos($svg, 'id="svg2"'));
+		$this->assertEquals(true, false !== \strpos($svg, '<style'));
+		$this->assertEquals(true, false === \strpos($svg, 'svg:style'));
+		$this->assertEquals(true, false !== \strpos($svg, 'bleerkk3'));
 
 		// Strip IDs.
-		$svg = common_get_clean_svg($file, array('strip_id'=>true));
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(false, false !== strpos($svg, 'id="svg2"'));
+		$svg = \common_get_clean_svg($file, array('strip_id'=>true));
+		$this->assertEquals(true, false !== \strpos($svg, '<svg'));
+		$this->assertEquals(false, false !== \strpos($svg, 'id="svg2"'));
 
 		// Stripe styles.
-		$svg = common_get_clean_svg($file, array('strip_style'=>true));
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(false, false !== strpos($svg, '<style'));
+		$svg = \common_get_clean_svg($file, array('strip_style'=>true));
+		$this->assertEquals(true, false !== \strpos($svg, '<svg'));
+		$this->assertEquals(false, false !== \strpos($svg, '<style'));
 
 		// Add namespace.
-		$svg = common_get_clean_svg($file, array('namespace'=>true));
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(false, false === strpos($svg, 'svg:style'));
+		$svg = \common_get_clean_svg($file, array('namespace'=>true));
+		$this->assertEquals(true, false !== \strpos($svg, '<svg'));
+		$this->assertEquals(false, false === \strpos($svg, 'svg:style'));
 
 		// Rewrite styles.
-		$svg = common_get_clean_svg($file, array('rewrite_styles'=>true));
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertEquals(false, false !== strpos($svg, 'bleerkk3'));
+		$svg = \common_get_clean_svg($file, array('rewrite_styles'=>true));
+		$this->assertEquals(true, false !== \strpos($svg, '<svg'));
+		$this->assertEquals(false, false !== \strpos($svg, 'bleerkk3'));
 	}
 
 	/**
@@ -58,7 +58,7 @@ class ImageTests extends WP_UnitTestCase {
 	function test_common_get_svg_dimensions() {
 		$file = static::ASSETS . 'monogram.svg';
 
-		$dimensions = common_get_svg_dimensions($file);
+		$dimensions = \common_get_svg_dimensions($file);
 
 		$this->assertEquals(330.056, $dimensions['width']);
 		$this->assertEquals(495.558, $dimensions['height']);
@@ -70,6 +70,6 @@ class ImageTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_get_blank_image() {
-		$this->assertEquals(true, strlen(common_get_blank_image()) > 0);
+		$this->assertEquals(true, \strlen(\common_get_blank_image()) > 0);
 	}
 }

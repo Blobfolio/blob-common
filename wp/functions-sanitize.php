@@ -10,24 +10,24 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
-use \blobfolio\common\cast as v_cast;
-use \blobfolio\common\data;
-use \blobfolio\common\file as v_file;
-use \blobfolio\common\format as v_format;
-use \blobfolio\common\mb as v_mb;
-use \blobfolio\common\ref\cast as r_cast;
-use \blobfolio\common\sanitize as v_sanitize;
-use \blobfolio\domain\domain;
+use blobfolio\common\cast as v_cast;
+use blobfolio\common\data;
+use blobfolio\common\file as v_file;
+use blobfolio\common\format as v_format;
+use blobfolio\common\mb as v_mb;
+use blobfolio\common\ref\cast as r_cast;
+use blobfolio\common\sanitize as v_sanitize;
+use blobfolio\domain\domain;
 
 // ---------------------------------------------------------------------
 // Case Conversion
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_strtolower')) {
+if (! \function_exists('common_strtolower')) {
 	/**
 	 * Wrapper For strtolower()
 	 *
@@ -42,7 +42,7 @@ if (!function_exists('common_strtolower')) {
 	}
 }
 
-if (!function_exists('common_strtoupper')) {
+if (! \function_exists('common_strtoupper')) {
 	/**
 	 * Wrapper For strtoupper()
 	 *
@@ -57,7 +57,7 @@ if (!function_exists('common_strtoupper')) {
 	}
 }
 
-if (!function_exists('common_ucwords')) {
+if (! \function_exists('common_ucwords')) {
 	/**
 	 * Wrapper For ucwords()
 	 *
@@ -72,7 +72,7 @@ if (!function_exists('common_ucwords')) {
 	}
 }
 
-if (!function_exists('common_ucfirst')) {
+if (! \function_exists('common_ucfirst')) {
 	/**
 	 * Wrapper For ucfirst()
 	 *
@@ -95,7 +95,7 @@ if (!function_exists('common_ucfirst')) {
 // Misc Formatting
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_format_money')) {
+if (! \function_exists('common_format_money')) {
 	/**
 	 * Money (USD)
 	 *
@@ -106,10 +106,10 @@ if (!function_exists('common_format_money')) {
 	function common_format_money($value, $cents=false) {
 		return v_format::money($value, $cents);
 	}
-	add_filter('common_format_money', 'common_format_money', 5, 2);
+	\add_filter('common_format_money', 'common_format_money', 5, 2);
 }
 
-if (!function_exists('common_format_phone')) {
+if (! \function_exists('common_format_phone')) {
 	/**
 	 * Phone
 	 *
@@ -120,18 +120,18 @@ if (!function_exists('common_format_phone')) {
 	 * @return string Phone number.
 	 */
 	function common_format_phone($value='') {
-		$value = common_sanitize_phone($value);
+		$value = \common_sanitize_phone($value);
 
-		if (strlen($value) >= 10) {
-			$first10 = substr($value, 0, 10);
-			return preg_replace('/^([0-9]{3})([0-9]{3})([0-9]{4})/i', "(\\1) \\2-\\3", $first10) . (strlen($value) > 10 ? ' x' . substr($value, 10) : '');
+		if (\strlen($value) >= 10) {
+			$first10 = \substr($value, 0, 10);
+			return \preg_replace('/^([0-9]{3})([0-9]{3})([0-9]{4})/i', "(\\1) \\2-\\3", $first10) . (\strlen($value) > 10 ? ' x' . \substr($value, 10) : '');
 		}
 
 		return $value;
 	}
 }
 
-if (!function_exists('common_inflect')) {
+if (! \function_exists('common_inflect')) {
 	/**
 	 * Inflect
 	 *
@@ -149,7 +149,7 @@ if (!function_exists('common_inflect')) {
 	}
 }
 
-if (!function_exists('common_get_excerpt')) {
+if (! \function_exists('common_get_excerpt')) {
 	/**
 	 * Generate Text Except
 	 *
@@ -163,7 +163,7 @@ if (!function_exists('common_get_excerpt')) {
 		v_mb::strtolower($method);
 
 		return v_format::excerpt(
-			strip_shortcodes($str),
+			\strip_shortcodes($str),
 			array(
 				'unit'=>$method,
 				'suffix'=>$append,
@@ -173,7 +173,7 @@ if (!function_exists('common_get_excerpt')) {
 	}
 }
 
-if (!function_exists('common_unixslashit')) {
+if (! \function_exists('common_unixslashit')) {
 	/**
 	 * Fix Path Slashes
 	 *
@@ -185,7 +185,7 @@ if (!function_exists('common_unixslashit')) {
 	}
 }
 
-if (!function_exists('common_unleadingslashit')) {
+if (! \function_exists('common_unleadingslashit')) {
 	/**
 	 * Strip Leading Slash
 	 *
@@ -197,7 +197,7 @@ if (!function_exists('common_unleadingslashit')) {
 	}
 }
 
-if (!function_exists('common_leadingslashit')) {
+if (! \function_exists('common_leadingslashit')) {
 	/**
 	 * Add Leading Slash
 	 *
@@ -209,7 +209,7 @@ if (!function_exists('common_leadingslashit')) {
 	}
 }
 
-if (!function_exists('common_array_to_indexed')) {
+if (! \function_exists('common_array_to_indexed')) {
 	/**
 	 * Create Index Array
 	 *
@@ -227,7 +227,7 @@ if (!function_exists('common_array_to_indexed')) {
 	}
 }
 
-if (!function_exists('common_to_csv')) {
+if (! \function_exists('common_to_csv')) {
 	/**
 	 * Generate CSV from Data
 	 *
@@ -242,7 +242,7 @@ if (!function_exists('common_to_csv')) {
 	}
 }
 
-if (!function_exists('common_to_xls')) {
+if (! \function_exists('common_to_xls')) {
 	/**
 	 * Generate XLS from Data
 	 *
@@ -265,7 +265,7 @@ if (!function_exists('common_to_xls')) {
 // Sanitization
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_to_range')) {
+if (! \function_exists('common_to_range')) {
 	/**
 	 * Confine a Value to a Range
 	 *
@@ -279,7 +279,7 @@ if (!function_exists('common_to_range')) {
 	}
 }
 
-if (!function_exists('common_in_range')) {
+if (! \function_exists('common_in_range')) {
 	/**
 	 * Is Value In Range?
 	 *
@@ -293,7 +293,7 @@ if (!function_exists('common_in_range')) {
 	}
 }
 
-if (!function_exists('common_length_in_range')) {
+if (! \function_exists('common_length_in_range')) {
 	/**
 	 * Length in Range
 	 *
@@ -309,7 +309,7 @@ if (!function_exists('common_length_in_range')) {
 	}
 }
 
-if (!function_exists('common_utf8')) {
+if (! \function_exists('common_utf8')) {
 	/**
 	 * UTF-8
 	 *
@@ -324,7 +324,7 @@ if (!function_exists('common_utf8')) {
 }
 
 // Alias.
-if (!function_exists('common_sanitize_utf8')) {
+if (! \function_exists('common_sanitize_utf8')) {
 	/**
 	 * UTF-8
 	 *
@@ -334,11 +334,11 @@ if (!function_exists('common_sanitize_utf8')) {
 	 * @return string String.
 	 */
 	function common_sanitize_utf8($str) {
-		return common_utf8($str);
+		return \common_utf8($str);
 	}
 }
 
-if (!function_exists('common_sanitize_name')) {
+if (! \function_exists('common_sanitize_name')) {
 	/**
 	 * (Person's) Name
 	 *
@@ -354,7 +354,7 @@ if (!function_exists('common_sanitize_name')) {
 	}
 }
 
-if (!function_exists('common_sanitize_printable')) {
+if (! \function_exists('common_sanitize_printable')) {
 	/**
 	 * Printable
 	 *
@@ -368,7 +368,7 @@ if (!function_exists('common_sanitize_printable')) {
 	}
 }
 
-if (!function_exists('common_sanitize_csv')) {
+if (! \function_exists('common_sanitize_csv')) {
 	/**
 	 * CSV Cell Data
 	 *
@@ -381,7 +381,7 @@ if (!function_exists('common_sanitize_csv')) {
 	}
 }
 
-if (!function_exists('common_sanitize_newlines')) {
+if (! \function_exists('common_sanitize_newlines')) {
 	/**
 	 * Whitespace
 	 *
@@ -397,7 +397,7 @@ if (!function_exists('common_sanitize_newlines')) {
 	}
 }
 
-if (!function_exists('common_sanitize_spaces')) {
+if (! \function_exists('common_sanitize_spaces')) {
 	/**
 	 * Horizontal Whitespace
 	 *
@@ -408,12 +408,12 @@ if (!function_exists('common_sanitize_spaces')) {
 	 * @return string String.
 	 */
 	function common_sanitize_spaces($str='') {
-		$str = common_utf8($str);
-		return trim(preg_replace('/\h{1,}/u', ' ', $str));
+		$str = \common_utf8($str);
+		return \trim(\preg_replace('/\h{1,}/u', ' ', $str));
 	}
 }
 
-if (!function_exists('common_sanitize_whitespace')) {
+if (! \function_exists('common_sanitize_whitespace')) {
 	/**
 	 * Whitespace
 	 *
@@ -430,7 +430,7 @@ if (!function_exists('common_sanitize_whitespace')) {
 	}
 }
 
-if (!function_exists('common_sanitize_quotes')) {
+if (! \function_exists('common_sanitize_quotes')) {
 	/**
 	 * Quotes
 	 *
@@ -445,7 +445,7 @@ if (!function_exists('common_sanitize_quotes')) {
 	}
 }
 
-if (!function_exists('common_sanitize_js_variable')) {
+if (! \function_exists('common_sanitize_js_variable')) {
 	/**
 	 * JS Variable
 	 *
@@ -458,7 +458,7 @@ if (!function_exists('common_sanitize_js_variable')) {
 	}
 }
 
-if (!function_exists('common_sanitize_email')) {
+if (! \function_exists('common_sanitize_email')) {
 	/**
 	 * Email
 	 *
@@ -473,7 +473,7 @@ if (!function_exists('common_sanitize_email')) {
 	}
 }
 
-if (!function_exists('common_sanitize_zip5')) {
+if (! \function_exists('common_sanitize_zip5')) {
 	/**
 	 * US ZIP5
 	 *
@@ -485,7 +485,7 @@ if (!function_exists('common_sanitize_zip5')) {
 	}
 }
 
-if (!function_exists('common_sanitize_ip')) {
+if (! \function_exists('common_sanitize_ip')) {
 	/**
 	 * IP Address
 	 *
@@ -497,7 +497,7 @@ if (!function_exists('common_sanitize_ip')) {
 	}
 }
 
-if (!function_exists('common_sanitize_number')) {
+if (! \function_exists('common_sanitize_number')) {
 	/**
 	 * To Number
 	 *
@@ -510,7 +510,7 @@ if (!function_exists('common_sanitize_number')) {
 	}
 }
 
-if (!function_exists('common_sanitize_bool')) {
+if (! \function_exists('common_sanitize_bool')) {
 	/**
 	 * To Bool
 	 *
@@ -524,7 +524,7 @@ if (!function_exists('common_sanitize_bool')) {
 }
 
 // Alias.
-if (!function_exists('common_sanitize_boolean')) {
+if (! \function_exists('common_sanitize_boolean')) {
 	/**
 	 * To Bool
 	 *
@@ -533,11 +533,11 @@ if (!function_exists('common_sanitize_boolean')) {
 	 * @return bool Bool.
 	 */
 	function common_sanitize_boolean($value=false, $flatten=false) {
-		return common_sanitize_bool($value, $flatten);
+		return \common_sanitize_bool($value, $flatten);
 	}
 }
 
-if (!function_exists('common_sanitize_float')) {
+if (! \function_exists('common_sanitize_float')) {
 	/**
 	 * To Float
 	 *
@@ -551,7 +551,7 @@ if (!function_exists('common_sanitize_float')) {
 }
 
 // Alias.
-if (!function_exists('common_doubleval')) {
+if (! \function_exists('common_doubleval')) {
 	/**
 	 * To Float
 	 *
@@ -560,12 +560,12 @@ if (!function_exists('common_doubleval')) {
 	 * @return float Float.
 	 */
 	function common_doubleval($value=0, $flatten=false) {
-		return common_sanitize_float($value, $flatten);
+		return \common_sanitize_float($value, $flatten);
 	}
 }
 
 // Alias.
-if (!function_exists('common_floatval')) {
+if (! \function_exists('common_floatval')) {
 	/**
 	 * To Float
 	 *
@@ -574,11 +574,11 @@ if (!function_exists('common_floatval')) {
 	 * @return float Float.
 	 */
 	function common_floatval($value=0, $flatten=false) {
-		return common_sanitize_float($value, $flatten);
+		return \common_sanitize_float($value, $flatten);
 	}
 }
 
-if (!function_exists('common_sanitize_by_type')) {
+if (! \function_exists('common_sanitize_by_type')) {
 	/**
 	 * To X Type
 	 *
@@ -592,7 +592,7 @@ if (!function_exists('common_sanitize_by_type')) {
 	}
 }
 
-if (!function_exists('common_sanitize_int')) {
+if (! \function_exists('common_sanitize_int')) {
 	/**
 	 * To Int
 	 *
@@ -605,7 +605,7 @@ if (!function_exists('common_sanitize_int')) {
 	}
 }
 // Alias.
-if (!function_exists('common_intval')) {
+if (! \function_exists('common_intval')) {
 	/**
 	 * To Int
 	 *
@@ -614,11 +614,11 @@ if (!function_exists('common_intval')) {
 	 * @return int Int.
 	 */
 	function common_intval($value=0, $flatten=false) {
-		return common_sanitize_int($value, $flatten);
+		return \common_sanitize_int($value, $flatten);
 	}
 }
 
-if (!function_exists('common_sanitize_string')) {
+if (! \function_exists('common_sanitize_string')) {
 	/**
 	 * To String
 	 *
@@ -631,7 +631,7 @@ if (!function_exists('common_sanitize_string')) {
 	}
 }
 // Alias.
-if (!function_exists('common_strval')) {
+if (! \function_exists('common_strval')) {
 	/**
 	 * To String
 	 *
@@ -640,11 +640,11 @@ if (!function_exists('common_strval')) {
 	 * @return string String.
 	 */
 	function common_strval($value='', $flatten=false) {
-		return common_sanitize_string($value, $flatten);
+		return \common_sanitize_string($value, $flatten);
 	}
 }
 
-if (!function_exists('common_sanitize_array')) {
+if (! \function_exists('common_sanitize_array')) {
 	/**
 	 * To Array
 	 *
@@ -656,7 +656,7 @@ if (!function_exists('common_sanitize_array')) {
 	}
 }
 
-if (!function_exists('common_sanitize_datetime')) {
+if (! \function_exists('common_sanitize_datetime')) {
 	/**
 	 * Datetime
 	 *
@@ -668,7 +668,7 @@ if (!function_exists('common_sanitize_datetime')) {
 	}
 }
 
-if (!function_exists('common_sanitize_date')) {
+if (! \function_exists('common_sanitize_date')) {
 	/**
 	 * Date
 	 *
@@ -680,7 +680,7 @@ if (!function_exists('common_sanitize_date')) {
 	}
 }
 
-if (!function_exists('common_sanitize_phone')) {
+if (! \function_exists('common_sanitize_phone')) {
 	/**
 	 * Phone Number
 	 *
@@ -690,19 +690,19 @@ if (!function_exists('common_sanitize_phone')) {
 	 * @return string Phone number.
 	 */
 	function common_sanitize_phone($value='') {
-		$value = common_sanitize_string($value);
-		$value = preg_replace('/[^\d]/', '', $value);
+		$value = \common_sanitize_string($value);
+		$value = \preg_replace('/[^\d]/', '', $value);
 
 		// If this looks like a 10-digit number with the +1 on it, chop it off.
-		if ((strlen($value) === 11) && (intval(substr($value, 0, 1)) === 1)) {
-			$value = substr($value, 1);
+		if ((\strlen($value) === 11) && (\intval(\substr($value, 0, 1)) === 1)) {
+			$value = \substr($value, 1);
 		}
 
 		return $value;
 	}
 }
 
-if (!function_exists('common_sanitize_domain_name')) {
+if (! \function_exists('common_sanitize_domain_name')) {
 	/**
 	 * Domain Name.
 	 *
@@ -726,7 +726,7 @@ if (!function_exists('common_sanitize_domain_name')) {
 // Validate
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_is_utf8')) {
+if (! \function_exists('common_is_utf8')) {
 	/**
 	 * Is Value Valid UTF-8?
 	 *
@@ -738,7 +738,7 @@ if (!function_exists('common_is_utf8')) {
 	}
 }
 
-if (!function_exists('common_validate_email')) {
+if (! \function_exists('common_validate_email')) {
 	/**
 	 * Is Email Valid
 	 *
@@ -746,11 +746,11 @@ if (!function_exists('common_validate_email')) {
 	 * @return bool True/false.
 	 */
 	function common_validate_email($email='') {
-		return filter_var($email, FILTER_VALIDATE_EMAIL) && preg_match('/^.+\@.+\..+$/', $email);
+		return \filter_var($email, \FILTER_VALIDATE_EMAIL) && \preg_match('/^.+\@.+\..+$/', $email);
 	}
 }
 
-if (!function_exists('common_validate_phone')) {
+if (! \function_exists('common_validate_phone')) {
 	/**
 	 * Is Phone Valid
 	 *
@@ -761,13 +761,13 @@ if (!function_exists('common_validate_phone')) {
 	 */
 	function common_validate_phone($value='') {
 		// Match the first 10.
-		$value = common_sanitize_string($value);
-		$first10 = substr($value, 0, 10);
-		return preg_match('/^[2-9][0-8][0-9][2-9][0-9]{2}[0-9]{4}$/i', $first10);
+		$value = \common_sanitize_string($value);
+		$first10 = \substr($value, 0, 10);
+		return \preg_match('/^[2-9][0-8][0-9][2-9][0-9]{2}[0-9]{4}$/i', $first10);
 	}
 }
 
-if (!function_exists('common_validate_cc')) {
+if (! \function_exists('common_validate_cc')) {
 	/**
 	 * Credit Card
 	 *
@@ -779,7 +779,7 @@ if (!function_exists('common_validate_cc')) {
 	}
 }
 
-if (!function_exists('common_sanitize_url')) {
+if (! \function_exists('common_sanitize_url')) {
 	/**
 	 * URL
 	 *
@@ -793,7 +793,7 @@ if (!function_exists('common_sanitize_url')) {
 	}
 }
 
-if (!function_exists('common_validate_domain_name')) {
+if (! \function_exists('common_validate_domain_name')) {
 	/**
 	 * Validate Domain Name
 	 *
@@ -807,7 +807,7 @@ if (!function_exists('common_validate_domain_name')) {
 		r_cast::to_bool($live, true);
 
 		$host = new domain($domain);
-		if (!$host->is_valid() || $host->is_ip()) {
+		if (! $host->is_valid() || $host->is_ip()) {
 			return false;
 		}
 

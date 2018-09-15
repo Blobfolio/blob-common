@@ -27,20 +27,20 @@ class mb {
 		ref\mb::trim($url);
 
 		// Before we start, let's fix scheme-agnostic URLs.
-		$url = preg_replace('/^:?\/\//', 'https://', $url);
+		$url = \preg_replace('/^:?\/\//', 'https://', $url);
 
 		// If an IPv6 address is passed on its own, we
 		// need to shove it in brackets.
-		if (filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+		if (\filter_var($url, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
 			$url = "[$url]";
 		}
 
 		// The trick is to urlencode (most) parts before passing
 		// them to the real parse_url().
-		$encoded = preg_replace_callback(
+		$encoded = \preg_replace_callback(
 			'%([a-zA-Z][a-zA-Z0-9+\-.]*)?(:?//)?([^:/@?&=#\[\]]+)%usD',
 			function ($matches) {
-				$matches[3] = urldecode($matches[3]);
+				$matches[3] = \urldecode($matches[3]);
 				return $matches[1] . $matches[2] . $matches[3];
 			},
 			$url
@@ -49,52 +49,52 @@ class mb {
 		// Before getting the real answer, make sure
 		// there is a scheme, otherwise PHP will assume
 		// all there is is a path, which is stupid.
-		if (PHP_URL_SCHEME !== $component) {
-			$test = parse_url($encoded, PHP_URL_SCHEME);
-			if (!$test) {
+		if (\PHP_URL_SCHEME !== $component) {
+			$test = \parse_url($encoded, \PHP_URL_SCHEME);
+			if (! $test) {
 				$encoded = "blobfolio://$encoded";
 			}
 		}
 
-		$parts = parse_url($encoded, $component);
+		$parts = \parse_url($encoded, $component);
 
 		// And now decode what we've been giving. Let's
 		// also take a moment to translate Unicode hosts
 		// to ASCII.
-		if (is_string($parts) && PHP_URL_SCHEME !== $component) {
-			$parts = str_replace(' ', '+', urldecode($parts));
+		if (\is_string($parts) && \PHP_URL_SCHEME !== $component) {
+			$parts = \str_replace(' ', '+', \urldecode($parts));
 
-			if (PHP_URL_HOST === $component) {
+			if (\PHP_URL_HOST === $component) {
 				// Fix Unicode.
-				if (function_exists('idn_to_ascii')) {
-					$parts = explode('.', $parts);
+				if (\function_exists('idn_to_ascii')) {
+					$parts = \explode('.', $parts);
 					ref\file::idn_to_ascii($parts);
-					$parts = implode('.', $parts);
+					$parts = \implode('.', $parts);
 				}
 
 				// Lowercase it.
 				ref\mb::strtolower($parts, false);
 
 				// Get rid of trailing periods.
-				$parts = ltrim($parts, '.');
-				$parts = rtrim($parts, '.');
+				$parts = \ltrim($parts, '.');
+				$parts = \rtrim($parts, '.');
 
 				// Standardize IPv6 formatting.
-				if (0 === strpos($parts, '[')) {
-					$parts = str_replace(array('[', ']'), '', $parts);
+				if (0 === \strpos($parts, '[')) {
+					$parts = \str_replace(array('[', ']'), '', $parts);
 					ref\sanitize::ip($parts, true);
 					$parts = "[{$parts}]";
 				}
 			}
 		}
-		elseif (is_array($parts)) {
+		elseif (\is_array($parts)) {
 			foreach ($parts as $k=>$v) {
-				if (!is_string($v)) {
+				if (! \is_string($v)) {
 					continue;
 				}
 
 				if ('scheme' !== $k) {
-					$parts[$k] = str_replace(' ', '+', urldecode($v));
+					$parts[$k] = \str_replace(' ', '+', \urldecode($v));
 				}
 				// Remove our pretend scheme.
 				elseif ('blobfolio' === $v) {
@@ -104,22 +104,22 @@ class mb {
 
 				if ('host' === $k) {
 					// Fix Unicode.
-					if (function_exists('idn_to_ascii')) {
-						$parts[$k] = explode('.', $parts[$k]);
+					if (\function_exists('idn_to_ascii')) {
+						$parts[$k] = \explode('.', $parts[$k]);
 						ref\file::idn_to_ascii($parts[$k]);
-						$parts[$k] = implode('.', $parts[$k]);
+						$parts[$k] = \implode('.', $parts[$k]);
 					}
 
 					// Lowercase it.
 					ref\mb::strtolower($parts[$k], false);
 
 					// Get rid of trailing periods.
-					$parts[$k] = ltrim($parts[$k], '.');
-					$parts[$k] = rtrim($parts[$k], '.');
+					$parts[$k] = \ltrim($parts[$k], '.');
+					$parts[$k] = \rtrim($parts[$k], '.');
 
 					// Standardize IPv6 formatting.
-					if (0 === strpos($parts[$k], '[')) {
-						$parts[$k] = str_replace(array('[', ']'), '', $parts[$k]);
+					if (0 === \strpos($parts[$k], '[')) {
+						$parts[$k] = \str_replace(array('[', ']'), '', $parts[$k]);
 						ref\sanitize::ip($parts[$k], true);
 						$parts[$k] = "[{$parts[$k]}]";
 					}
@@ -139,11 +139,11 @@ class mb {
 	 * @return bool True/false.
 	 */
 	public static function parse_str($str, &$result) {
-		if (function_exists('mb_parse_str')) {
-			return mb_parse_str($str, $result);
+		if (\function_exists('mb_parse_str')) {
+			return \mb_parse_str($str, $result);
 		}
 		else {
-			return parse_str($str, $result);
+			return \parse_str($str, $result);
 		}
 	}
 
@@ -156,7 +156,7 @@ class mb {
 	 * @param int $pad_type Pad type.
 	 * @return string Padded string.
 	 */
-	public static function str_pad($str, int $pad_length, $pad_string=' ', int $pad_type=STR_PAD_RIGHT) {
+	public static function str_pad($str, int $pad_length, $pad_string=' ', int $pad_type=\STR_PAD_RIGHT) {
 		ref\mb::str_pad($str, $pad_length, $pad_string, $pad_type);
 		return $str;
 	}
@@ -180,11 +180,11 @@ class mb {
 	 * @return int String length.
 	 */
 	public static function strlen(string $str) {
-		if (function_exists('mb_strlen')) {
-			return (int) mb_strlen($str, 'UTF-8');
+		if (\function_exists('mb_strlen')) {
+			return (int) \mb_strlen($str, 'UTF-8');
 		}
 
-		return strlen($str);
+		return \strlen($str);
 	}
 
 	/**
@@ -196,11 +196,11 @@ class mb {
 	 * @return int|bool First occurrence or false.
 	 */
 	public static function strpos(string $haystack, string $needle, int $offset=0) {
-		if (function_exists('mb_strpos')) {
-			return mb_strpos($haystack, $needle, $offset, 'UTF-8');
+		if (\function_exists('mb_strpos')) {
+			return \mb_strpos($haystack, $needle, $offset, 'UTF-8');
 		}
 
-		return strpos($haystack, $needle, $offset);
+		return \strpos($haystack, $needle, $offset);
 	}
 
 	/**
@@ -223,11 +223,11 @@ class mb {
 	 * @return int|bool Last occurrence or false.
 	 */
 	public static function strrpos(string $haystack, string $needle, int $offset=0) {
-		if (function_exists('mb_strrpos')) {
-			return mb_strrpos($haystack, $needle, $offset, 'UTF-8');
+		if (\function_exists('mb_strrpos')) {
+			return \mb_strrpos($haystack, $needle, $offset, 'UTF-8');
 		}
 		else {
-			return strrpos($haystack, $needle, $offset);
+			return \strrpos($haystack, $needle, $offset);
 		}
 	}
 
@@ -270,11 +270,11 @@ class mb {
 	 * @return string String.
 	 */
 	public static function substr(string $str, int $start=0, $length=null) {
-		if (function_exists('mb_substr')) {
-			return mb_substr($str, $start, $length, 'UTF-8');
+		if (\function_exists('mb_substr')) {
+			return \mb_substr($str, $start, $length, 'UTF-8');
 		}
 
-		return substr($str, $start, $length);
+		return \substr($str, $start, $length);
 	}
 
 	/**
@@ -285,11 +285,11 @@ class mb {
 	 * @return int Count.
 	 */
 	public static function substr_count(string $haystack, string $needle) {
-		if (function_exists('mb_substr_count')) {
-			return mb_substr_count($haystack, $needle, 'UTF-8');
+		if (\function_exists('mb_substr_count')) {
+			return \mb_substr_count($haystack, $needle, 'UTF-8');
 		}
 		else {
-			return substr_count($haystack, $needle);
+			return \substr_count($haystack, $needle);
 		}
 	}
 

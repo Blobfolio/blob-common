@@ -18,13 +18,13 @@ class BehaviorTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_cron_schedules() {
-		$thing = wp_get_schedules();
+		$thing = \wp_get_schedules();
 
-		$this->assertEquals(true, array_key_exists('oneminute', $thing));
-		$this->assertEquals(true, array_key_exists('twominutes', $thing));
-		$this->assertEquals(true, array_key_exists('fiveminutes', $thing));
-		$this->assertEquals(true, array_key_exists('tenminutes', $thing));
-		$this->assertEquals(true, array_key_exists('halfhour', $thing));
+		$this->assertEquals(true, \array_key_exists('oneminute', $thing));
+		$this->assertEquals(true, \array_key_exists('twominutes', $thing));
+		$this->assertEquals(true, \array_key_exists('fiveminutes', $thing));
+		$this->assertEquals(true, \array_key_exists('tenminutes', $thing));
+		$this->assertEquals(true, \array_key_exists('halfhour', $thing));
 	}
 
 	/**
@@ -33,10 +33,10 @@ class BehaviorTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_upload_mimes() {
-		$mimes = get_allowed_mime_types();
+		$mimes = \get_allowed_mime_types();
 
-		$this->assertEquals(true, array_key_exists('svg', $mimes));
-		$this->assertEquals(true, array_key_exists('webp', $mimes));
+		$this->assertEquals(true, \array_key_exists('svg', $mimes));
+		$this->assertEquals(true, \array_key_exists('webp', $mimes));
 	}
 
 	/**
@@ -45,13 +45,13 @@ class BehaviorTests extends WP_UnitTestCase {
 	 * @return void Nothing.
 	 */
 	function test_common_upload_real_mimes() {
-		$svg = file_get_contents(static::ASSETS . 'monogram.svg');
+		$svg = \file_get_contents(static::ASSETS . 'monogram.svg');
 
 		// Save a copy.
 		$upload = static::ASSETS . 'tmpfile';
-		@file_put_contents($upload, $svg);
+		@\file_put_contents($upload, $svg);
 
-		$checked = apply_filters(
+		$checked = \apply_filters(
 			'wp_check_filetype_and_ext',
 			array(
 				'type'=>false,
@@ -60,7 +60,7 @@ class BehaviorTests extends WP_UnitTestCase {
 			),
 			$upload,
 			'monogram.svg',
-			get_allowed_mime_types()
+			\get_allowed_mime_types()
 		);
 
 		$this->assertEquals('image/svg+xml', $checked['type']);
@@ -68,6 +68,6 @@ class BehaviorTests extends WP_UnitTestCase {
 		$this->assertEquals('monogram.svg', $checked['proper_filename']);
 
 		// Remove test file.
-		@unlink($upload);
+		@\unlink($upload);
 	}
 }

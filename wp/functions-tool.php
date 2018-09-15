@@ -10,20 +10,20 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
-use \blobfolio\common\cast as v_cast;
-use \blobfolio\common\data;
-use \blobfolio\common\mb as v_mb;
-use \blobfolio\common\ref\mb as r_mb;
+use blobfolio\common\cast as v_cast;
+use blobfolio\common\data;
+use blobfolio\common\mb as v_mb;
+use blobfolio\common\ref\mb as r_mb;
 
 // ---------------------------------------------------------------------
 // Comparison/Eval Tools
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_array_type')) {
+if (! \function_exists('common_array_type')) {
 	/**
 	 * Array Type
 	 *
@@ -36,14 +36,14 @@ if (!function_exists('common_array_type')) {
 	 * @return string|bool Type. False on failure.
 	 */
 	function common_array_type(&$arr=null) {
-		if (!is_array($arr)) {
+		if (! \is_array($arr)) {
 			return false;
 		}
 		return v_cast::array_type($arr);
 	}
 }
 
-if (!function_exists('common_array_compare')) {
+if (! \function_exists('common_array_compare')) {
 	/**
 	 * Compare Two Arrays
 	 *
@@ -52,14 +52,14 @@ if (!function_exists('common_array_compare')) {
 	 * @return bool True/false.
 	 */
 	function common_array_compare(&$arr1, &$arr2) {
-		if (!is_array($arr1) || !is_array($arr2)) {
+		if (! \is_array($arr1) || ! \is_array($arr2)) {
 			return false;
 		}
 		return data::array_compare($arr1, $arr2);
 	}
 }
 
-if (!function_exists('common_iin_array()')) {
+if (! \function_exists('common_iin_array()')) {
 	/**
 	 * Case-Insensitive in_array()
 	 *
@@ -72,7 +72,7 @@ if (!function_exists('common_iin_array()')) {
 	}
 }
 
-if (!function_exists('common_iarray_key_exists()')) {
+if (! \function_exists('common_iarray_key_exists()')) {
 	/**
 	 * Case-Insensitive array_key_exists()
 	 *
@@ -85,7 +85,7 @@ if (!function_exists('common_iarray_key_exists()')) {
 	}
 }
 
-if (!function_exists('common_isubstr_count()')) {
+if (! \function_exists('common_isubstr_count()')) {
 	/**
 	 * Case-Insensitive substr_count()
 	 *
@@ -108,7 +108,7 @@ if (!function_exists('common_isubstr_count()')) {
 // Other Tools
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_strlen')) {
+if (! \function_exists('common_strlen')) {
 	/**
 	 * Wrapper For strlen()
 	 *
@@ -120,7 +120,7 @@ if (!function_exists('common_strlen')) {
 	}
 }
 
-if (!function_exists('common_strpos')) {
+if (! \function_exists('common_strpos')) {
 	/**
 	 * Wrapper For strpos()
 	 *
@@ -134,7 +134,7 @@ if (!function_exists('common_strpos')) {
 	}
 }
 
-if (!function_exists('common_substr')) {
+if (! \function_exists('common_substr')) {
 	/**
 	 * Wrapper For substr()
 	 *
@@ -148,7 +148,7 @@ if (!function_exists('common_substr')) {
 	}
 }
 
-if (!function_exists('common_substr_count')) {
+if (! \function_exists('common_substr_count')) {
 	/**
 	 * Wrapper For substr_count()
 	 *
@@ -161,7 +161,7 @@ if (!function_exists('common_substr_count')) {
 	}
 }
 
-if (!function_exists('common_to_char_array')) {
+if (! \function_exists('common_to_char_array')) {
 	/**
 	 * Wrapper For str_split()
 	 *
@@ -173,7 +173,7 @@ if (!function_exists('common_to_char_array')) {
 	}
 }
 
-if (!function_exists('common_array_map_recursive')) {
+if (! \function_exists('common_array_map_recursive')) {
 	/**
 	 * Recursive Array Map
 	 *
@@ -186,7 +186,7 @@ if (!function_exists('common_array_map_recursive')) {
 	}
 }
 
-if (!function_exists('common_random_int')) {
+if (! \function_exists('common_random_int')) {
 	/**
 	 * Generate Random Integer
 	 *
@@ -202,7 +202,7 @@ if (!function_exists('common_random_int')) {
 	}
 }
 
-if (!function_exists('common_array_pop_top')) {
+if (! \function_exists('common_array_pop_top')) {
 	/**
 	 * Return the last value of an array.
 	 *
@@ -212,14 +212,14 @@ if (!function_exists('common_array_pop_top')) {
 	 * @return mixed Value. False on error.
 	 */
 	function common_array_pop_top(&$arr) {
-		if (!is_array($arr)) {
+		if (! \is_array($arr)) {
 			return false;
 		}
 		return data::array_pop_top($arr);
 	}
 }
 
-if (!function_exists('common_array_pop')) {
+if (! \function_exists('common_array_pop')) {
 	/**
 	 * Return the first value of an array.
 	 *
@@ -227,14 +227,14 @@ if (!function_exists('common_array_pop')) {
 	 * @return mixed Value. False on error.
 	 */
 	function common_array_pop(&$arr) {
-		if (!is_array($arr)) {
+		if (! \is_array($arr)) {
 			return false;
 		}
 		return data::array_pop($arr);
 	}
 }
 
-if (!function_exists('common_switcheroo')) {
+if (! \function_exists('common_switcheroo')) {
 	/**
 	 * Switch Two Variables
 	 *
@@ -247,7 +247,7 @@ if (!function_exists('common_switcheroo')) {
 	}
 }
 
-if (!function_exists('common_parse_args')) {
+if (! \function_exists('common_parse_args')) {
 	/**
 	 * Parse Arguments
 	 *
@@ -266,7 +266,7 @@ if (!function_exists('common_parse_args')) {
 	}
 }
 
-if (!function_exists('common_parse_json_args')) {
+if (! \function_exists('common_parse_json_args')) {
 	/**
 	 * Parse Arguments (JSON)
 	 *
@@ -285,7 +285,7 @@ if (!function_exists('common_parse_json_args')) {
 	}
 }
 
-if (!function_exists('common_generate_random_string')) {
+if (! \function_exists('common_generate_random_string')) {
 	/**
 	 * Generate Random String
 	 *
@@ -311,7 +311,7 @@ if (!function_exists('common_generate_random_string')) {
 // Misc
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_get_cc_exp_years')) {
+if (! \function_exists('common_get_cc_exp_years')) {
 	/**
 	 * Generate Credit Card Expiration Years
 	 *
@@ -323,7 +323,7 @@ if (!function_exists('common_get_cc_exp_years')) {
 	}
 }
 
-if (!function_exists('common_get_cc_exp_months')) {
+if (! \function_exists('common_get_cc_exp_months')) {
 	/**
 	 * Generate Credit Card Expiration Months
 	 *

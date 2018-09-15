@@ -8,44 +8,12 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\format;
+use blobfolio\common\format;
 
 /**
  * Test Suite
  */
 class format_tests extends \PHPUnit\Framework\TestCase {
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
-
-
-
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
@@ -307,7 +275,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	function test_to_csv($value, $headers, string $delimiter, string $eol, $expected) {
 		$result = format::to_csv($value, $headers, $delimiter, $eol);
 		$this->assertSame($expected, $result);
-		$this->assertSame('string', gettype($result));
+		$this->assertSame('string', \gettype($result));
 	}
 
 	/**
@@ -334,10 +302,10 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 		$headers = array('FIRST NAME', 'PHONE NUMBER');
 
 		$csv = format::to_xls($data);
-		$this->assertSame(true, false !== strpos($csv, 'NAME'));
+		$this->assertSame(true, false !== \strpos($csv, 'NAME'));
 
 		$csv = format::to_xls($data, $headers);
-		$this->assertSame(true, false !== strpos($csv, 'FIRST NAME'));
+		$this->assertSame(true, false !== \strpos($csv, 'FIRST NAME'));
 	}
 
 	// ----------------------------------------------------------------- end tests
@@ -557,7 +525,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				'Hi\\\\bb There',
-				'Hi\\' . chr(0x08) . 'b There',
+				'Hi\\' . \chr(0x08) . 'b There',
 			),
 		);
 	}
@@ -829,7 +797,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_links() {
-		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
 			array(
@@ -1096,25 +1064,25 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				1,
 				1,
-				PHP_ROUND_HALF_UP,
+				\PHP_ROUND_HALF_UP,
 				1.0,
 			),
 			array(
 				1.234,
 				1,
-				PHP_ROUND_HALF_UP,
+				\PHP_ROUND_HALF_UP,
 				1.2,
 			),
 			array(
 				1.234,
 				2,
-				PHP_ROUND_HALF_UP,
+				\PHP_ROUND_HALF_UP,
 				1.23,
 			),
 			array(
 				array(1.234, '4.567'),
 				2,
-				PHP_ROUND_HALF_UP,
+				\PHP_ROUND_HALF_UP,
 				array(1.23, 4.57),
 			),
 		);
@@ -1140,7 +1108,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 				'2015-01-15 09:12:23',
 			),
 			array(
-				strtotime('2015-01-15 01:12:23'),
+				\strtotime('2015-01-15 01:12:23'),
 				'America/Los_Angeles',
 				null,
 				'2015-01-15 09:12:23',

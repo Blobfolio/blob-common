@@ -45,15 +45,15 @@ class cast {
 	 * @return string|bool Type. False on failure.
 	 */
 	public static function array_type(&$arr=null) {
-		if (!is_array($arr) || !count($arr)) {
+		if (! \is_array($arr) || ! \count($arr)) {
 			return false;
 		}
 
-		$keys = array_keys($arr);
-		if (range(0, count($keys) - 1) === $keys) {
+		$keys = \array_keys($arr);
+		if (\range(0, \count($keys) - 1) === $keys) {
 			return 'sequential';
 		}
-		elseif (count($keys) === count(array_filter($keys, 'is_numeric'))) {
+		elseif (\count($keys) === \count(\array_filter($keys, 'is_numeric'))) {
 			return 'indexed';
 		}
 		else {

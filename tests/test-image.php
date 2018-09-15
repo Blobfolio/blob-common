@@ -8,45 +8,13 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\image;
+use blobfolio\common\image;
 
 /**
  * Test Suite
  */
 class image_tests extends \PHPUnit\Framework\TestCase {
-
 	const ASSETS = __DIR__ . '/assets/';
-
-
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
 
 
 
@@ -62,8 +30,8 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	function test_clean_svg() {
 		$svg = image::clean_svg(self::ASSETS . 'enshrined.svg');
 
-		$this->assertEquals(true, false !== strpos($svg, '<svg'));
-		$this->assertSame(false, strpos($svg, '<script'));
+		$this->assertEquals(true, false !== \strpos($svg, '<svg'));
+		$this->assertSame(false, \strpos($svg, '<script'));
 	}
 
 	/**
@@ -79,10 +47,10 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$result = image::getimagesize($file);
 
 		// Make sure the return type matches.
-		$this->assertSame(gettype($expected), gettype($result));
+		$this->assertSame(\gettype($expected), \gettype($result));
 
 		// If we were expecting an array, check the keys we passed.
-		if (is_array($expected)) {
+		if (\is_array($expected)) {
 			foreach ($expected as $k=>$v) {
 				$this->assertTrue(isset($result[$k]));
 				$this->assertSame($v, $result[$k]);
@@ -116,7 +84,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$dimensions = array('width'=>330.056, 'height'=>495.558);
 
 		$this->assertEquals($dimensions, image::svg_dimensions($svg));
-		$this->assertEquals($dimensions, image::svg_dimensions(file_get_contents($svg)));
+		$this->assertEquals($dimensions, image::svg_dimensions(\file_get_contents($svg)));
 	}
 
 	/**
@@ -127,18 +95,18 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	function test_to_webp() {
 		$in = static::ASSETS . 'space.jpg';
 
-		if (!image::has_webp()) {
+		if (! image::has_webp()) {
 			$this->markTestSkipped('Native WebP binaries not detected.');
 		}
 
 		image::to_webp($in, null);
-		$this->assertEquals(true, file_exists(self::ASSETS . 'space.webp'));
-		@unlink(self::ASSETS . 'space.webp');
+		$this->assertEquals(true, \file_exists(self::ASSETS . 'space.webp'));
+		@\unlink(self::ASSETS . 'space.webp');
 
 		$out = static::ASSETS . 'space2.webp';
 		image::to_webp($in, $out);
-		$this->assertEquals(true, file_exists($out));
-		@unlink($out);
+		$this->assertEquals(true, \file_exists($out));
+		@\unlink($out);
 	}
 
 	// ----------------------------------------------------------------- end tests

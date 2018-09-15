@@ -66,11 +66,11 @@ class format {
 		ref\cast::string($cidr, true);
 
 		$range = array('min'=>0, 'max'=>0);
-		$cidr = array_pad(explode('/', $cidr), 2, 0);
+		$cidr = \array_pad(\explode('/', $cidr), 2, 0);
 		ref\cast::int($cidr[1], true);
 
 		// IPv4?
-		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+		if (\filter_var($cidr[0], \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4)) {
 			// IPv4 is only 32-bit.
 			ref\sanitize::to_range($cidr[1], 0, 32);
 
@@ -79,22 +79,22 @@ class format {
 			}
 			else {
 				// Work from binary.
-				$cidr[1] = bindec(str_pad(str_repeat('1', $cidr[1]), 32, '0'));
+				$cidr[1] = \bindec(\str_pad(\str_repeat('1', $cidr[1]), 32, '0'));
 
 				// Calculate the range.
-				$ip = ip2long($cidr[0]);
+				$ip = \ip2long($cidr[0]);
 				$netmask = $cidr[1];
 				$first = ($ip & $netmask);
 				$bc = $first | ~$netmask;
 
-				$range['min'] = long2ip($first);
-				$range['max'] = long2ip($bc);
+				$range['min'] = \long2ip($first);
+				$range['max'] = \long2ip($bc);
 			}
 			return $range;
 		}
 
 		// IPv6? Of course a little more complicated.
-		if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+		if (\filter_var($cidr[0], \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
 			// IPv6 is only 128-bit.
 			ref\sanitize::to_range($cidr[1], 0, 128);
 
@@ -104,9 +104,9 @@ class format {
 			}
 
 			// Work from binary.
-			$bin = str_pad(str_repeat('1', $cidr[1]), 128, '0');
-			if (function_exists('gmp_init')) {
-				$cidr[1] = gmp_strval(gmp_init($bin, 2), 10);
+			$bin = \str_pad(\str_repeat('1', $cidr[1]), 128, '0');
+			if (\function_exists('gmp_init')) {
+				$cidr[1] = \gmp_strval(\gmp_init($bin, 2), 10);
 			}
 			else {
 				$cidr[1] = bc::bindec($bin);
@@ -116,21 +116,21 @@ class format {
 			$ip = static::ip_to_number($cidr[0]);
 			$netmask = $cidr[1];
 
-			if (function_exists('gmp_and')) {
-				$first = gmp_and($ip, $netmask);
+			if (\function_exists('gmp_and')) {
+				$first = \gmp_and($ip, $netmask);
 
 				// GMP doesn't have the kind of ~ we're looking for. But
 				// that's fine; binary is easy.
-				$bin = gmp_strval(gmp_init($netmask, 10), 2);
-				$bin = sprintf('%0128s', $bin);
-				$bin = strtr($bin, array('0'=>'1', '1'=>'0'));
-				$not = gmp_strval(gmp_init($bin, 2), 10);
+				$bin = \gmp_strval(\gmp_init($netmask, 10), 2);
+				$bin = \sprintf('%0128s', $bin);
+				$bin = \strtr($bin, array('0'=>'1', '1'=>'0'));
+				$not = \gmp_strval(\gmp_init($bin, 2), 10);
 
-				$bc = gmp_or($first, $not);
+				$bc = \gmp_or($first, $not);
 
 				// Make sure they're strings.
-				$first = gmp_strval($first);
-				$bc = gmp_strval($bc);
+				$first = \gmp_strval($first);
+				$bc = \gmp_strval($bc);
 			}
 			else {
 				$first = bc::bitwise('&', $ip, $netmask);
@@ -214,15 +214,15 @@ class format {
 	public static function excerpt($str='', $args=null) {
 		ref\cast::string($str, true);
 		ref\sanitize::whitespace($str, 0);
-		$str = strip_tags($str);
+		$str = \strip_tags($str);
 
 		$options = data::parse_args($args, constants::EXCERPT);
 		if ($options['length'] < 1) {
 			return '';
 		}
 
-		$options['unit'] = strtolower($options['unit']);
-		switch (substr($options['unit'], 0, 4)) {
+		$options['unit'] = \strtolower($options['unit']);
+		switch (\substr($options['unit'], 0, 4)) {
 			case 'char':
 				$options['unit'] = 'character';
 				break;
@@ -236,16 +236,16 @@ class format {
 			('character' === $options['unit']) &&
 			mb::strlen($str) > $options['length']
 		) {
-			$str = trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
+			$str = \trim(mb::substr($str, 0, $options['length'])) . $options['suffix'];
 		}
 		// Word limit.
 		elseif (
 			('word' === $options['unit']) &&
-			substr_count($str, ' ') > $options['length'] - 1
+			\substr_count($str, ' ') > $options['length'] - 1
 		) {
-			$str = explode(' ', $str);
-			$str = array_slice($str, 0, $options['length']);
-			$str = implode(' ', $str) . $options['suffix'];
+			$str = \explode(' ', $str);
+			$str = \array_slice($str, 0, $options['length']);
+			$str = \implode(' ', $str) . $options['suffix'];
 		}
 
 		return $str;
@@ -292,8 +292,8 @@ class format {
 	 * @return string Inflected string.
 	 */
 	public static function inflect($count, $single, $plural) {
-		if (is_array($count)) {
-			$count = (float) count($count);
+		if (\is_array($count)) {
+			$count = (float) \count($count);
 		}
 		else {
 			ref\cast::float($count, true);
@@ -301,11 +301,11 @@ class format {
 
 		if (1.0 === $count) {
 			ref\cast::string($single, true);
-			return sprintf($single, $count);
+			return \sprintf($single, $count);
 		}
 		else {
 			ref\cast::string($plural, true);
-			return sprintf($plural, $count);
+			return \sprintf($plural, $count);
 		}
 	}
 
@@ -467,7 +467,7 @@ class format {
 	 * @param int $mode Mode.
 	 * @return float Number.
 	 */
-	public static function round($num, int $precision=0, int $mode=PHP_ROUND_HALF_UP) {
+	public static function round($num, int $precision=0, int $mode=\PHP_ROUND_HALF_UP) {
 		ref\format::round($num, $precision, $mode);
 		return $num;
 	}
@@ -483,33 +483,33 @@ class format {
 	 */
 	public static function to_csv($data=null, $headers=null, string $delimiter=',', string $eol="\n") {
 		ref\cast::array($data);
-		$data = array_values(array_filter($data, 'is_array'));
+		$data = \array_values(\array_filter($data, 'is_array'));
 		ref\cast::array($headers);
 
 		$out = array();
 
 		// Grab headers from data?
 		if (
-			!count($headers) &&
-			count($data) &&
+			! \count($headers) &&
+			\count($data) &&
 			(cast::array_type($data[0]) === 'associative')
 		) {
-			$headers = array_keys($data[0]);
+			$headers = \array_keys($data[0]);
 		}
 
 		// Output headers, if applicable.
-		if (count($headers)) {
+		if (\count($headers)) {
 			foreach ($headers as $k=>$v) {
 				ref\cast::string($headers[$k], true);
 			}
 
 			ref\sanitize::csv($headers);
 
-			$out[] = '"' . implode('"' . $delimiter . '"', $headers) . '"';
+			$out[] = '"' . \implode('"' . $delimiter . '"', $headers) . '"';
 		}
 
 		// Output data.
-		if (count($data)) {
+		if (\count($data)) {
 			foreach ($data as $line) {
 				foreach ($line as $k=>$v) {
 					ref\cast::string($line[$k], true);
@@ -517,11 +517,11 @@ class format {
 
 				ref\sanitize::csv($line);
 
-				$out[] = '"' . implode('"' . $delimiter . '"', $line) . '"';
+				$out[] = '"' . \implode('"' . $delimiter . '"', $line) . '"';
 			}
 		}
 
-		return implode($eol, $out);
+		return \implode($eol, $out);
 	}
 
 	/**
@@ -548,7 +548,7 @@ class format {
 	 */
 	public static function to_xls($data=null, $headers=null) {
 		ref\cast::array($data);
-		$data = array_values(array_filter($data, 'is_array'));
+		$data = \array_values(\array_filter($data, 'is_array'));
 		ref\cast::array($headers);
 
 		// @codingStandardsIgnoreStart
@@ -583,29 +583,29 @@ class format {
 
 		// Grab headers from data?
 		if (
-			!count($headers) &&
-			count($data) &&
+			! \count($headers) &&
+			\count($data) &&
 			(cast::array_type($data[0]) === 'associative')
 		) {
-			$headers = array_keys($data[0]);
+			$headers = \array_keys($data[0]);
 		}
 
 		// Output headers, if applicable.
-		if (count($headers)) {
+		if (\count($headers)) {
 			foreach ($headers as $k=>$v) {
 				ref\cast::string($headers[$k], true);
 			}
 
 			$out[] = '<Row>';
 			foreach ($headers as $cell) {
-				$cell = htmlspecialchars(
-					strip_tags(
+				$cell = \htmlspecialchars(
+					\strip_tags(
 						sanitize::quotes(
 							sanitize::whitespace($cell, 0),
 							true
 						)
 					),
-					ENT_XML1 | ENT_NOQUOTES,
+					\ENT_XML1 | \ENT_NOQUOTES,
 					'UTF-8'
 				);
 				$out[] = '<Cell><Data ss:Type="String"><b>' . $cell . '</b></Data></Cell>';
@@ -614,19 +614,19 @@ class format {
 		}
 
 		// Output data.
-		if (count($data)) {
+		if (\count($data)) {
 			foreach ($data as $line) {
 				$out[] = '<Row>';
 				foreach ($line as $cell) {
 					// Different types of data need to be treated differently.
-					$type = gettype($cell);
+					$type = \gettype($cell);
 					$format = null;
 					if ('boolean' === $type || 'bool' === $type) {
 						$type = 'Boolean';
 						$format = '0';
 						$cell = $cell ? 1 : 0;
 					}
-					elseif (is_numeric($cell)) {
+					elseif (\is_numeric($cell)) {
 						$type = 'Number';
 						ref\cast::float($cell, true);
 					}
@@ -635,34 +635,34 @@ class format {
 						ref\sanitize::whitespace($cell, 2);
 
 						// Date and time.
-						if (preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {
+						if (\preg_match('/^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}$/', $cell)) {
 							$type = 'DateTime';
 							$format = '1';
-							$cell = str_replace(' ', 'T', $cell);
+							$cell = \str_replace(' ', 'T', $cell);
 						}
 						// Date.
-						elseif (preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $cell)) {
+						elseif (\preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $cell)) {
 							$type = 'DateTime';
 							$format = '2';
 							$cell .= 'T00:00:00';
 						}
 						// Time.
-						elseif (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $cell)) {
+						elseif (\preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $cell)) {
 							$type = 'DateTime';
 							$format = '3';
 							$cell = "0000-00-00T$cell";
-							if (substr_count($cell, ':') === 2) {
+							if (\substr_count($cell, ':') === 2) {
 								$cell .= ':00';
 							}
 						}
 						// Percent.
-						elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $cell)) {
+						elseif (\preg_match('/^\-?[\d,]*\.?\d+%$/', $cell)) {
 							$type = 'Number';
 							$format = '4';
 							ref\cast::float($cell, true);
 						}
 						// Currency.
-						elseif (preg_match('/^\-\$?[\d,]*\.?\d+$/', $cell) || preg_match('/^\-?[\d,]*\.?\d+¢$/', $cell)) {
+						elseif (\preg_match('/^\-\$?[\d,]*\.?\d+$/', $cell) || \preg_match('/^\-?[\d,]*\.?\d+¢$/', $cell)) {
 							$type = 'Number';
 							$format = '5';
 							ref\cast::float($cell, true);
@@ -670,11 +670,11 @@ class format {
 						// Everything else.
 						else {
 							$type = 'String';
-							$cell = htmlspecialchars(
-								strip_tags(
+							$cell = \htmlspecialchars(
+								\strip_tags(
 									sanitize::quotes($cell)
 								),
-								ENT_XML1 | ENT_NOQUOTES,
+								\ENT_XML1 | \ENT_NOQUOTES,
 								'UTF-8'
 							);
 						}
@@ -691,7 +691,7 @@ class format {
 		$out[] = '</Worksheet>';
 		$out[] = '</Workbook>';
 
-		return implode("\r\n", $out);
+		return \implode("\r\n", $out);
 	}
 }
 

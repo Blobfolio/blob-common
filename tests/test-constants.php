@@ -8,7 +8,7 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
+use blobfolio\common\constants;
 
 /**
  * Test Suite
@@ -31,19 +31,19 @@ class constants_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function test_countries(string $code, $data) {
 		// The country code should be 2 uppercase characters.
-		$this->assertTrue(!!preg_match('/^[A-Z]{2}$/', $code));
+		$this->assertTrue(!! \preg_match('/^[A-Z]{2}$/', $code));
 
 		// There should be a name.
 		$this->assertTrue(isset($data['name']));
-		$this->assertTrue(!!$data['name']);
+		$this->assertTrue(!! $data['name']);
 
 		// There should be a region.
 		$this->assertTrue(isset($data['region']));
-		$this->assertTrue(in_array($data['region'], constants::REGIONS, true));
+		$this->assertTrue(\in_array($data['region'], constants::REGIONS, true));
 
 		// There should be a currency.
 		$this->assertTrue(isset($data['currency']));
-		$this->assertTrue(!!preg_match('/^[A-Z]{3}$/', $data['currency']));
+		$this->assertTrue(!! \preg_match('/^[A-Z]{3}$/', $data['currency']));
 	}
 
 	// ----------------------------------------------------------------- end tests

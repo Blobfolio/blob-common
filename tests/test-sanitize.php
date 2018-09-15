@@ -8,45 +8,14 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\sanitize;
+use blobfolio\common\constants;
+use blobfolio\common\sanitize;
 
 /**
  * Test Suite
  */
 class sanitize_tests extends \PHPUnit\Framework\TestCase {
-
 	const ASSETS = __DIR__ . '/assets/';
-
-
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
 
 
 
@@ -161,13 +130,13 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	function test_date($value, $expected) {
 		// We can use the datetime test data, but need to cut
 		// it to date-size.
-		if (is_array($expected)) {
+		if (\is_array($expected)) {
 			foreach ($expected as $k=>$v) {
-				$expected[$k] = substr($v, 0, 10);
+				$expected[$k] = \substr($v, 0, 10);
 			}
 		}
 		else {
-			$expected = substr($expected, 0, 10);
+			$expected = \substr($expected, 0, 10);
 		}
 
 		$this->assertEquals($expected, sanitize::date($value));
@@ -406,7 +375,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $svg SVG.
 	 */
 	function test_svg($svg) {
-		if (!class_exists('DOMDocument') || !class_exists('DOMXPath')) {
+		if (! \class_exists('DOMDocument') || ! \class_exists('DOMXPath')) {
 			$this->markTestSkipped('DOM is not installed.');
 		}
 
@@ -429,7 +398,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$result = sanitize::svg($svg);
 
 		foreach ($tests as $v) {
-			$this->assertSame(false, strpos($result, $v));
+			$this->assertSame(false, \strpos($result, $v));
 		}
 	}
 
@@ -492,8 +461,8 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @param mixed $value Value.
 	 */
 	function test_utf8($value) {
-		$encoding = strtoupper(mb_detect_encoding(sanitize::utf8($value)));
-		$this->assertSame(true, in_array($encoding, array('ASCII', 'UTF-8'), true));
+		$encoding = \strtoupper(\mb_detect_encoding(sanitize::utf8($value)));
+		$this->assertSame(true, \in_array($encoding, array('ASCII', 'UTF-8'), true));
 	}
 
 	/**
@@ -756,7 +725,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 				'2015-01-02 13:23:11',
 			),
 			array(
-				strtotime('2015-01-02 13:23:11'),
+				\strtotime('2015-01-02 13:23:11'),
 				'2015-01-02 13:23:11',
 			),
 			array(
@@ -788,7 +757,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_domain() {
-		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
 			array(
@@ -881,7 +850,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_email() {
-		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
 			array(
@@ -957,7 +926,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_hostname() {
-		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
 			array(
@@ -1430,10 +1399,10 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 */
 	function data_svg() {
 		return array(
-			array(file_get_contents(static::ASSETS . 'monogram-inkscape.svg')),
-			array(file_get_contents(static::ASSETS . 'enshrined.svg')),
-			array(file_get_contents(static::ASSETS . 'pi.svg')),
-			array(file_get_contents(static::ASSETS . 'minus.svg')),
+			array(\file_get_contents(static::ASSETS . 'monogram-inkscape.svg')),
+			array(\file_get_contents(static::ASSETS . 'enshrined.svg')),
+			array(\file_get_contents(static::ASSETS . 'pi.svg')),
+			array(\file_get_contents(static::ASSETS . 'minus.svg')),
 		);
 	}
 
@@ -1546,7 +1515,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 * @return array Data.
 	 */
 	function data_url() {
-		$smiley_host = function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
+		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
 			array(
@@ -1586,8 +1555,8 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 			array('Björk Guðmundsdóttir'),
 			array("Hello\nWorld"),
 			array(123),
-			array(file_get_contents(self::ASSETS . 'text-utf8.txt')),
-			array(file_get_contents(self::ASSETS . 'text-latin.txt')),
+			array(\file_get_contents(self::ASSETS . 'text-utf8.txt')),
+			array(\file_get_contents(self::ASSETS . 'text-latin.txt')),
 		);
 	}
 

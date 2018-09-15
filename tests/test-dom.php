@@ -8,45 +8,13 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\dom;
+use blobfolio\common\dom;
 
 /**
  * Test Suite
  */
 class dom_tests extends \PHPUnit\Framework\TestCase {
-
 	const ASSETS = __DIR__ . '/assets/';
-
-
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
 
 
 
@@ -60,10 +28,10 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_load_svg() {
-		$svg = file_get_contents(self::ASSETS . 'pi.svg');
+		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 
-		$this->assertSame(true, is_a($dom, 'DOMDocument'));
+		$this->assertSame(true, \is_a($dom, 'DOMDocument'));
 	}
 
 	/**
@@ -72,11 +40,11 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_save_svg() {
-		$svg = file_get_contents(self::ASSETS . 'pi.svg');
+		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 		$svg = dom::save_svg($dom);
 
-		$this->assertSame(true, false !== strpos($svg, '<svg'));
+		$this->assertSame(true, false !== \strpos($svg, '<svg'));
 	}
 
 	/**
@@ -85,13 +53,13 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_get_nodes_by_class() {
-		$svg = file_get_contents(self::ASSETS . 'pi.svg');
+		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 		$class = 'k3xzp';
 
 		$nodes = dom::get_nodes_by_class($dom, $class);
 
-		$this->assertEquals(1, count($nodes));
+		$this->assertEquals(1, \count($nodes));
 	}
 
 	/**
@@ -111,7 +79,7 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 
 		$this->assertEquals('<span><br><strong>hello</strong>world</span>', $innerhtml);
 
-		$innerhtml = dom::innerhtml($div, true, LIBXML_NOEMPTYTAG);
+		$innerhtml = dom::innerhtml($div, true, \LIBXML_NOEMPTYTAG);
 		$this->assertEquals('<span><br></br><strong>hello</strong>world</span>', $innerhtml);
 	}
 
@@ -121,15 +89,15 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_parse_css() {
-		$svg = file_get_contents(self::ASSETS . 'pi.svg');
+		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 		$style = $dom->getElementsByTagName('style');
 		$style = $style->item(0);
 
 		$parsed = dom::parse_css($style->nodeValue);
 
-		$this->assertSame(true, is_array($parsed));
-		$this->assertEquals(1, count($parsed));
+		$this->assertSame(true, \is_array($parsed));
+		$this->assertEquals(1, \count($parsed));
 		$this->assertEquals('.k3xzp{fill:currentColor;}', $parsed[0]['raw']);
 	}
 
@@ -139,7 +107,7 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 * @return void Nothing.
 	 */
 	function test_remove_nodes() {
-		$svg = file_get_contents(self::ASSETS . 'pi.svg');
+		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 
 		// Before.

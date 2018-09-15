@@ -8,45 +8,13 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
-use \blobfolio\common\constants;
-use \blobfolio\common\mime;
+use blobfolio\common\mime;
 
 /**
  * Test Suite
  */
 class mime_tests extends \PHPUnit\Framework\TestCase {
-
 	const ASSETS = __DIR__ . '/assets/';
-
-
-
-	// -----------------------------------------------------------------
-	// Set up
-	// -----------------------------------------------------------------
-
-	/**
-	 * Before Test
-	 *
-	 * String cast bypass should be off before the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function setUp() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	/**
-	 * After Test
-	 *
-	 * String cast bypass should still be off after the test.
-	 *
-	 * @return void Nothing.
-	 */
-	protected function tearDown() {
-		$this->assertFalse(constants::$str_lock);
-	}
-
-	// ----------------------------------------------------------------- end setup
 
 
 
@@ -66,9 +34,9 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	function test_get_mime($mime, $expected_mime, $expected_ext) {
 		$result = mime::get_mime($mime);
 
-		$this->assertSame(true, is_array($result));
+		$this->assertSame(true, \is_array($result));
 		$this->assertEquals($expected_mime, $result['mime']);
-		$this->assertSame(true, in_array($expected_ext, $result['ext'], true));
+		$this->assertSame(true, \in_array($expected_ext, $result['ext'], true));
 	}
 
 	/**
@@ -83,9 +51,9 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	function test_get_extension($ext, $expected_ext, $expected_mime) {
 		$result = mime::get_extension($ext);
 
-		$this->assertSame(true, is_array($result));
+		$this->assertSame(true, \is_array($result));
 		$this->assertEquals($expected_ext, $result['ext']);
-		$this->assertSame(true, in_array($expected_mime, $result['mime'], true));
+		$this->assertSame(true, \in_array($expected_mime, $result['mime'], true));
 	}
 
 	/**
@@ -104,7 +72,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 
 		$this->assertEquals($expected, $result);
 		if ($suggestion) {
-			$this->assertSame(true, in_array($suggestion, $suggested, true));
+			$this->assertSame(true, \in_array($suggestion, $suggested, true));
 		}
 	}
 
@@ -171,7 +139,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				static::ASSETS . 'space.jpg',
 				array(
-					'dirname'=>rtrim(static::ASSETS, '/'),
+					'dirname'=>\rtrim(static::ASSETS, '/'),
 					'basename'=>'space.jpg',
 					'extension'=>'jpg',
 					'filename'=>'space',
@@ -184,7 +152,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				static::ASSETS . 'space.png',
 				array(
-					'dirname'=>rtrim(static::ASSETS, '/'),
+					'dirname'=>\rtrim(static::ASSETS, '/'),
 					'basename'=>'space.png',
 					'extension'=>'jpeg',
 					'filename'=>'space',
@@ -197,11 +165,11 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'pkcs12-test-keystore.tar.gz',
 				array(
-					'dirname'=>getcwd(),
+					'dirname'=>\getcwd(),
 					'basename'=>'pkcs12-test-keystore.tar.gz',
 					'extension'=>'gz',
 					'filename'=>'pkcs12-test-keystore.tar',
-					'path'=>getcwd() . '/pkcs12-test-keystore.tar.gz',
+					'path'=>\getcwd() . '/pkcs12-test-keystore.tar.gz',
 					'mime'=>'application/gzip',
 				),
 				null,

@@ -10,13 +10,13 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
-$requires = defined('WP_DEBUG_LOG_CAP') ? WP_DEBUG_LOG_CAP : 'manage_options';
-if (!current_user_can($requires)) {
-	wp_die(__('You do not have sufficient permissions to access this page.'));
+$requires = \defined('WP_DEBUG_LOG_CAP') ? \WP_DEBUG_LOG_CAP : 'manage_options';
+if (! \current_user_can($requires)) {
+	\wp_die(\__('You do not have sufficient permissions to access this page.'));
 }
 
 /**
@@ -27,9 +27,9 @@ if (!current_user_can($requires)) {
  * @return array Plugins.
  */
 function sister_plugins() {
-	require_once(trailingslashit(ABSPATH) . 'wp-admin/includes/plugin.php');
-	require_once(trailingslashit(ABSPATH) . 'wp-admin/includes/plugin-install.php');
-	$response = plugins_api(
+	require_once \trailingslashit(\ABSPATH) . 'wp-admin/includes/plugin.php';
+	require_once \trailingslashit(\ABSPATH) . 'wp-admin/includes/plugin-install.php';
+	$response = \plugins_api(
 		'query_plugins',
 		array(
 			'author'=>'blobfolio',
@@ -37,21 +37,21 @@ function sister_plugins() {
 		)
 	);
 
-	if (!isset($response->plugins) || !is_array($response->plugins)) {
+	if (! isset($response->plugins) || ! \is_array($response->plugins)) {
 		return array();
 	}
 
 	// We want to know whether a plugin is on the system, not
 	// necessarily whether it is active.
-	$plugin_base = trailingslashit(WP_PLUGIN_DIR);
-	$mu_base = defined('WPMU_PLUGIN_DIR') ? trailingslashit(WPMU_PLUGIN_DIR) : false;
+	$plugin_base = \trailingslashit(\WP_PLUGIN_DIR);
+	$mu_base = \defined('WPMU_PLUGIN_DIR') ? \trailingslashit(\WPMU_PLUGIN_DIR) : false;
 
 	$plugins = array();
 	foreach ($response->plugins as $p) {
 		if (
 			('blob-common' === $p->slug) ||
-			file_exists("{$plugin_base}{$p->slug}") ||
-			($mu_base && file_exists("{$mu_base}{$p->slug}"))
+			\file_exists("{$plugin_base}{$p->slug}") ||
+			($mu_base && \file_exists("{$mu_base}{$p->slug}"))
 		) {
 			continue;
 		}
@@ -65,7 +65,7 @@ function sister_plugins() {
 		);
 	}
 
-	usort(
+	\usort(
 		$plugins,
 		function($a, $b) {
 			if ($a['name'] === $b['name']) {
@@ -79,7 +79,7 @@ function sister_plugins() {
 	return $plugins;
 }
 
-$logpath = trailingslashit(WP_CONTENT_DIR) . 'debug.log';
+$logpath = \trailingslashit(\WP_CONTENT_DIR) . 'debug.log';
 
 // @codingStandardsIgnoreStart
 ?><style type="text/css">

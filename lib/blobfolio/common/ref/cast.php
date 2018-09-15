@@ -11,8 +11,8 @@
 
 namespace blobfolio\common\ref;
 
-use \blobfolio\common\data;
-use \blobfolio\common\constants;
+use blobfolio\common\constants;
+use blobfolio\common\data;
 
 class cast {
 
@@ -24,7 +24,7 @@ class cast {
 	 */
 	public static function array(&$value=null) {
 		// Short circuit.
-		if (is_array($value)) {
+		if (\is_array($value)) {
 			return;
 		}
 
@@ -54,31 +54,31 @@ class cast {
 	 */
 	public static function bool(&$value=false, bool $flatten=false) {
 		// Short circuit.
-		if (is_bool($value)) {
+		if (\is_bool($value)) {
 			return;
 		}
 
-		if (!$flatten && is_array($value)) {
+		if (! $flatten && \is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::bool($value[$k]);
 			}
 		}
 		else {
 			// Evaluate special cases.
-			if (is_string($value)) {
-				$value = strtolower($value);
-				if (in_array($value, constants::TRUE_BOOLS, true)) {
+			if (\is_string($value)) {
+				$value = \strtolower($value);
+				if (\in_array($value, constants::TRUE_BOOLS, true)) {
 					$value = true;
 				}
-				elseif (in_array($value, constants::FALSE_BOOLS, true)) {
+				elseif (\in_array($value, constants::FALSE_BOOLS, true)) {
 					$value = false;
 				}
 			}
-			elseif (is_array($value)) {
-				$value = !!count($value);
+			elseif (\is_array($value)) {
+				$value = !! \count($value);
 			}
 
-			if (!is_bool($value)) {
+			if (! \is_bool($value)) {
 				try {
 					$value = (bool) $value;
 				} catch (\Throwable $e) {
@@ -119,11 +119,11 @@ class cast {
 	 */
 	public static function float(&$value=0, bool $flatten=false) {
 		// Short circuit.
-		if (is_float($value)) {
+		if (\is_float($value)) {
 			return;
 		}
 
-		if (!$flatten && is_array($value)) {
+		if (! $flatten && \is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::float($value[$k]);
 			}
@@ -169,33 +169,33 @@ class cast {
 	 */
 	public static function int(&$value=0, bool $flatten=false) {
 		// Short circuit.
-		if (is_int($value)) {
+		if (\is_int($value)) {
 			return;
 		}
 
-		if (!$flatten && is_array($value)) {
+		if (! $flatten && \is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::int($value[$k]);
 			}
 		}
 		else {
 			// Flatten single-entry arrays.
-			if (is_array($value) && (1 === count($value))) {
+			if (\is_array($value) && (1 === \count($value))) {
 				$value = data::array_pop_top($value);
 			}
 
 			// Evaluate special cases.
-			if (is_string($value)) {
-				$value = strtolower($value);
-				if (in_array($value, constants::TRUE_BOOLS, true)) {
+			if (\is_string($value)) {
+				$value = \strtolower($value);
+				if (\in_array($value, constants::TRUE_BOOLS, true)) {
 					$value = 1;
 				}
-				elseif (in_array($value, constants::FALSE_BOOLS, true)) {
+				elseif (\in_array($value, constants::FALSE_BOOLS, true)) {
 					$value = 0;
 				}
 			}
 
-			if (!is_int($value)) {
+			if (! \is_int($value)) {
 				static::number($value, true);
 				$value = (int) $value;
 			}
@@ -233,49 +233,49 @@ class cast {
 	 */
 	public static function number(&$value=0, bool $flatten=false) {
 		// Short circuit.
-		if (is_float($value)) {
+		if (\is_float($value)) {
 			return;
 		}
 
-		if (!$flatten && is_array($value)) {
+		if (! $flatten && \is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::number($value[$k]);
 			}
 		}
 		else {
 			// Flatten single-entry arrays.
-			if (is_array($value) && (1 === count($value))) {
+			if (\is_array($value) && (1 === \count($value))) {
 				$value = data::array_pop_top($value);
 			}
 
-			if (is_string($value)) {
+			if (\is_string($value)) {
 				static::string($value);
 
 				// Replace number chars.
-				$from = array_keys(constants::NUMBER_CHARS);
-				$to = array_values(constants::NUMBER_CHARS);
-				$value = str_replace($from, $to, $value);
+				$from = \array_keys(constants::NUMBER_CHARS);
+				$to = \array_values(constants::NUMBER_CHARS);
+				$value = \str_replace($from, $to, $value);
 
 				// Convert from cents.
-				if (preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
-					$value = preg_replace('/[^\-\d\.]/', '', $value);
+				if (\preg_match('/^\-?[\d,]*\.?\d+¢$/', $value)) {
+					$value = \preg_replace('/[^\-\d\.]/', '', $value);
 					static::number($value);
 					$value /= 100;
 				}
 				// Convert from percent.
-				elseif (preg_match('/^\-?[\d,]*\.?\d+%$/', $value)) {
-					$value = preg_replace('/[^\-\d\.]/', '', $value);
+				elseif (\preg_match('/^\-?[\d,]*\.?\d+%$/', $value)) {
+					$value = \preg_replace('/[^\-\d\.]/', '', $value);
 					static::number($value);
 					$value /= 100;
 				}
 			}
 
-			if (!is_float($value)) {
+			if (! \is_float($value)) {
 				try {
-					$value = (float) filter_var(
+					$value = (float) \filter_var(
 						$value,
-						FILTER_SANITIZE_NUMBER_FLOAT,
-						FILTER_FLAG_ALLOW_FRACTION
+						\FILTER_SANITIZE_NUMBER_FLOAT,
+						\FILTER_FLAG_ALLOW_FRACTION
 					);
 				} catch (\Throwable $e) {
 					$value = 0.0;
@@ -303,14 +303,14 @@ class cast {
 	 * @return void Nothing.
 	 */
 	public static function string(&$value='', bool $flatten=false) {
-		if (!$flatten && is_array($value)) {
+		if (! $flatten && \is_array($value)) {
 			foreach ($value as $k=>$v) {
 				static::string($value[$k]);
 			}
 		}
 		else {
 			// Flatten single-entry arrays.
-			if (is_array($value) && (1 === count($value))) {
+			if (\is_array($value) && (1 === \count($value))) {
 				$value = data::array_pop_top($value);
 			}
 
@@ -319,8 +319,8 @@ class cast {
 				if (
 					$value &&
 					(
-						!function_exists('mb_check_encoding') ||
-						!mb_check_encoding($value, 'ASCII')
+						! \function_exists('mb_check_encoding') ||
+						! \mb_check_encoding($value, 'ASCII')
 					)
 				) {
 					sanitize::utf8($value);
@@ -351,7 +351,7 @@ class cast {
 	 * @return void Nothing.
 	 */
 	public static function to_type(&$value, string $type='', bool $flatten=false) {
-		switch (strtolower($type)) {
+		switch (\strtolower($type)) {
 			case 'string':
 				static::string($value, $flatten);
 				break;

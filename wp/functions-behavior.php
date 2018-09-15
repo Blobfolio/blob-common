@@ -11,14 +11,14 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
-use \blobfolio\common\data;
-use \blobfolio\common\mb as v_mb;
-use \blobfolio\common\mime;
-use \blobfolio\common\ref\sanitize as r_sanitize;
+use blobfolio\common\data;
+use blobfolio\common\mb as v_mb;
+use blobfolio\common\mime;
+use blobfolio\common\ref\sanitize as r_sanitize;
 
 // ---------------------------------------------------------------------
 // MIME Fix
@@ -26,9 +26,9 @@ use \blobfolio\common\ref\sanitize as r_sanitize;
 
 // Not needed if Lord of the Files is around.
 if (
-	!function_exists('common_upload_real_mimes') &&
-	!in_array('blob-mimes/index.php', get_option('active_plugins', array()), true) &&
-	(!defined('WPMU_PLUGIN_DIR') || !WPMU_PLUGIN_DIR || !@is_dir(trailingslashit(WPMU_PLUGIN_DIR) . 'blob-mimes'))
+	! \function_exists('common_upload_real_mimes') &&
+	! \in_array('blob-mimes/index.php', \get_option('active_plugins', array()), true) &&
+	(! \defined('WPMU_PLUGIN_DIR') || ! \WPMU_PLUGIN_DIR || ! @\is_dir(\trailingslashit(\WPMU_PLUGIN_DIR) . 'blob-mimes'))
 ) {
 	/**
 	 * Fix/Improve Upload MIME Detection
@@ -49,11 +49,11 @@ if (
 	 */
 	function common_upload_real_mimes($checked, $file, $filename, $mimes) {
 		// Only worry if the first check failed.
-		if (!$checked['type'] || !$checked['ext']) {
+		if (! $checked['type'] || ! $checked['ext']) {
 			$finfo = mime::finfo($file, $filename);
 
 			// The time for checking certain image types has passed already.
-			$mime_to_ext = apply_filters('getimagesize_mimes_to_exts', array(
+			$mime_to_ext = \apply_filters('getimagesize_mimes_to_exts', array(
 				'image/jpeg'=>'jpg',
 				'image/png'=>'png',
 				'image/gif'=>'gif',
@@ -62,15 +62,15 @@ if (
 			));
 			if (
 				0 !== v_mb::strpos($finfo['mime'], 'image/') ||
-				!in_array($finfo['extension'], $mime_to_ext, true)
+				! \in_array($finfo['extension'], $mime_to_ext, true)
 			) {
 				// Was the extension wrong?
-				if (count($finfo['suggested_filename'])) {
+				if (\count($finfo['suggested_filename'])) {
 					$filename = data::array_pop_top($finfo['suggested_filename']);
 				}
 
 				// What does WP think?
-				$wp_filetype = wp_check_filetype($filename, $mimes);
+				$wp_filetype = \wp_check_filetype($filename, $mimes);
 				if ($wp_filetype['ext'] && $wp_filetype['type']) {
 					$checked['ext'] = $wp_filetype['ext'];
 					$checked['type'] = $wp_filetype['type'];
@@ -81,10 +81,10 @@ if (
 
 		// Sanitize SVGs.
 		if ('image/svg+xml' === $checked['type']) {
-			$contents = @file_get_contents($file);
+			$contents = @\file_get_contents($file);
 			r_sanitize::svg($contents);
 			if ($contents) {
-				@file_put_contents($file, $contents);
+				@\file_put_contents($file, $contents);
 			}
 			else {
 				$checked['type'] = false;
@@ -94,7 +94,7 @@ if (
 
 		return $checked;
 	}
-	add_filter('wp_check_filetype_and_ext', 'common_upload_real_mimes', 10, 4);
+	\add_filter('wp_check_filetype_and_ext', 'common_upload_real_mimes', 10, 4);
 }
 
 // --------------------------------------------------------------------- end MIME fix
@@ -106,24 +106,24 @@ if (
 // ---------------------------------------------------------------------
 
 // Do not include back/next links in meta.
-add_filter('previous_post_rel_link', '__return_false');
-add_filter('next_post_rel_link', '__return_false');
-remove_action('wp_head', 'wlwmanifest_link');
+\add_filter('previous_post_rel_link', '__return_false');
+\add_filter('next_post_rel_link', '__return_false');
+\remove_action('wp_head', 'wlwmanifest_link');
 
-if (!function_exists('common_disable_wp_embed')) {
+if (! \function_exists('common_disable_wp_embed')) {
 	/**
 	 * Disable WP-Embed Scripts
 	 *
 	 * @return void Nothing.
 	 */
 	function common_disable_wp_embed() {
-		wp_deregister_script('wp-embed');
+		\wp_deregister_script('wp-embed');
 	}
-	add_action('wp', 'common_disable_wp_embed');
-	add_filter('oembed_discovery_links', '__return_false', PHP_INT_MAX);
+	\add_action('wp', 'common_disable_wp_embed');
+	\add_filter('oembed_discovery_links', '__return_false', \PHP_INT_MAX);
 }
 
-if (!function_exists('common_disable_checked_to_top')) {
+if (! \function_exists('common_disable_checked_to_top')) {
 	/**
 	 * Don't Re-Order Post Taxonomy
 	 *
@@ -139,10 +139,10 @@ if (!function_exists('common_disable_checked_to_top')) {
 		$args['checked_ontop'] = false;
 		return $args;
 	}
-	add_filter('wp_terms_checklist_args', 'common_disable_checked_to_top');
+	\add_filter('wp_terms_checklist_args', 'common_disable_checked_to_top');
 }
 
-if (!function_exists('common_cron_schedules')) {
+if (! \function_exists('common_cron_schedules')) {
 	/**
 	 * More WP CRON Schedules
 	 *
@@ -192,7 +192,7 @@ if (!function_exists('common_cron_schedules')) {
 
 		return $schedules;
 	}
-	add_filter('cron_schedules', 'common_cron_schedules');
+	\add_filter('cron_schedules', 'common_cron_schedules');
 }
 
 // --------------------------------------------------------------------- end automatic
@@ -203,7 +203,7 @@ if (!function_exists('common_cron_schedules')) {
 // Optional Overrides
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_upload_mimes')) {
+if (! \function_exists('common_upload_mimes')) {
 	/**
 	 * Allow SVG/WebP Uploads
 	 *
@@ -215,10 +215,10 @@ if (!function_exists('common_upload_mimes')) {
 		$existing_mimes['webp'] = 'image/webp';
 		return $existing_mimes;
 	}
-	add_filter('upload_mimes', 'common_upload_mimes');
+	\add_filter('upload_mimes', 'common_upload_mimes');
 }
 
-if (!function_exists('common_svg_media_thumbnail')) {
+if (! \function_exists('common_svg_media_thumbnail')) {
 	/**
 	 * SVG Thumbnail Support in Media Library Grid
 	 *
@@ -229,26 +229,26 @@ if (!function_exists('common_svg_media_thumbnail')) {
 	 */
 	function common_svg_media_thumbnails($response, $attachment, $meta) {
 
-		if (!is_array($response) || !isset($response['type'], $response['subtype'])) {
+		if (! \is_array($response) || ! isset($response['type'], $response['subtype'])) {
 			return $response;
 		}
 
 		if (
 			('image' === $response['type']) &&
 			('svg+xml' === $response['subtype']) &&
-			class_exists('SimpleXMLElement')
+			\class_exists('SimpleXMLElement')
 		) {
 			try {
-				$path = get_attached_file($attachment->ID);
-				if (@file_exists($path)) {
-					$svg = new SimpleXMLElement(@file_get_contents($path));
+				$path = \get_attached_file($attachment->ID);
+				if (@\file_exists($path)) {
+					$svg = new SimpleXMLElement(@\file_get_contents($path));
 					$src = $response['url'];
 					$width = (int) $svg['width'];
 					$height = (int) $svg['height'];
 
 					// Media gallery.
-					$response['image'] = compact('src', 'width', 'height');
-					$response['thumb'] = compact('src', 'width', 'height');
+					$response['image'] = \compact('src', 'width', 'height');
+					$response['thumb'] = \compact('src', 'width', 'height');
 
 					// Media single.
 					$response['sizes']['full'] = array(
@@ -265,10 +265,10 @@ if (!function_exists('common_svg_media_thumbnail')) {
 
 		return $response;
 	}
-	add_filter('wp_prepare_attachment_for_js', 'common_svg_media_thumbnails', 10, 3);
+	\add_filter('wp_prepare_attachment_for_js', 'common_svg_media_thumbnails', 10, 3);
 }
 
-if (!function_exists('common_disable_jquery_migrate')) {
+if (! \function_exists('common_disable_jquery_migrate')) {
 	/**
 	 * Disable jQuery Migrate
 	 *
@@ -285,20 +285,20 @@ if (!function_exists('common_disable_jquery_migrate')) {
 		// enqueued.
 		if (
 			isset($wp_scripts->registered['jquery']->deps) &&
-			!is_admin() &&
-			(false !== ($key = array_search('jquery-migrate', $wp_scripts->registered['jquery']->deps, true)))
+			! \is_admin() &&
+			(false !== ($key = \array_search('jquery-migrate', $wp_scripts->registered['jquery']->deps, true)))
 		) {
 			// Compared with other removal methods, this keeps the keys
 			// sequential.
-			array_splice($wp_scripts->registered['jquery']->deps, $key, 1);
+			\array_splice($wp_scripts->registered['jquery']->deps, $key, 1);
 		}
 	}
-	if (defined('WP_DISABLE_JQUERY_MIGRATE') && WP_DISABLE_JQUERY_MIGRATE) {
-		add_action('wp_print_scripts', 'common_disable_jquery_migrate');
+	if (\defined('WP_DISABLE_JQUERY_MIGRATE') && \WP_DISABLE_JQUERY_MIGRATE) {
+		\add_action('wp_print_scripts', 'common_disable_jquery_migrate');
 	}
 }
 
-if (!function_exists('common_disable_wp_emojicons')) {
+if (! \function_exists('common_disable_wp_emojicons')) {
 	/**
 	 * Disable WP-Emoji Scripts
 	 *
@@ -309,20 +309,20 @@ if (!function_exists('common_disable_wp_emojicons')) {
 	 */
 	function common_disable_wp_emojicons() {
 		// All actions related to emojis.
-		remove_action('admin_print_styles', 'print_emoji_styles');
-		remove_action('wp_head', 'print_emoji_detection_script', 7 );
-		remove_action('admin_print_scripts', 'print_emoji_detection_script');
-		remove_action('wp_print_styles', 'print_emoji_styles');
-		remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
-		remove_filter('the_content_feed', 'wp_staticize_emoji');
-		remove_filter('comment_text_rss', 'wp_staticize_emoji');
+		\remove_action('admin_print_styles', 'print_emoji_styles');
+		\remove_action('wp_head', 'print_emoji_detection_script', 7 );
+		\remove_action('admin_print_scripts', 'print_emoji_detection_script');
+		\remove_action('wp_print_styles', 'print_emoji_styles');
+		\remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+		\remove_filter('the_content_feed', 'wp_staticize_emoji');
+		\remove_filter('comment_text_rss', 'wp_staticize_emoji');
 
 		// Filter to remove TinyMCE emojis.
-		add_filter('tiny_mce_plugins', 'common_disable_emojicons_tinymce');
-		add_filter('emoji_svg_url', '__return_false', PHP_INT_MAX);
+		\add_filter('tiny_mce_plugins', 'common_disable_emojicons_tinymce');
+		\add_filter('emoji_svg_url', '__return_false', \PHP_INT_MAX);
 	}
-	if (defined('WP_DISABLE_EMOJI') && WP_DISABLE_EMOJI) {
-		add_action('init', 'common_disable_wp_emojicons');
+	if (\defined('WP_DISABLE_EMOJI') && \WP_DISABLE_EMOJI) {
+		\add_action('init', 'common_disable_wp_emojicons');
 	}
 
 	/**
@@ -332,8 +332,8 @@ if (!function_exists('common_disable_wp_emojicons')) {
 	 * @return array Plugins.
 	 */
 	function common_disable_emojicons_tinymce($plugins) {
-		if (is_array($plugins)) {
-			return array_diff($plugins, array('wpemoji'));
+		if (\is_array($plugins)) {
+			return \array_diff($plugins, array('wpemoji'));
 		}
 
 		return array();

@@ -10,7 +10,7 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 //
 // @param n/a
 // @return hash
-if (!function_exists('common_get_form_timestamp')) {
+if (! \function_exists('common_get_form_timestamp')) {
 	/**
 	 * Generate Form Timestamp
 	 *
@@ -33,13 +33,13 @@ if (!function_exists('common_get_form_timestamp')) {
 	 * @return string Hash.
 	 */
 	function common_get_form_timestamp() {
-		$salt = defined('NONCE_KEY') ? NONCE_KEY : 'no_nonce_' . site_url();
-		$time = time();
-		return "$time," . md5($time . $salt);
+		$salt = \defined('NONCE_KEY') ? \NONCE_KEY : 'no_nonce_' . \site_url();
+		$time = \time();
+		return "$time," . \md5($time . $salt);
 	}
 }
 // Alias.
-if (!function_exists('common_generate_form_timestamp')) {
+if (! \function_exists('common_generate_form_timestamp')) {
 	/**
 	 * Generate Form Timestamp
 	 *
@@ -48,7 +48,7 @@ if (!function_exists('common_generate_form_timestamp')) {
 	 * @return string Hash.
 	 */
 	function common_generate_form_timestamp() {
-		return common_get_form_timestamp();
+		return \common_get_form_timestamp();
 	}
 }
 
@@ -58,7 +58,7 @@ if (!function_exists('common_generate_form_timestamp')) {
 // @param hash
 // @param time elapsed (must be >= this value)
 // @return true/false
-if (!function_exists('common_check_form_timestamp')) {
+if (! \function_exists('common_check_form_timestamp')) {
 	/**
 	 * Validate Form Timestamp
 	 *
@@ -67,16 +67,16 @@ if (!function_exists('common_check_form_timestamp')) {
 	 * @return bool True/false.
 	 */
 	function common_check_form_timestamp($hash='', $elapsed=5) {
-		$salt = defined('NONCE_KEY') ? NONCE_KEY : 'no_nonce_' . site_url();
-		if (!preg_match('/^\d+,([\da-f]{32})$/i', $hash)) {
+		$salt = \defined('NONCE_KEY') ? \NONCE_KEY : 'no_nonce_' . \site_url();
+		if (! \preg_match('/^\d+,([\da-f]{32})$/i', $hash)) {
 			return false;
 		}
-		list($t,$h) = explode(',', $hash);
-		return ((md5($t . $salt) === $h) && (time() - $t >= $elapsed));
+		list($t,$h) = \explode(',', $hash);
+		return ((\md5($t . $salt) === $h) && (\time() - $t >= $elapsed));
 	}
 }
 // Alias.
-if (!function_exists('common_verify_form_timestamp')) {
+if (! \function_exists('common_verify_form_timestamp')) {
 	/**
 	 * Validate Form Timestamp
 	 *
@@ -85,7 +85,7 @@ if (!function_exists('common_verify_form_timestamp')) {
 	 * @return bool True/false.
 	 */
 	function common_verify_form_timestamp($hash='', $elapsed=5) {
-		return common_check_form_timestamp($hash, $elapsed);
+		return \common_check_form_timestamp($hash, $elapsed);
 	}
 }
 

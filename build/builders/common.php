@@ -8,11 +8,10 @@
 
 namespace blobfolio\dev;
 
-use \blobfolio\bob\format;
-use \blobfolio\bob\io;
-use \blobfolio\bob\log;
-use \blobfolio\common\file as v_file;
-use \Phar;
+use blobfolio\bob\io;
+use blobfolio\bob\log;
+use blobfolio\common\file as v_file;
+use Phar;
 
 class common extends \blobfolio\bob\base\mike {
 	// Project Name.
@@ -55,7 +54,7 @@ class common extends \blobfolio\bob\base\mike {
 	public static function build() {
 		// We need a working directory early.
 		static::make_working_dir();
-		$skel_dir = BOB_ROOT_DIR . 'skel/';
+		$skel_dir = \BOB_ROOT_DIR . 'skel/';
 
 		// Install composer.
 		io::composer_install(static::$_working_dir, "{$skel_dir}composer.json", true);
@@ -65,7 +64,7 @@ class common extends \blobfolio\bob\base\mike {
 			log::print('Replacing remote with local lib…');
 			$working = static::$_working_dir . 'vendor/blobfolio/blob-common/lib/blobfolio/';
 			v_file::rmdir($working);
-			v_file::copy(dirname(BOB_ROOT_DIR) . '/lib/blobfolio/', $working);
+			v_file::copy(\dirname(\BOB_ROOT_DIR) . '/lib/blobfolio/', $working);
 		}
 
 		log::print('Parsing classmap…');
@@ -77,16 +76,16 @@ class common extends \blobfolio\bob\base\mike {
 		v_file::mkdir($vendor_new, 0755);
 
 		// Parse the map.
-		$raw = file_get_contents("{$vendor_old}composer/autoload_static.php");
+		$raw = \file_get_contents("{$vendor_old}composer/autoload_static.php");
 		if (
-			(false === ($start = strpos($raw, '$classMap ='))) ||
-			(false === ($end = strpos($raw, ');', $start)))
+			(false === ($start = \strpos($raw, '$classMap ='))) ||
+			(false === ($end = \strpos($raw, ');', $start)))
 		) {
 			log::error('Could not parse classmap.');
 		}
 
-		$map = substr($raw, $start, ($end - $start + 2));
-		$map = str_replace("__DIR__ . '/..' . ", '', $map);
+		$map = \substr($raw, $start, ($end - $start + 2));
+		$map = \str_replace("__DIR__ . '/..' . ", '', $map);
 		// phpcs:disable
 		eval($map);
 		//phpcs:enable
@@ -96,14 +95,14 @@ class common extends \blobfolio\bob\base\mike {
 		$out = array();
 		foreach ($classMap as $k=>$v) {
 			// Move the files out of the original location.
-			$subdir = explode('/', ltrim($v, '/'));
-			$subdir = array_shift($subdir);
-			if (file_exists("{$vendor_old}{$subdir}")) {
-				rename("{$vendor_old}{$subdir}", "{$vendor_new}{$subdir}");
+			$subdir = \explode('/', \ltrim($v, '/'));
+			$subdir = \array_shift($subdir);
+			if (\file_exists("{$vendor_old}{$subdir}")) {
+				\rename("{$vendor_old}{$subdir}", "{$vendor_new}{$subdir}");
 			}
 
-			$classMap[$k] = '/lib/' . ltrim($v, '/');
-			$out[] = "'" . addslashes($k) . "'=>'phar://' . \$blobcommon_phar . '/" . addslashes(ltrim($classMap[$k], '/')) . "'";
+			$classMap[$k] = '/lib/' . \ltrim($v, '/');
+			$out[] = "'" . \addslashes($k) . "'=>'phar://' . \$blobcommon_phar . '/" . \addslashes(\ltrim($classMap[$k], '/')) . "'";
 		}
 
 		log::print('Cleaning up…');
@@ -117,11 +116,11 @@ class common extends \blobfolio\bob\base\mike {
 		$shitlist[] = '#/LICENSE$#';
 		foreach ($files as $v) {
 			if (io::is_shitlist($v, $shitlist)) {
-				if (is_dir($v)) {
+				if (\is_dir($v)) {
 					v_file::rmdir($v);
 				}
 				else {
-					unlink($v);
+					\unlink($v);
 				}
 			}
 		}
@@ -131,28 +130,28 @@ class common extends \blobfolio\bob\base\mike {
 		$files = v_file::scandir($vendor_new);
 		foreach ($files as $v) {
 			if (
-				('.php' === substr($v, -4)) ||
+				('.php' === \substr($v, -4)) ||
 				// Remember blob-phone stores its classes with a .txt
 				// extension to avoid bloating an optimized classmap
 				// file.
-				preg_match('#/data[A-Z]{2}.txt$#', $v)
+				\preg_match('#/data[A-Z]{2}.txt$#', $v)
 			) {
-				file_put_contents($v, php_strip_whitespace($v));
+				\file_put_contents($v, \php_strip_whitespace($v));
 			}
 		}
 
 		log::print('Compiling stubs…');
 
 		// The main one first.
-		static::$stub_common = file_get_contents("{$skel_dir}common_index.template");
-		static::$stub_common = str_replace(
+		static::$stub_common = \file_get_contents("{$skel_dir}common_index.template");
+		static::$stub_common = \str_replace(
 			'CLASSMAP',
-			"\n\t" . implode(",\n\t", $out) . "\n",
+			"\n\t" . \implode(",\n\t", $out) . "\n",
 			static::$stub_common
 		);
 
 		// Our test file.
-		static::$stub_test = file_get_contents("{$skel_dir}test_index.template");
+		static::$stub_test = \file_get_contents("{$skel_dir}test_index.template");
 	}
 
 	/**
@@ -164,14 +163,14 @@ class common extends \blobfolio\bob\base\mike {
 		log::print('Building blob-common.phar…');
 
 		// Define some paths.
-		$bin_dir = dirname(BOB_ROOT_DIR) . '/bin/';
+		$bin_dir = \dirname(\BOB_ROOT_DIR) . '/bin/';
 
 		// Remove original.
-		if (is_file("{$bin_dir}blob-common.phar")) {
-			unlink("{$bin_dir}blob-common.phar");
+		if (\is_file("{$bin_dir}blob-common.phar")) {
+			\unlink("{$bin_dir}blob-common.phar");
 		}
 
-		clearstatcache();
+		\clearstatcache();
 
 		// Make new.
 		$phar = new Phar("{$bin_dir}blob-common.phar", 0);
@@ -183,12 +182,12 @@ class common extends \blobfolio\bob\base\mike {
 
 		// Compile a version release file.
 		$out = array(
-			'checksum'=>md5_file("{$bin_dir}blob-common.phar"),
-			'date_created'=>date('c'),
-			'size'=>intval(filesize("{$bin_dir}blob-common.phar")),
+			'checksum'=>\md5_file("{$bin_dir}blob-common.phar"),
+			'date_created'=>\date('c'),
+			'size'=>\intval(\filesize("{$bin_dir}blob-common.phar")),
 			'url'=>static::COMMON_REMOTE,
 		);
-		file_put_contents("{$bin_dir}blob-common.json", json_encode($out, JSON_PRETTY_PRINT));
+		\file_put_contents("{$bin_dir}blob-common.json", \json_encode($out, \JSON_PRETTY_PRINT));
 
 		log::print('Building test.phar…');
 

@@ -10,25 +10,25 @@
  */
 
 // This must be called through WordPress.
-if (!defined('ABSPATH')) {
+if (! \defined('ABSPATH')) {
 	exit;
 }
 
-use \blobfolio\common\constants;
-use \blobfolio\common\data;
-use \blobfolio\common\file as v_file;
-use \blobfolio\common\format as v_format;
-use \blobfolio\common\mb as v_mb;
-use \blobfolio\common\mime;
-use \blobfolio\common\ref\file as r_file;
-use \blobfolio\common\ref\sanitize as r_sanitize;
-use \blobfolio\common\sanitize as v_sanitize;
+use blobfolio\common\constants;
+use blobfolio\common\data;
+use blobfolio\common\file as v_file;
+use blobfolio\common\format as v_format;
+use blobfolio\common\mb as v_mb;
+use blobfolio\common\mime;
+use blobfolio\common\ref\file as r_file;
+use blobfolio\common\ref\sanitize as r_sanitize;
+use blobfolio\common\sanitize as v_sanitize;
 
 // ---------------------------------------------------------------------
 // Geography
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_get_us_states')) {
+if (! \function_exists('common_get_us_states')) {
 	/**
 	 * Return US States
 	 *
@@ -44,19 +44,19 @@ if (!function_exists('common_get_us_states')) {
 		// is a bit limiting. Raw data is now stored in title case, but
 		// can be uppercased as needed for backward compatibility.
 		if ($uppercase) {
-			$states = array_map('strtoupper', $states);
+			$states = \array_map('strtoupper', $states);
 		}
 
 		// Remove others.
-		if (!$include_other) {
-			$states = array_diff_key($states, array_flip($other));
+		if (! $include_other) {
+			$states = \array_diff_key($states, \array_flip($other));
 		}
 
 		return $states;
 	}
 }
 
-if (!function_exists('common_get_ca_provinces')) {
+if (! \function_exists('common_get_ca_provinces')) {
 	/**
 	 * Return Canadian Provinces
 	 *
@@ -70,14 +70,14 @@ if (!function_exists('common_get_ca_provinces')) {
 		// is a bit limiting. Raw data is now stored in title case, but
 		// can be uppercased as needed for backward compatibility.
 		if ($uppercase) {
-			$provinces = array_map('strtoupper', $provinces);
+			$provinces = \array_map('strtoupper', $provinces);
 		}
 
 		return $provinces;
 	}
 }
 
-if (!function_exists('common_get_countries')) {
+if (! \function_exists('common_get_countries')) {
 	/**
 	 * Return Countries
 	 *
@@ -94,7 +94,7 @@ if (!function_exists('common_get_countries')) {
 		// stored in title case. However for the sake of consistency,
 		// an uppercase flag has been added.
 		if ($uppercase) {
-			$countries = array_map('strtoupper', $countries);
+			$countries = \array_map('strtoupper', $countries);
 		}
 
 		return $countries;
@@ -110,7 +110,7 @@ if (!function_exists('common_get_countries')) {
 // File Handling
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_readfile_chunked')) {
+if (! \function_exists('common_readfile_chunked')) {
 	/**
 	 * Read File in Chunks
 	 *
@@ -126,7 +126,7 @@ if (!function_exists('common_readfile_chunked')) {
 	}
 }
 
-if (!function_exists('common_get_data_uri')) {
+if (! \function_exists('common_get_data_uri')) {
 	/**
 	 * Get Data-URI From File
 	 *
@@ -138,7 +138,7 @@ if (!function_exists('common_get_data_uri')) {
 	}
 }
 
-if (!function_exists('common_get_mime_type')) {
+if (! \function_exists('common_get_mime_type')) {
 	/**
 	 * Get MIME Type By File
 	 *
@@ -159,7 +159,7 @@ if (!function_exists('common_get_mime_type')) {
 // IPs
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_ip_to_number')) {
+if (! \function_exists('common_ip_to_number')) {
 	/**
 	 * IP to Number
 	 *
@@ -171,7 +171,7 @@ if (!function_exists('common_ip_to_number')) {
 	}
 }
 
-if (!function_exists('common_cidr_to_range')) {
+if (! \function_exists('common_cidr_to_range')) {
 	/**
 	 * CIDR to IP Range
 	 *
@@ -205,32 +205,32 @@ if (!function_exists('common_cidr_to_range')) {
 function _common_get_path_map() {
 	static $paths;
 
-	if (!is_array($paths)) {
+	if (! \is_array($paths)) {
 		$paths = array();
 
 		// Plugin paths.
-		if (defined('WP_PLUGIN_DIR') && defined('WP_PLUGIN_URL')) {
-			$paths[trailingslashit(WP_PLUGIN_DIR)] = trailingslashit(WP_PLUGIN_URL);
+		if (\defined('WP_PLUGIN_DIR') && \defined('WP_PLUGIN_URL')) {
+			$paths[\trailingslashit(\WP_PLUGIN_DIR)] = \trailingslashit(\WP_PLUGIN_URL);
 		}
 
 		// Uploads.
-		$upload = wp_upload_dir();
-		$paths[trailingslashit($upload['basedir'])] = trailingslashit($upload['baseurl']);
+		$upload = \wp_upload_dir();
+		$paths[\trailingslashit($upload['basedir'])] = \trailingslashit($upload['baseurl']);
 
 		// Content paths.
-		if (defined('WP_CONTENT_DIR') && defined('WP_CONTENT_URL')) {
-			$paths[trailingslashit(WP_CONTENT_DIR)] = trailingslashit(WP_CONTENT_URL);
+		if (\defined('WP_CONTENT_DIR') && \defined('WP_CONTENT_URL')) {
+			$paths[\trailingslashit(\WP_CONTENT_DIR)] = \trailingslashit(\WP_CONTENT_URL);
 		}
 
 		// There's always abspath.
-		$paths[trailingslashit(ABSPATH)] = trailingslashit(site_url());
+		$paths[\trailingslashit(\ABSPATH)] = \trailingslashit(\site_url());
 	}
 
 	return $paths;
 }
 
 
-if (!function_exists('common_get_path_by_url')) {
+if (! \function_exists('common_get_path_by_url')) {
 	/**
 	 * Get File Path From URL
 	 *
@@ -241,7 +241,7 @@ if (!function_exists('common_get_path_by_url')) {
 	 */
 	function common_get_path_by_url($url) {
 		r_sanitize::url($url);
-		if (!$url) {
+		if (! $url) {
 			return false;
 		}
 
@@ -254,12 +254,12 @@ if (!function_exists('common_get_path_by_url')) {
 		}
 
 		// Run through paths and swap if we can.
-		$paths = _common_get_path_map();
+		$paths = \_common_get_path_map();
 		foreach ($paths as $k=>$v) {
 			// Make the URL RegExable.
-			$v = preg_replace('#^https?://#ui', '//', $v);
-			$v = '(https?:)?' . preg_quote($v, '#');
-			if (($result = preg_replace("#^{$v}#ui", $k, $url)) !== $url) {
+			$v = \preg_replace('#^https?://#ui', '//', $v);
+			$v = '(https?:)?' . \preg_quote($v, '#');
+			if (($result = \preg_replace("#^{$v}#ui", $k, $url)) !== $url) {
 				return $result;
 			}
 		}
@@ -269,7 +269,7 @@ if (!function_exists('common_get_path_by_url')) {
 	}
 }
 
-if (!function_exists('common_get_url_by_path')) {
+if (! \function_exists('common_get_url_by_path')) {
 	/**
 	 * Get URL File Path
 	 *
@@ -282,10 +282,10 @@ if (!function_exists('common_get_url_by_path')) {
 		r_file::unixslash($path);
 
 		// Run through paths and swap if we can.
-		$paths = _common_get_path_map();
+		$paths = \_common_get_path_map();
 		foreach ($paths as $k=>$v) {
-			$k = preg_quote($k, '#');
-			if (($result = preg_replace("#^{$k}#ui", $v, $path)) !== $path) {
+			$k = \preg_quote($k, '#');
+			if (($result = \preg_replace("#^{$k}#ui", $v, $path)) !== $path) {
 				return $result;
 			}
 		}
@@ -294,7 +294,7 @@ if (!function_exists('common_get_url_by_path')) {
 	}
 }
 
-if (!function_exists('common_is_empty_dir')) {
+if (! \function_exists('common_is_empty_dir')) {
 	/**
 	 * Is Directory Empty?
 	 *
@@ -306,7 +306,7 @@ if (!function_exists('common_is_empty_dir')) {
 	}
 }
 
-if (!function_exists('common_is_site_url')) {
+if (! \function_exists('common_is_site_url')) {
 	/**
 	 * Check If a URL is On-Site
 	 *
@@ -315,12 +315,12 @@ if (!function_exists('common_is_site_url')) {
 	 */
 	function common_is_site_url($url) {
 		r_sanitize::hostname($url, false);
-		$site = v_sanitize::hostname(site_url(), false);
+		$site = v_sanitize::hostname(\site_url(), false);
 		return $url === $site;
 	}
 }
 
-if (!function_exists('common_is_current_page')) {
+if (! \function_exists('common_is_current_page')) {
 	/**
 	 * Check If a URL is Being Viewed
 	 *
@@ -329,13 +329,13 @@ if (!function_exists('common_is_current_page')) {
 	 * @return bool True/false.
 	 */
 	function common_is_current_page($url, $subpages=false) {
-		if (!common_is_site_url($url)) {
+		if (! \common_is_site_url($url)) {
 			return false;
 		}
 
 		// Ready the test URL for comparison.
-		$url = v_mb::parse_url($url, PHP_URL_PATH);
-		$url2 = v_mb::parse_url(site_url($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+		$url = v_mb::parse_url($url, \PHP_URL_PATH);
+		$url2 = v_mb::parse_url(\site_url($_SERVER['REQUEST_URI']), \PHP_URL_PATH);
 
 		// And check for a match.
 		if ($subpages) {
@@ -346,7 +346,7 @@ if (!function_exists('common_is_current_page')) {
 	}
 }
 
-if (!function_exists('common_redirect')) {
+if (! \function_exists('common_redirect')) {
 	/**
 	 * Redirect Wrapper
 	 *
@@ -358,19 +358,19 @@ if (!function_exists('common_redirect')) {
 	 * @return void Nothing.
 	 */
 	function common_redirect($url=null, $offsite=false) {
-		if (is_numeric($url)) {
-			$url = get_permalink($url);
+		if (\is_numeric($url)) {
+			$url = \get_permalink($url);
 		}
 
-		if (!$url || (!$offsite && !common_is_site_url($url))) {
-			$url = site_url();
+		if (! $url || (! $offsite && ! \common_is_site_url($url))) {
+			$url = \site_url();
 		}
 
 		v_file::redirect($url);
 	}
 }
 
-if (!function_exists('common_get_site_hostname')) {
+if (! \function_exists('common_get_site_hostname')) {
 	/**
 	 * Get Site Hostname
 	 *
@@ -380,11 +380,11 @@ if (!function_exists('common_get_site_hostname')) {
 	 * @return string Hostname.
 	 */
 	function common_get_site_hostname() {
-		return v_sanitize::hostname(site_url(), false);
+		return v_sanitize::hostname(\site_url(), false);
 	}
 }
 
-if (!function_exists('common_upload_path')) {
+if (! \function_exists('common_upload_path')) {
 	/**
 	 * Upload Path
 	 *
@@ -395,18 +395,18 @@ if (!function_exists('common_upload_path')) {
 	 * @return string Upload path or URL.
 	 */
 	function common_upload_path($subpath=null, $url=false) {
-		$dir = wp_upload_dir();
+		$dir = \wp_upload_dir();
 		$dir = $dir['basedir'];
-		$path = trailingslashit($dir);
-		if (!is_null($subpath)) {
+		$path = \trailingslashit($dir);
+		if (! \is_null($subpath)) {
 			$path .= v_file::unleadingslash($subpath);
 		}
 
-		return $url ? common_get_url_by_path($path) : $path;
+		return $url ? \common_get_url_by_path($path) : $path;
 	}
 }
 
-if (!function_exists('common_theme_path')) {
+if (! \function_exists('common_theme_path')) {
 	/**
 	 * Theme Path
 	 *
@@ -418,13 +418,13 @@ if (!function_exists('common_theme_path')) {
 	 */
 	function common_theme_path($subpath=null, $url=false) {
 		// This is a URL.
-		$dir = trailingslashit(get_stylesheet_directory_uri());
-		$path = trailingslashit($dir);
-		if (!is_null($subpath)) {
+		$dir = \trailingslashit(\get_stylesheet_directory_uri());
+		$path = \trailingslashit($dir);
+		if (! \is_null($subpath)) {
 			$path .= v_file::unleadingslash($subpath);
 		}
 
-		return $url ? $path : common_get_path_by_url($path);
+		return $url ? $path : \common_get_path_by_url($path);
 	}
 }
 
@@ -436,7 +436,7 @@ if (!function_exists('common_theme_path')) {
 // Time
 // ---------------------------------------------------------------------
 
-if (!function_exists('common_datediff')) {
+if (! \function_exists('common_datediff')) {
 	/**
 	 * Days Between Dates
 	 *
@@ -449,7 +449,7 @@ if (!function_exists('common_datediff')) {
 	}
 }
 
-if (!function_exists('common_get_blog_timezone')) {
+if (! \function_exists('common_get_blog_timezone')) {
 	/**
 	 * Local Time
 	 *
@@ -460,16 +460,16 @@ if (!function_exists('common_get_blog_timezone')) {
 	function common_get_blog_timezone() {
 		static $tz;
 
-		if (is_null($tz)) {
+		if (\is_null($tz)) {
 			// Try the timezone string.
-			if (false === $tz = get_option('timezone_string', false)) {
+			if (false === $tz = \get_option('timezone_string', false)) {
 
 				// Try a GMT offset.
-				if (0.0 === ($utc_offset = (float) get_option('gmt_offset', 0.0))) {
+				if (0.0 === ($utc_offset = (float) \get_option('gmt_offset', 0.0))) {
 					$tz = 'UTC';
 				}
 				// Pull proper tz abbreviation from the offset, or default to UTC.
-				elseif (false === $tz = timezone_name_from_abbr('', ($utc_offset * 3600), 0)) {
+				elseif (false === $tz = \timezone_name_from_abbr('', ($utc_offset * 3600), 0)) {
 					$tz = 'UTC';
 				}
 			}
@@ -481,7 +481,7 @@ if (!function_exists('common_get_blog_timezone')) {
 	}
 }
 
-if (!function_exists('common_to_blogtime')) {
+if (! \function_exists('common_to_blogtime')) {
 	/**
 	 * Convert Date to Local Time
 	 *
@@ -490,11 +490,11 @@ if (!function_exists('common_to_blogtime')) {
 	 * @return string Date.
 	 */
 	function common_to_blogtime($date, $from='UTC') {
-		return v_format::to_timezone($date, $from, common_get_blog_timezone());
+		return v_format::to_timezone($date, $from, \common_get_blog_timezone());
 	}
 }
 
-if (!function_exists('common_from_blogtime')) {
+if (! \function_exists('common_from_blogtime')) {
 	/**
 	 * Convert Date from Local Time
 	 *
@@ -503,7 +503,7 @@ if (!function_exists('common_from_blogtime')) {
 	 * @return string Date.
 	 */
 	function common_from_blogtime($date, $to='UTC') {
-		return v_format::to_timezone($date, common_get_blog_timezone(), $to);
+		return v_format::to_timezone($date, \common_get_blog_timezone(), $to);
 	}
 }
 
