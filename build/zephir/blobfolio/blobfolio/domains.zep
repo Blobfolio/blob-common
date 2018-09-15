@@ -862,6 +862,9 @@ final class Domains {
 	/**
 	 * Redirect
 	 *
+	 * Note: When using, be sure to issue an exit() as Zephir can't do
+	 * that itself for some reason.
+	 *
 	 * @param string $to URL.
 	 * @return void Nothing.
 	 */
@@ -879,8 +882,6 @@ final class Domains {
 		else {
 			echo "<script>top.location.href='" . str_replace("'", "\'", to) . "';</script>";
 		}
-
-		exit(0);
 	}
 
 	/**
