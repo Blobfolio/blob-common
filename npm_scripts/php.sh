@@ -16,13 +16,13 @@ fi
 
 
 
-./node_modules/blobfolio-phpcs/lib/vendor/bin/phpcs --colors --standard=Blobfolio --encoding=utf8 --report=full --extensions=php ./
+./node_modules/blobfolio-phpcs/lib/vendor/bin/phpcs --colors --standard=Blobfolio --encoding=utf8 --report=full --ignore="build/zephir/*" --extensions=php ./
 if [ $? -eq 0 ]; then
 	# Everything was fine; just log to the terminal and exit.
 	echo -e "\033[32;1mSuccess:\033[0m Your PHP is looking good!"
 else
 	# Try one more time without warnings to see if this is bad or not.
-	./node_modules/blobfolio-phpcs/lib/vendor/bin/phpcs --colors --standard=Blobfolio --encoding=utf8 --report=notifysend --extensions=php ./
+	./node_modules/blobfolio-phpcs/lib/vendor/bin/phpcs --colors --standard=Blobfolio --encoding=utf8 --report=notifysend --ignore="build/zephir/*" --extensions=php ./
 fi
 
 
