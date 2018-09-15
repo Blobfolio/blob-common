@@ -19,13 +19,15 @@ use blobfolio\common\sanitize as v_sanitize;
 use blobfolio\domain\domain;
 
 // Check for MB functions once.
-\define(
-	'BLOBCOMMON_SANITIZE_HAS_MB',
-	(
-		\function_exists('mb_check_encoding') &&
-		\function_exists('mb_strlen')
-	)
-);
+if (! \defined('BLOBCOMMON_SANITIZE_HAS_MB')) {
+	\define(
+		'BLOBCOMMON_SANITIZE_HAS_MB',
+		(
+			\function_exists('mb_check_encoding') &&
+			\function_exists('mb_strlen')
+		)
+	);
+}
 
 class sanitize {
 
