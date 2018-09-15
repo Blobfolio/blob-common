@@ -190,6 +190,7 @@ class dom {
 	 * @param int $flags Additional flags (XML only).
 	 * @return string Content.
 	 */
+	// phpcs:ignore
 	public static function innerhtml($node, bool $xml=false, int $flags=null) {
 		if (
 			! \is_a($node, 'DOMElement') &&
