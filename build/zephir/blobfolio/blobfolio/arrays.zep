@@ -70,6 +70,43 @@ final class Arrays {
 	}
 
 	/**
+	 * Flatten Associative
+	 *
+	 * Like ::flatten() except keys are flattened too.
+	 *
+	 * @param mixed $data Data.
+	 * @param string $stub Key stub.
+	 * @return mixed Data.
+	 */
+	public static function flattenAssoc(array arr, const string stub="") -> array {
+		if (!count(arr)) {
+			return [];
+		}
+
+		array out = [];
+		var k;
+		var v;
+
+		for k, v in arr {
+			string key = stub ? strval(stub . "_" . k) : strval(k);
+
+			if (is_array(v)) {
+				array tmp = (array) self::flattenAssoc(v, key);
+				var k2;
+				var v2;
+				for k2, v2 in tmp {
+					let out[k2] = v2;
+				}
+			}
+			else {
+				let out[key] = v;
+			}
+		}
+
+		return out;
+	}
+
+	/**
 	 * List to Array
 	 *
 	 * Convert a delimited list into a proper array.

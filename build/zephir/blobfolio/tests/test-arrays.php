@@ -35,6 +35,21 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Test: flattenAssoc
+	 *
+	 * @dataProvider data_flattenAssoc
+	 *
+	 * @param mixed $value Value.
+	 * @param string $stub Stub.
+	 * @param mixed $expected Expected.
+	 */
+	function test_flattenAssoc($value, string $stub, $expected) {
+		$result = \Blobfolio\Arrays::flattenAssoc($value, $stub);
+		$this->assertSame($expected, $result);
+		$this->assertSame('array', gettype($result));
+	}
+
+	/**
 	 * Test: fromList
 	 *
 	 * @dataProvider data_fromList
@@ -345,6 +360,58 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 					'sparkling', 'spiced', 'stout', 'sweet', 'syrup',
 					'tennessee', 'tequila', 'umeshu', 'vermouth',
 					'vodka', 'whiskey', 'whisky', 'white', 'wine',
+				),
+			),
+		);
+	}
+
+	/**
+	 * Data: flattenAssoc
+	 *
+	 * @return array Values.
+	 */
+	function data_flattenAssoc() {
+		return array(
+			array(
+				array(
+					'name'=>'Barney',
+					'contact'=>array(
+						'email'=>'barney@hello.com',
+						'phone'=>'+1 123-456-7890',
+						'preferences'=>array(
+							'dnc'=>true,
+							'mode'=>'email',
+						),
+					),
+				),
+				'',
+				array(
+					'name'=>'Barney',
+					'contact_email'=>'barney@hello.com',
+					'contact_phone'=>'+1 123-456-7890',
+					'contact_preferences_dnc'=>true,
+					'contact_preferences_mode'=>'email',
+				),
+			),
+			array(
+				array(
+					'name'=>'Barney',
+					'contact'=>array(
+						'email'=>'barney@hello.com',
+						'phone'=>'+1 123-456-7890',
+						'preferences'=>array(
+							'dnc'=>true,
+							'mode'=>'email',
+						),
+					),
+				),
+				'stub',
+				array(
+					'stub_name'=>'Barney',
+					'stub_contact_email'=>'barney@hello.com',
+					'stub_contact_phone'=>'+1 123-456-7890',
+					'stub_contact_preferences_dnc'=>true,
+					'stub_contact_preferences_mode'=>'email',
 				),
 			),
 		);
