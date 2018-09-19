@@ -1,8 +1,8 @@
 Package: php-blobfolio
-Version: 20180903-1
+Version: 20180919-2
 Architecture: amd64
 Maintainer: Blobfolio, LLC <hello@blobfolio.com>
-Installed-Size: 11538854
+Installed-Size: 11585589
 Depends: php-common (>= 1:7.0+33~), phpapi-20170718, libc6 (>= 2.14)
 Provides: php7.2-blobfolio
 Section: php
