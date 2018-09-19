@@ -316,6 +316,22 @@ class strings_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Test: toYesNo
+	 *
+	 * @dataProvider data_toYesNo
+	 *
+	 * @param mixed $value Value.
+	 * @param string $yes Yes.
+	 * @param string $no No.
+	 * @param string $expected Expected.
+	 */
+	function test_toYesNo($value, string $yes, string $no, string $expected) {
+		$result = \Blobfolio\Strings::toYesNo($value, $yes, $no);
+
+		$this->assertSame($expected, $result);
+	}
+
+	/**
 	 * Test: utf8
 	 *
 	 * @dataProvider data_utf8
@@ -828,6 +844,40 @@ class strings_tests extends \PHPUnit\Framework\TestCase {
 			array(
 				'HAPPY',
 				'happy',
+			),
+		);
+	}
+
+	/**
+	 * Data: toYesNo
+	 *
+	 * @return array Values.
+	 */
+	function data_toYesNo() {
+		return array(
+			array(
+				array(),
+				'Yes',
+				'No',
+				'No',
+			),
+			array(
+				array(1),
+				'Yes',
+				'No',
+				'Yes',
+			),
+			array(
+				0.0,
+				'Yes',
+				'No',
+				'No',
+			),
+			array(
+				123,
+				'Y',
+				'N',
+				'Y',
 			),
 		);
 	}

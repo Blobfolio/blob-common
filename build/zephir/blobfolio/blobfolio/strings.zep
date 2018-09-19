@@ -1048,6 +1048,21 @@ final class Strings {
 		return self::trim(implode(eol, out), globals_get("flag_trusted"));
 	}
 
+	/**
+	 * Yes/No
+	 *
+	 * Convert a mixed var into a Yes or No response based on its
+	 * evaluation.
+	 *
+	 * @param mixed $value Value.
+	 * @param string $yes Yes.
+	 * @param string $no No.
+	 * @return string Yes/No.
+	 */
+	public static function toYesNo(var value, string yes="Yes", string no="No") -> string {
+		return value ? yes : no;
+	}
+
 
 
 	// -----------------------------------------------------------------
