@@ -576,6 +576,30 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 				"\n",
 				"\"FIRST NAME\",\"PHONE NUMBER\"\n\"John \"\"Cool\"\" Dude\"",
 			),
+			array(
+				array(
+					array(
+						'Name'=>'Josh',
+						'Phone'=>'+1 201-555-0123',
+					),
+					array(
+						'Phone'=>'+1 201-555-0123',
+						'Name'=>'Josh',
+					),
+					array(
+						'Name'=>'Josh',
+						'Phone'=>'+1 201-555-0123',
+						'State'=>'Nevada',
+					),
+					array(
+						'Name'=>'Josh',
+					),
+				),
+				null,
+				",",
+				"\n",
+				"\"Name\",\"Phone\"\n\"Josh\",\"+1 201-555-0123\"\n\"Josh\",\"+1 201-555-0123\"\n\"Josh\",\"+1 201-555-0123\"\n\"Josh\",\"\""
+			),
 		);
 	}
 

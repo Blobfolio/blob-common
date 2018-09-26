@@ -317,11 +317,12 @@ final class Arrays {
 
 		// Data should be an array of arrays.
 		let data = (array) array_values(array_filter(data, "is_array"));
+		bool assoc = count(data) && ("associative" === self::getType(data[0]));
 
 		if ("array" === typeof headers) {
 			let headers = self::flatten(headers);
 		}
-		elseif (count(data) && ("associative" === self::getType(data[0]))) {
+		elseif (assoc) {
 			let headers = array_keys(data[0]);
 		}
 		else {
@@ -342,8 +343,24 @@ final class Arrays {
 		}
 
 		if (count(data)) {
+			array dataKeys = (array) array_keys(data[0]);
 			var line;
-			for line in data {
+			var k2;
+			for k2, line in data {
+				// Make sure keys are in the right order.
+				if (assoc && k2 > 0 && ("associative" === self::getType(line))) {
+					array tmp = [];
+					for (v in dataKeys) {
+						if (isset(line[v])) {
+							let tmp[v] = line[v];
+						}
+						else {
+							let tmp[v] = "";
+						}
+					}
+					let line = tmp;
+				}
+
 				for k, v in line {
 					let line[k] = self::csvCell(v);
 				}
