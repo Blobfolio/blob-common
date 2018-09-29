@@ -529,6 +529,46 @@ final class Geo {
 		return self::_timezones[tz];
 	}
 
+	/**
+	 * Check Timezone For Daylight Saving
+	 *
+	 * @param string $tz Timezone.
+	 * @return bool True/false.
+	 */
+	public static function isTimezoneDst(string tz="") -> bool {
+		// If not specifying a specific timezone, just find the answer.
+		if (empty tz) {
+			array now = (array) localtime(time(), true);
+			return (bool) now["tm_isdst"];
+		}
+
+		// We have to temporarily swap PHP's timezone.
+		let tz = self::niceTimezone(tz);
+		string tz_old = (string) date_default_timezone_get();
+		if (tz !== tz_old) {
+			date_default_timezone_set(tz);
+		}
+
+		// Pull the data.
+		array now = (array) localtime(time(), true);
+
+		// Set it back to the original time.
+		if (tz !== tz_old) {
+			date_default_timezone_set(tz_old);
+		}
+
+		return (bool) now["tm_isdst"];
+	}
+
+	/**
+	 * Is Daylight Saving
+	 *
+	 * @return bool True/false.
+	 */
+	public static function isDst() -> bool {
+		return self::isTimezoneDst();
+	}
+
 
 
 	// -----------------------------------------------------------------
