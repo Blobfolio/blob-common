@@ -59,7 +59,7 @@
     "name": "Blobfolio Common",
     "description": "Improved type juggling, data manipulation, etc.",
     "author": "Blobfolio, LLC <hello@blobfolio.com>",
-    "version": "20181001-1",
+    "version": "20181002-1",
     "verbose": true,
     "requires": {
         "extensions": [
