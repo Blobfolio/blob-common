@@ -163,7 +163,15 @@ final class Blobfolio {
 				let self::_data_dir = "/usr/share/php/Blobfolio/";
 			}
 
-			let self::_data_dir = (string) \Blobfolio\Files::path(self::_data_dir, globals_get("flag_trusted"));
+			// This has to be a directory.
+			if (is_dir(self::_data_dir)) {
+				let self::_data_dir = (string) \Blobfolio\Files::path(self::_data_dir, globals_get("flag_trusted"));
+			}
+			else {
+				// Zephir has a weird bug preventing us from assigning
+				// an empty string directly.
+				let self::_data_dir = (string) trim(" ");
+			}
 		}
 
 		// Check a specific file?
