@@ -314,6 +314,11 @@ class cast {
 				$value = data::array_pop_top($value);
 			}
 
+			if (\is_array($value)) {
+				$value = '';
+				return;
+			}
+
 			try {
 				$value = (string) $value;
 				if (
