@@ -1002,19 +1002,6 @@ class format {
 			return false;
 		}
 
-		// Try the native PHP function first. This will work if the
-		// source was an IPv4 address, and is a lot faster than
-		// rebuliding manually with math extensions.
-		try {
-			$tmp = \long2ip($ip);
-			if (\filter_var($tmp, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4)) {
-				$ip = $tmp;
-				return true;
-			}
-		} catch (\Throwable $e) {
-			$noop;
-		}
-
 		if (\function_exists('gmp_init')) {
 			$bin = \gmp_strval(\gmp_init($ip, 10), 2);
 			$bin = \sprintf('%0128s', $bin);
