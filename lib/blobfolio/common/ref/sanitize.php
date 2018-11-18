@@ -1476,11 +1476,7 @@ class sanitize {
 			$str = v_file::unparse_url($tmp);
 
 			$str = \filter_var($str, \FILTER_SANITIZE_URL);
-			if (! \filter_var(
-				$str,
-				\FILTER_VALIDATE_URL,
-				\FILTER_FLAG_SCHEME_REQUIRED | \FILTER_FLAG_HOST_REQUIRED
-			)) {
+			if (! \filter_var($str, \FILTER_VALIDATE_URL)) {
 				$str = '';
 				return false;
 			}
