@@ -987,6 +987,14 @@ class format {
 	 * @return bool True/false.
 	 */
 	public static function number_to_ip(&$ip) {
+		// If we have a proper integer, we can assume PHP's native
+		// function can handle it.
+		if (\is_int($ip)) {
+			$ip = \long2ip($ip);
+			sanitize::ip($ip, true);
+			return;
+		}
+
 		if (! \is_string($ip)) {
 			if (\is_numeric($ip)) {
 				$ip = (string) $ip;
