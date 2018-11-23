@@ -803,7 +803,6 @@ class image {
 	 * @return bool True/false.
 	 */
 	public static function to_webp(string $from, $to=null, $cwebp=null, $gif2webp=null, bool $refresh=false) {
-
 		// Try binaries first, fallback to GD.
 		return (
 			static::to_webp_binary($from, $to, $cwebp, $gif2webp, $refresh) ||
