@@ -219,12 +219,14 @@ final class IPs {
 		// Try the native PHP function first. This will work if the
 		// source was an IPv4 address, and is a lot faster than
 		// rebuliding manually with math extensions.
-		try {
-			var tmp = long2ip(ip);
-			if (filter_var(tmp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-				return tmp;
-			}
-		} catch \Throwable {}
+		if ip <= 2147483647 {
+			try {
+				var tmp = long2ip(ip);
+				if (filter_var(tmp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+					return tmp;
+				}
+			} catch \Throwable {}
+		}
 
 		string bin = (string) gmp_strval(gmp_init(ip, 10), 2);
 		let bin = sprintf("%0128s", bin);
