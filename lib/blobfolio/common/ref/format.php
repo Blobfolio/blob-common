@@ -1072,7 +1072,7 @@ class format {
 			cast::array($types);
 
 			// We can only go further if blob-phone is installed.
-			if (\class_exists('\\blobfolio\\phone\\phone')) {
+			if (\class_exists('blobfolio\\phone\\phone')) {
 				$str = new phone($str, $country);
 				if (! $str->is_phone($types)) {
 					$str = '';
