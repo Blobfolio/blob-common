@@ -302,6 +302,44 @@ final class Arrays {
 	}
 
 	/**
+	 * Oxford Join
+	 *
+	 * Join a list of elements the way english professors do.
+	 *
+	 * @param array $arr Array.
+	 * @param string $separator Final separator.
+	 * @return string Joined.
+	 */
+	public static function oxford_join(array arr, string separator="and") -> string {
+		if (! count(arr)) {
+			return "";
+		}
+
+		// Clean up the separator.
+		let separator = trim(separator);
+		if (empty separator) {
+			let separator = "and";
+		}
+
+		// Let's build a nice array.
+		array out = [];
+		var v;
+
+		for v in arr {
+			if (! empty v && ("string" === typeof v || is_numeric(v))) {
+				let out[] = (string) v;
+			}
+		}
+
+		if (count(out) <= 2) {
+			return implode(" " . separator . " ", out);
+		}
+
+		string last = (string) array_pop(out);
+		return implode(", ", out) . ", " . separator . " " . last;
+	}
+
+	/**
 	 * To CSV
 	 *
 	 * Create a CSV from Data

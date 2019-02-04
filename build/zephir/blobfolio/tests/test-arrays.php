@@ -80,6 +80,20 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Test: oxford_join
+	 *
+	 * @dataProvider data_oxford_join
+	 *
+	 * @param array $value Value.
+	 * @param string $separator Separator.
+	 * @param string $expected Expected.
+	 */
+	function test_oxford_join($value, string $separator, string $expected) {
+		$result = \Blobfolio\Arrays::oxford_join($value, $separator);
+		$this->assertSame($expected, $result);
+	}
+
+	/**
 	 * Test: toCsv
 	 *
 	 * @dataProvider data_toCsv
@@ -534,6 +548,41 @@ class arrays_tests extends \PHPUnit\Framework\TestCase {
 					'US'=>.05,
 					'TX'=>0.0,
 				),
+			),
+		);
+	}
+
+	/**
+	 * Data: oxford_join
+	 *
+	 * @return array Values.
+	 */
+	function data_oxford_join() {
+		return array(
+			array(
+				array('apples', 'bananas', 'oranges'),
+				'and',
+				'apples, bananas, and oranges',
+			),
+			array(
+				array('apples', 'bananas', 'oranges'),
+				'and/or',
+				'apples, bananas, and/or oranges',
+			),
+			array(
+				array('apples', 'bananas'),
+				'and',
+				'apples and bananas',
+			),
+			array(
+				array('apples'),
+				'and',
+				'apples',
+			),
+			array(
+				array(array('apples'), 1, 'bananas'),
+				'and',
+				'1 and bananas',
 			),
 		);
 	}

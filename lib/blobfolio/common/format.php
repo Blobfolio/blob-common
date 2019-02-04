@@ -447,6 +447,43 @@ class format {
 	}
 
 	/**
+	 * Oxford Join
+	 *
+	 * Join a list of elements the way english professors do.
+	 *
+	 * @param array $arr Array.
+	 * @param string $separator Final separator.
+	 * @return string Joined.
+	 */
+	public static function oxford_join($arr, string $separator = 'and') {
+		if (! \is_array($arr) || ! \count($arr)) {
+			return '';
+		}
+
+		$separator = \trim($separator);
+		if (! $separator) {
+			$separator = 'and';
+		}
+		$separator = " $separator ";
+
+		// Let's build a nice array of joinable elements.
+		$out = array();
+		foreach ($arr as $v) {
+			if ($v && (\is_string($v) || \is_numeric($v))) {
+				$out[] = (string) $v;
+			}
+		}
+
+		// Low counts don't require commas.
+		if (\count($out) <= 2) {
+			return \implode($separator, $out);
+		}
+
+		$last = (string) \array_pop($out);
+		return \implode(', ', $out) . ",$separator" . $last;
+	}
+
+	/**
 	 * Phone
 	 *
 	 * @param string $str Phone.
