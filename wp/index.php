@@ -41,7 +41,7 @@ if (! \defined('BLOBCOMMON_PHAR_PATH')) {
 
 // Whether or not we're doing library updates.
 if (! \defined('BLOBCOMMON_PHAR_UPDATES')) {
-	\define('BLOBCOMMON_PHAR_UPDATES', (\BLOBCOMMON_PHAR_PATH === \BLOBCOMMON_PLUGIN_DIR . '/lib/blob-common.phar'));
+	\define('BLOBCOMMON_PHAR_UPDATES', false);
 }
 
 // Is this installed as a Must-Use plugin?
