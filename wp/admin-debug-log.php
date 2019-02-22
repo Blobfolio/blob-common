@@ -48,20 +48,27 @@ function sister_plugins() {
 
 	$plugins = array();
 	foreach ($response->plugins as $p) {
+		// WordPress changed the formatting; let's make sure we always
+		// have an array.
+		if (! \is_array($p)) {
+			$p = (array) $p;
+		}
+
 		if (
-			('blob-common' === $p->slug) ||
-			\file_exists("{$plugin_base}{$p->slug}") ||
-			($mu_base && \file_exists("{$mu_base}{$p->slug}"))
+			! isset($p['slug']) ||
+			('blob-common' === $p['slug']) ||
+			\file_exists("{$plugin_base}{$p['slug']}") ||
+			($mu_base && \file_exists("{$mu_base}{$p['slug']}"))
 		) {
 			continue;
 		}
 
 		$plugins[] = array(
-			'name'=>$p->name,
-			'slug'=>$p->slug,
-			'description'=>$p->short_description,
-			'url'=>$p->homepage,
-			'version'=>$p->version,
+			'name'=>$p['name'],
+			'slug'=>$p['slug'],
+			'description'=>$p['short_description'],
+			'url'=>$p['homepage'],
+			'version'=>$p['version'],
 		);
 	}
 
