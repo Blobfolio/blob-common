@@ -1,10 +1,10 @@
 Package: php-blobfolio
-Version: 20190204-1
+Version: 20190303-1
 Architecture: amd64
 Maintainer: Blobfolio, LLC <hello@blobfolio.com>
 Installed-Size: 11643115
-Depends: php-common (>= 1:7.0+33~), phpapi-20170718, libc6 (>= 2.14)
-Provides: php7.2-blobfolio
+Depends: phpapi-20170718 | phpapi-20180731, libc6 (>= 2.14)
+Provides: php7.2-blobfolio, php7.3-blobfolio
 Section: php
 Priority: optional
 Homepage: https://github.com/Blobfolio/blob-common
