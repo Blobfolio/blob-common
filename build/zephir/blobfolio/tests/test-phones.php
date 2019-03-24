@@ -103,7 +103,7 @@ class phones_tests extends \PHPUnit\Framework\TestCase {
 				1012345678,
 				'CN',
 				array(),
-				'+86 101 234 5678',
+				'+86 1012 345678',
 			),
 			array(
 				'2042345678',
@@ -130,7 +130,7 @@ class phones_tests extends \PHPUnit\Framework\TestCase {
 					'prefix'=>86,
 					'region'=>'Asia',
 					'types'=>array('fixed'),
-					'number'=>'+86 101 234 5678',
+					'number'=>'+86 1012 345678',
 				),
 			),
 			// Canadian number w/ wrong country.
@@ -157,7 +157,7 @@ class phones_tests extends \PHPUnit\Framework\TestCase {
 					'prefix'=>598,
 					'region'=>'South America',
 					'types'=>array('mobile'),
-					'number'=>'+598 9423 1234',
+					'number'=>'+598 94 231 234',
 				),
 			),
 			// US w/o country.
