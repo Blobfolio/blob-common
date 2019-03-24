@@ -9,7 +9,7 @@ if [ "$1" = "remove" ]; then
     if [ -e /usr/lib/php/php-maintscript-helper ] ; then
 	. /usr/lib/php/php-maintscript-helper
 
-	for version in 7.2 ; do
+	for version in 7.3 ; do
 	    for conf in blobfolio ; do
 		php_invoke dismod $version ALL $conf || exit $?
 	    done
@@ -18,7 +18,7 @@ if [ "$1" = "remove" ]; then
 fi
 
 if [ "$1" = "purge" ] ; then
-    for version in 7.2 7.1 7.0 5.6 ; do
+    for version in 7.3 7.2 7.1 7.0 5.6 ; do
 	inidir="/etc/php/$version/mods-available"
 	for conf in blobfolio; do
 	    inifile=${conf}.ini
