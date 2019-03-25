@@ -631,8 +631,7 @@ final class Domains {
 		let str = filter_var(str, FILTER_SANITIZE_URL);
 		if (!filter_var(
 			str,
-			FILTER_VALIDATE_URL,
-			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED
+			FILTER_VALIDATE_URL
 		)) {
 			return "";
 		}
