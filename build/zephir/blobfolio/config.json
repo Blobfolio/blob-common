@@ -52,14 +52,14 @@
         "constant-folding": true,
         "static-constant-class-folding": true,
         "call-gatherer-pass": true,
-        "check-invalid-reads": false,
+        "check-invalid-reads": true,
         "internal-call-transformation": false
     },
     "namespace": "blobfolio",
     "name": "Blobfolio Common",
     "description": "Improved type juggling, data manipulation, etc.",
     "author": "Blobfolio, LLC <hello@blobfolio.com>",
-    "version": "20190325-1",
+    "version": "20190402-1",
     "verbose": true,
     "requires": {
         "extensions": [
