@@ -1099,6 +1099,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 			array(2015550123, 'US', '+1 201-555-0123'),
 			array(2015550123, 'CA', '+1 201-555-0123'),
 			array(array(2015550123), 'CA', array('+1 201-555-0123')),
+			array(1012345678, 'CN', '+86 101 234 5678'),
 		);
 	}
 
