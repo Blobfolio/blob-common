@@ -129,7 +129,7 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $quote Quote.
 	 * @param string $expected Expected.
 	 */
-	function test_js(string $value, string $quote, string $expected) {
+	function test_js($value, $quote, string $expected) {
 		$result = \Blobfolio\Dom::js($value, $quote);
 
 		$this->assertSame($expected, $result);

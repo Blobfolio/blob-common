@@ -295,7 +295,7 @@ class strings_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_toSentence(string $value, string $expected) {
+	function test_toSentence($value, $expected) {
 		$result = \Blobfolio\Strings::toSentence($value);
 
 		$this->assertSame($expected, $result);
@@ -447,7 +447,7 @@ class strings_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $value Value.
 	 * @param bool $expected Expected.
 	 */
-	function test_isUtf8(string $value, bool $expected) {
+	function test_isUtf8($value, bool $expected) {
 		$result = \Blobfolio\Strings::isUtf8($value);
 
 		$this->assertSame($expected, $result);
@@ -1000,7 +1000,7 @@ class strings_tests extends \PHPUnit\Framework\TestCase {
 			),
 			array(
 				13,
-				13,
+				'13',
 			),
 			array(
 				'happy times are here again.',
