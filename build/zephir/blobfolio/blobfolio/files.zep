@@ -14,6 +14,7 @@ final class Files {
 	const MIME_DEFAULT = "application/octet-stream";
 	const MIME_EMPTY = "inode/x-empty";
 
+	private static _loaded_blob_mimes = false;
 	private static _mimes_by_e;
 	private static _mimes_by_m;
 
@@ -81,9 +82,7 @@ final class Files {
 		}
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_blob_mimes")) {
-			self::loadMimes();
-		}
+		self::loadMimes();
 
 		array out = [];
 		var v;
@@ -118,9 +117,7 @@ final class Files {
 		}
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_blob_mimes")) {
-			self::loadMimes();
-		}
+		self::loadMimes();
 
 		if (isset(self::_mimes_by_e[ext])) {
 			return self::_mimes_by_e[ext];
@@ -1083,6 +1080,11 @@ final class Files {
 	 * @throws Exception Error.
 	 */
 	private static function loadMimes() -> void {
+		// Don't allow accidental repeats.
+		if (true === self::_loaded_blob_mimes) {
+			return;
+		}
+
 		// Gotta load it!
 		string json = (string) \Blobfolio\Blobfolio::getDataDir("blob-mimes.json");
 		if (empty json) {
@@ -1098,6 +1100,6 @@ final class Files {
 		let self::_mimes_by_e = (array) tmp["extensions"];
 		let self::_mimes_by_m = (array) tmp["mimes"];
 
-		globals_set("loaded_blob_mimes", true);
+		let self::_loaded_blob_mimes = true;
 	}
 }

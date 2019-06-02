@@ -14,6 +14,8 @@ final class Phones {
 	const MINLENGTH = 3;
 	const MAXLENGTH = 30;
 
+	private static _loaded_blob_phone = false;
+
 	private static _country;
 	private static _data;
 	private static _prefixes;
@@ -75,9 +77,7 @@ final class Phones {
 		}
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_blob_phone")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		// Sanitize default country.
 		let country = \Blobfolio\Geo::niceCountry(country);
@@ -222,6 +222,11 @@ final class Phones {
 	 * @throws Exception Error.
 	 */
 	private static function loadData() -> void {
+		// Don't allow accidental repeats.
+		if (true === self::_loaded_blob_phone) {
+			return;
+		}
+
 		string json = (string) \Blobfolio\Blobfolio::getDataDir("blob-phone.json");
 		if (empty json) {
 			throw new \Exception("Missing phone formatting data.");
@@ -244,6 +249,6 @@ final class Phones {
 			let self::_country = "US";
 		}
 
-		globals_set("loaded_blob_phone", true);
+		let self::_loaded_blob_phone = true;
 	}
 }

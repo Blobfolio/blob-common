@@ -13,6 +13,7 @@
 namespace Blobfolio;
 
 final class Domains {
+	private static _loaded_blob_domains = false;
 	private static _suffixes;
 
 	private host;
@@ -181,11 +182,8 @@ final class Domains {
 			return out;
 		}
 
-		// Now the hard part. See if any parts of the host
-		// correspond to a registered suffix.
-		if (!globals_get("loaded_blob_domains")) {
-			self::loadSuffixes();
-		}
+		// Make sure the data is loaded.
+		self::loadSuffixes();
 
 		array suffixes = (array) self::_suffixes;
 		array suffix = [];
@@ -871,9 +869,9 @@ final class Domains {
 		let to = \Blobfolio\Domains::niceUrl(to);
 
 		// Prevent stupid browser RELOAD warnings.
-		let _POST = null;
-		let _GET = null;
-		let _REQUEST = null;
+		// let _POST = null;
+		// let _GET = null;
+		// let _REQUEST = null;
 
 		if (!headers_sent()) {
 			header("Location: " . to);
@@ -965,6 +963,11 @@ final class Domains {
 	 * @throws Exception Error.
 	 */
 	private static function loadSuffixes() -> void {
+		// Don't allow accidental repeats.
+		if (true === self::_loaded_blob_domains) {
+			return;
+		}
+
 		// Gotta load it!
 		string json = (string) \Blobfolio\Blobfolio::getDataDir("blob-domains.json");
 		if (empty json) {
@@ -976,6 +979,6 @@ final class Domains {
 			throw new \Exception("Could not parse domain suffix data.");
 		}
 
-		globals_set("loaded_blob_domains", true);
+		let self::_loaded_blob_domains = true;
 	}
 }

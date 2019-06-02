@@ -11,6 +11,8 @@
 namespace Blobfolio;
 
 final class Geo {
+	private static _loaded_geo = false;
+
 	private static _au;
 	private static _ca;
 	private static _country;
@@ -33,10 +35,8 @@ final class Geo {
 	 * @return array Parts.
 	 */
 	public static function niceAddress(array parts, const uint flags=7) -> array {
-		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		// Load data.
+		self::loadData();
 
 		// First figure out what fields we should be including.
 		bool flagsEmail = (flags & globals_get("flag_address_field_email"));
@@ -253,9 +253,7 @@ final class Geo {
 		}
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		// Uppercase it.
 		let country = \Blobfolio\Strings::toUpper(country, globals_get("flag_trusted"));
@@ -308,9 +306,7 @@ final class Geo {
 		}
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		// Uppercase it.
 		let state = (string) strtoupper(state);
@@ -369,9 +365,7 @@ final class Geo {
 		}
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		// Uppercase it.
 		let state = (string) strtoupper(state);
@@ -408,9 +402,7 @@ final class Geo {
 		}
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		// Uppercase it.
 		let state = (string) strtoupper(state);
@@ -518,9 +510,7 @@ final class Geo {
 		let tz = (string) preg_replace("/\s/u", "", tz);
 
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		if (empty tz || !isset(self::_timezones[tz])) {
 			return "UTC";
@@ -672,9 +662,7 @@ final class Geo {
 	 */
 	public static function getAuStates() -> array {
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		return self::_au;
 	}
@@ -686,9 +674,7 @@ final class Geo {
 	 */
 	public static function getCaProvinces() -> array {
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		return self::_ca;
 	}
@@ -700,9 +686,7 @@ final class Geo {
 	 */
 	public static function getCountries() -> array {
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		return self::_countries;
 	}
@@ -776,9 +760,7 @@ final class Geo {
 	 */
 	public static function getUsStates(const uint flags=1) -> array {
 		// Make sure the data is loaded.
-		if (!globals_get("loaded_geo")) {
-			self::loadData();
-		}
+		self::loadData();
 
 		// Strip the territories and military bases, but keep DC.
 		bool extra = (flags & globals_get("flag_us_territories"));
@@ -811,6 +793,11 @@ final class Geo {
 	 * @throws Exception Error.
 	 */
 	private static function loadData() -> void {
+		// Only load once.
+		if (true === self::_loaded_geo) {
+			return;
+		}
+
 		string json = (string) \Blobfolio\Blobfolio::getDataDir("geo.json");
 		if (empty json) {
 			throw new \Exception("Missing geo data.");
@@ -835,6 +822,6 @@ final class Geo {
 			let self::_country = "US";
 		}
 
-		globals_set("loaded_geo", true);
+		let self::_loaded_geo = true;
 	}
 }
