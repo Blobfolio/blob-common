@@ -1642,9 +1642,8 @@ class sanitize {
 			cast::string($str, true);
 			static::to_range($newlines, 0);
 
-			if (! $newlines) {
-				$str = \preg_replace('/\s+/u', ' ', $str);
-				mb::trim($str);
+			if (! $newlines || ! \preg_match('/\v/u', $str)) {
+				$str = \trim(\preg_replace('/\s+/u', ' ', $str));
 				return;
 			}
 
