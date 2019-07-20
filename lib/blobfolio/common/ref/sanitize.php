@@ -238,8 +238,14 @@ class sanitize {
 		else {
 			cast::string($str, true);
 
-			$str = \preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $str);
-			$str = \preg_replace('/\\\\+0+/', '', $str);
+			$str = \preg_replace(
+				array(
+					'/[\x00-\x08\x0B\x0C\x0E-\x1F]/',
+					'/\\\\+0+/',
+				),
+				'',
+				$str
+			);
 		}
 	}
 

@@ -24,8 +24,17 @@ class dom {
 		ref\cast::string($svg, true);
 
 		// First thing first, lowercase all tags.
-		$svg = \preg_replace('/<svg/ui', '<svg', $svg);
-		$svg = \preg_replace('/<\/svg>/ui', '</svg>', $svg);
+		$svg = \preg_replace(
+			array(
+				'/<svg/ui',
+				'/<\/svg>/ui',
+			),
+			array(
+				'<svg',
+				'</svg>',
+			),
+			$svg
+		);
 
 		// Find the start and end tags so we can cut out miscellaneous garbage.
 		if (
@@ -43,20 +52,25 @@ class dom {
 			$svg
 		);
 
-		// Remove XML, PHP, ASP, etc.
-		$svg = \preg_replace('/<\?(.*)\?>/Us', '', $svg);
-		$svg = \preg_replace('/<\%(.*)\%>/Us', '', $svg);
+		// Remove XML, PHP, ASP, and comments.
+		$svg = \preg_replace(
+			array(
+				'/<\?(.*)\?>/Us',
+				'/<\%(.*)\%>/Us',
+				'/<!--(.*)-->/Us',
+				'/\/\*(.*)\*\//Us',
+			),
+			'',
+			$svg
+		);
 
-		if ((false !== \strpos($svg, '<?')) || (false !== \strpos($svg, '<%'))) {
-			return false;
-		}
-
-		// Remove comments.
-		$svg = \preg_replace('/<!--(.*)-->/Us', '', $svg);
-		$svg = \preg_replace('/\/\*(.*)\*\//Us', '', $svg);
-
-		if ((false !== \strpos($svg, '<!--')) || (false !== \strpos($svg, '/*'))) {
-			return false;
+		if (
+			(false !== \strpos($svg, '<?')) ||
+			(false !== \strpos($svg, '<%')) ||
+			(false !== \strpos($svg, '<!--')) ||
+			(false !== \strpos($svg, '/*'))
+		) {
+			return null;
 		}
 
 		// Open it.
@@ -103,20 +117,25 @@ class dom {
 			$svg
 		);
 
-		// Remove XML, PHP, ASP, etc.
-		$svg = \preg_replace('/<\?(.*)\?>/Us', '', $svg);
-		$svg = \preg_replace('/<\%(.*)\%>/Us', '', $svg);
+		// Remove XML, PHP, ASP, and comments.
+		$svg = \preg_replace(
+			array(
+				'/<\?(.*)\?>/Us',
+				'/<\%(.*)\%>/Us',
+				'/<!--(.*)-->/Us',
+				'/\/\*(.*)\*\//Us',
+			),
+			'',
+			$svg
+		);
 
-		if ((false !== \strpos($svg, '<?')) || (false !== \strpos($svg, '<%'))) {
-			return '';
-		}
-
-		// Remove comments.
-		$svg = \preg_replace('/<!--(.*)-->/Us', '', $svg);
-		$svg = \preg_replace('/\/\*(.*)\*\//Us', '', $svg);
-
-		if ((false !== \strpos($svg, '<!--')) || (false !== \strpos($svg, '/*'))) {
-			return '';
+		if (
+			(false !== \strpos($svg, '<?')) ||
+			(false !== \strpos($svg, '<%')) ||
+			(false !== \strpos($svg, '<!--')) ||
+			(false !== \strpos($svg, '/*'))
+		) {
+			return null;
 		}
 
 		// Find the start and end tags so we can cut out miscellaneous garbage.
@@ -276,23 +295,22 @@ class dom {
 
 		// Substitute brackets for unlikely characters to make parsing easier
 		// hopefully nobody's using braille in their stylesheets...
-		$styles = \preg_replace('/\{(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', '⠁', $styles);
-		$styles = \preg_replace('/\}(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u', '⠈', $styles);
-
-		// Put spaces behind and after parentheses.
 		$styles = \preg_replace(
-			'/\s*(\()\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
-			' (',
-			$styles
-		);
-		$styles = \preg_replace(
-			'/\s*(\))\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
-			') ',
-			$styles
-		);
-
-		// Make sure {} have no whitespace on either end.
-		$styles = \preg_replace('/\s*(⠁|⠈|@)\s*/u', '$1', $styles);
+			array(
+				'/\{(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+				'/\}(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+				'/\s*(\()\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+				'/\s*(\))\s*(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+				'/\s*(⠁|⠈|@)\s*/u',
+			),
+			array(
+				'⠁',
+				'⠈',
+				' (',
+				') ',
+				'$1',
+			),
+		$styles);
 
 		// Push @ rules to their own lines.
 		$styles = \str_replace('@', "\n@", $styles);
@@ -337,13 +355,16 @@ class dom {
 		// One more quick formatting thing, we can get rid of spaces
 		// between closing) and punctuation.
 		$styles = \preg_replace(
-			'/\)\s(,|;)(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
-			')$1',
+			array(
+				'/\)\s(,|;)(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/u',
+				'/(url|rgba?)\s+\(/',
+			),
+			array(
+				')$1',
+				'$1(',
+			),
 			$styles
 		);
-
-		// And between RGB/URL stuff.
-		$styles = \preg_replace('/(url|rgba?)\s+\(/', '$1(', $styles);
 
 		$styles = \explode("\n", $styles);
 		$styles = \array_filter($styles, 'strlen');

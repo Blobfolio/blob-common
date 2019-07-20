@@ -369,9 +369,19 @@ class mb {
 			}
 
 			// Is this word hyphenated or dashed?
-			$v = \preg_replace('/(\p{Pd})\n/u', '$1', $v);
-			$v = \preg_replace('/(\p{Pd}+)/u', "$1\n", $v);
-			static::trim($v);
+			$v = \preg_replace(
+				array(
+					'/(\p{Pd})\n/u',
+					'/(\p{Pd}+)/u',
+					'/(^\s+|\s+$)/u',
+				),
+				array(
+					'$1',
+					"$1\n",
+					'',
+				),
+				$v
+			);
 
 			// Loop through word chunks to see what fits where.
 			$v = \explode("\n", $v);
@@ -397,7 +407,11 @@ class mb {
 				if ($v === $break) {
 					unset($lines[$k]);
 				}
-				$lines[$k] = \preg_replace('/^' . \preg_quote($break, '/') . '/ui', '', $v);
+				$lines[$k] = \preg_replace(
+					'/^' . \preg_quote($break, '/') . '/ui',
+					'',
+					$v
+				);
 				continue;
 			}
 
