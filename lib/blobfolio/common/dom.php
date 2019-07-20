@@ -150,16 +150,22 @@ class dom {
 		}
 
 		ref\cast::array($class);
-		$class = \array_map('trim', $class);
 		foreach ($class as $k=>$v) {
-			$class[$k] = \ltrim($class[$k], '.');
+			$class[$k] = \ltrim(\trim($class[$k]), '.');
+			if (! $class[$k]) {
+				unset($class[$k]);
+			}
 		}
-		$class = \array_filter($class, 'strlen');
-		\sort($class);
-		$class = \array_unique($class);
-		if (! \count($class)) {
+
+		if (empty($class)) {
 			return $nodes;
 		}
+
+		$class = \array_unique($class);
+		\sort($class);
+
+		// We'll be referencing this a lot.
+		$class_length = \count($class);
 
 		$possible = $parent->getElementsByTagName('*');
 		if ($possible->length) {
@@ -170,7 +176,8 @@ class dom {
 					$classes = \explode(' ', $classes);
 					$overlap = \array_intersect($classes, $class);
 
-					if (\count($overlap) && (! $all || \count($overlap) === \count($class))) {
+					$count = \count($overlap);
+					if ($count && (! $all || $count === $class_length)) {
 						$nodes[] = $child;
 					}
 				}
