@@ -91,14 +91,14 @@ class mb {
 
 		cast::string($str, true);
 
-		$str_length = v_mb::strlen($str);
-		$out = array();
-
-		for ($i = 0; $i < $str_length; $i += $split_length) {
-			$out[] = v_mb::substr($str, $i, $split_length);
+		if (1 === $split_length) {
+			\preg_match_all('/./us', $str, $matches);
+		}
+		else {
+			\preg_match_all("/.{1,$split_length}/us", $str, $matches);
 		}
 
-		$str = $out;
+		$str = ! empty($matches[0]) ? $matches[0] : array();
 		return true;
 	}
 
