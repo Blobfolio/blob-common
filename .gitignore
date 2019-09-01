@@ -10,11 +10,11 @@
 /blob-common/
 /build/bob
 /build/lib/vendor/
+/build/zephir/blobfolio/.phpunit.result.cache
 /build/zephir/blobfolio/.temp/
+/build/zephir/blobfolio/.zephir/
 /build/zephir/blobfolio/compile-errors.log
 /build/zephir/blobfolio/compile.log
 /build/zephir/blobfolio/ext/
 /lib/vendor/
 /wp/lib/*.phar
-/build/zephir/blobfolio/.phpunit.result.cache
-/build/zephir/blobfolio/.zephir/
