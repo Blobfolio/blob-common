@@ -510,7 +510,7 @@ class format {
 			// A comma or the end.
 			if (
 				($x === $length) ||
-				((',' === $chunk{$x}) && 'slice' === $last['type'])
+				((',' === $chunk[$x]) && 'slice' === $last['type'])
 			) {
 				$slice = v_mb::substr($chunk, $last['from'], ($x - $last['from']));
 				$slices[] = array(
@@ -542,29 +542,29 @@ class format {
 			}
 			// A new quote.
 			elseif (
-				(('"' === $chunk{$x}) || ("'" === $chunk{$x})) &&
+				(('"' === $chunk[$x]) || ("'" === $chunk[$x])) &&
 				('string' !== $last['type'])
 			) {
 				$slices[] = array(
 					'type'=>'string',
 					'from'=>$x,
-					'delimiter'=>$chunk{$x},
+					'delimiter'=>$chunk[$x],
 				);
 			}
 			// An end quote.
 			elseif (
-				($chunk{$x} === $last['delimiter']) &&
+				($chunk[$x] === $last['delimiter']) &&
 				('string' === $last['type']) &&
 				(
-					('\\' !== $chunk{$x - 1}) ||
-					(('\\' === $chunk{$x - 1}) && ('\\' === $chunk{$x - 2}))
+					('\\' !== $chunk[$x - 1]) ||
+					(('\\' === $chunk[$x - 1]) && ('\\' === $chunk[$x - 2]))
 				)
 			) {
 				\array_pop($slices);
 			}
 			// Opening bracket (and we're in a slice/objectish thing.
 			elseif (
-				('[' === $chunk{$x}) &&
+				('[' === $chunk[$x]) &&
 				\in_array($last['type'], array('slice', 'array', 'object'), true)
 			) {
 				$slices[] = array(
@@ -575,14 +575,14 @@ class format {
 			}
 			// Closing bracket.
 			elseif (
-				(']' === $chunk{$x}) &&
+				(']' === $chunk[$x]) &&
 				('array' === $last['type'])
 			) {
 				\array_pop($slices);
 			}
 			// Opening brace (and we're in a slice/objectish thing.
 			elseif (
-				('{' === $chunk{$x}) &&
+				('{' === $chunk[$x]) &&
 				\in_array($last['type'], array('slice', 'array', 'object'), true)
 			) {
 				$slices[] = array(
@@ -593,7 +593,7 @@ class format {
 			}
 			// Closing brace.
 			elseif (
-				('}' === $chunk{$x}) &&
+				('}' === $chunk[$x]) &&
 				('object' === $last['type'])
 			) {
 				\array_pop($slices);
@@ -618,7 +618,7 @@ class format {
 				\array_pop($slices);
 				++$x;
 				for ($y = $last['from']; $y <= $x; ++$y) {
-					$chunk{$y} = ' ';
+					$chunk[$y] = ' ';
 				}
 			}
 		}// End each char.
