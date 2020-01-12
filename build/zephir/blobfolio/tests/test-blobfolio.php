@@ -52,10 +52,6 @@ class blobfolio_tests extends \PHPUnit\Framework\TestCase {
 	function data_getDataDir() {
 		return array(
 			array(
-				'',
-				'/usr/share/php/Blobfolio/',
-			),
-			array(
 				'blob-domains.json',
 				true,
 			),

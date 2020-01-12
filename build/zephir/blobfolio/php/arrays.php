@@ -12,6 +12,10 @@
 
 namespace Blobfolio;
 
+use Blobfolio\Blobfolio as Shim;
+
+
+
 final class Arrays {
 
 	// -----------------------------------------------------------------
@@ -30,15 +34,15 @@ final class Arrays {
 	 */
 	public static function flatten(array $arr, int $flags=0) : array {
 		if (empty($arr)) {
-			return [];
+			return array();
 		}
 
-		$out = [];
+		$out = array();
 		foreach ($arr as $v) {
 			// Recurse arrays.
-			if (is_array($v)) {
-				if (!empty($v)) {
-					$out = array_merge($out, self::flatten($v, $flags));
+			if (\is_array($v)) {
+				if (! empty($v)) {
+					$out = \array_merge($out, self::flatten($v, $flags));
 				}
 			}
 			else {
@@ -46,22 +50,22 @@ final class Arrays {
 			}
 		}
 
-		if (!empty($out)) {
-			$sort = !! ($flags & globals_get("flag_sort"));
-			$unique = !! ($flags & globals_get("flag_unique"));
+		if (! empty($out)) {
+			$sort = !! ($flags & Shim::SORT);
+			$unique = !! ($flags & Shim::UNIQUE);
 			if ($sort || $unique) {
 				if ($unique) {
-					$out = (array) array_unique($out);
+					$out = (array) \array_unique($out);
 				}
 				if ($sort) {
-					sort($out);
+					\sort($out);
 				}
 				else {
-					$out = array_values($out);
+					$out = \array_values($out);
 				}
 			}
 			else {
-				$out = array_values($out);
+				$out = \array_values($out);
 			}
 		}
 
@@ -73,20 +77,20 @@ final class Arrays {
 	 *
 	 * Like ::flatten() except keys are flattened too.
 	 *
-	 * @param mixed $data Data.
+	 * @param array $arr Data.
 	 * @param string $stub Key stub.
-	 * @return mixed Data.
+	 * @return array Data.
 	 */
-	public static function flattenAssoc(array $arr, string $stub="") : array {
+	public static function flattenAssoc(array $arr, string $stub='') : array {
 		if (empty($arr)) {
-			return [];
+			return array();
 		}
 
-		$out = [];
+		$out = array();
 		foreach ($arr as $k=>$v) {
-			$key = $stub ? strval($stub . "_" . $k) : strval($k);
+			$key = $stub ? \strval($stub . '_' . $k) : \strval($k);
 
-			if (is_array($v)) {
+			if (\is_array($v)) {
 				$tmp = (array) self::flattenAssoc($v, $key);
 				foreach ($tmp as $k2=>$v2) {
 					$out[$k2] = $v2;
@@ -116,24 +120,24 @@ final class Arrays {
 	 * @args mixed $min Minimum value.
 	 * @args mixed $max Maximum value.
 	 *
-	 * @return void Nothing.
+	 * @return array Array.
 	 */
 	public static function fromList($list, $args=null) : array {
-		$defaults = [
-			"cast"=>"string",
-			"delimiter"=>",",
-			"max"=>null,
-			"min"=>null,
-			"sort"=>false,
-			"trim"=>true,
-			"unique"=>true
-		];
+		$defaults = array(
+			'cast'=>'string',
+			'delimiter'=>',',
+			'max'=>null,
+			'min'=>null,
+			'sort'=>false,
+			'trim'=>true,
+			'unique'=>true,
+		);
 
 		// There's a weird Zephir casting bug requiring we run these
 		// two alternate realities separately.
-		if ("string" === gettype($args)) {
+		if ('string' === \gettype($args)) {
 			$data = (array) \Blobfolio\Cast::parseArgs(
-				["delimiter"=>$args],
+				array('delimiter'=>$args),
 				$defaults
 			);
 		}
@@ -142,91 +146,91 @@ final class Arrays {
 		}
 
 		// Make sure the cast type makes sense.
-		$castTypes = [
-			"array",
-			"bool",
-			"boolean",
-			"double",
-			"float",
-			"int",
-			"integer",
-			"long",
-			"number",
-			"string"
-		];
-		$data["cast"] = strtolower($data["cast"]);
-		if (!in_array($data["cast"], $castTypes, true)) {
-			$data["cast"] = "string";
+		$castTypes = array(
+			'array',
+			'bool',
+			'boolean',
+			'double',
+			'float',
+			'int',
+			'integer',
+			'long',
+			'number',
+			'string',
+		);
+		$data['cast'] = \strtolower($data['cast']);
+		if (! \in_array($data['cast'], $castTypes, true)) {
+			$data['cast'] = 'string';
 		}
 
-		$argsMin = !empty($data["min"]);
-		$argsMax = !empty($data["max"]);
+		$argsMin = ! empty($data['min']);
+		$argsMax = ! empty($data['max']);
 
 		// Sanitize min/max.
-		if ($argsMin && $argsMax && $data["min"] > $data["max"]) {
-			$tmp = $data["min"];
-			$data["min"] = $data["max"];
-			$data["max"] = $tmp;
+		if ($argsMin && $argsMax && $data['min'] > $data['max']) {
+			$tmp = $data['min'];
+			$data['min'] = $data['max'];
+			$data['max'] = $tmp;
 		}
 
 		$list = (array) \Blobfolio\Cast::toArray($list);
 		if (empty($list)) {
-			return [];
+			return array();
 		}
 
-		$out = [];
+		$out = array();
 		foreach ($list as $k=>$v) {
-			if ("array" === gettype($v)) {
+			if ('array' === \gettype($v)) {
 				$list[$k] = self::fromList($v, $data);
 			}
 			else {
 				// We need to work with strings.
-				$list[$k] = \Blobfolio\Cast::toString($v, globals_get("flag_flatten"));
+				$list[$k] = \Blobfolio\Cast::toString($v, Shim::FLATTEN);
 
-				if ($data["delimiter"]) {
-					$list[$k] = (array) explode($data["delimiter"], $list[$k]);
+				if ($data['delimiter']) {
+					$list[$k] = (array) \explode($data['delimiter'], $list[$k]);
 				}
 				else {
 					$list[$k] = \Blobfolio\Strings::split($list[$k]);
 				}
 
 				// Trimming?
-				if ($data["trim"]) {
+				if ($data['trim']) {
 					foreach ($list[$k] as $k2=>$v2) {
-						$list[$k][$k2] = \Blobfolio\Strings::trim($v2, globals_get("flag_trusted"));
+						$list[$k][$k2] = \Blobfolio\Strings::trim($v2, Shim::TRUSTED);
 					}
 				}
 
 				// Get rid of empties.
-				$list[$k] = array_filter($list[$k], "strlen");
+				$list[$k] = \array_filter($list[$k], 'strlen');
 
 				// Cast back?
-				if ("string" !== $data["cast"]) {
-					$list[$k] = \Blobfolio\Cast::toType($list[$k], $data["cast"]);
+				if ('string' !== $data['cast']) {
+					$list[$k] = \Blobfolio\Cast::toType($list[$k], $data['cast']);
 				}
 			}
 
 			// Add whatever we've got to the running total.
 			foreach ($list[$k] as $v2) {
 				if (
-					(!$argsMin || $v2 >= $data["min"]) &&
-					(!$argsMax || $v2 <= $data["max"])
+					(! $argsMin || $v2 >= $data['min']) &&
+					(! $argsMax || $v2 <= $data['max'])
 				) {
 					$out[] = $v2;
 				}
 			}
 		}
 
-		if (count($out) > 1) {
+		if (\count($out) > 1) {
 			// Unique?
-			if ($data["unique"]) {
-				$out = array_unique($out);
-				$out = array_values($out);
+			if ($data['unique']) {
+				$out = \array_unique($out);
+				$out = \array_values($out);
 			}
 
 			// Sort?
-			if ($data["sort"]) {
-				sort($out);
+			if ($data['sort']) {
+				\sort($out);
 			}
 		}
 
@@ -244,20 +248,20 @@ final class Arrays {
 	 * @param string $other Label.
 	 * @return array|bool Array or false.
 	 */
-	public static function otherize(array $arr, int $length=5, string $other="Other") {
-		if ("associative" !== self::getType($arr)) {
+	public static function otherize(array $arr, int $length=5, string $other='Other') {
+		if ('associative' !== self::getType($arr)) {
 			return false;
 		}
 
 		// Make sure everything is numeric.
 		foreach ($arr as $k=>$v) {
-			$type = gettype($v);
-			if (("integer" !== $type) && ("double" !== $type)) {
-				$arr[$k] = \Blobfolio\Cast::toFloat($v, globals_get("flag_flatten"));
+			$type = \gettype($v);
+			if (('integer' !== $type) && ('double' !== $type)) {
+				$arr[$k] = \Blobfolio\Cast::toFloat($v, Shim::FLATTEN);
 			}
 		}
 
-		arsort($arr);
+		\arsort($arr);
 
 		// Make sure we have a sane length.
 		if ($length < 1) {
@@ -265,22 +269,22 @@ final class Arrays {
 		}
 
 		// No need to otherize.
-		if (count($arr) <= $length) {
+		if (\count($arr) <= $length) {
 			return $arr;
 		}
 
 		$other = \Blobfolio\Strings::utf8($other);
 		if (empty($other)) {
-			$other = "Other";
+			$other = 'Other';
 		}
 
 		// Just sum it.
 		if (1 === $length) {
-			return [$other=>array_sum($arr)];
+			return array($other=>\array_sum($arr));
 		}
 
-		$out = (array) array_slice($arr, 0, $length - 1);
-		$out[$other] = array_sum(array_slice($arr, $length - 1));
+		$out = (array) \array_slice($arr, 0, $length - 1);
+		$out[$other] = \array_sum(\array_slice($arr, $length - 1));
 
 		return $out;
 	}
@@ -294,31 +298,31 @@ final class Arrays {
 	 * @param string $separator Final separator.
 	 * @return string Joined.
 	 */
-	public static function oxford_join(array $arr, string $separator="and") : string {
+	public static function oxford_join(array $arr, string $separator='and') : string {
 		if (empty($arr)) {
-			return "";
+			return '';
 		}
 
 		// Clean up the separator.
-		$separator = trim($separator);
+		$separator = \trim($separator);
 		if (empty($separator)) {
-			$separator = "and";
+			$separator = 'and';
 		}
 
 		// Let's build a nice array.
-		$out = [];
+		$out = array();
 		foreach ($arr as $v) {
-			if (! empty($v) && ("string" === gettype($v) || is_numeric($v))) {
+			if (! empty($v) && ('string' === \gettype($v) || \is_numeric($v))) {
 				$out[] = (string) $v;
 			}
 		}
 
-		if (count($out) <= 2) {
-			return implode(" " . $separator . " ", $out);
+		if (\count($out) <= 2) {
+			return \implode(' ' . $separator . ' ', $out);
 		}
 
-		$last = (string) array_pop($out);
-		return implode(", ", $out) . ", " . $separator . " " . $last;
+		$last = (string) \array_pop($out);
+		return \implode(', ', $out) . ', ' . $separator . ' ' . $last;
 	}
 
 	/**
@@ -332,46 +336,46 @@ final class Arrays {
 	 * @param string $eol EOL.
 	 * @return string CSV.
 	 */
-	public static function toCsv(array $data, $headers=null, string $delimiter=",", string $eol="\n") : string {
-		$delimiter = "\"" . str_replace("\"", "", $delimiter) . "\"";
+	public static function toCsv(array $data, $headers=null, string $delimiter=',', string $eol="\n") : string {
+		$delimiter = '"' . \str_replace('"', '', $delimiter) . '"';
 
 		// Data should be an array of arrays.
-		$data = (array) array_values(array_filter($data, "is_array"));
-		$assoc = count($data) && ("associative" === self::getType($data[0]));
+		$data = (array) \array_values(\array_filter($data, 'is_array'));
+		$assoc = \count($data) && ('associative' === self::getType($data[0]));
 
-		if ("array" === gettype($headers)) {
+		if ('array' === \gettype($headers)) {
 			$headers = self::flatten($headers);
 		}
 		elseif ($assoc) {
-			$headers = array_keys($data[0]);
+			$headers = \array_keys($data[0]);
 		}
 		else {
-			$headers = [];
+			$headers = array();
 		}
 
-		$out = [];
+		$out = array();
 
 		// Fix up headers.
-		if (count($headers)) {
+		if (\count($headers)) {
 			foreach ($headers as $k=>$v) {
 				$headers[$k] = self::csvCell($v);
 			}
 
-			$out[] = "\"" . implode($delimiter, $headers) . "\"";
+			$out[] = '"' . \implode($delimiter, $headers) . '"';
 		}
 
-		if (count($data)) {
-			$dataKeys = (array) array_keys($data[0]);
+		if (\count($data)) {
+			$dataKeys = (array) \array_keys($data[0]);
 			foreach ($data as $k2=>$line) {
 				// Make sure keys are in the right order.
-				if ($assoc && $k2 > 0 && ("associative" === self::getType($line))) {
-					$tmp = [];
+				if ($assoc && $k2 > 0 && ('associative' === self::getType($line))) {
+					$tmp = array();
 					foreach ($dataKeys as $v) {
 						if (isset($line[$v])) {
 							$tmp[$v] = $line[$v];
 						}
 						else {
-							$tmp[$v] = "";
+							$tmp[$v] = '';
 						}
 					}
 					$line = $tmp;
@@ -381,11 +385,11 @@ final class Arrays {
 					$line[$k] = self::csvCell($v);
 				}
 
-				$out[] = "\"" . implode($delimiter, $line) . "\"";
+				$out[] = '"' . \implode($delimiter, $line) . '"';
 			}
 		}
 
-		return implode($eol, $out);
+		return \implode($eol, $out);
 	}
 
 	/**
@@ -395,16 +399,16 @@ final class Arrays {
 	 * @return string String.
 	 */
 	private static function csvCell($str) : string {
-		$str = \Blobfolio\Cast::toString($str, globals_get("flag_flatten"));
-		$str = \Blobfolio\Strings::niceText($str, 0, globals_get("flag_trusted"));
+		$str = \Blobfolio\Cast::toString($str, Shim::FLATTEN);
+		$str = \Blobfolio\Strings::niceText($str, 0, Shim::TRUSTED);
 
 		// Remove existing double quotes.
-		while (false !== strpos($str, "\"\"")) {
-			$str = str_replace("\"\"", "\"", $str);
+		while (false !== \strpos($str, '""')) {
+			$str = \str_replace('""', '"', $str);
 		}
 
 		// Redo double quotes.
-		return str_replace("\"", "\"\"", $str);
+		return \str_replace('"', '""', $str);
 	}
 
 	/**
@@ -420,14 +424,14 @@ final class Arrays {
 	 * @param string $value Value.
 	 * @return array Array.
 	 */
-	public static function toIndexed(array $arr, string $key="key", string $value="value") : array {
-		$out = [];
-		if (count($arr)) {
+	public static function toIndexed(array $arr, string $key='key', string $value='value') : array {
+		$out = array();
+		if (\count($arr)) {
 			foreach ($arr as $k=>$v) {
-				$out[] = [
+				$out[] = array(
 					$key=>$k,
-					$value=>$v
-				];
+					$value=>$v,
+				);
 			}
 		}
 
@@ -445,90 +449,88 @@ final class Arrays {
 	 *
 	 * Compute the difference between two or more arrays.
 	 *
-	 * @param array $arr1 Array.
-	 * @param array $arr2 Array.
 	 * @return array Difference.
 	 */
 	public static function iDiff() : array {
-		$targets = (array) func_get_args();
-		$targetsLen = (int) count($targets);
+		$targets = (array) \func_get_args();
+		$targetsLen = (int) \count($targets);
 
 		if ($targetsLen < 2) {
-			return [];
+			return array();
 		}
 
 		// Make sure all arguments are arrays.
 		foreach ($targets as $v) {
-			if ("array" !== gettype($v)) {
-				return [];
+			if ('array' !== \gettype($v)) {
+				return array();
 			}
 		}
 
 		// Can't do anything if the first is empty.
 		if (empty($targets[0])) {
-			return [];
+			return array();
 		}
 
 		// One more time through, actually check here.
-		$common = [];
+		$common = array();
 		$x = 1;
 		$currentType = null;
 
 		while ($x < $targetsLen) {
 			// Skip empties.
-			if (!count($targets[$x])) {
+			if (! \count($targets[$x])) {
 				$x++;
 				continue;
 			}
 
 			// Lowercase values of current.
 			foreach ($targets[$x] as $k=>$v) {
-				$currentType = gettype($v);
+				$currentType = \gettype($v);
 
-				if ("string" === $currentType) {
+				if ('string' === $currentType) {
 					$targets[$x][$k] = \Blobfolio\Strings::toLower($v);
 				}
 
 				// Remove non-comparable entries.
 				if (
-					("array" === $currentType) ||
-					(("object" === $currentType) && (null !== $v))
+					('array' === $currentType) ||
+					(('object' === $currentType) && (null !== $v))
 				) {
 					unset($targets[$x][$k]);
 				}
 			}
 
 			// Recount and move on if empty.
-			if (!count($targets[$x])) {
+			if (! \count($targets[$x])) {
 				$x++;
 				continue;
 			}
 
-			$common = [];
+			$common = array();
 
 			// Run through the first.
 			foreach ($targets[0] as $k=>$v) {
-				$currentType = gettype($v);
+				$currentType = \gettype($v);
 
 				if (
-					("array" === $currentType) ||
-					(("object" === $currentType) && (null !== $v))
+					('array' === $currentType) ||
+					(('object' === $currentType) && (null !== $v))
 				) {
 					continue;
 				}
 
-				if ("string" === $currentType) {
-					$v = \Blobfolio\Strings::toLower(v);
+				if ('string' === $currentType) {
+					$v = \Blobfolio\Strings::toLower($v);
 				}
 
 				// Save it (the original) if unique.
-				if (!in_array($v, $targets[$x], true)) {
+				if (! \in_array($v, $targets[$x], true)) {
 					$common[$k] = $targets[0][$k];
 				}
 			}
 
-			if (!count($common)) {
-				return [];
+			if (! \count($common)) {
+				return array();
 			}
 
 			// Override the original.
@@ -556,90 +558,88 @@ final class Arrays {
 	 *
 	 * Compute the union between two or more arrays.
 	 *
-	 * @param array $arr1 Array.
-	 * @param array $arr2 Array.
 	 * @return array Difference.
 	 */
 	public static function iIntersect() : array {
-		$targets = (array) func_get_args();
-		$targetsLen = (int) count($targets);
+		$targets = (array) \func_get_args();
+		$targetsLen = (int) \count($targets);
 
 		if ($targetsLen < 2) {
-			return [];
+			return array();
 		}
 
 		// Make sure all arguments are arrays.
 		foreach ($targets as $v) {
-			if ("array" !== gettype($v)) {
-				return [];
+			if ('array' !== \gettype($v)) {
+				return array();
 			}
 		}
 
 		// Can't do anything if the first is empty.
-		if (!count($targets[0])) {
-			return [];
+		if (! \count($targets[0])) {
+			return array();
 		}
 
 		// One more time through, actually check here.
-		$common = [];
+		$common = array();
 		$x = 1;
 		$currentType = null;
 
 		while ($x < $targetsLen) {
 			// Skip empties.
-			if (!count($targets[$x])) {
+			if (! \count($targets[$x])) {
 				$x++;
 				continue;
 			}
 
 			// Lowercase values of current.
 			foreach ($targets[$x] as $k=>$v) {
-				$currentType = gettype($v);
+				$currentType = \gettype($v);
 
-				if ("string" === $currentType) {
+				if ('string' === $currentType) {
 					$targets[$x][$k] = \Blobfolio\Strings::toLower($v);
 				}
 
 				// Remove non-comparable entries.
 				if (
-					("array" === $currentType) ||
-					(("object" === $currentType) && (null !== $v))
+					('array' === $currentType) ||
+					(('object' === $currentType) && (null !== $v))
 				) {
 					unset($targets[$x][$k]);
 				}
 			}
 
 			// Recount and move on if empty.
-			if (!count($targets[$x])) {
+			if (! \count($targets[$x])) {
 				$x++;
 				continue;
 			}
 
-			$common = [];
+			$common = array();
 
 			// Run through the first.
 			foreach ($targets[0] as $k=>$v) {
-				$currentType = gettype($v);
+				$currentType = \gettype($v);
 
 				if (
-					("array" === $currentType) ||
-					(("object" === $currentType) && (null !== $v))
+					('array' === $currentType) ||
+					(('object' === $currentType) && (null !== $v))
 				) {
 					continue;
 				}
 
-				if ("string" === $currentType) {
-					$v = \Blobfolio\Strings::toLower(v);
+				if ('string' === $currentType) {
+					$v = \Blobfolio\Strings::toLower($v);
 				}
 
 				// Save it (the original) if unique.
-				if (in_array($v, $targets[$x], true)) {
+				if (\in_array($v, $targets[$x], true)) {
 					$common[$k] = $targets[0][$k];
 				}
 			}
 
-			if (!count($common)) {
-				return [];
+			if (! \count($common)) {
+				return array();
 			}
 
 			// Override the original.
@@ -658,7 +658,7 @@ final class Arrays {
 	 * @return bool True/false.
 	 */
 	public static function iKeyExists($needle, array $haystack) : bool {
-		$haystack = array_keys($haystack);
+		$haystack = \array_keys($haystack);
 		return (false !== self::iSearch($needle, $haystack));
 	}
 
@@ -671,23 +671,25 @@ final class Arrays {
 	 * @return mixed Key or false.
 	 */
 	public static function iSearch($needle, array $haystack, bool $strict=true) {
-		if (!count($haystack)) {
+		if (! \count($haystack)) {
 			return false;
 		}
 
 		// Lowercase needle.
-		if ("string" === gettype($needle)) {
+		if ('string' === \gettype($needle)) {
 			$needle = \Blobfolio\Strings::toLower($needle);
 
 			// Lowercase haystack too.
 			foreach ($haystack as $k=>$v) {
-				if ("string" === gettype($v)) {
+				if ('string' === \gettype($v)) {
 					$haystack[$k] = \Blobfolio\Strings::toLower($v);
 				}
 			}
 		}
 
-		return array_search($needle, $haystack, $strict);
+		// phpcs:disable
+		return \array_search($needle, $haystack, $strict);
+		// phpcs:enable
 	}
 
 
@@ -704,19 +706,19 @@ final class Arrays {
 	 * @return bool True/false.
 	 */
 	public static function compare(array $arr1, array $arr2) : bool {
-		$arr1Len = (int) count($arr1);
-		$arr2Len = (int) count($arr2);
+		$arr1Len = (int) \count($arr1);
+		$arr2Len = (int) \count($arr2);
 
 		// If both are empty, they're equal.
-		if (!$arr1Len && !$arr2Len) {
+		if (! $arr1Len && ! $arr2Len) {
 			return true;
 		}
 		// If the counts are different, so are they.
 		elseif (
-			!$arr1Len ||
-			!$arr2Len ||
+			! $arr1Len ||
+			! $arr2Len ||
 			($arr1Len !== $arr2Len) ||
-			(count(array_intersect_key($arr1, $arr2)) !== $arr1Len)
+			(\count(\array_intersect_key($arr1, $arr2)) !== $arr1Len)
 		) {
 			return false;
 		}
@@ -729,33 +731,33 @@ final class Arrays {
 		if (
 			($arr1Type !== $arr2Type) &&
 			(
-				("associative" === $arr1Type) ||
-				("associative" === $arr2Type)
+				('associative' === $arr1Type) ||
+				('associative' === $arr2Type)
 			)
 		) {
 			return false;
 		}
 
 		// If neither are associative, just check the intersect.
-		if (("associative" !== $arr1Type) && ("associative" !== $arr2Type)) {
-			return (count(array_intersect($arr1, $arr2)) === $arr1Len);
+		if (('associative' !== $arr1Type) && ('associative' !== $arr2Type)) {
+			return (\count(\array_intersect($arr1, $arr2)) === $arr1Len);
 		}
 
 		// Go line by line looking for all the ways they might diverge.
 		foreach ($arr1 as $k=>$v) {
-			if (!isset($arr2[$k])) {
+			if (! isset($arr2[$k])) {
 				return false;
 			}
 
-			$arr1Type = gettype($v);
-			$arr2Type = gettype($arr2[$k]);
+			$arr1Type = \gettype($v);
+			$arr2Type = \gettype($arr2[$k]);
 			if ($arr1Type !== $arr2Type) {
 				return false;
 			}
 
 			// Recurse arrays.
-			if ("array" === $arr1Type) {
-				if (!self::compare($v, $arr2[$k])) {
+			if ('array' === $arr1Type) {
+				if (! self::compare($v, $arr2[$k])) {
 					return false;
 				}
 			}
@@ -783,17 +785,17 @@ final class Arrays {
 			return false;
 		}
 
-		$keys = (array) array_keys($arr);
+		$keys = (array) \array_keys($arr);
 
-		if (range(0, count($keys) - 1) === $keys) {
-			return "sequential";
+		if (\range(0, \count($keys) - 1) === $keys) {
+			return 'sequential';
 		}
 
-		elseif (count($keys) === count(array_filter($keys, "is_numeric"))) {
-			return "indexed";
+		elseif (\count($keys) === \count(\array_filter($keys, 'is_numeric'))) {
+			return 'indexed';
 		}
 
-		return "associative";
+		return 'associative';
 	}
 
 	/**
@@ -809,7 +811,7 @@ final class Arrays {
 			return false;
 		}
 
-		return end($arr);
+		return \end($arr);
 	}
 
 	/**
@@ -819,17 +821,17 @@ final class Arrays {
 	 * @return mixed Value. False on error.
 	 */
 	public static function popRand(array $arr) {
-		$length = (int) count($arr);
+		$length = (int) \count($arr);
 
 		switch ($length) {
 			case 0:
 				return false;
 			case 1:
-				return end($arr);
+				return \end($arr);
 		}
 
-		$keys = (array) array_keys($arr);
-		$index = (int) random_int(0, $length - 1);
+		$keys = (array) \array_keys($arr);
+		$index = (int) \random_int(0, $length - 1);
 
 		return $arr[$keys[$index]];
 	}
@@ -845,7 +847,7 @@ final class Arrays {
 			return false;
 		}
 
-		reset($arr);
-		return $arr[key($arr)];
+		\reset($arr);
+		return $arr[\key($arr)];
 	}
 }

@@ -12,6 +12,10 @@
 
 namespace Blobfolio;
 
+use Blobfolio\Blobfolio as Shim;
+
+
+
 final class Cli {
 	/**
 	 * Is CLI?
@@ -19,7 +23,7 @@ final class Cli {
 	 * @return bool True/false.
 	 */
 	public static function isCli() : bool {
-		return ("cli" === php_sapi_name());
+		return ('cli' === \php_sapi_name());
 	}
 
 	/**
@@ -28,8 +32,8 @@ final class Cli {
 	 * @return bool True/false.
 	 */
 	public static function isRoot() : bool {
-		if (function_exists("posix_getuid")) {
-			return (0 === posix_getuid());
+		if (\function_exists('posix_getuid')) {
+			return (0 === \posix_getuid());
 		}
 
 		return false;
@@ -51,31 +55,30 @@ final class Cli {
 	 *
 	 * @see {https://misc.flogisoft.com/bash/tip_colors_and_formatting}
 	 *
-	 * @param mixed $args Arguments.
 	 * @return string Colorized string.
 	 */
 	public static function colorize() : string {
-		$args = (array) func_get_args();
-		$line = chr(27) . "[%sm%s" . chr(27) . "[0m";
-		$out = "";
+		$args = (array) \func_get_args();
+		$line = \chr(27) . '[%sm%s' . \chr(27) . '[0m';
+		$out = '';
 
 		foreach ($args as $v) {
 			$v = \Blobfolio\Cast::toArray($v);
-			if (!count($v)) {
+			if (! \count($v)) {
 				continue;
 			}
 
 			// The string comes first.
-			$tmp = array_shift($v);
-			$str = (string) \Blobfolio\Cast::toString($tmp, globals_get("flag_flatten"));
+			$tmp = \array_shift($v);
+			$str = (string) \Blobfolio\Cast::toString($tmp, Shim::FLATTEN);
 
 			// Deal with codes.
 			$v = \Blobfolio\Arrays::flatten($v);
-			$v = array_filter($v, "is_int");
-			if (count($v)) {
-				$out .= sprintf(
+			$v = \array_filter($v, 'is_int');
+			if (\count($v)) {
+				$out .= \sprintf(
 					$line,
-					implode(";", $v),
+					\implode(';', $v),
 					$str
 				);
 			}

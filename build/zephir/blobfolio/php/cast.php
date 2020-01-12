@@ -12,7 +12,10 @@
 
 namespace Blobfolio;
 
+use Blobfolio\Blobfolio as Shim;
 use Throwable;
+
+
 
 final class Cast {
 	// -----------------------------------------------------------------
@@ -20,18 +23,20 @@ final class Cast {
 	// -----------------------------------------------------------------
 
 	/**
-	 * @var array $boolish Boolish values.
+	 * Boolish values.
+	 *
+	 * @var array $boolish
 	 */
-	private static $boolish = [
-		"0"=>false,
-		"1"=>true,
-		"false"=>false,
-		"no"=>false,
-		"off"=>false,
-		"on"=>true,
-		"true"=>true,
-		"yes"=>true
-	];
+	private static $boolish = array(
+		'0'=>false,
+		'1'=>true,
+		'false'=>false,
+		'no'=>false,
+		'off'=>false,
+		'on'=>true,
+		'true'=>true,
+		'yes'=>true,
+	);
 
 
 
@@ -47,15 +52,15 @@ final class Cast {
 	 */
 	public static function toArray($value) : array {
 		// Short circuit.
-		if ("array" === gettype($value)) {
+		if ('array' === \gettype($value)) {
 			return $value;
 		}
 
 		try {
 			// Zephir doesn't support (array) hinting in this one place.
-			settype($value, "array");
+			\settype($value, 'array');
 		} catch (Throwable $e) {
-			$value = [];
+			$value = array();
 		}
 
 		return $value;
@@ -69,22 +74,22 @@ final class Cast {
 	 * @return bool Bool.
 	 */
 	public static function toBool($value, int $flags=0) {
-		$flatten = !! ($flags & globals_get("flag_flatten"));
+		$flatten = !! ($flags & Shim::FLATTEN);
 
 		// Recurse.
-		if (!$flatten && ("array" === gettype($value))) {
+		if (! $flatten && ('array' === \gettype($value))) {
 			foreach ($value as $k=>$v) {
 				$value[$k] = (bool) self::toBool($v);
 			}
 			return $value;
 		}
 		else {
-			switch (gettype($value)) {
+			switch (\gettype($value)) {
 				// Short circuit.
-				case "boolean":
+				case 'boolean':
 					return $value;
-				case "string":
-					$value = strtolower($value);
+				case 'string':
+					$value = \strtolower($value);
 
 					// Special cases.
 					if (isset(self::$boolish[$value])) {
@@ -92,8 +97,8 @@ final class Cast {
 					}
 
 					return !! $value;
-				case "array":
-					return !!count($value);
+				case 'array':
+					return !! \count($value);
 			}
 
 			try {
@@ -114,21 +119,21 @@ final class Cast {
 	 * @return float Float.
 	 */
 	public static function toFloat($value, int $flags=0) {
-		$flatten = !! ($flags & globals_get("flag_flatten"));
+		$flatten = !! ($flags & Shim::FLATTEN);
 
 		// Recurse.
-		if (!$flatten && ("array" === gettype($value))) {
+		if (! $flatten && ('array' === \gettype($value))) {
 			foreach ($value as $k=>$v) {
 				$value[$k] = self::toFloat($v);
 			}
 			return $value;
 		}
 		// Short circuit.
-		elseif ("double" === gettype($value)) {
+		elseif ('double' === \gettype($value)) {
 			return $value;
 		}
 		else {
-			$value = self::toNumber($value, globals_get("flag_flatten"));
+			$value = self::toNumber($value, Shim::FLATTEN);
 		}
 
 		return $value;
@@ -142,30 +147,30 @@ final class Cast {
 	 * @return int Integer.
 	 */
 	public static function toInt($value, int $flags=0) {
-		$flatten = !!($flags & globals_get("flag_flatten"));
+		$flatten = !! ($flags & Shim::FLATTEN);
 
 		// Recurse.
-		if (!$flatten && ("array" === gettype($value))) {
+		if (! $flatten && ('array' === \gettype($value))) {
 			foreach ($value as $k=>$v) {
 				$value[$k] = self::toInt($v);
 			}
 			return $value;
 		}
 		else {
-			switch (gettype($value)) {
-				case "array":
-					if (1 === count($value)) {
-						reset($value);
-						return self::toInt($value[key($value)], globals_get("flag_flatten"));
+			switch (\gettype($value)) {
+				case 'array':
+					if (1 === \count($value)) {
+						\reset($value);
+						return self::toInt($value[\key($value)], Shim::FLATTEN);
 					}
 
 					return 0;
-				case "int":
-				case "integer":
-				case "long":
+				case 'int':
+				case 'integer':
+				case 'long':
 					return $value;
-				case "string":
-					$value = strtolower($value);
+				case 'string':
+					$value = \strtolower($value);
 
 					// Special cases.
 					if (isset(self::$boolish[$value])) {
@@ -174,7 +179,7 @@ final class Cast {
 			}
 		}
 
-		$value = (int) self::toNumber($value, globals_get("flag_flatten"));
+		$value = (int) self::toNumber($value, Shim::FLATTEN);
 		return $value;
 	}
 
@@ -189,35 +194,35 @@ final class Cast {
 	 * @return float Number.
 	 */
 	public static function toNumber($value, int $flags=0) {
-		$flatten = !! ($flags & globals_get("flag_flatten"));
+		$flatten = !! ($flags & Shim::FLATTEN);
 
 		// Recurse.
-		if (!$flatten && ("array" === gettype($value))) {
+		if (! $flatten && ('array' === \gettype($value))) {
 			foreach ($value as $k=>$v) {
 				$value[$k] = self::toNumber($v);
 			}
 			return $value;
 		}
 		else {
-			switch (gettype($value)) {
-				case "array":
-					if (1 === count($value)) {
-						reset($value);
-						return self::toNumber($value[key($value)], globals_get("flag_flatten"));
+			switch (\gettype($value)) {
+				case 'array':
+					if (1 === \count($value)) {
+						\reset($value);
+						return self::toNumber($value[\key($value)], Shim::FLATTEN);
 					}
 
 					return 0.0;
-				case "double":
-				case "float":
-				case "number":
+				case 'double':
+				case 'float':
+				case 'number':
 					return $value;
-				case "int":
-				case "integer":
-				case "long":
+				case 'int':
+				case 'integer':
+				case 'long':
 					return (float) $value;
-				case "string":
+				case 'string':
 					// Weird Unicode numbers.
-					$number_char_keys = [
+					$number_char_keys = array(
 						"\xef\xbc\x90", "\xef\xbc\x91", "\xef\xbc\x92",
 						"\xef\xbc\x93", "\xef\xbc\x94", "\xef\xbc\x95",
 						"\xef\xbc\x96", "\xef\xbc\x97", "\xef\xbc\x98",
@@ -229,37 +234,37 @@ final class Cast {
 						"\xdb\xb9", "\xe1\xa0\x90", "\xe1\xa0\x91",
 						"\xe1\xa0\x92", "\xe1\xa0\x93", "\xe1\xa0\x94",
 						"\xe1\xa0\x95", "\xe1\xa0\x96", "\xe1\xa0\x97",
-						"\xe1\xa0\x98", "\xe1\xa0\x99"
-					];
+						"\xe1\xa0\x98", "\xe1\xa0\x99",
+					);
 
 					// The equivalent as actual numbers.
-					$number_char_values = [
+					$number_char_values = array(
 						0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
 						7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3,
-						4, 5, 6, 7, 8, 9
-					];
+						4, 5, 6, 7, 8, 9,
+					);
 
 					// Fix weird Unicode numbers.
-					$value = str_replace(
+					$value = \str_replace(
 						$number_char_keys,
 						$number_char_values,
 						$value
 					);
 
 					// Convert from cents.
-					if (preg_match("/^\-?[\d,]*\.?\d+(¢|%)$/", $value)) {
+					if (\preg_match('/^\-?[\d,]*\.?\d+(¢|%)$/', $value)) {
 						return self::toNumber(
-							preg_replace("/[^\-\d\.]/", "", $value)
+							\preg_replace('/[^\-\d\.]/', '', $value)
 						) / 100;
 					}
 			}
 		}
 
 		try {
-			$value = (float) filter_var(
+			$value = (float) \filter_var(
 				$value,
-				FILTER_SANITIZE_NUMBER_FLOAT,
-				FILTER_FLAG_ALLOW_FRACTION
+				\FILTER_SANITIZE_NUMBER_FLOAT,
+				\FILTER_FLAG_ALLOW_FRACTION
 			);
 		} catch (Throwable $e) {
 			$value = 0.0;
@@ -276,10 +281,10 @@ final class Cast {
 	 * @return string String.
 	 */
 	public static function toString($value, int $flags=0) {
-		$flatten = !! ($flags & globals_get("flag_flatten"));
+		$flatten = !! ($flags & Shim::FLATTEN);
 
 		// Recurse.
-		if (!$flatten && ("array" === gettype($value))) {
+		if (! $flatten && ('array' === \gettype($value))) {
 			foreach ($value as $k=>$v) {
 				$value[$k] = self::toString($v);
 			}
@@ -287,23 +292,23 @@ final class Cast {
 		}
 		else {
 			// If a single-entry array is passed, use that value.
-			if (("array" === gettype($value))) {
-				if (1 === count($value)) {
-					reset($value);
-					return self::toString($value[key($value)], globals_get("flag_flatten"));
+			if (('array' === \gettype($value))) {
+				if (1 === \count($value)) {
+					\reset($value);
+					return self::toString($value[\key($value)], Shim::FLATTEN);
 				}
 
-				return "";
+				return '';
 			}
 
 			try {
 				$value = (string) $value;
 			} catch (Throwable $e) {
-				return "";
+				return '';
 			}
 
 			// Fix up UTF-8 maybe.
-			if ($value && !mb_check_encoding($value, "ASCII")) {
+			if ($value && ! \mb_check_encoding($value, 'ASCII')) {
 				$value = \Blobfolio\Strings::utf8($value);
 			}
 		}
@@ -317,24 +322,24 @@ final class Cast {
 	 * @param mixed $value Variable.
 	 * @param string $type Type.
 	 * @param int $flags Flags.
-	 * @return void Nothing.
+	 * @return mixed Value.
 	 */
 	public static function toType($value, string $type, int $flags=0) {
-		switch (strtolower($type)) {
-			case "string":
+		switch (\strtolower($type)) {
+			case 'string':
 				return self::toString($value, $flags);
-			case "int":
-			case "integer":
-			case "long":
+			case 'int':
+			case 'integer':
+			case 'long':
 				return self::toInt($value, $flags);
-			case "double":
-			case "float":
-			case "number":
+			case 'double':
+			case 'float':
+			case 'number':
 				return self::toFloat($value, $flags);
-			case "bool":
-			case "boolean":
+			case 'bool':
+			case 'boolean':
 				return self::toBool($value, $flags);
-			case "array":
+			case 'array':
 				return self::toArray($value);
 		}
 
@@ -361,8 +366,8 @@ final class Cast {
 	 */
 	public static function parseArgs($args, $defaults, int $flags = 3) : array {
 		// Nothing to crunch if the template isn't set.
-		if ("array" !== gettype($defaults) || empty($defaults)) {
-			return [];
+		if ('array' !== \gettype($defaults) || empty($defaults)) {
+			return array();
 		}
 
 		// If there are no arguments to crunch, return the template.
@@ -371,18 +376,18 @@ final class Cast {
 			return $defaults;
 		}
 
-		$strict = !! ($flags & globals_get("flag_parse_strict"));
-		$recursive = !! ($flags & globals_get("flag_parse_strict"));
+		$strict = !! ($flags & Shim::PARSE_STRICT);
+		$recursive = !! ($flags & Shim::PARSE_STRICT);
 
 		// Rebuild with user args!
 		foreach ($defaults as $k=>$v) {
-			if (array_key_exists($k, $args)) {
+			if (\array_key_exists($k, $args)) {
 				// Recurse if the default is a populated associative
 				// array.
 				if (
 					$recursive &&
-					("array" === gettype($defaults[$k])) &&
-					("associative" === \Blobfolio\Arrays::getType($defaults[$k]))
+					('array' === \gettype($defaults[$k])) &&
+					('associative' === \Blobfolio\Arrays::getType($defaults[$k]))
 				) {
 					$defaults[$k] = self::parseArgs(
 						$args[$k],
@@ -394,14 +399,14 @@ final class Cast {
 				else {
 					$defaults[$k] = $args[$k];
 					if ($strict && (null !== $v)) {
-						$d_type = gettype($v);
-						$a_type = gettype($defaults[$k]);
+						$d_type = \gettype($v);
+						$a_type = \gettype($defaults[$k]);
 
 						if ($a_type !== $d_type) {
 							$defaults[$k] = self::toType(
 								$defaults[$k],
 								$d_type,
-								globals_get("flag_flatten")
+								Shim::FLATTEN
 							);
 						}
 					}

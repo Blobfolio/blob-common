@@ -34,8 +34,8 @@ class ascii85_tests extends \PHPUnit\Framework\TestCase {
 		$encoded = \Blobfolio\Ascii85::encode($value);
 		$decoded = \Blobfolio\Ascii85::decode($encoded);
 
-		$this->assertSame($encoded, $expected);
-		$this->assertSame($decoded, $value);
+		$this->assertSame($expected, $encoded);
+		$this->assertSame($value, $decoded);
 	}
 
 	/**
@@ -83,11 +83,11 @@ class ascii85_tests extends \PHPUnit\Framework\TestCase {
 		return array(
 			array(
 				'Hello World',
-				'nm=QNzY&b1A+]n',
+				'nm=QNzY&b1A+]m',
 			),
 			array(
 				'Björk Guðmundsdóttir is a swan.',
-				'ltBADA+=^/B&gC2B-7-hww+-}Bzk+rx(+z9aAI:nzz2',
+				'ltBADA+=^/B&gC2B-7-hww+-}Bzk+rx(+z9aAI:nzy$',
 			),
 		);
 	}

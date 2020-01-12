@@ -153,17 +153,17 @@ final class Blobfolio {
 	 * @param string $file File.
 	 * @return string Directory or file contents.
 	 */
-	public static function getDataDir(string $file="") : string {
+	public static function getDataDir(string $file='') : string {
 		// Check a specific file?
-		if (!empty($file)) {
-			if (!empty(self::$_data_dir)) {
+		if (! empty($file)) {
+			if (! empty(self::$_data_dir)) {
 				$file = self::$_data_dir . $file;
-				if (is_file($file)) {
-					return (string) file_get_contents($file);
+				if (\is_file($file)) {
+					return (string) \file_get_contents($file);
 				}
 			}
 
-			return "";
+			return '';
 		}
 
 		// Just return the base directory.

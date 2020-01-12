@@ -12,6 +12,7 @@
 
 namespace Blobfolio;
 
+use Blobfolio\Blobfolio as Shim;
 use Exception;
 
 
@@ -33,7 +34,6 @@ final class Domains {
 	 * Construct
 	 *
 	 * @param string $host Host.
-	 * @param bool $www Strip www.
 	 * @return void Nothing.
 	 */
 	public function __construct(string $host) {
@@ -42,10 +42,10 @@ final class Domains {
 			return;
 		}
 
-		$this->host = $parsed["host"];
-		$this->subdomain = $parsed["subdomain"];
-		$this->domain = $parsed["domain"];
-		$this->suffix = $parsed["suffix"];
+		$this->host = $parsed['host'];
+		$this->subdomain = $parsed['subdomain'];
+		$this->domain = $parsed['domain'];
+		$this->suffix = $parsed['suffix'];
 	}
 
 
@@ -60,8 +60,8 @@ final class Domains {
 	 */
 	private static function parseHost(string $host) {
 		// Try to parse it the easy way.
-		$tmp = self::parseUrl($host, PHP_URL_HOST);
-		if (!empty($tmp)) {
+		$tmp = self::parseUrl($host, \PHP_URL_HOST);
+		if (! empty($tmp)) {
 			$host = $tmp;
 		}
 		// Or the hard way?
@@ -69,40 +69,40 @@ final class Domains {
 			$host = \Blobfolio\Strings::trim($host);
 
 			// Cut off the path, if any.
-			$start = mb_strpos($host, "/", 0, "UTF-8");
+			$start = \mb_strpos($host, '/', 0, 'UTF-8');
 			if (false !== $start) {
-				$host = mb_substr($host, 0, $start, "UTF-8");
+				$host = \mb_substr($host, 0, $start, 'UTF-8');
 			}
 
 			// Cut off the query, if any.
-			$start = mb_strpos($host, "?", 0, "UTF-8");
+			$start = \mb_strpos($host, '?', 0, 'UTF-8');
 			if (false !== $start) {
-				$host = mb_substr($host, 0, $start, "UTF-8");
+				$host = \mb_substr($host, 0, $start, 'UTF-8');
 			}
 
 			// Cut off credentials, if any.
-			$start = mb_strpos($host, "@", 0, "UTF-8");
+			$start = \mb_strpos($host, '@', 0, 'UTF-8');
 			if (false !== $start) {
-				$host = mb_substr($host, $start + 1, null, "UTF-8");
+				$host = \mb_substr($host, $start + 1, null, 'UTF-8');
 			}
 
 			// Is this an IPv6 address?
-			if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-				$host = IPs::niceIp($host, globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
+			if (\filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
+				$host = IPs::niceIp($host, Shim::IP_RESTRICTED | Shim::IP_CONDENSE);
 			}
 			else {
 				// Pluck an IP out of brackets.
-				$start = strpos($host, "[");
-				$end = strpos($host, "]");
+				$start = \strpos($host, '[');
+				$end = \strpos($host, ']');
 				if ((0 === $start) && false !== $end) {
-					$host = mb_substr($host, 1, $end - 1, "UTF-8");
-					$host = IPs::niceIp($host, globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
+					$host = \mb_substr($host, 1, $end - 1, 'UTF-8');
+					$host = IPs::niceIp($host, Shim::IP_RESTRICTED | Shim::IP_CONDENSE);
 				}
 				// Chop off the port, if any.
 				else {
-					$start = mb_strpos($host, ":", 0, "UTF-8");
+					$start = \mb_strpos($host, ':', 0, 'UTF-8');
 					if (false !== $start) {
-						$host = mb_substr($host, 0, $start, "UTF-8");
+						$host = \mb_substr($host, 0, $start, 'UTF-8');
 					}
 				}
 			}
@@ -116,43 +116,43 @@ final class Domains {
 			$host = (string) self::toAscii($host);
 
 			// Lowercase it.
-			$host = strtolower($host);
+			$host = \strtolower($host);
 
 			// Get rid of trailing periods.
-			$host = ltrim($host, ".");
-			$host = rtrim($host, ".");
+			$host = \ltrim($host, '.');
+			$host = \rtrim($host, '.');
 		}
 
 		// Liberate IPv6 from its walls.
-		if (0 === strpos($host, "[")) {
-			$host = str_replace(["[", "]"], "", $host);
-			$host = IPs::niceIp($host, globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
+		if (0 === \strpos($host, '[')) {
+			$host = \str_replace(array('[', ']'), '', $host);
+			$host = IPs::niceIp($host, Shim::IP_RESTRICTED | Shim::IP_CONDENSE);
 		}
 
 		// Is this an IP address? If so, we're done!
-		if (filter_var($host, FILTER_VALIDATE_IP)) {
+		if (\filter_var($host, \FILTER_VALIDATE_IP)) {
 			return $host;
 		}
 
 		// Look for illegal characters. At this point we should
 		// only have nice and safe ASCII.
-		if (preg_match("/[^a-z\d\-\.]/u", $host)) {
+		if (\preg_match('/[^a-z\d\-\.]/u', $host)) {
 			return false;
 		}
 
-		$parts = (array) explode(".", $host);
+		$parts = (array) \explode('.', $host);
 		foreach ($parts as $v) {
 			// Gotta have length, and can't start or end with a dash.
 			if (
 				empty($v) ||
-				(0 === strpos($v, "-")) ||
-				("-" === substr($v, -1))
+				(0 === \strpos($v, '-')) ||
+				('-' === \substr($v, -1))
 			) {
 				return false;
 			}
 		}
 
-		return implode(".", $parts);
+		return \implode('.', $parts);
 	}
 
 	/**
@@ -171,17 +171,17 @@ final class Domains {
 			return false;
 		}
 
-		$out = [
-			"host"=>null,
-			"subdomain"=>null,
-			"domain"=>null,
-			"suffix"=>null
-		];
+		$out = array(
+			'host'=>null,
+			'subdomain'=>null,
+			'domain'=>null,
+			'suffix'=>null,
+		);
 
 		// If this is an IP, we don't have to do anything else.
-		if (filter_var($host, FILTER_VALIDATE_IP)) {
-			$out["host"] = $host;
-			$out["domain"] = $host;
+		if (\filter_var($host, \FILTER_VALIDATE_IP)) {
+			$out['host'] = $host;
+			$out['domain'] = $host;
 			return $out;
 		}
 
@@ -189,28 +189,28 @@ final class Domains {
 		self::loadSuffixes();
 
 		$suffixes = (array) self::$_suffixes;
-		$suffix = [];
-		$parts = (array) explode(".", $host);
-		$parts = array_reverse($parts);
+		$suffix = array();
+		$parts = (array) \explode('.', $host);
+		$parts = \array_reverse($parts);
 
 		foreach ($parts as $k=>$part) {
 			// Override rule.
-			if (isset($suffixes[$part]["!"])) {
+			if (isset($suffixes[$part]['!'])) {
 				break;
 			}
 
 			// A match.
 			if (isset($suffixes[$part])) {
-				array_unshift($suffix, $part);
+				\array_unshift($suffix, $part);
 				$suffixes = $suffixes[$part];
 				unset($parts[$k]);
 				continue;
 			}
 
 			// A wildcard.
-			if (isset($suffixes["*"])) {
-				array_unshift($suffix, $part);
-				$suffixes = $suffixes["*"];
+			if (isset($suffixes['*'])) {
+				\array_unshift($suffix, $part);
+				$suffixes = $suffixes['*'];
 				unset($parts[$k]);
 				continue;
 			}
@@ -220,25 +220,25 @@ final class Domains {
 		}
 
 		// The suffix can't be all there is.
-		if (!count($parts)) {
+		if (! \count($parts)) {
 			return false;
 		}
 
 		// The domain.
-		$parts = array_reverse($parts);
-		$out["domain"] = array_pop($parts);
+		$parts = \array_reverse($parts);
+		$out['domain'] = \array_pop($parts);
 
 		// The subdomain.
-		if (count($parts)) {
-			$out["subdomain"] = implode(".", $parts);
+		if (\count($parts)) {
+			$out['subdomain'] = \implode('.', $parts);
 		}
 
 		// The suffix.
-		if (count($suffix)) {
-			$out["suffix"] = implode(".", $suffix);
+		if (\count($suffix)) {
+			$out['suffix'] = \implode('.', $suffix);
 		}
 
-		$out["host"] = $host;
+		$out['host'] = $host;
 		return $out;
 	}
 
@@ -251,20 +251,20 @@ final class Domains {
 	 * @return void Nothing.
 	 */
 	public function stripWww() : void {
-		if (empty($this->subdomain) || !$this->isValid()) {
+		if (empty($this->subdomain) || ! $this->isValid()) {
 			return;
 		}
 
 		if (
-			("www" === $this->subdomain) ||
-			(0 === strpos($this->subdomain, "www."))
+			('www' === $this->subdomain) ||
+			(0 === \strpos($this->subdomain, 'www.'))
 		) {
-			$this->subdomain = preg_replace("/^www\.?/u", "", $this->subdomain);
+			$this->subdomain = \preg_replace('/^www\.?/u', '', $this->subdomain);
 			if (empty($this->subdomain)) {
 				$this->subdomain = null;
 			}
 
-			$this->host = preg_replace("/^www\./u", "", $this->host);
+			$this->host = \preg_replace('/^www\./u', '', $this->host);
 		}
 	}
 
@@ -277,22 +277,22 @@ final class Domains {
 	 */
 	public function addWww() : void {
 		if (
-			!$this->isValid() ||
-			("www" === $this->subdomain) ||
-			(!empty($this->subdomain) && (0 === strpos($this->subdomain, "www."))) ||
+			! $this->isValid() ||
+			('www' === $this->subdomain) ||
+			(! empty($this->subdomain) && (0 === \strpos($this->subdomain, 'www.'))) ||
 			$this->isIp(true)
 		) {
 			return;
 		}
 
 		if (empty($this->subdomain)) {
-			$this->subdomain = "www";
+			$this->subdomain = 'www';
 		}
 		else {
-			$this->subdomain = "www." . $this->subdomain;
+			$this->subdomain = 'www.' . $this->subdomain;
 		}
 
-		$this->host = "www." . $this->host;
+		$this->host = 'www.' . $this->host;
 	}
 
 
@@ -308,7 +308,7 @@ final class Domains {
 	 * @return bool True/false.
 	 */
 	public function isValid(bool $dns=false) : bool {
-		return (!empty($this->host) && (!$dns || $this->hasDns()));
+		return (! empty($this->host) && (! $dns || $this->hasDns()));
 	}
 
 	/**
@@ -319,7 +319,7 @@ final class Domains {
 	public function isFqdn() : bool {
 		return (
 			$this->isValid() &&
-			(!empty($this->suffix) || $this->isIp(false))
+			(! empty($this->suffix) || $this->isIp(false))
 		);
 	}
 
@@ -330,18 +330,18 @@ final class Domains {
 	 * @return bool True/false.
 	 */
 	public function isIp(bool $restricted=true) : bool {
-		if (!$this->isValid()) {
+		if (! $this->isValid()) {
 			return false;
 		}
 
 		if ($restricted) {
-			return !!filter_var($this->host, FILTER_VALIDATE_IP);
+			return !! \filter_var($this->host, \FILTER_VALIDATE_IP);
 		}
 
-		return !!filter_var(
+		return !! \filter_var(
 			$this->host,
-			FILTER_VALIDATE_IP,
-			FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+			\FILTER_VALIDATE_IP,
+			\FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE
 		);
 	}
 
@@ -353,17 +353,17 @@ final class Domains {
 	public function hasDns() : bool {
 		// Have to set it first.
 		if (null === $this->dns) {
-			if (!$this->isFqdn()) {
+			if (! $this->isFqdn()) {
 				$this->dns = false;
 			}
 			elseif ($this->isIp()) {
 				$this->dns = $this->isIp(false);
 			}
 			else {
-				$this->dns = !!filter_var(
-					gethostbyname($this->host . "."),
-					FILTER_VALIDATE_IP,
-					FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+				$this->dns = !! \filter_var(
+					\gethostbyname($this->host . '.'),
+					\FILTER_VALIDATE_IP,
+					\FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE
 				);
 			}
 		}
@@ -377,11 +377,11 @@ final class Domains {
 	 * @return bool True/false.
 	 */
 	public function isAscii() : bool {
-		if (!$this->isValid()) {
+		if (! $this->isValid()) {
 			return false;
 		}
 
-		return !$this->isUnicode();
+		return ! $this->isUnicode();
 	}
 
 	/**
@@ -390,7 +390,7 @@ final class Domains {
 	 * @return bool True/false.
 	 */
 	public function isUnicode() : bool {
-		if (!$this->isValid() || $this->isIp()) {
+		if (! $this->isValid() || $this->isIp()) {
 			return false;
 		}
 
@@ -413,7 +413,7 @@ final class Domains {
 			return $this->host;
 		}
 
-		return "";
+		return '';
 	}
 
 	/**
@@ -423,16 +423,16 @@ final class Domains {
 	 * @return array|bool Host data or false.
 	 */
 	public function getData(int $flags=0) {
-		if (!$this->isValid()) {
+		if (! $this->isValid()) {
 			return false;
 		}
 
-		return [
-			"host"=>$this->getHost($flags),
-			"subdomain"=>$this->getSubdomain($flags),
-			"domain"=>$this->getDomain($flags),
-			"suffix"=>$this->getSuffix($flags)
-		];
+		return array(
+			'host'=>$this->getHost($flags),
+			'subdomain'=>$this->getSubdomain($flags),
+			'domain'=>$this->getDomain($flags),
+			'suffix'=>$this->getSuffix($flags),
+		);
 	}
 
 	/**
@@ -442,8 +442,8 @@ final class Domains {
 	 * @return string|null Host.
 	 */
 	public function getHost(int $flags=0) : ?string {
-		$unicode = !! ($flags & globals_get("flag_unicode"));
-		if ($unicode && !empty($this->host)) {
+		$unicode = !! ($flags & Shim::UNICODE);
+		if ($unicode && ! empty($this->host)) {
 			return self::toUnicode($this->host);
 		}
 
@@ -457,8 +457,8 @@ final class Domains {
 	 * @return string|null Subdomain.
 	 */
 	public function getSubdomain(int $flags=0) : ?string {
-		$unicode = !! ($flags & globals_get("flag_unicode"));
-		if ($unicode && !empty($this->subdomain)) {
+		$unicode = !! ($flags & Shim::UNICODE);
+		if ($unicode && ! empty($this->subdomain)) {
 			return self::toUnicode($this->subdomain);
 		}
 
@@ -472,8 +472,8 @@ final class Domains {
 	 * @return string|null Domain.
 	 */
 	public function getDomain(int $flags=0) : ?string {
-		$unicode = !! ($flags & globals_get("flag_unicode"));
-		if ($unicode && !empty($this->domain)) {
+		$unicode = !! ($flags & Shim::UNICODE);
+		if ($unicode && ! empty($this->domain)) {
 			return self::toUnicode($this->domain);
 		}
 
@@ -487,8 +487,8 @@ final class Domains {
 	 * @return string|null Suffix.
 	 */
 	public function getSuffix(int $flags=0) : ?string {
-		$unicode = !! ($flags & globals_get("flag_unicode"));
-		if ($unicode && !empty($this->suffix)) {
+		$unicode = !! ($flags & Shim::UNICODE);
+		if ($unicode && ! empty($this->suffix)) {
 			return self::toUnicode($this->suffix);
 		}
 
@@ -513,12 +513,12 @@ final class Domains {
 	 */
 	public static function niceDomain(string $str, int $flags=0) : string {
 		$host = new self($str);
-		if ($host->isFqdn() && !$host->isIp()) {
+		if ($host->isFqdn() && ! $host->isIp()) {
 			$host->stripWww();
 			return $host->getHost($flags);
 		}
 
-		return "";
+		return '';
 	}
 
 	/**
@@ -532,45 +532,45 @@ final class Domains {
 	 * @return string Email.
 	 */
 	public static function niceEmail(string $str, int $flags=0) : string {
-		$str = (string) \Blobfolio\Strings::quotes($str, ($flags & globals_get("flag_trusted")));
-		$str = \Blobfolio\Strings::toLower($str, globals_get("flag_trusted"));
+		$str = (string) \Blobfolio\Strings::quotes($str, ($flags & Shim::TRUSTED));
+		$str = \Blobfolio\Strings::toLower($str, Shim::TRUSTED);
 
 		// Strip comments.
-		$str = preg_replace("/\([^)]*\)/u", "", $str);
+		$str = \preg_replace('/\([^)]*\)/u', '', $str);
 
 		// Early bail: wrong number of "@".
-		if (1 !== substr_count($str, "@")) {
-			return "";
+		if (1 !== \substr_count($str, '@')) {
+			return '';
 		}
 
 		// For backward-compatibility, strip quotes now.
-		$str = str_replace(["'", "\""], "", $str);
+		$str = \str_replace(array("'", '"'), '', $str);
 
 		// Sanitize by part.
-		$parts = (array) explode("@", $str);
+		$parts = (array) \explode('@', $str);
 
 		// Sanitize local part.
-		$parts[0] = preg_replace(
-			"/[^\.a-z0-9\!#\$%&\*\+\-\=\?_~]/u",
-			"",
+		$parts[0] = \preg_replace(
+			'/[^\.a-z0-9\!#$%&\*\+\-\=\?_~]/u',
+			'',
 			$parts[0]
 		);
-		$parts[0] = ltrim($parts[0], ".");
-		$parts[0] = rtrim($parts[0], ".");
+		$parts[0] = \ltrim($parts[0], '.');
+		$parts[0] = \rtrim($parts[0], '.');
 
 		// Another early bail, nothing local left.
 		if (empty($parts[0])) {
-			return "";
+			return '';
 		}
 
 		// Sanitize host.
 		$host = new self($parts[1]);
-		if (!$host->isValid() || !$host->isFqdn() || $host->isIp()) {
-			return "";
+		if (! $host->isValid() || ! $host->isFqdn() || $host->isIp()) {
+			return '';
 		}
 		$parts[1] = $host->getHost();
 
-		return implode("@", $parts);
+		return \implode('@', $parts);
 	}
 
 	/**
@@ -582,16 +582,16 @@ final class Domains {
 	 */
 	public static function niceHost(string $str, int $flags=1) {
 		$host = new self($str);
-		if (!$host->isValid()) {
+		if (! $host->isValid()) {
 			return false;
 		}
 
-		$stripWww = !! ($flags & globals_get("flag_host_strip_www"));
+		$stripWww = !! ($flags & Shim::HOST_STRIP_WWW);
 		if ($stripWww) {
 			$host->stripWww();
 		}
 
-		return $host->getHost(($flags & globals_get("flag_unicode")));
+		return $host->getHost(($flags & Shim::UNICODE));
 	}
 
 	/**
@@ -607,30 +607,30 @@ final class Domains {
 
 		// Validate the host, and ASCIIfy international bits
 		// to keep PHP happy.
-		if (!isset($tmp["host"]) || empty($tmp["host"])) {
-			return "";
+		if (! isset($tmp['host']) || empty($tmp['host'])) {
+			return '';
 		}
 
-		$tmp["host"] = new self($tmp["host"]);
-		if (!$tmp["host"]->isValid()) {
-			return "";
+		$tmp['host'] = new self($tmp['host']);
+		if (! $tmp['host']->isValid()) {
+			return '';
 		}
-		$tmp["host"] = $tmp["host"]->getHost();
+		$tmp['host'] = $tmp['host']->getHost();
 
 		// Schemes can be lowercase.
-		if (isset($tmp["scheme"])) {
-			$tmp["scheme"] = strtolower($tmp["scheme"]);
+		if (isset($tmp['scheme'])) {
+			$tmp['scheme'] = \strtolower($tmp['scheme']);
 		}
 
 		// Put it back together.
 		$str = (string) self::unparseUrl($tmp);
 
-		$str = filter_var($str, FILTER_SANITIZE_URL);
-		if (!filter_var(
+		$str = \filter_var($str, \FILTER_SANITIZE_URL);
+		if (! \filter_var(
 			$str,
-			FILTER_VALIDATE_URL
+			\FILTER_VALIDATE_URL
 		)) {
-			return "";
+			return '';
 		}
 
 		return $str;
@@ -656,89 +656,89 @@ final class Domains {
 		$url = \Blobfolio\Strings::trim($url);
 
 		// Before we start, let's fix scheme-agnostic URLs.
-		$url = preg_replace("#^:?//#", "https://", $url);
+		$url = \preg_replace('#^:?//#', 'https://', $url);
 
 		// If an IPv6 address is passed on its own, we
 		// need to shove it in brackets.
-		if (filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-			$url = "[" . $url . "]";
+		if (\filter_var($url, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
+			$url = '[' . $url . ']';
 		}
 
 		// The trick is to urlencode (most) parts before passing
 		// them to the real parse_url().
-		$encoded = (string) preg_replace_callback(
-			"%([a-zA-Z][a-zA-Z0-9+\-.]*)?(:?//)?([^:/@?&=#\[\]]+)%usD",
-			[static::class, "_parseUrlCallback"],
+		$encoded = (string) \preg_replace_callback(
+			'%([a-zA-Z][a-zA-Z0-9+\-.]*)?(:?//)?([^:/@?&=#\[\]]+)%usD',
+			array(static::class, '_parseUrlCallback'),
 			$url
 		);
 
 		// Before getting the real answer, make sure
 		// there is a scheme, otherwise PHP will assume
 		// all there is is a path, which is stupid.
-		if (PHP_URL_SCHEME !== $component) {
-			$test = parse_url($encoded, PHP_URL_SCHEME);
+		if (\PHP_URL_SCHEME !== $component) {
+			$test = \parse_url($encoded, \PHP_URL_SCHEME);
 			if (empty($test)) {
-				$encoded = "blobfolio://" . $encoded;
+				$encoded = 'blobfolio://' . $encoded;
 			}
 		}
 
-		$parts = parse_url($encoded, $component);
+		$parts = \parse_url($encoded, $component);
 
 		// And now decode what we've been giving. Let's also take a
 		// moment to translate Unicode hosts to ASCII.
-		if (("string" === gettype($parts)) && (PHP_URL_SCHEME !== $component)) {
-			$parts = str_replace(" ", "+", urldecode($parts));
+		if (('string' === \gettype($parts)) && (\PHP_URL_SCHEME !== $component)) {
+			$parts = \str_replace(' ', '+', \urldecode($parts));
 
-			if (PHP_URL_HOST === $component) {
+			if (\PHP_URL_HOST === $component) {
 				// Fix Unicode.
 				$parts = (string) self::toAscii($parts);
 
 				// Lowercase it.
-				$parts = strtolower($parts);
+				$parts = \strtolower($parts);
 
 				// Get rid of trailing periods.
-				$parts = ltrim($parts, ".");
-				$parts = rtrim($parts, ".");
+				$parts = \ltrim($parts, '.');
+				$parts = \rtrim($parts, '.');
 
 				// Standardize IPv6 formatting.
-				if (0 === strpos($parts, "[")) {
-					$parts = str_replace(["[", "]"], "", $parts);
-					$parts = IPs::niceIp($parts, globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
-					$parts = "[" . $parts . "]";
+				if (0 === \strpos($parts, '[')) {
+					$parts = \str_replace(array('[', ']'), '', $parts);
+					$parts = IPs::niceIp($parts, Shim::IP_RESTRICTED | Shim::IP_CONDENSE);
+					$parts = '[' . $parts . ']';
 				}
 			}
 		}
-		elseif ("array" === gettype($parts)) {
+		elseif ('array' === \gettype($parts)) {
 			foreach ($parts as $k=>$v) {
-				if ("string" !== gettype($v)) {
+				if ('string' !== \gettype($v)) {
 					continue;
 				}
 
-				if ("scheme" !== $k) {
-					$parts[$k] = str_replace(" ", "+", urldecode($v));
+				if ('scheme' !== $k) {
+					$parts[$k] = \str_replace(' ', '+', \urldecode($v));
 				}
 				// Remove our pretend scheme.
-				elseif ("blobfolio" === $v) {
+				elseif ('blobfolio' === $v) {
 					unset($parts[$k]);
 					continue;
 				}
 
-				if (("host" === $k) && ("string" === gettype($parts[$k]))) {
+				if (('host' === $k) && ('string' === \gettype($parts[$k]))) {
 					// Fix Unicode.
 					$parts[$k] = (string) self::toAscii($parts[$k]);
 
 					// Lowercase it.
-					$parts[$k] = strtolower($parts[$k]);
+					$parts[$k] = \strtolower($parts[$k]);
 
 					// Get rid of trailing periods.
-					$parts[$k] = ltrim($parts[$k], ".");
-					$parts[$k] = rtrim($parts[$k], ".");
+					$parts[$k] = \ltrim($parts[$k], '.');
+					$parts[$k] = \rtrim($parts[$k], '.');
 
 					// Standardize IPv6 formatting.
-					if (0 === strpos($parts[$k], "[")) {
-						$parts[$k] = str_replace(["[", "]"], "", $parts[$k]);
-						$parts[$k] = IPs::niceIp($parts[$k], globals_get("flag_ip_restricted") | globals_get("flag_ip_condense"));
-						$parts[$k] = "[" . $parts[$k] . "]";
+					if (0 === \strpos($parts[$k], '[')) {
+						$parts[$k] = \str_replace(array('[', ']'), '', $parts[$k]);
+						$parts[$k] = IPs::niceIp($parts[$k], Shim::IP_RESTRICTED | Shim::IP_CONDENSE);
+						$parts[$k] = '[' . $parts[$k] . ']';
 					}
 				}
 			}
@@ -754,7 +754,7 @@ final class Domains {
 	 * @return string Replacement.
 	 */
 	private static function _parseUrlCallback(array $matches) : string {
-		return $matches[1] . $matches[2] . urldecode($matches[3]);
+		return $matches[1] . $matches[2] . \urldecode($matches[3]);
 	}
 
 	/**
@@ -764,17 +764,17 @@ final class Domains {
 	 * @return string URL.
 	 */
 	public static function unparseUrl(array $parsed) {
-		$url = "";
-		$url_parts = [
-			"scheme"=>"",
-			"host"=>"",
-			"user"=>"",
-			"pass"=>"",
-			"port"=>"",
-			"path"=>"",
-			"query"=>"",
-			"fragment"=>""
-		];
+		$url = '';
+		$url_parts = array(
+			'scheme'=>'',
+			'host'=>'',
+			'user'=>'',
+			'pass'=>'',
+			'port'=>'',
+			'path'=>'',
+			'query'=>'',
+			'fragment'=>'',
+		);
 
 		$parsed = \Blobfolio\Cast::parseArgs($parsed, $url_parts);
 
@@ -788,62 +788,62 @@ final class Domains {
 
 		// We don't really care about validating url integrity,
 		// but if nothing at all was passed then it is trash.
-		if (!count($parsed)) {
+		if (! \count($parsed)) {
 			return false;
 		}
 
 		// The scheme.
-		if (isset($parsed["scheme"])) {
-			$url .= $parsed["scheme"] . ":";
+		if (isset($parsed['scheme'])) {
+			$url .= $parsed['scheme'] . ':';
 		}
 
 		// The host.
-		if (isset($parsed["host"])) {
-			if (!empty($url)) {
-				$url .= "//";
+		if (isset($parsed['host'])) {
+			if (! empty($url)) {
+				$url .= '//';
 			}
 
 			// Is this a user:pass situation?
-			if (isset($parsed["user"])) {
-				$url .= $parsed["user"];
-				if (isset($parsed["pass"])) {
-					$url .= ":" . $parsed["pass"];
+			if (isset($parsed['user'])) {
+				$url .= $parsed['user'];
+				if (isset($parsed['pass'])) {
+					$url .= ':' . $parsed['pass'];
 				}
-				$url .= "@";
+				$url .= '@';
 			}
 
 			// Finally the host.
-			if (filter_var($parsed["host"], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-				$url .= "[" . $parsed["host"] . "]";
+			if (\filter_var($parsed['host'], \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
+				$url .= '[' . $parsed['host'] . ']';
 			}
 			else {
-				$url .= $parsed["host"];
+				$url .= $parsed['host'];
 			}
 
 			// The port.
-			if (isset($parsed["port"])) {
-				$url .= ":" . $parsed["port"];
+			if (isset($parsed['port'])) {
+				$url .= ':' . $parsed['port'];
 			}
 
 			// Prepare for a path by adding a trailing slash.
-			if (isset($parsed["path"]) && (0 !== strpos($parsed["path"], "/"))) {
-				$url .= "/";
+			if (isset($parsed['path']) && (0 !== \strpos($parsed['path'], '/'))) {
+				$url .= '/';
 			}
 		}
 
 		// Add the path.
-		if (isset($parsed["path"])) {
-			$url .= $parsed["path"];
+		if (isset($parsed['path'])) {
+			$url .= $parsed['path'];
 		}
 
 		// Add the query.
-		if (isset($parsed["query"])) {
-			$url .= "?" . $parsed["query"];
+		if (isset($parsed['query'])) {
+			$url .= '?' . $parsed['query'];
 		}
 
 		// And top it off with a fragment.
-		if (isset($parsed["fragment"])) {
-			$url .= "#" . $parsed["fragment"];
+		if (isset($parsed['fragment'])) {
+			$url .= '#' . $parsed['fragment'];
 		}
 
 		if (empty($url)) {
@@ -870,11 +870,11 @@ final class Domains {
 		// let _GET = null;
 		// let _REQUEST = null;
 
-		if (!headers_sent()) {
-			header("Location: " . $to);
+		if (! \headers_sent()) {
+			\header('Location: ' . $to);
 		}
 		else {
-			echo "<script>top.location.href='" . str_replace("'", "\'", $to) . "';</script>";
+			echo "<script>top.location.href='" . \str_replace("'", "\'", $to) . "';</script>";
 		}
 	}
 
@@ -885,12 +885,12 @@ final class Domains {
 	 * @return string|null Value.
 	 */
 	private static function toAscii(string $value) : ?string {
-		if (!empty($value)) {
-			$parts = (array) explode(".", $value);
+		if (! empty($value)) {
+			$parts = (array) \explode('.', $value);
 			foreach ($parts as $k=>$v) {
-				$parts[$k] = (string) idn_to_ascii($v, 0, INTL_IDNA_VARIANT_UTS46);
+				$parts[$k] = (string) \idn_to_ascii($v, 0, \INTL_IDNA_VARIANT_UTS46);
 			}
-			return implode(".", $parts);
+			return \implode('.', $parts);
 		}
 
 		return null;
@@ -903,12 +903,12 @@ final class Domains {
 	 * @return string|null Value.
 	 */
 	private static function toUnicode(string $value) : ?string {
-		if (!empty($value)) {
-			$parts = (array) explode(".", $value);
+		if (! empty($value)) {
+			$parts = (array) \explode('.', $value);
 			foreach ($parts as $k=>$v) {
-				$parts[$k] = (string) idn_to_utf8($v, 0, INTL_IDNA_VARIANT_UTS46);
+				$parts[$k] = (string) \idn_to_utf8($v, 0, \INTL_IDNA_VARIANT_UTS46);
 			}
-			return implode(".", $parts);
+			return \implode('.', $parts);
 		}
 
 		return null;
@@ -928,10 +928,10 @@ final class Domains {
 	 * @param bool $httponly HTTP only.
 	 * @return bool True/false.
 	 */
-	public static function unsetcookie(string $name, string $path="", string $domain="", bool $secure=false, bool $httponly=false) : bool {
+	public static function unsetcookie(string $name, string $path='', string $domain='', bool $secure=false, bool $httponly=false) : bool {
 
-		if (!headers_sent()) {
-			setcookie($name, false, -1, $path, $domain, $secure, $httponly);
+		if (! \headers_sent()) {
+			\setcookie($name, false, -1, $path, $domain, $secure, $httponly);
 			if (isset($_COOKIE[$name])) {
 				unset($_COOKIE[$name]);
 			}
@@ -964,14 +964,14 @@ final class Domains {
 		}
 
 		// Gotta load it!
-		$json = (string) \Blobfolio\Blobfolio::getDataDir("blob-domains.json");
+		$json = (string) \Blobfolio\Blobfolio::getDataDir('blob-domains.json');
 		if (empty($json)) {
-			throw new Exception("Missing domain suffix data.");
+			throw new Exception('Missing domain suffix data.');
 		}
 
-		self::$_suffixes = json_decode($json, true);
-		if ("array" !== gettype(self::$_suffixes)) {
-			throw new Exception("Could not parse domain suffix data.");
+		self::$_suffixes = \json_decode($json, true);
+		if ('array' !== \gettype(self::$_suffixes)) {
+			throw new Exception('Could not parse domain suffix data.');
 		}
 
 		self::$_loaded_blob_domains = true;

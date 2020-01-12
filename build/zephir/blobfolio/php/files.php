@@ -10,14 +10,15 @@
 
 namespace Blobfolio;
 
+use Blobfolio\Blobfolio as Shim;
 use Exception;
 use Throwable;
 
 
 
 final class Files {
-	const MIME_DEFAULT = "application/octet-stream";
-	const MIME_EMPTY = "inode/x-empty";
+	const MIME_DEFAULT = 'application/octet-stream';
+	const MIME_EMPTY = 'inode/x-empty';
 
 	private static $_loaded_blob_mimes = false;
 	private static $_mimes_by_e;
@@ -37,9 +38,9 @@ final class Files {
 	 * @return string Extension.
 	 */
 	public static function niceFileExtension(string $ext, int $flags=0) : string {
-		$ext = \Blobfolio\Strings::toLower($ext, ($flags & globals_get("flag_trusted")));
-		$ext = preg_replace("/\s/u", "", $ext);
-		return rtrim(ltrim($ext, "*."), "*.");
+		$ext = \Blobfolio\Strings::toLower($ext, ($flags & Shim::TRUSTED));
+		$ext = \preg_replace('/\s/u', '', $ext);
+		return \rtrim(\ltrim($ext, '*.'), '*.');
 	}
 
 	/**
@@ -49,15 +50,15 @@ final class Files {
 	 * @return string MIME.
 	 */
 	public static function niceMime(string $mime) : string {
-		$mime = strtolower($mime);
-		$mime = preg_replace("#[^-+*.a-z0-9/]#", "", $mime);
+		$mime = \strtolower($mime);
+		$mime = \preg_replace('#[^-+*.a-z0-9/]#', '', $mime);
 
 		if (
-			(substr_count($mime, "/") !== 1) ||
-			(0 === strpos($mime, "/")) ||
-			("/" === substr($mime, -1))
+			(\substr_count($mime, '/') !== 1) ||
+			(0 === \strpos($mime, '/')) ||
+			('/' === \substr($mime, -1))
 		) {
-			return "";
+			return '';
 		}
 
 		return $mime;
@@ -71,7 +72,7 @@ final class Files {
 	 */
 	public static function getMimeType(string $path) : string {
 		$finfo = (array) self::finfo($path);
-		return $finfo["mime"];
+		return $finfo['mime'];
 	}
 
 	/**
@@ -82,26 +83,26 @@ final class Files {
 	 */
 	public static function getMimeExtensions(string $mime) {
 		$aliases = (array) self::getMimeMutations($mime);
-		if (!count($aliases)) {
+		if (! \count($aliases)) {
 			return false;
 		}
 
 		// Make sure the data is loaded.
 		self::loadMimes();
 
-		$out = [];
+		$out = array();
 		foreach ($aliases as $v) {
 			if (isset(self::$_mimes_by_m[$v])) {
-				$out = array_merge($out, self::$_mimes_by_m[$v]);
+				$out = \array_merge($out, self::$_mimes_by_m[$v]);
 			}
 		}
 
-		if (!count($out)) {
+		if (! \count($out)) {
 			return false;
 		}
-		elseif (count($out) > 1) {
-			$out = array_unique($out);
-			$out = array_values($out);
+		elseif (\count($out) > 1) {
+			$out = \array_unique($out);
+			$out = \array_values($out);
 		}
 
 		return $out;
@@ -141,28 +142,28 @@ final class Files {
 	public static function getMimeMutations(string $mime) : array {
 		$mime = self::niceMime($mime);
 		if (empty($mime)) {
-			return [];
+			return array();
 		}
 
 		if ((self::MIME_EMPTY === $mime) || (self::MIME_DEFAULT === $mime)) {
-			return [$mime];
+			return array($mime);
 		}
 
-		$out = [];
+		$out = array();
 
 		// Weird Microsoft type.
-		if (0 === strpos($mime, "application/cdfv2")) {
-			$out[] = "application/vnd.ms-office";
+		if (0 === \strpos($mime, 'application/cdfv2')) {
+			$out[] = 'application/vnd.ms-office';
 		}
 
 		// Split it into type and subtype.
-		$parts = (array) explode("/", $mime);
-		$subtype = (string) preg_replace("/^(x-|vnd\.)/", "", $parts[1]);
-		$out[] = $parts[0] . "/x-" . $subtype;
-		$out[] = $parts[0] . "/vnd." . $subtype;
-		$out[] = $parts[0] . "/" . $subtype;
+		$parts = (array) \explode('/', $mime);
+		$subtype = (string) \preg_replace('/^(x-|vnd\.)/', '', $parts[1]);
+		$out[] = $parts[0] . '/x-' . $subtype;
+		$out[] = $parts[0] . '/vnd.' . $subtype;
+		$out[] = $parts[0] . '/' . $subtype;
 
-		usort($out, [static::class, "getMimeMutationsUsort"]);
+		\usort($out, array(static::class, 'getMimeMutationsUsort'));
 
 		return $out;
 	}
@@ -175,17 +176,17 @@ final class Files {
 	 * @return int Priority.
 	 */
 	private static function getMimeMutationsUsort(string $a, string $b) : int {
-		if (preg_match("#/(x-|vnd\.)#", $a)) {
-			$a = "1_" . $a;
+		if (\preg_match('#/(x-|vnd\.)#', $a)) {
+			$a = '1_' . $a;
 		}
 		else {
-			$a = "0_" . $a;
+			$a = '0_' . $a;
 		}
-		if (preg_match("#/(x-|vnd\.)#", $b)) {
-			$b = "1_" . $b;
+		if (\preg_match('#/(x-|vnd\.)#', $b)) {
+			$b = '1_' . $b;
 		}
 		else {
-			$b = "0_" . $b;
+			$b = '0_' . $b;
 		}
 
 		return $a < $b ? -1 : 1;
@@ -224,7 +225,7 @@ final class Files {
 			return true;
 		}
 
-		return in_array($mime, $mimes, true);
+		return \in_array($mime, $mimes, true);
 	}
 
 	/**
@@ -236,32 +237,32 @@ final class Files {
 	 * @param string $niceName Alternate file name (for e.g. tmp uploads).
 	 * @return array Data.
 	 */
-	public static function finfo(string $path, string $niceName="") : array {
+	public static function finfo(string $path, string $niceName='') : array {
 		$path = \Blobfolio\Strings::utf8($path);
-		if (!empty($niceName)) {
+		if (! empty($niceName)) {
 			$niceName = \Blobfolio\Strings::utf8($niceName);
 		}
 
-		$out = [
-			"dirname"=>"",
-			"basename"=>"",
-			"extension"=>"",
-			"filename"=>"",
-			"path"=>"",
-			"mime"=>self::MIME_DEFAULT,
-			"rename"=>[]
-		];
+		$out = array(
+			'dirname'=>'',
+			'basename'=>'',
+			'extension'=>'',
+			'filename'=>'',
+			'path'=>'',
+			'mime'=>self::MIME_DEFAULT,
+			'rename'=>array(),
+		);
 
 		// This could just be an extension.
 		if (
-			(false === strpos($path, ".")) &&
-			(false === strpos($path, "/")) &&
-			(false === strpos($path, "\\"))
+			(false === \strpos($path, '.')) &&
+			(false === \strpos($path, '/')) &&
+			(false === \strpos($path, '\\'))
 		) {
-			$out["extension"] = self::niceFileExtension($path);
+			$out['extension'] = self::niceFileExtension($path);
 			$mimes = self::getExtensionMimes($path);
 			if (false !== $mimes) {
-				$out["mime"] = $mimes[0];
+				$out['mime'] = $mimes[0];
 			}
 
 			return $out;
@@ -269,92 +270,91 @@ final class Files {
 
 		// This should be a path of some sort.
 		$path = self::path($path);
-		$out["path"] = $path;
-		$out = \Blobfolio\Cast::parseArgs(pathinfo($path), $out);
+		$out['path'] = $path;
+		$out = \Blobfolio\Cast::parseArgs(\pathinfo($path), $out);
 
 		// Apply a nice name.
-		if (!empty($niceName)) {
-			$tmp = pathinfo($niceName);
+		if (! empty($niceName)) {
+			$tmp = \pathinfo($niceName);
 
-			if (isset($tmp["filename"])) {
-				$out["filename"] = $tmp["filename"];
+			if (isset($tmp['filename'])) {
+				$out['filename'] = $tmp['filename'];
 			}
 			else {
-				$out["filename"] = "";
+				$out['filename'] = '';
 			}
 
-			if (isset($tmp["extension"])) {
-				$out["extension"] = $tmp["extension"];
+			if (isset($tmp['extension'])) {
+				$out['extension'] = $tmp['extension'];
 			}
 			else {
-				$out["extension"] = "";
+				$out['extension'] = '';
 			}
 		}
 
 		// Can't trust pathinfo to sanitize the extension.
-		$out["extension"] = self::niceFileExtension($out["extension"]);
+		$out['extension'] = self::niceFileExtension($out['extension']);
 
 		// Pull MIMEs for the extension.
-		$mimes = self::getExtensionMimes($out["extension"]);
+		$mimes = self::getExtensionMimes($out['extension']);
 		if (false !== $mimes) {
-			$out["mime"] = $mimes[0];
+			$out['mime'] = $mimes[0];
 		}
 
 		// See if this is a real path.
 		try {
-			$path = stream_resolve_include_path($path);
-			if (!empty($path)) {
-				$out["path"] = $path;
-				$out["dirname"] = dirname($path);
+			$path = \stream_resolve_include_path($path);
+			if (! empty($path)) {
+				$out['path'] = $path;
+				$out['dirname'] = \dirname($path);
 			}
 
 			// Try Magic MIMEs.
-			if (is_file($path) && filesize($path) > 0) {
-				$finfo = finfo_open(FILEINFO_MIME_TYPE);
-				$magicMime = (string) finfo_file($finfo, $path);
+			if (\is_file($path) && \filesize($path) > 0) {
+				$finfo = \finfo_open(\FILEINFO_MIME_TYPE);
+				$magicMime = (string) \finfo_file($finfo, $path);
 				$magicMime = self::niceMime($magicMime);
-				finfo_close($finfo);
+				\finfo_close($finfo);
 
 				// Fileinfo can misidentify SVGs if they are missing
 				// their XML tag or DOCTYPE.
 				if (
-					("svg" === $out["extension"]) &&
-					("image/svg+xml" !== $magicMime)
+					('svg' === $out['extension']) &&
+					('image/svg+xml' !== $magicMime)
 				) {
-					$tmp = file_get_contents($path);
+					$tmp = \file_get_contents($path);
 					if (
-						is_string($tmp) &&
-						(false !== stripos($tmp, "<svg"))
+						\is_string($tmp) &&
+						(false !== \stripos($tmp, '<svg'))
 					) {
-						$magicMime = "image/svg+xml";
+						$magicMime = 'image/svg+xml';
 					}
 				}
 
 				// Okay, dive deeper into the magic.
 				if (
-					!empty($magicMime) &&
+					! empty($magicMime) &&
 					(
-						(self::MIME_DEFAULT !== $out["mime"]) ||
-						(0 !== strpos($magicMime, "text/"))
+						(self::MIME_DEFAULT !== $out['mime']) ||
+						(0 !== \strpos($magicMime, 'text/'))
 					) &&
-					!self::checkExtensionMimePair($out["extension"], $magicMime)
+					! self::checkExtensionMimePair($out['extension'], $magicMime)
 				) {
 					// Override what we've found so far if the magic is
 					// legit.
 					$tmp = self::getMimeExtensions($magicMime);
 					if (false !== $tmp) {
-						$out["mime"] = $magicMime;
-						$out["extension"] = $tmp[0];
+						$out['mime'] = $magicMime;
+						$out['extension'] = $tmp[0];
 
 						// Build alternative names.
 						foreach ($tmp as $v) {
-							$out["rename"][] = $out["filename"] . "." . $v;
+							$out['rename'][] = $out['filename'] . '.' . $v;
 						}
 					}
 				}
 			}
-		}
-		catch (Throwable $e) {
+		} catch (Throwable $e) {
 			return $out;
 		}
 
@@ -375,7 +375,7 @@ final class Files {
 	 * @return string|array Path.
 	 */
 	public static function leadingSlash(string $str, int $flags=0) : string {
-		return "/" . self::unleadingSlash($str, ($flags & globals_get("flag_trusted")));
+		return '/' . self::unleadingSlash($str, ($flags & Shim::TRUSTED));
 	}
 
 	/**
@@ -386,16 +386,16 @@ final class Files {
 	 * @return bool|string Path or false.
 	 */
 	public static function path(string $str, int $flags=0) {
-		$trusted = !! ($flags & globals_get("flag_trusted"));
-		if (!$trusted) {
+		$trusted = !! ($flags & Shim::TRUSTED);
+		if (! $trusted) {
 			$str = \Blobfolio\Strings::utf8($str);
 		}
 
-		$validate = !! ($flags & globals_get("flag_path_validate"));
+		$validate = !! ($flags & Shim::PATH_VALIDATE);
 
 		// This might be a URL rather than something local. We only want
 		// to focus on local ones.
-		if (preg_match("#^(https?|ftps?|sftp):#iu", $str)) {
+		if (\preg_match('#^(https?|ftps?|sftp):#iu', $str)) {
 			$str = \Blobfolio\Domains::niceUrl($str);
 			if (empty($str)) {
 				return false;
@@ -405,19 +405,19 @@ final class Files {
 		}
 
 		// Strip leading file:// scheme.
-		if (0 === strpos($str, "file://")) {
-			$str = substr($str, 7);
+		if (0 === \strpos($str, 'file://')) {
+			$str = \substr($str, 7);
 		}
 
 		// Fix up slashes.
-		$str = self::unixSlash($str, globals_get("flag_trusted"));
+		$str = self::unixSlash($str, Shim::TRUSTED);
 
 		// Is this a real path?
 		$old_str = $str;
 		try {
-			$str = stream_resolve_include_path($str);
+			$str = \stream_resolve_include_path($str);
 		} catch (Throwable $e) {
-			$str = "";
+			$str = '';
 		}
 
 		// A bad path.
@@ -430,9 +430,9 @@ final class Files {
 			// Start again.
 			$str = $old_str;
 			try {
-				$dir = stream_resolve_include_path(dirname($str));
+				$dir = \stream_resolve_include_path(\dirname($str));
 				if ($dir) {
-					$str = self::trailingSlash($dir, globals_get("flag_trusted")) . basename($str);
+					$str = self::trailingSlash($dir, Shim::TRUSTED) . \basename($str);
 				}
 			} catch (Throwable $e) {
 				$str = $old_str;
@@ -444,8 +444,8 @@ final class Files {
 		}
 
 		// Always trail slashes on directories.
-		if (is_dir($str)) {
-			$str = self::trailingSlash($str, globals_get("flag_trusted"));
+		if (\is_dir($str)) {
+			$str = self::trailingSlash($str, Shim::TRUSTED);
 		}
 
 		return $str;
@@ -459,7 +459,7 @@ final class Files {
 	 * @return string|array Path.
 	 */
 	public static function trailingSlash(string $str, int $flags=0) : string {
-		return self::untrailingSlash($str, ($flags & globals_get("flag_trusted"))) . "/";
+		return self::untrailingSlash($str, ($flags & Shim::TRUSTED)) . '/';
 	}
 
 	/**
@@ -470,14 +470,14 @@ final class Files {
 	 * @return string|array Path.
 	 */
 	public static function unixSlash(string $str, int $flags=0) : string {
-		$trusted = !! ($flags & globals_get("flag_trusted"));
-		if (!$trusted) {
+		$trusted = !! ($flags & Shim::TRUSTED);
+		if (! $trusted) {
 			$str = \Blobfolio\Strings::utf8($str);
 		}
 
-		$str = str_replace("\\", "/", $str);
-		$str = str_replace("/./", "/", $str);
-		return preg_replace("#/{2,}#u", "/", $str);
+		$str = \str_replace('\\', '/', $str);
+		$str = \str_replace('/./', '/', $str);
+		return \preg_replace('#/{2,}#u', '/', $str);
 	}
 
 	/**
@@ -488,8 +488,8 @@ final class Files {
 	 * @return string|array Path.
 	 */
 	public static function unleadingSlash(string $str, int $flags=0) : string {
-		$str = self::unixSlash($str, ($flags & globals_get("flag_trusted")));
-		return ltrim($str, "/");
+		$str = self::unixSlash($str, ($flags & Shim::TRUSTED));
+		return \ltrim($str, '/');
 	}
 
 	/**
@@ -500,8 +500,8 @@ final class Files {
 	 * @return string|array Path.
 	 */
 	public static function untrailingSlash(string $str, int $flags=0) : string {
-		$str = self::unixSlash($str, ($flags & globals_get("flag_trusted")));
-		return rtrim($str, "/");
+		$str = self::unixSlash($str, ($flags & Shim::TRUSTED));
+		return \rtrim($str, '/');
 	}
 
 
@@ -519,8 +519,8 @@ final class Files {
 	 * @return string String.
 	 */
 	public static function addBom(string $str) : string {
-		$bom = chr(239) . chr(187) . chr(191);
-		$str = (string) str_replace($bom, "", $str);
+		$bom = \chr(239) . \chr(187) . \chr(191);
+		$str = (string) \str_replace($bom, '', $str);
 		return $bom . $str;
 	}
 
@@ -533,7 +533,7 @@ final class Files {
 	 */
 	public static function copy(string $from, string $to) : bool {
 		// Double-check the from.
-		$from = self::path($from, globals_get("flag_path_validate"));
+		$from = self::path($from, Shim::PATH_VALIDATE);
 		if (empty($from)) {
 			return false;
 		}
@@ -544,32 +544,32 @@ final class Files {
 		}
 
 		// Recurse directories.
-		if (is_dir($from)) {
-			$to = self::trailingSlash($to, globals_get("flag_trusted"));
+		if (\is_dir($from)) {
+			$to = self::trailingSlash($to, Shim::TRUSTED);
 
 			// Make sure the destination root exists.
-			if (is_dir($to)) {
-				if (!self::mkdir($to)) {
+			if (\is_dir($to)) {
+				if (! self::mkdir($to)) {
 					return false;
 				}
 			}
 
 			// Copy all files and directories within.
-			$handle = opendir($from);
+			$handle = \opendir($from);
 			if ($handle) {
-				$file = readdir($handle);
+				$file = \readdir($handle);
 				while ($file) {
 					// Ignore dots.
-					if (("." === $file) || (".." === $file)) {
-						$file = readdir($handle);
+					if (('.' === $file) || ('..' === $file)) {
+						$file = \readdir($handle);
 						continue;
 					}
 
 					// Recurse.
 					self::copy($from . $file, $to . $file);
-					$file = readdir($handle);
+					$file = \readdir($handle);
 				}
-				closedir($handle);
+				\closedir($handle);
 			}
 			else {
 				return false;
@@ -578,25 +578,25 @@ final class Files {
 			return true;
 		}
 		// Let PHP handle it.
-		elseif (is_file($from)) {
-			$dir_from = (string) dirname($from);
-			$dir_to = (string) dirname($to);
+		elseif (\is_file($from)) {
+			$dir_from = (string) \dirname($from);
+			$dir_to = (string) \dirname($to);
 
 			// Make sure the destination root exists.
-			if (!is_dir($dir_to)) {
-				$chmod = (fileperms($dir_from) & 0777 | 0755);
-				if (!self::mkdir($dir_to, $chmod)) {
+			if (! \is_dir($dir_to)) {
+				$chmod = (\fileperms($dir_from) & 0777 | 0755);
+				if (! self::mkdir($dir_to, $chmod)) {
 					return false;
 				}
 			}
 
 			// Copy the file.
-			if (!copy($from, $to)) {
+			if (! \copy($from, $to)) {
 				return false;
 			}
 
-			$chmod = (fileperms($from) & 0777 | 0644);
-			chmod($to, $chmod);
+			$chmod = (\fileperms($from) & 0777 | 0644);
+			\chmod($to, $chmod);
 
 			return true;
 		}
@@ -623,33 +623,33 @@ final class Files {
 	 * @param string $delimiter Delimiter.
 	 * @return bool|array Headers.
 	 */
-	public static function csvHeaders(string $csv, $cols=false, string $delimiter=",") {
+	public static function csvHeaders(string $csv, $cols=false, string $delimiter=',') {
 		// We definitely need a file.
-		$csv = (string) self::path($csv, globals_get("flag_path_validate"));
-		if (empty($csv) || !is_file($csv)) {
+		$csv = (string) self::path($csv, Shim::PATH_VALIDATE);
+		if (empty($csv) || ! \is_file($csv)) {
 			return false;
 		}
 
 		// Are we looking for particular columns?
 		$assoc = false;
-		if (is_array($cols) && count($cols)) {
-			if ("associative" === \Blobfolio\Arrays::getType($cols)) {
+		if (\is_array($cols) && \count($cols)) {
+			if ('associative' === \Blobfolio\Arrays::getType($cols)) {
 				$assoc = true;
 			}
-			$cols = array_flip($cols);
+			$cols = \array_flip($cols);
 		}
 		else {
 			$cols = false;
 		}
 
 		// Open the CSV and look for the first line with stuff.
-		$handle = fopen($csv, "r");
+		$handle = \fopen($csv, 'r');
 		if (false === $handle) {
 			return false;
 		}
 
 		while (true) {
-			$line = fgetcsv($handle, 0, $delimiter);
+			$line = \fgetcsv($handle, 0, $delimiter);
 
 			// We only need to read one line, but if that fails, we're
 			// done.
@@ -658,25 +658,25 @@ final class Files {
 			}
 
 			// We can skip leading empties though.
-			if (!isset($line[0]) || (null === $line[0])) {
+			if (! isset($line[0]) || (null === $line[0])) {
 				continue;
 			}
 
 			// Flip the line too.
-			$line = array_flip($line);
+			$line = \array_flip($line);
 
 			// If we aren't filtering columns, just cast and return.
-			if (!$cols) {
+			if (! $cols) {
 				foreach ($line as $k=>$v) {
-					$line[$k] = (int) v;
+					$line[$k] = (int) $v;
 				}
 
 				return $line;
 			}
 
-			$out = [];
+			$out = array();
 			foreach ($cols as $k=>$v) {
-				$key = $assoc ? v : k;
+				$key = $assoc ? $v : $k;
 				$value = isset($line[$k]) ? (int) $line[$k] : false;
 				$out[$key] = $value;
 			}
@@ -695,15 +695,15 @@ final class Files {
 	 * @return string URI.
 	 */
 	public static function dataUri(string $path) : string {
-		$path = self::path($path, globals_get("flag_path_validate"));
-		if (empty($path) || !is_file($path)) {
-			return "";
+		$path = self::path($path, Shim::PATH_VALIDATE);
+		if (empty($path) || ! \is_file($path)) {
+			return '';
 		}
 
-		$content = (string) base64_encode(file_get_contents($path));
+		$content = (string) \base64_encode(\file_get_contents($path));
 		$mime = (string) self::getMimeType($path);
 
-		return "data:" . $mime . ";base64," . $content;
+		return 'data:' . $mime . ';base64,' . $content;
 	}
 
 	/**
@@ -716,23 +716,23 @@ final class Files {
 	 */
 	public static function hashDir(string $str) {
 		$files = (array) self::scandir($str, true, false);
-		if (!count($files)) {
-			return md5("empty");
+		if (! \count($files)) {
+			return \md5('empty');
 		}
 
 		// Add up the file hashes.
-		$soup = "";
+		$soup = '';
 		foreach ($files as $v) {
-			$soup .= md5_file($v);
+			$soup .= \md5_file($v);
 		}
 
-		return md5($soup);
+		return \md5($soup);
 	}
 
 	/**
 	 * Directory Size
 	 *
-	 * @param string $path Path.
+	 * @param string $str Path.
 	 * @return int Size.
 	 */
 	public static function dirSize(string $str) : int {
@@ -740,7 +740,7 @@ final class Files {
 		$files = (array) self::scandir($str, true, false);
 
 		foreach ($files as $v) {
-			$size += (int) filesize($v);
+			$size += (int) \filesize($v);
 		}
 
 		return $size;
@@ -757,7 +757,7 @@ final class Files {
 	 */
 	public static function getLineCount(string $file, bool $trim=true) : int {
 		// We definitely need a file.
-		if (empty($file) || !is_file($file)) {
+		if (empty($file) || ! \is_file($file)) {
 			return 0;
 		}
 
@@ -766,12 +766,12 @@ final class Files {
 		// Unfortunately we still need to read the file line by line,
 		// but at least we're only loading one line into memory at a
 		// time. For large files, this makes a big difference.
-		$handle = fopen($file, "r");
+		$handle = \fopen($file, 'r');
 		if ($handle) {
-			$line = fgets($handle);
+			$line = \fgets($handle);
 			while ($line) {
 				if ($trim) {
-					if (trim($line)) {
+					if (\trim($line)) {
 						$lines++;
 					}
 				}
@@ -779,9 +779,9 @@ final class Files {
 					$lines++;
 				}
 
-				$line = fgets($handle);
+				$line = \fgets($handle);
 			}
-			fclose($handle);
+			\fclose($handle);
 		}
 
 		return $lines;
@@ -794,7 +794,7 @@ final class Files {
 	 * @return bool True/false.
 	 */
 	public static function isEmptyDir(string $str) : bool {
-		if (!is_readable($str) || !is_dir($str)) {
+		if (! \is_readable($str) || ! \is_dir($str)) {
 			return false;
 		}
 
@@ -809,35 +809,35 @@ final class Files {
 	 * PHP's mkdir function can be recursive, but the permissions are
 	 * only set correctly on the innermost folder created.
 	 *
-	 * @param string $path Path.
+	 * @param string $str Path.
 	 * @param int $chmod CHMOD.
 	 * @return bool True/false.
 	 */
 	public static function mkdir(string $str, $chmod=null) : bool {
 		// Figure out a good default CHMOD.
-		if (empty($chmod) || !is_numeric($chmod)) {
-			$chmod = (fileperms(getcwd()) & 0777 | 0755);
+		if (empty($chmod) || ! \is_numeric($chmod)) {
+			$chmod = (\fileperms(\getcwd()) & 0777 | 0755);
 		}
 
 		// Sanitize the path.
 		$str = (string) self::path($str);
-		if (empty($str) || (false !== strpos($str, "://"))) {
+		if (empty($str) || (false !== \strpos($str, '://'))) {
 			return false;
 		}
 
 		// We only need to proceed if the path doesn't exist.
-		if (!is_dir($str)) {
-			$str = self::untrailingSlash($str, globals_get("flag_trusted"));
+		if (! \is_dir($str)) {
+			$str = self::untrailingSlash($str, Shim::TRUSTED);
 
 			// Figure out where we need to begin.
-			$base = (string) dirname($str);
-			while ($base && ("." !== $base) && !is_dir($base)) {
-				$base = dirname($base);
+			$base = (string) \dirname($str);
+			while ($base && ('.' !== $base) && ! \is_dir($base)) {
+				$base = \dirname($base);
 			}
 
 			// PHP can recursively make a directory; the real problem
 			// is it doesn't fix permissions in the middle.
-			if (!mkdir($str, 0777, true)) {
+			if (! \mkdir($str, 0777, true)) {
 				return false;
 			}
 
@@ -845,37 +845,37 @@ final class Files {
 			if ($str !== $base) {
 				// If we fell deep enough that base became relative,
 				// let's move it back.
-				if (empty($base) || ("." === $base)) {
-					$base = (string) getcwd();
+				if (empty($base) || ('.' === $base)) {
+					$base = (string) \getcwd();
 				}
 
 				// Base should be inside path. If not, something weird
 				// has happened.
-				if (0 !== mb_strpos($str, $base, 0, "UTF-8")) {
+				if (0 !== \mb_strpos($str, $base, 0, 'UTF-8')) {
 					return true;
 				}
 
-				$str = mb_substr(
+				$str = \mb_substr(
 					$str,
-					(int) mb_strlen($base, "UTF-8"),
+					(int) \mb_strlen($base, 'UTF-8'),
 					null,
-					"UTF-8"
+					'UTF-8'
 				);
-				$str = self::unleadingSlash($str, globals_get("flag_trusted"));
-				$parts = (array) explode("/", $str);
+				$str = self::unleadingSlash($str, Shim::TRUSTED);
+				$parts = (array) \explode('/', $str);
 				$str = $base;
 
 				// Loop through each subdirectory to set the appropriate
 				// permissions.
 				foreach ($parts as $v) {
-					$str .= ("/" === substr($str, -1)) ? $v : "/" . $v;
-					if (!chmod($str, $chmod)) {
+					$str .= ('/' === \substr($str, -1)) ? $v : '/' . $v;
+					if (! \chmod($str, $chmod)) {
 						return true;
 					}
 				}
 			}
 			else {
-				chmod($str, $chmod);
+				\chmod($str, $chmod);
 			}
 		}
 
@@ -889,30 +889,30 @@ final class Files {
 	 * @param bool $retbytes Return bites served.
 	 */
 	public static function readfileChunked(string $file, bool $retbytes=true) {
-		if (empty($file) || !is_file($file)) {
+		if (empty($file) || ! \is_file($file)) {
 			return false;
 		}
 
 		$chunk_size = 1024 * 1024;
 		$count = 0;
-		$buffer = "";
+		$buffer = '';
 
-		$handle = fopen($file, "rb");
-		if (!$handle) {
+		$handle = \fopen($file, 'rb');
+		if (! $handle) {
 			return false;
 		}
 
-		while (!feof($handle)) {
-			$buffer = (string) fread($handle, $chunk_size);
+		while (! \feof($handle)) {
+			$buffer = (string) \fread($handle, $chunk_size);
 			echo $buffer;
-			ob_flush();
-			flush();
+			\ob_flush();
+			\flush();
 			if ($retbytes) {
-				$count += strlen($buffer);
+				$count += \strlen($buffer);
 			}
 		}
 
-		$status = fclose($handle);
+		$status = \fclose($handle);
 
 		// Return the number of bytes delivered.
 		if ($retbytes && $status) {
@@ -925,47 +925,47 @@ final class Files {
 	/**
 	 * Recursively Remove A Directory
 	 *
-	 * @param string $path Path.
+	 * @param string $str Path.
 	 * @return bool True/false.
 	 */
 	public static function rmdir(string $str) : bool {
-		$str = self::path($str, globals_get("flag_path_validate"));
-		if (empty($str) || !is_readable($str) || !is_dir($str)) {
+		$str = self::path($str, Shim::PATH_VALIDATE);
+		if (empty($str) || ! \is_readable($str) || ! \is_dir($str)) {
 			return false;
 		}
 
 		// Scan all files in dir.
-		$handle = opendir($str);
+		$handle = \opendir($str);
 		if ($handle) {
-			$file = readdir($handle);
+			$file = \readdir($handle);
 			while ($file) {
 				// Anything but a dot === not empty.
-				if (("." === $file) || (".." === $file)) {
-					$file = readdir($handle);
+				if (('.' === $file) || ('..' === $file)) {
+					$file = \readdir($handle);
 					continue;
 				}
 
 				$path = $str . $file;
 
 				// Delete files.
-				if (is_file($path)) {
-					unlink($path);
+				if (\is_file($path)) {
+					\unlink($path);
 				}
 				// Recursively delete directories.
 				else {
 					self::rmdir($path);
 				}
 
-				$file = readdir($handle);
+				$file = \readdir($handle);
 			}
-			closedir($handle);
+			\closedir($handle);
 		}
 
 		if (self::isEmptyDir($str)) {
-			rmdir($str);
+			\rmdir($str);
 		}
 
-		return (false === stream_resolve_include_path($str));
+		return (false === \stream_resolve_include_path($str));
 	}
 
 	/**
@@ -978,9 +978,9 @@ final class Files {
 	 * @return array Path(s).
 	 */
 	public static function scandir(string $str, bool $show_files=true, bool $show_dirs=true, int $depth=-1) : array {
-		$str = self::path($str, globals_get("flag_path_validate"));
-		if (empty($str) || !is_dir($str) || (!$show_files && !$show_dirs)) {
-			return [];
+		$str = self::path($str, Shim::PATH_VALIDATE);
+		if (empty($str) || ! \is_dir($str) || (! $show_files && ! $show_dirs)) {
+			return array();
 		}
 
 		// Set the depth for recursion.
@@ -992,34 +992,34 @@ final class Files {
 			$inner_depth = 0;
 		}
 
-		$out = [];
-		$handle = opendir($str);
+		$out = array();
+		$handle = \opendir($str);
 		if ($handle) {
-			$str = self::trailingSlash($str, globals_get("flag_trusted"));
-			$file = readdir($handle);
+			$str = self::trailingSlash($str, Shim::TRUSTED);
+			$file = \readdir($handle);
 			while ($file) {
 				// Always ignore dots.
-				if (("." === $file) || (".." === $file)) {
-					$file = readdir($handle);
+				if (('.' === $file) || ('..' === $file)) {
+					$file = \readdir($handle);
 					continue;
 				}
 
 				$path = $str . $file;
 
 				// This is a file.
-				if (is_file($path)) {
+				if (\is_file($path)) {
 					if ($show_files) {
 						$out[] = $path;
 					}
 				}
-				elseif (is_dir($path)) {
+				elseif (\is_dir($path)) {
 					if ($show_dirs) {
-						$out[] = $path . "/";
+						$out[] = $path . '/';
 					}
 
 					// Recurse?
 					if (0 !== $inner_depth) {
-						$out = (array) array_merge(
+						$out = (array) \array_merge(
 							$out,
 							self::scandir(
 								$path,
@@ -1031,12 +1031,12 @@ final class Files {
 					}
 				}
 
-				$file = readdir($handle);
+				$file = \readdir($handle);
 			}
-			closedir($handle);
+			\closedir($handle);
 		}
 
-		sort($out);
+		\sort($out);
 		return $out;
 	}
 
@@ -1049,8 +1049,8 @@ final class Files {
 	 * @return string String.
 	 */
 	public static function stripBom(string $str) : string {
-		$bom = chr(239) . chr(187) . chr(191);
-		return (string) str_replace($bom, "", $str);
+		$bom = \chr(239) . \chr(187) . \chr(191);
+		return (string) \str_replace($bom, '', $str);
 	}
 
 
@@ -1075,18 +1075,18 @@ final class Files {
 		}
 
 		// Gotta load it!
-		$json = (string) \Blobfolio\Blobfolio::getDataDir("blob-mimes.json");
+		$json = (string) \Blobfolio\Blobfolio::getDataDir('blob-mimes.json');
 		if (empty($json)) {
-			throw new Exception("Missing MIME data.");
+			throw new Exception('Missing MIME data.');
 		}
 
-		$tmp = json_decode($json, true);
-		if ("array" !== gettype($tmp)) {
-			throw new Exception("Could not parse MIME data.");
+		$tmp = \json_decode($json, true);
+		if ('array' !== \gettype($tmp)) {
+			throw new Exception('Could not parse MIME data.');
 		}
 
-		self::$_mimes_by_e = (array) $tmp["extensions"];
-		self::$_mimes_by_m = (array) $tmp["mimes"];
+		self::$_mimes_by_e = (array) $tmp['extensions'];
+		self::$_mimes_by_m = (array) $tmp['mimes'];
 
 		self::$_loaded_blob_mimes = true;
 	}
