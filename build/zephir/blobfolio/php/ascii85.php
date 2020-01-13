@@ -85,30 +85,33 @@ final class Ascii85 {
 		}
 
 		$padding = 0;
-		if ($mod = \strlen($data) % 5) {
+		$length = \strlen($data);
+		if ($mod = $length % 5) {
 			$padding = 5 - $mod;
-			$data .= \str_repeat('u', $padding);
+			$data .= \str_repeat('#', $padding);
+			$length += $padding;
 		}
 
 		// Remap.
-		$digits = \str_split($data, 5);
-		$converted = \array_map(function ($value) {
-			$accumulator = 0;
-			$values = \unpack('C*', $value);
-			foreach ($values as $char) {
-				$index = \strpos(self::$map, \chr($char));
-				$accumulator = $accumulator * 85 + $index;
+		$fifths = \str_split($data, 5);
+		$bytes = array();
+		foreach ($fifths as $byte=>$chars) {
+			$char = 0;
+			$values = \unpack('C*', $chars);
+			foreach ($values as $key) {
+				$index = (int) \strpos(self::$map, \chr($key));
+				$char = $char * 85 + $index;
 			}
-			return \pack('N', $accumulator);
-		}, $digits);
+			$bytes[$byte] = \pack('N', $char);
+		}
 
 		// Kill any padding.
 		if ($padding) {
-			$last = \count($converted) - 1;
-			$converted[$last] = \substr($converted[$last], 0, 4 - $padding);
+			$last = \count($bytes) - 1;
+			$bytes[$last] = \substr($bytes[$last], 0, 4 - $padding);
 		}
 
-		return \implode('', $converted);
+		return \implode('', $bytes);
 	}
 
 	/**
