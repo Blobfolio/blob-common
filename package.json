@@ -1,8 +1,5 @@
 {
   "name": "blob-common",
-  "devDependencies": {
-    "blobfolio-phpcs": "git+ssh://git@blobfolio.com:3417/blobfolio-phpcs"
-  },
   "scripts": {
     "preinstall": "npm list onchange -g || npm install onchange -g",
     "watch": "onchange '*.php' '**/*.php' -- npm run -s php",
