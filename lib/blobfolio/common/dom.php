@@ -75,7 +75,9 @@ class dom {
 
 		// Open it.
 		\libxml_use_internal_errors(true);
-		\libxml_disable_entity_loader(true);
+		if (PHP_VERSION_ID < 80000) {
+			\libxml_disable_entity_loader(true);
+		}
 		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$dom->formatOutput = false;
 		$dom->preserveWhiteSpace = false;
