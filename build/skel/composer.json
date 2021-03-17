@@ -1,5 +1,5 @@
 {
-  "name": "blob-common-phar",
+  "name": "blob-common/phar",
   "require": {
     "blobfolio\/blob-common": "*",
     "blobfolio\/blob-mimes": "*",
