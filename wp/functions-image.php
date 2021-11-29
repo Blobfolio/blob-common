@@ -315,7 +315,7 @@ if (! \function_exists('common_get_image_srcset')) {
 	 * @param array|string $size Size(s).
 	 * @return string|bool SRCSET string or false.
 	 */
-	function common_get_image_srcset($attachment_id=0, $size) {
+	function common_get_image_srcset($attachment_id=0, $size=null) {
 		r_cast::to_int($attachment_id, true);
 		if ($attachment_id < 1) {
 			return false;
