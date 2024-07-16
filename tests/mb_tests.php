@@ -8,71 +8,74 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\mb;
 
 /**
  * Test Suite
  */
-class mb_tests extends \PHPUnit\Framework\TestCase {
+class mb_tests extends TestCase {
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_parse_url')]
 	/**
 	 * ::parse_url()
-	 *
-	 * @dataProvider data_parse_url
 	 *
 	 * @param string $url URL.
 	 * @param int $component Component.
 	 * @param array $expected Expected.
 	 */
-	function test_parse_url($url, $component, $expected) {
+	public function test_parse_url($url, $component, $expected) {
 		$this->assertEquals($expected, mb::parse_url($url, $component));
 	}
 
+	#[Test]
+	#[DataProvider('data_parse_str')]
 	/**
 	 * ::parse_str()
-	 *
-	 * @dataProvider data_parse_str
 	 *
 	 * @param string $str String.
 	 * @param array $expected Expected.
 	 */
-	function test_parse_str($str, $expected) {
+	public function test_parse_str($str, $expected) {
 		mb::parse_str($str, $result);
 		$this->assertEquals($expected, $result);
 	}
 
+	#[Test]
+	#[DataProvider('data_str_split')]
 	/**
 	 * ::str_split()
-	 *
-	 * @dataProvider data_str_split
 	 *
 	 * @param string $str String.
 	 * @param int $split_length Split length.
 	 * @param array $expected Expected.
 	 */
-	function test_str_split($str, $split_length, $expected) {
+	public function test_str_split($str, $split_length, $expected) {
 		$this->assertEquals($expected, mb::str_split($str, $split_length));
 	}
 
+	#[Test]
+	#[DataProvider('data_strlen')]
 	/**
 	 * ::strlen()
-	 *
-	 * @dataProvider data_strlen
 	 *
 	 * @param string $str String.
 	 * @param int $expected Expected.
 	 */
-	function test_strlen($str, $expected) {
+	public function test_strlen($str, $expected) {
 		$this->assertEquals($expected, mb::strlen($str));
 	}
 
+	#[Test]
+	#[DataProvider('data_str_pad')]
 	/**
 	 * ::str_pad()
-	 *
-	 * @dataProvider data_str_pad
 	 *
 	 * @param string $str String.
 	 * @param int $pad_length Pad length.
@@ -80,145 +83,145 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 * @param int $pad_type Pad type.
 	 * @param string $expected Expected.
 	 */
-	function test_str_pad($str, $pad_length, $pad_string, $pad_type, $expected) {
+	public function test_str_pad($str, $pad_length, $pad_string, $pad_type, $expected) {
 		$this->assertEquals($expected, mb::str_pad($str, $pad_length, $pad_string, $pad_type));
 	}
 
+	#[Test]
+	#[DataProvider('data_strpos')]
 	/**
 	 * ::strpos()
 	 *
-	 * @dataProvider data_strpos
-	 *
 	 * @param string $haystack Haystack.
 	 * @param string $needle Needle.
 	 * @param int $offset Offset.
 	 * @param mixed $expected Expected.
 	 */
-	function test_strpos($haystack, $needle, $offset, $expected) {
+	public function test_strpos($haystack, $needle, $offset, $expected) {
 		$this->assertSame($expected, mb::strpos($haystack, $needle, $offset));
 	}
 
+	#[Test]
+	#[DataProvider('data_strrev')]
 	/**
 	 * ::strrev()
-	 *
-	 * @dataProvider data_strrev
 	 *
 	 * @param string $str String.
 	 * @param string $expected Expected.
 	 */
-	function test_strrev($str, $expected) {
+	public function test_strrev($str, $expected) {
 		$this->assertEquals($expected, mb::strrev($str));
 	}
 
+	#[Test]
+	#[DataProvider('data_strrpos')]
 	/**
 	 * ::strrpos()
-	 *
-	 * @dataProvider data_strrpos
 	 *
 	 * @param string $haystack Haystack.
 	 * @param string $needle Needle.
 	 * @param int $offset Offset.
 	 * @param mixed $expected Expected.
 	 */
-	function test_strrpos($haystack, $needle, $offset, $expected) {
+	public function test_strrpos($haystack, $needle, $offset, $expected) {
 		$this->assertSame($expected, mb::strrpos($haystack, $needle, $offset));
 	}
 
+	#[Test]
+	#[DataProvider('data_strtolower')]
 	/**
 	 * ::strtolower()
 	 *
-	 * @dataProvider data_strtolower
-	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_strtolower($str, $strict, $expected) {
+	public function test_strtolower($str, $strict, $expected) {
 		$this->assertSame($expected, mb::strtolower($str, $strict));
 	}
 
+	#[Test]
+	#[DataProvider('data_strtoupper')]
 	/**
 	 * ::strtoupper()
-	 *
-	 * @dataProvider data_strtoupper
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_strtoupper($str, $strict, $expected) {
+	public function test_strtoupper($str, $strict, $expected) {
 		$this->assertSame($expected, mb::strtoupper($str, $strict));
 	}
 
+	#[Test]
+	#[DataProvider('data_substr')]
 	/**
 	 * ::substr()
-	 *
-	 * @dataProvider data_substr
 	 *
 	 * @param string $str String.
 	 * @param int $start Start.
 	 * @param int $length Length.
 	 * @param string $expected Expected.
 	 */
-	function test_substr($str, $start, $length, $expected) {
+	public function test_substr($str, $start, $length, $expected) {
 		$this->assertEquals($expected, mb::substr($str, $start, $length));
 	}
 
+	#[Test]
+	#[DataProvider('data_substr_count')]
 	/**
 	 * ::substr_count()
-	 *
-	 * @dataProvider data_substr_count
 	 *
 	 * @param string $haystack Haystack.
 	 * @param string $needle Needle.
 	 * @param string $expected Expected.
 	 */
-	function test_substr_count($haystack, $needle, $expected) {
+	public function test_substr_count($haystack, $needle, $expected) {
 		$this->assertEquals($expected, mb::substr_count($haystack, $needle));
 	}
 
+	#[Test]
+	#[DataProvider('data_trim')]
 	/**
 	 * ::trim()
 	 *
-	 * @dataProvider data_trim
-	 *
 	 * @param string $str String.
 	 * @param string $expected Expected.
 	 */
-	function test_trim($str, $expected) {
+	public function test_trim($str, $expected) {
 		$this->assertEquals($expected, mb::trim($str));
 	}
 
+	#[Test]
+	#[DataProvider('data_ucfirst')]
 	/**
 	 * ::ucfirst()
 	 *
-	 * @dataProvider data_ucfirst
-	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_ucfirst($str, $strict, $expected) {
+	public function test_ucfirst($str, $strict, $expected) {
 		$this->assertSame($expected, mb::ucfirst($str, $strict));
 	}
 
+	#[Test]
+	#[DataProvider('data_ucwords')]
 	/**
 	 * ::ucwords()
-	 *
-	 * @dataProvider data_ucwords
 	 *
 	 * @param string $str String.
 	 * @param bool $strict Strict.
 	 * @param string $expected Expected.
 	 */
-	function test_ucwords($str, $strict, $expected) {
+	public function test_ucwords($str, $strict, $expected) {
 		$this->assertSame($expected, mb::ucwords($str, $strict));
 	}
 
+	#[Test]
+	#[DataProvider('data_wordwrap')]
 	/**
 	 * ::wordwrap()
-	 *
-	 * @dataProvider data_wordwrap
 	 *
 	 * @param string $str String.
 	 * @param int $width Width.
@@ -226,7 +229,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 * @param bool $cut Cut.
 	 * @param string $expected Expected.
 	 */
-	function test_wordwrap($str, $width, $break, $cut, $expected) {
+	public function test_wordwrap($str, $width, $break, $cut, $expected) {
 		$this->assertEquals($expected, mb::wordwrap($str, $width, $break, $cut));
 	}
 
@@ -243,7 +246,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_parse_url() {
+	static function data_parse_url() {
 		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
@@ -304,7 +307,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_parse_str() {
+	static function data_parse_str() {
 		return array(
 			array(
 				'foo=BjöRk&bar=Ⅷ loVes',
@@ -329,7 +332,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_str_split() {
+	static function data_str_split() {
 		return array(
 			array(
 				'Björk',
@@ -349,7 +352,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_strlen() {
+	static function data_strlen() {
 		return array(
 			array(
 				'Björk',
@@ -367,7 +370,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_str_pad() {
+	static function data_str_pad() {
 		return array(
 			array(
 				'Björk',
@@ -412,7 +415,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_strpos() {
+	static function data_strpos() {
 		return array(
 			array(
 				'Björk Björk',
@@ -446,7 +449,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_strrev() {
+	static function data_strrev() {
 		return array(
 			array(
 				'Björk',
@@ -464,7 +467,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_strrpos() {
+	static function data_strrpos() {
 		return array(
 			array(
 				'Björk Björk',
@@ -498,7 +501,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_strtolower() {
+	static function data_strtolower() {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
@@ -543,7 +546,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_strtoupper() {
+	static function data_strtoupper() {
 		return array(
 			array(
 				'THE lazY Rex ⅸ eAtS f00d.',
@@ -588,7 +591,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_substr() {
+	static function data_substr() {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
@@ -616,7 +619,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_substr_count() {
+	static function data_substr_count() {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
@@ -641,7 +644,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_trim() {
+	static function data_trim() {
 		return array(
 			array(
 				' 	test ',
@@ -667,7 +670,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ucfirst() {
+	static function data_ucfirst() {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
@@ -712,7 +715,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ucwords() {
+	static function data_ucwords() {
 		return array(
 			array(
 				'quEen BjöRk Ⅷ loVes 3 aPplEs.',
@@ -757,7 +760,7 @@ class mb_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_wordwrap() {
+	static function data_wordwrap() {
 		return array(
 			array(
 				'Björk',

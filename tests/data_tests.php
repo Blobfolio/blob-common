@@ -8,37 +8,40 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\data;
 
 /**
  * Test Suite
  */
-class data_tests extends \PHPUnit\Framework\TestCase {
+class data_tests extends TestCase {
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_array_compare')]
 	/**
 	 * ::array_compare()
-	 *
-	 * @dataProvider data_array_compare
 	 *
 	 * @param array $arr1 Array 1.
 	 * @param array $arr2 Array 2.
 	 * @param array $expected Expected.
 	 */
-	function test_array_compare($arr1, $arr2, $expected) {
+	public function test_array_compare($arr1, $arr2, $expected) {
 		$this->assertSame($expected, data::array_compare($arr1, $arr2));
 	}
 
+	#[Test]
+	#[DataProvider('data_array_idiff')]
 	/**
 	 * ::array_idiff()
 	 *
-	 * @dataProvider data_array_idiff
-	 *
 	 * @param array $expected Expected.
 	 */
-	function test_array_idiff($expected) {
+	public function test_array_idiff($expected) {
 		// This takes a variable number of arguments.
 		$arrays = \func_get_args();
 		if (! \is_array($arrays) || \count($arrays) < 2) {
@@ -50,14 +53,14 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, $result);
 	}
 
+	#[Test]
+	#[DataProvider('data_array_iintersect')]
 	/**
 	 * ::array_iintersect()
 	 *
-	 * @dataProvider data_array_iintersect
-	 *
 	 * @param array $expected Expected.
 	 */
-	function test_array_iintersect($expected) {
+	public function test_array_iintersect($expected) {
 		// This takes a variable number of arguments.
 		$arrays = \func_get_args();
 		if (! \is_array($arrays) || \count($arrays) < 2) {
@@ -69,80 +72,80 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, $result);
 	}
 
+	#[Test]
+	#[DataProvider('data_array_ikey_exists')]
 	/**
 	 * ::array_ikey_exists()
-	 *
-	 * @dataProvider data_array_ikey_exists
 	 *
 	 * @param mixed $key Key.
 	 * @param array $arr Array.
 	 * @param bool $expected Expected.
 	 */
-	function test_array_ikey_exists($key, $arr, $expected) {
+	public function test_array_ikey_exists($key, $arr, $expected) {
 		$this->assertSame($expected, data::array_ikey_exists($key, $arr));
 	}
 
+	#[Test]
+	#[DataProvider('data_array_isearch')]
 	/**
 	 * ::array_isearch()
-	 *
-	 * @dataProvider data_array_isearch
 	 *
 	 * @param mixed $needle Needle.
 	 * @param array $haystack Haystack.
 	 * @param bool $strict Strict.
 	 * @param bool $expected Expected.
 	 */
-	function test_array_isearch($needle, $haystack, $strict, $expected) {
+	public function test_array_isearch($needle, $haystack, $strict, $expected) {
 		$this->assertSame($expected, data::array_isearch($needle, $haystack, $strict));
 	}
 
+	#[Test]
+	#[DataProvider('data_array_map_recurisve')]
 	/**
 	 * ::array_map_recursive()
-	 *
-	 * @dataProvider data_array_map_recurisve
 	 *
 	 * @param string $callback Callback.
 	 * @param mixed $value Value.
 	 * @param array $expected Expected.
 	 */
-	function test_array_map_recursive($callback, $value, $expected) {
+	public function test_array_map_recursive($callback, $value, $expected) {
 		$this->assertEquals($expected, data::array_map_recursive($callback, $value));
 	}
 
+	#[Test]
+	#[DataProvider('data_array_otherize')]
 	/**
 	 * ::array_otherize()
-	 *
-	 * @dataProvider data_array_otherize
 	 *
 	 * @param array $arr Array.
 	 * @param int $length Length.
 	 * @param string $label Label.
 	 * @param array $expected Expected.
 	 */
-	function test_array_otherize($arr, $length, $label, $expected) {
+	public function test_array_otherize($arr, $length, $label, $expected) {
 		$this->assertEquals($expected, data::array_otherize($arr, $length, $label));
 	}
 
+	#[Test]
+	#[DataProvider('data_array_pop')]
 	/**
 	 * ::array_pop()
-	 *
-	 * @dataProvider data_array_pop
 	 *
 	 * @param array $arr Array.
 	 * @param array $expected Expected.
 	 */
-	function test_array_pop($arr, $expected) {
+	public function test_array_pop($arr, $expected) {
 		$this->assertEquals($expected, data::array_pop($arr));
 	}
 
+	#[Test]
+	#[DataProvider('data_array_pop_rand')]
 	/**
 	 * ::array_pop_rand()
 	 *
-	 * @dataProvider data_array_pop_rand
-	 *
 	 * @param array $arr Array.
 	 */
-	function test_array_pop_rand($arr) {
+	public function test_array_pop_rand($arr) {
 		if (! \count($arr)) {
 			$this->assertSame(false, data::array_pop_rand($arr));
 		}
@@ -167,126 +170,126 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
+	#[Test]
+	#[DataProvider('data_array_pop_top')]
 	/**
 	 * ::array_pop_top()
-	 *
-	 * @dataProvider data_array_pop_top
 	 *
 	 * @param array $arr Array.
 	 * @param array $expected Expected.
 	 */
-	function test_array_pop_top($arr, $expected) {
+	public function test_array_pop_top($arr, $expected) {
 		$this->assertEquals($expected, data::array_pop_top($arr));
 	}
 
+	#[Test]
+	#[DataProvider('data_cc_exp_months')]
 	/**
 	 * ::cc_exp_months()
-	 *
-	 * @dataProvider data_cc_exp_months
 	 *
 	 * @param string $format Format.
 	 * @param array $expected Expected.
 	 */
-	function test_cc_exp_months($format, $expected) {
+	public function test_cc_exp_months($format, $expected) {
 		$this->assertEquals($expected, data::cc_exp_months($format));
 	}
 
+	#[Test]
+	#[DataProvider('data_cc_exp_years')]
 	/**
 	 * ::cc_exp_years()
-	 *
-	 * @dataProvider data_cc_exp_years
 	 *
 	 * @param int $length Length.
 	 * @param array $expected Expected.
 	 */
-	function test_cc_exp_years($length, $expected) {
+	public function test_cc_exp_years($length, $expected) {
 		$this->assertEquals($expected, data::cc_exp_years($length));
 	}
 
+	#[Test]
+	#[DataProvider('data_datediff')]
 	/**
 	 * ::datediff()
-	 *
-	 * @dataProvider data_datediff
 	 *
 	 * @param mixed $date1 Date 1.
 	 * @param mixed $date2 Date 2.
 	 * @param array $expected Expected.
 	 */
-	function test_datediff($date1, $date2, $expected) {
+	public function test_datediff($date1, $date2, $expected) {
 		$this->assertSame($expected, data::datediff($date1, $date2));
 	}
 
+	#[Test]
+	#[DataProvider('data_iin_array')]
 	/**
 	 * ::iin_array()
-	 *
-	 * @dataProvider data_iin_array
 	 *
 	 * @param mixed $needle Needle.
 	 * @param array $haystack Haystack.
 	 * @param bool $strict Strict.
 	 * @param bool $expected Expected.
 	 */
-	function test_iin_array($needle, $haystack, $strict, $expected) {
+	public function test_iin_array($needle, $haystack, $strict, $expected) {
 		$this->assertSame($expected, data::iin_array($needle, $haystack, $strict));
 	}
 
+	#[Test]
+	#[DataProvider('data_in_range')]
 	/**
 	 * ::in_range()
-	 *
-	 * @dataProvider data_in_range
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $min Min.
 	 * @param mixed $max Max.
 	 * @param array $expected Expected.
 	 */
-	function test_in_range($value, $min, $max, $expected) {
+	public function test_in_range($value, $min, $max, $expected) {
 		$this->assertSame($expected, data::in_range($value, $min, $max));
 	}
 
+	#[Test]
+	#[DataProvider('data_ip_in_range')]
 	/**
 	 * ::ip_in_range()
-	 *
-	 * @dataProvider data_ip_in_range
 	 *
 	 * @param mixed $ip IP.
 	 * @param mixed $min Min.
 	 * @param mixed $max Max.
 	 * @param array $expected Expected.
 	 */
-	function test_ip_in_range($ip, $min, $max, $expected) {
+	public function test_ip_in_range($ip, $min, $max, $expected) {
 		$this->assertSame($expected, data::ip_in_range($ip, $min, $max));
 	}
 
+	#[Test]
+	#[DataProvider('data_is_json')]
 	/**
 	 * ::is_json()
-	 *
-	 * @dataProvider data_is_json
 	 *
 	 * @param mixed $value Value.
 	 * @param bool $empty Allow empty.
 	 * @param array $expected Expected.
 	 */
-	function test_is_json($value, $empty, $expected) {
+	public function test_is_json($value, $empty, $expected) {
 		$this->assertSame($expected, data::is_json($value, $empty));
 	}
 
+	#[Test]
+	#[DataProvider('data_is_utf8')]
 	/**
 	 * ::is_utf8()
-	 *
-	 * @dataProvider data_is_utf8
 	 *
 	 * @param mixed $value Value.
 	 * @param array $expected Expected.
 	 */
-	function test_is_utf8($value, $expected) {
+	public function test_is_utf8($value, $expected) {
 		$this->assertEquals($expected, data::is_utf8($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_json_decode_array')]
 	/**
 	 * ::json_decode_array()
-	 *
-	 * @dataProvider data_json_decode_array
 	 *
 	 * @param mixed $json JSON.
 	 * @param array $default Template.
@@ -294,28 +297,28 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 * @param bool $recursive Recursive.
 	 * @param array $expected Expected.
 	 */
-	function test_json_decode_array($json, $default, $strict, $recursive, $expected) {
+	public function test_json_decode_array($json, $default, $strict, $recursive, $expected) {
 		$this->assertEquals($expected, data::json_decode_array($json, $default, $strict, $recursive));
 	}
 
+	#[Test]
+	#[DataProvider('data_length_in_range')]
 	/**
 	 * ::length_in_range()
-	 *
-	 * @dataProvider data_length_in_range
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $min Min.
 	 * @param mixed $max Max.
 	 * @param array $expected Expected.
 	 */
-	function test_length_in_range($value, $min, $max, $expected) {
+	public function test_length_in_range($value, $min, $max, $expected) {
 		$this->assertSame($expected, data::length_in_range($value, $min, $max));
 	}
 
+	#[Test]
+	#[DataProvider('data_parse_args')]
 	/**
 	 * ::parse_args()
-	 *
-	 * @dataProvider data_parse_args
 	 *
 	 * @param mixed $args Args.
 	 * @param array $default Template.
@@ -323,16 +326,17 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 * @param bool $recursive Recursive.
 	 * @param array $expected Expected.
 	 */
-	function test_parse_args($args, $default, $strict, $recursive, $expected) {
+	public function test_parse_args($args, $default, $strict, $recursive, $expected) {
 		$this->assertEquals($expected, data::parse_args($args, $default, $strict, $recursive));
 	}
 
+	#[Test]
 	/**
 	 * ::random_int()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_random_int() {
+	public function test_random_int() {
 		$thing = array();
 		for ($x = 0; $x < 20; $x++) {
 			$thing[] = data::random_int(0, 10);
@@ -351,12 +355,13 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame(true, \count($thing) === \count($thing2));
 	}
 
+	#[Test]
 	/**
 	 * ::random_string()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_random_string() {
+	public function test_random_string() {
 		$thing = array();
 		for ($x = 0; $x < 20; $x++) {
 			$thing[] = data::random_string(10);
@@ -382,12 +387,13 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
+	#[Test]
 	/**
 	 * ::switcheroo()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_switcheroo() {
+	public function test_switcheroo() {
 		$var1 = 5;
 		$var2 = 10;
 
@@ -410,7 +416,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_compare() {
+	static function data_array_compare() {
 		$arr1 = array(1, 2, 3);
 		$arr2 = array(2, 3, 1);
 		$arr3 = array(
@@ -433,7 +439,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_idiff() {
+	static function data_array_idiff() {
 		return array(
 			array(
 				array(
@@ -461,7 +467,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_iintersect() {
+	static function data_array_iintersect() {
 		return array(
 			array(
 				array(),
@@ -486,7 +492,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_ikey_exists() {
+	static function data_array_ikey_exists() {
 		return array(
 			array(
 				'foo',
@@ -516,7 +522,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_isearch() {
+	static function data_array_isearch() {
 		return array(
 			array(
 				'foo',
@@ -556,7 +562,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_map_recurisve() {
+	static function data_array_map_recurisve() {
 		return array(
 			array(
 				'strval',
@@ -582,7 +588,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_otherize() {
+	static function data_array_otherize() {
 		$arr = array(
 			'US'=>100,
 			'CA'=>200,
@@ -646,7 +652,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_pop() {
+	static function data_array_pop() {
 		return array(
 			array(
 				array(1, 2, 3),
@@ -671,7 +677,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_pop_rand() {
+	static function data_array_pop_rand() {
 		return array(
 			array(
 				array(1, 2, 3, 4, 5, 6, 7, 8, 9, 0),
@@ -704,7 +710,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_pop_top() {
+	static function data_array_pop_top() {
 		return array(
 			array(
 				array(1, 2, 3),
@@ -729,7 +735,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_cc_exp_months() {
+	static function data_cc_exp_months() {
 		return array(
 			array(
 				'F',
@@ -756,7 +762,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_cc_exp_years() {
+	static function data_cc_exp_years() {
 		$year = (int) \date('Y');
 
 		$arr1 = array();
@@ -788,7 +794,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_datediff() {
+	static function data_datediff() {
 		return array(
 			array(
 				'2015-01-01',
@@ -818,7 +824,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_iin_array() {
+	static function data_iin_array() {
 		return array(
 			array(
 				'foo',
@@ -858,7 +864,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_in_range() {
+	static function data_in_range() {
 		return array(
 			array(
 				'2015-01-15',
@@ -898,7 +904,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ip_in_range() {
+	static function data_ip_in_range() {
 		return array(
 			array(
 				'127.0.0.1',
@@ -932,7 +938,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_is_json() {
+	static function data_is_json() {
 		return array(
 			array(
 				1,
@@ -982,7 +988,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_is_utf8() {
+	static function data_is_utf8() {
 		return array(
 			array(
 				1,
@@ -1004,7 +1010,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_json_decode_array() {
+	static function data_json_decode_array() {
 		return array(
 			array(
 				'',
@@ -1084,7 +1090,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_length_in_range() {
+	static function data_length_in_range() {
 		return array(
 			array(
 				'Ḉẩt',
@@ -1118,7 +1124,7 @@ class data_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_parse_args() {
+	static function data_parse_args() {
 		return array(
 			array(
 				'',

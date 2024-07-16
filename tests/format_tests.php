@@ -8,209 +8,212 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\format;
 
 /**
  * Test Suite
  */
-class format_tests extends \PHPUnit\Framework\TestCase {
+class format_tests extends TestCase {
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_array_flatten')]
 	/**
 	 * ::array_flatten()
-	 *
-	 * @dataProvider data_array_flatten
 	 *
 	 * @param array $arr Array.
 	 * @param array $expected Expected.
 	 */
-	function test_array_flatten($arr, $expected) {
+	public function test_array_flatten($arr, $expected) {
 		$this->assertSame($expected, format::array_flatten($arr));
 	}
 
+	#[Test]
+	#[DataProvider('data_array_to_indexed')]
 	/**
 	 * ::array_to_indexed()
-	 *
-	 * @dataProvider data_array_to_indexed
 	 *
 	 * @param array $value Value.
 	 * @param array $expected Expected.
 	 */
-	function test_array_to_indexed($value, $expected) {
+	public function test_array_to_indexed($value, $expected) {
 		$this->assertEquals($expected, format::array_to_indexed($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_ceil')]
 	/**
 	 * ::ceil()
-	 *
-	 * @dataProvider data_ceil
 	 *
 	 * @param mixed $num Number.
 	 * @param int $precision Precision.
 	 * @param mixed $expected Expected.
 	 */
-	function test_ceil($num, $precision, $expected) {
+	public function test_ceil($num, $precision, $expected) {
 		$this->assertSame($expected, format::ceil($num, $precision));
 	}
 
+	#[Test]
+	#[DataProvider('data_cidr_to_range')]
 	/**
 	 * ::cidr_to_range()
-	 *
-	 * @dataProvider data_cidr_to_range
 	 *
 	 * @param string $cidr CIDR.
 	 * @param array $expected Expected.
 	 */
-	function test_cidr_to_range($cidr, $expected) {
+	public function test_cidr_to_range($cidr, $expected) {
 		$this->assertEquals($expected, format::cidr_to_range($cidr));
 	}
 
+	#[Test]
+	#[DataProvider('data_decode_entities')]
 	/**
 	 * ::decode_entities()
 	 *
-	 * @dataProvider data_decode_entities
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_decode_entities($value, $expected) {
+	public function test_decode_entities($value, $expected) {
 		$this->assertEquals($expected, format::decode_entities($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_decode_js_entities')]
 	/**
 	 * ::decode_js_entities()
-	 *
-	 * @dataProvider data_decode_js_entities
 	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_decode_js_entities($value, $expected) {
+	public function test_decode_js_entities($value, $expected) {
 		$this->assertEquals($expected, format::decode_js_entities($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_excerpt')]
 	/**
 	 * ::excerpt()
-	 *
-	 * @dataProvider data_excerpt
 	 *
 	 * @param string $value Value.
 	 * @param array $args Args.
 	 * @param string $expected Expected.
 	 */
-	function test_excerpt($value, $args, $expected) {
+	public function test_excerpt($value, $args, $expected) {
 		$this->assertEquals($expected, format::excerpt($value, $args));
 	}
 
+	#[Test]
+	#[DataProvider('data_floor')]
 	/**
 	 * ::floor()
-	 *
-	 * @dataProvider data_floor
 	 *
 	 * @param mixed $num Number.
 	 * @param int $precision Precision.
 	 * @param mixed $expected Expected.
 	 */
-	function test_floor($num, $precision, $expected) {
+	public function test_floor($num, $precision, $expected) {
 		$this->assertSame($expected, format::floor($num, $precision));
 	}
 
+	#[Test]
+	#[DataProvider('data_fraction')]
 	/**
 	 * ::fraction()
-	 *
-	 * @dataProvider data_fraction
 	 *
 	 * @param mixed $num Number.
 	 * @param int $tolerance Tolerance.
 	 * @param mixed $expected Expected.
 	 */
-	function test_fraction($num, $tolerance, $expected) {
+	public function test_fraction($num, $tolerance, $expected) {
 		$this->assertSame($expected, format::fraction($num, $tolerance));
 	}
 
+	#[Test]
+	#[DataProvider('data_inflect')]
 	/**
 	 * ::inflect()
-	 *
-	 * @dataProvider data_inflect
 	 *
 	 * @param mixed $count Count.
 	 * @param string $single Single.
 	 * @param string $plural Plural.
 	 * @param string $expected Expected.
 	 */
-	function test_inflect($count, $single, $plural, $expected) {
+	public function test_inflect($count, $single, $plural, $expected) {
 		$this->assertEquals($expected, format::inflect($count, $single, $plural));
 	}
 
+	#[Test]
+	#[DataProvider('data_ip_to_number')]
 	/**
 	 * ::ip_to_number()
 	 *
-	 * @dataProvider data_ip_to_number
-	 *
 	 * @param string $ip IP.
 	 * @param string $expected Expected.
 	 */
-	function test_ip_to_number($ip, $expected) {
+	public function test_ip_to_number($ip, $expected) {
 		$this->assertEquals($expected, format::ip_to_number($ip));
 	}
 
+	#[Test]
+	#[DataProvider('data_ip_to_subnet')]
 	/**
 	 * ::ip_to_subnet()
-	 *
-	 * @dataProvider data_ip_to_subnet
 	 *
 	 * @param string $ip IP.
 	 * @param string $expected Expected.
 	 */
-	function test_ip_to_subnet($ip, $expected) {
+	public function test_ip_to_subnet($ip, $expected) {
 		$this->assertEquals($expected, format::ip_to_subnet($ip));
 	}
 
+	#[Test]
+	#[DataProvider('data_json')]
 	/**
 	 * ::json()
-	 *
-	 * @dataProvider data_json
 	 *
 	 * @param string $json JSON.
 	 * @param bool $pretty Pretty.
 	 * @param string $expected Expected.
 	 */
-	function test_json($json, $pretty, $expected) {
+	public function test_json($json, $pretty, $expected) {
 		$this->assertSame($expected, format::json($json, $pretty));
 	}
 
+	#[Test]
+	#[DataProvider('data_links')]
 	/**
 	 * ::links()
 	 *
-	 * @dataProvider data_links
-	 *
 	 * @param string $value Value.
 	 * @param array $args Args.
 	 * @param string $expected Expected.
 	 */
-	function test_links($value, $args, $expected) {
+	public function test_links($value, $args, $expected) {
 		$this->assertEquals($expected, format::links($value, $args));
 	}
 
+	#[Test]
+	#[DataProvider('data_list_to_array')]
 	/**
 	 * ::list_to_array()
-	 *
-	 * @dataProvider data_list_to_array
 	 *
 	 * @param string $value Value.
 	 * @param array $args Args.
 	 * @param string $expected Expected.
 	 */
-	function test_list_to_array($value, $args, $expected) {
+	public function test_list_to_array($value, $args, $expected) {
 		$this->assertEquals($expected, format::list_to_array($value, $args));
 	}
 
+	#[Test]
+	#[DataProvider('data_money')]
 	/**
 	 * ::money()
-	 *
-	 * @dataProvider data_money
 	 *
 	 * @param mixed $value Value.
 	 * @param bool $cents Cents.
@@ -218,66 +221,66 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 * @param bool $no00 No ~.00.
 	 * @param string $expected Expected.
 	 */
-	function test_money($value, $cents, $separator, $no00, $expected) {
+	public function test_money($value, $cents, $separator, $no00, $expected) {
 		$this->assertEquals($expected, format::money($value, $cents, $separator, $no00));
 	}
 
+	#[Test]
+	#[DataProvider('data_number_to_ip')]
 	/**
 	 * ::number_to_ip()
-	 *
-	 * @dataProvider data_number_to_ip
 	 *
 	 * @param string $ip IP.
 	 * @param string $expected Expected.
 	 */
-	function test_number_to_ip($ip, $expected) {
+	public function test_number_to_ip($ip, $expected) {
 		$this->assertEquals($expected, format::number_to_ip($ip));
 	}
 
+	#[Test]
+	#[DataProvider('data_oxford_join')]
 	/**
 	 * ::oxford_join()
-	 *
-	 * @dataProvider data_oxford_join
 	 *
 	 * @param array $value Value.
 	 * @param string $separator Separator.
 	 * @param string $expected Expected.
 	 */
-	function test_oxford_join($value, string $separator, string $expected) {
+	public function test_oxford_join($value, string $separator, string $expected) {
 		$this->assertSame($expected, format::oxford_join($value, $separator));
 	}
 
+	#[Test]
+	#[DataProvider('data_phone')]
 	/**
 	 * ::phone()
-	 *
-	 * @dataProvider data_phone
 	 *
 	 * @param mixed $value Value.
 	 * @param string $country Country.
 	 * @param string $expected Expected.
 	 */
-	function test_phone($value, $country, $expected) {
+	public function test_phone($value, $country, $expected) {
 		$this->assertEquals($expected, format::phone($value, $country));
 	}
 
+	#[Test]
+	#[DataProvider('data_round')]
 	/**
 	 * ::round()
-	 *
-	 * @dataProvider data_round
 	 *
 	 * @param mixed $num Number.
 	 * @param int $precision Precision.
 	 * @param int $mode Mode.
 	 * @param mixed $expected Expected.
 	 */
-	function test_round($num, $precision, $mode, $expected) {
+	public function test_round($num, $precision, $mode, $expected) {
 		$this->assertSame($expected, format::round($num, $precision, $mode));
 	}
 
+	#[Test]
+	#[DataProvider('data_to_csv')]
 	/**
 	 * Test: ::to_csv()
-	 *
-	 * @dataProvider data_to_csv
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $headers Headers.
@@ -285,32 +288,33 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 * @param string $eol Eol.
 	 * @param mixed $expected Expected.
 	 */
-	function test_to_csv($value, $headers, string $delimiter, string $eol, $expected) {
+	public function test_to_csv($value, $headers, string $delimiter, string $eol, $expected) {
 		$result = format::to_csv($value, $headers, $delimiter, $eol);
 		$this->assertSame($expected, $result);
 		$this->assertSame('string', \gettype($result));
 	}
 
+	#[Test]
+	#[DataProvider('data_to_timezone')]
 	/**
 	 * ::to_timezone()
-	 *
-	 * @dataProvider data_to_timezone
 	 *
 	 * @param mixed $date Date.
 	 * @param string $from From.
 	 * @param string $to To.
 	 * @param string $expected Expected.
 	 */
-	function test_to_timezone($date, $from, $to, $expected) {
+	public function test_to_timezone($date, $from, $to, $expected) {
 		$this->assertEquals($expected, format::to_timezone($date, $from, $to));
 	}
 
+	#[Test]
 	/**
 	 * ::to_xls()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_to_xls() {
+	public function test_to_xls() {
 		$data = array(array('NAME'=>'John', 'PHONE'=>'+1 201-555-0123'));
 		$headers = array('FIRST NAME', 'PHONE NUMBER');
 
@@ -334,7 +338,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_flatten() {
+	static function data_array_flatten() {
 		return array(
 			array(
 				array(1, 2, 3, 4),
@@ -358,7 +362,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_to_csv() {
+	static function data_to_csv() {
 		$data = array(array('NAME'=>'John', 'PHONE'=>'+1 201-555-0123'));
 		$headers = array('FIRST NAME', 'PHONE NUMBER');
 
@@ -399,7 +403,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_to_indexed() {
+	static function data_array_to_indexed() {
 		return array(
 			array(
 				array(1),
@@ -431,7 +435,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ceil() {
+	static function data_ceil() {
 		return array(
 			array(
 				1,
@@ -461,7 +465,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_cidr_to_range() {
+	static function data_cidr_to_range() {
 		return array(
 			array(
 				'50.116.18.174/24',
@@ -496,7 +500,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_decode_entities() {
+	static function data_decode_entities() {
 		return array(
 			array(
 				'Happy & Healthy',
@@ -522,7 +526,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_decode_js_entities() {
+	static function data_decode_js_entities() {
 		return array(
 			array(
 				'\\nhello\\u00c1',
@@ -548,7 +552,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_excerpt() {
+	static function data_excerpt() {
 		return array(
 			array(
 				'It ẉẩṩ a dark and stormy night.',
@@ -592,7 +596,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_floor() {
+	static function data_floor() {
 		return array(
 			array(
 				1,
@@ -622,7 +626,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_fraction() {
+	static function data_fraction() {
 		return array(
 			array(
 				0.5,
@@ -672,7 +676,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_inflect() {
+	static function data_inflect() {
 		return array(
 			array(
 				1,
@@ -706,7 +710,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ip_to_number() {
+	static function data_ip_to_number() {
 		return array(
 			array(
 				'50.116.18.174',
@@ -732,7 +736,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ip_to_subnet() {
+	static function data_ip_to_subnet() {
 		return array(
 			array(
 				'50.116.18.174',
@@ -754,7 +758,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_json() {
+	static function data_json() {
 		return array(
 			array(
 				"{'hello':'there' } ",
@@ -809,7 +813,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_links() {
+	static function data_links() {
 		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
@@ -961,7 +965,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_list_to_array() {
+	static function data_list_to_array() {
 		return array(
 			array(
 				'1,2,3',
@@ -1018,7 +1022,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_money() {
+	static function data_money() {
 		return array(
 			array(2.5, false, '', false, '$2.50'),
 			array('1', false, '', false, '$1.00'),
@@ -1036,7 +1040,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_number_to_ip() {
+	static function data_number_to_ip() {
 		return array(
 			array(
 				846467758,
@@ -1058,7 +1062,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Values.
 	 */
-	function data_oxford_join() {
+	static function data_oxford_join() {
 		return array(
 			array(
 				array('apples', 'bananas', 'oranges'),
@@ -1093,7 +1097,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_phone() {
+	static function data_phone() {
 		return array(
 			array(2015550123, null, '+1 201-555-0123'),
 			array(2015550123, 'US', '+1 201-555-0123'),
@@ -1108,7 +1112,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_round() {
+	static function data_round() {
 		return array(
 			array(
 				1,
@@ -1142,7 +1146,7 @@ class format_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_to_timezone() {
+	static function data_to_timezone() {
 		return array(
 			array(
 				'2015-01-15 01:12:23',

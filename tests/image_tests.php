@@ -8,12 +8,15 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\image;
 
 /**
  * Test Suite
  */
-class image_tests extends \PHPUnit\Framework\TestCase {
+class image_tests extends TestCase {
 	const ASSETS = __DIR__ . '/assets/';
 
 
@@ -22,18 +25,21 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
 	/**
 	 * ::clean_svg()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_clean_svg() {
+	public function test_clean_svg() {
 		$svg = image::clean_svg(self::ASSETS . 'enshrined.svg');
 
 		$this->assertEquals(true, false !== \strpos($svg, '<svg'));
 		$this->assertSame(false, \strpos($svg, '<script'));
 	}
 
+	#[Test]
+	#[DataProvider('data_getimagesize')]
 	/**
 	 * ::getimagesize()
 	 *
@@ -43,7 +49,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	 * @param mixed $expected Expected.
 	 * @return void Nothing.
 	 */
-	function test_getimagesize(string $file, $expected) {
+	public function test_getimagesize(string $file, $expected) {
 		$result = image::getimagesize($file);
 
 		// Make sure the return type matches.
@@ -62,24 +68,26 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
+	#[Test]
 	/**
 	 * ::has_webp()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_has_webp() {
+	public function test_has_webp() {
 		$cwebp = self::ASSETS . 'webp/bin/cwebp';
 		$gif2webp = self::ASSETS . 'webp/bin/gif2webp';
 
 		$this->assertSame(true, image::has_webp($cwebp, $gif2webp));
 	}
 
+	#[Test]
 	/**
 	 * ::svg_dimensions()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_svg_dimensions() {
+	public function test_svg_dimensions() {
 		$svg = static::ASSETS . 'monogram-inkscape.svg';
 		$dimensions = array('width'=>330.056, 'height'=>495.558);
 
@@ -87,12 +95,13 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($dimensions, image::svg_dimensions(\file_get_contents($svg)));
 	}
 
+	#[Test]
 	/**
 	 * ::to_webp()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_to_webp() {
+	public function test_to_webp() {
 		$in = static::ASSETS . 'space.jpg';
 
 		if (! image::has_webp()) {
@@ -122,7 +131,7 @@ class image_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_getimagesize() {
+	static function data_getimagesize() {
 		return array(
 			array(
 				static::ASSETS . 'space.jpg',

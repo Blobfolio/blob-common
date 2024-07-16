@@ -8,28 +8,28 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\constants;
 
 /**
  * Test Suite
  */
-class constants_tests extends \PHPUnit\Framework\TestCase {
-
-
-
+class constants_tests extends TestCase {
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_countries')]
 	/**
 	 * ::COUNTRIES
-	 *
-	 * @dataProvider data_countries
 	 *
 	 * @param string $code Code.
 	 * @param array $data Data.
 	 */
-	function test_countries(string $code, $data) {
+	public function test_countries(string $code, $data) {
 		// The country code should be 2 uppercase characters.
 		$this->assertTrue(!! \preg_match('/^[A-Z]{2}$/', $code));
 
@@ -59,7 +59,7 @@ class constants_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_countries() {
+	static function data_countries() {
 		$out = array();
 		foreach (constants::COUNTRIES as $k=>$v) {
 			$out[] = array($k, $v);

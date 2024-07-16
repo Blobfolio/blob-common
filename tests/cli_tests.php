@@ -8,25 +8,28 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\cli;
 
 /**
  * Test Suite
  */
-class cli_tests extends \PHPUnit\Framework\TestCase {
+class cli_tests extends TestCase {
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_colorize')]
 	/**
 	 * ::colorize()
-	 *
-	 * @dataProvider data_colorize
 	 *
 	 * @param array $value Value.
 	 * @param array $expected Expected.
 	 */
-	function test_colorize($value, $expected) {
+	public function test_colorize($value, $expected) {
 		$result = \call_user_func_array(
 			array('\\blobfolio\\common\\cli', 'colorize'),
 			$value
@@ -34,17 +37,19 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($expected, $result);
 	}
 
+	#[Test]
 	/**
 	 * ::is_cli()
 	 */
-	function test_is_cli() {
+	public function test_is_cli() {
 		$this->assertTrue(cli::is_cli());
 	}
 
+	#[Test]
 	/**
 	 * ::is_root()
 	 */
-	function test_is_root() {
+	public function test_is_root() {
 		if (! \function_exists('posix_getuid')) {
 			$this->markTestSkipped('POSIX functions are missing.');
 		}
@@ -66,7 +71,7 @@ class cli_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_colorize() {
+	static function data_colorize() {
 		return array(
 			array(
 				array(

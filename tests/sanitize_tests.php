@@ -8,13 +8,16 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\constants;
 use blobfolio\common\sanitize;
 
 /**
  * Test Suite
  */
-class sanitize_tests extends \PHPUnit\Framework\TestCase {
+class sanitize_tests extends TestCase {
 	const ASSETS = __DIR__ . '/assets/';
 
 
@@ -23,111 +26,111 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_accents')]
 	/**
 	 * ::accents()
 	 *
-	 * @dataProvider data_accents
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_accents($value, $expected) {
+	public function test_accents($value, $expected) {
 		$this->assertEquals($expected, sanitize::accents($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_attribute_value')]
 	/**
 	 * ::attribute_value()
 	 *
-	 * @dataProvider data_attribute_value
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_attribute_value($value, $expected) {
+	public function test_attribute_value($value, $expected) {
 		$this->assertEquals($expected, sanitize::attribute_value($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_ca_postal_code')]
 	/**
 	 * ::ca_postal_code()
 	 *
-	 * @dataProvider data_ca_postal_code
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_ca_postal_code($value, $expected) {
+	public function test_ca_postal_code($value, $expected) {
 		$this->assertEquals($expected, sanitize::ca_postal_code($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_cc')]
 	/**
 	 * ::cc()
 	 *
-	 * @dataProvider data_cc
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_cc($value, $expected) {
+	public function test_cc($value, $expected) {
 		$this->assertSame($expected, sanitize::cc($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_control_characters')]
 	/**
 	 * ::control_characters()
 	 *
-	 * @dataProvider data_control_characters
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_control_characters($value, $expected) {
+	public function test_control_characters($value, $expected) {
 		$this->assertEquals($expected, sanitize::control_characters($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_country')]
 	/**
 	 * ::country()
 	 *
-	 * @dataProvider data_country
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_country($value, $expected) {
+	public function test_country($value, $expected) {
 		$this->assertSame($expected, sanitize::country($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_csv')]
 	/**
 	 * ::csv()
 	 *
-	 * @dataProvider data_csv
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_csv($value, $expected) {
+	public function test_csv($value, $expected) {
 		$this->assertEquals($expected, sanitize::csv($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_datetime')]
 	/**
 	 * ::datetime()
 	 *
-	 * @dataProvider data_datetime
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_datetime($value, $expected) {
+	public function test_datetime($value, $expected) {
 		$this->assertEquals($expected, sanitize::datetime($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_datetime')]
 	/**
 	 * ::date()
-	 *
-	 * @dataProvider data_datetime
 	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_date($value, $expected) {
+	public function test_date($value, $expected) {
 		// We can use the datetime test data, but need to cut
 		// it to date-size.
 		if (\is_array($expected)) {
@@ -142,239 +145,239 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($expected, sanitize::date($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_domain')]
 	/**
 	 * ::domain()
-	 *
-	 * @dataProvider data_domain
 	 *
 	 * @param string $value Value.
 	 * @param bool $unicode Unicode.
 	 * @param string $expected Expected.
 	 */
-	function test_domain($value, $unicode, $expected) {
+	public function test_domain($value, $unicode, $expected) {
 		$this->assertEquals($expected, sanitize::domain($value, $unicode));
 	}
 
+	#[Test]
+	#[DataProvider('data_ean')]
 	/**
 	 * ::ean()
-	 *
-	 * @dataProvider data_ean
 	 *
 	 * @param string $value Value.
 	 * @param bool $formatted Formatted.
 	 * @param string $expected Expected.
 	 */
-	function test_ean($value, $formatted, $expected) {
+	public function test_ean($value, $formatted, $expected) {
 		$this->assertEquals($expected, sanitize::ean($value, $formatted));
 	}
 
+	#[Test]
+	#[DataProvider('data_email')]
 	/**
 	 * ::email()
 	 *
-	 * @dataProvider data_email
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_email($value, $expected) {
+	public function test_email($value, $expected) {
 		$this->assertEquals($expected, sanitize::email($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_file_extension')]
 	/**
 	 * ::file_extension()
 	 *
-	 * @dataProvider data_file_extension
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_file_extension($value, $expected) {
+	public function test_file_extension($value, $expected) {
 		$this->assertEquals($expected, sanitize::file_extension($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_html')]
 	/**
 	 * ::html()
-	 *
-	 * @dataProvider data_html
 	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_html($value, $expected) {
+	public function test_html($value, $expected) {
 		$this->assertEquals($expected, sanitize::html($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_hostname')]
 	/**
 	 * ::hostname()
-	 *
-	 * @dataProvider data_hostname
 	 *
 	 * @param string $value Value.
 	 * @param bool $www Keep www.
 	 * @param bool $unicode Unicode.
 	 * @param string $expected Expected.
 	 */
-	function test_hostname($value, $www, $unicode, $expected) {
+	public function test_hostname($value, $www, $unicode, $expected) {
 		$this->assertSame($expected, sanitize::hostname($value, $www, $unicode));
 	}
 
+	#[Test]
+	#[DataProvider('data_ip')]
 	/**
 	 * ::ip()
-	 *
-	 * @dataProvider data_ip
 	 *
 	 * @param string $value Value.
 	 * @param bool $restricted Allow reserved.
 	 * @param bool $condense Condense IPv6.
 	 * @param string $expected Expected.
 	 */
-	function test_ip($value, $restricted, $condense, $expected) {
+	public function test_ip($value, $restricted, $condense, $expected) {
 		$this->assertEquals($expected, sanitize::ip($value, $restricted, $condense));
 	}
 
+	#[Test]
+	#[DataProvider('data_iri_value')]
 	/**
 	 * ::iri_value()
-	 *
-	 * @dataProvider data_iri_value
 	 *
 	 * @param string $value Value.
 	 * @param mixed $protocols Allowed Protocols.
 	 * @param mixed $domains Allowed domains.
 	 * @param string $expected Expected.
 	 */
-	function test_iri_value($value, $protocols, $domains, $expected) {
+	public function test_iri_value($value, $protocols, $domains, $expected) {
 		$this->assertEquals($expected, sanitize::iri_value($value, $protocols, $domains));
 	}
 
+	#[Test]
+	#[DataProvider('data_isbn')]
 	/**
 	 * ::isbn()
-	 *
-	 * @dataProvider data_isbn
 	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_isbn($value, $expected) {
+	public function test_isbn($value, $expected) {
 		$this->assertEquals($expected, sanitize::isbn($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_js')]
 	/**
 	 * ::js()
-	 *
-	 * @dataProvider data_js
 	 *
 	 * @param string $value Value.
 	 * @param string $quote Quote.
 	 * @param string $expected Expected.
 	 */
-	function test_js($value, $quote, $expected) {
+	public function test_js($value, $quote, $expected) {
 		$this->assertEquals($expected, sanitize::js($value, $quote));
 	}
 
+	#[Test]
+	#[DataProvider('data_mime')]
 	/**
 	 * ::mime()
 	 *
-	 * @dataProvider data_mime
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_mime($value, $expected) {
+	public function test_mime($value, $expected) {
 		$this->assertEquals($expected, sanitize::mime($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_name')]
 	/**
 	 * ::name()
 	 *
-	 * @dataProvider data_name
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_name($value, $expected) {
+	public function test_name($value, $expected) {
 		$this->assertEquals($expected, sanitize::name($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_password')]
 	/**
 	 * ::password()
 	 *
-	 * @dataProvider data_password
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_password($value, $expected) {
+	public function test_password($value, $expected) {
 		$this->assertEquals($expected, sanitize::password($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_printable')]
 	/**
 	 * ::printable()
 	 *
-	 * @dataProvider data_printable
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_printable($value, $expected) {
+	public function test_printable($value, $expected) {
 		$this->assertEquals($expected, sanitize::printable($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_province')]
 	/**
 	 * ::province()
 	 *
-	 * @dataProvider data_province
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_province($value, $expected) {
+	public function test_province($value, $expected) {
 		$this->assertEquals($expected, sanitize::province($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_quotes')]
 	/**
 	 * ::quotes()
 	 *
-	 * @dataProvider data_quotes
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_quotes($value, $expected) {
+	public function test_quotes($value, $expected) {
 		$this->assertEquals($expected, sanitize::quotes($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_state')]
 	/**
 	 * ::state()
 	 *
-	 * @dataProvider data_state
-	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_state($value, $expected) {
+	public function test_state($value, $expected) {
 		$this->assertEquals($expected, sanitize::state($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_au_state')]
 	/**
 	 * ::au_state()
-	 *
-	 * @dataProvider data_au_state
 	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_au_state($value, $expected) {
+	public function test_au_state($value, $expected) {
 		$this->assertEquals($expected, sanitize::au_state($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_svg')]
 	/**
 	 * ::svg()
 	 *
-	 * @dataProvider data_svg
-	 *
 	 * @param string $svg SVG.
 	 */
-	function test_svg($svg) {
+	public function test_svg($svg) {
 		if (! \class_exists('DOMDocument') || ! \class_exists('DOMXPath')) {
 			$this->markTestSkipped('DOM is not installed.');
 		}
@@ -402,104 +405,104 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
+	#[Test]
+	#[DataProvider('data_timezone')]
 	/**
 	 * ::timezone()
-	 *
-	 * @dataProvider data_timezone
 	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_timezone($value, $expected) {
+	public function test_timezone($value, $expected) {
 		$this->assertEquals($expected, sanitize::timezone($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_to_range')]
 	/**
 	 * ::to_range()
-	 *
-	 * @dataProvider data_to_range
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $min Min.
 	 * @param mixed $max Max.
 	 * @param mixed $expected Expected.
 	 */
-	function test_to_range($value, $min, $max, $expected) {
+	public function test_to_range($value, $min, $max, $expected) {
 		$this->assertEquals($expected, sanitize::to_range($value, $min, $max));
 	}
 
+	#[Test]
+	#[DataProvider('data_upc')]
 	/**
 	 * ::upc()
-	 *
-	 * @dataProvider data_upc
 	 *
 	 * @param string $value Value.
 	 * @param bool $formatted Formatted.
 	 * @param string $expected Expected.
 	 */
-	function test_upc($value, $formatted, $expected) {
+	public function test_upc($value, $formatted, $expected) {
 		$this->assertEquals($expected, sanitize::upc($value, $formatted));
 	}
 
+	#[Test]
+	#[DataProvider('data_url')]
 	/**
 	 * ::url()
-	 *
-	 * @dataProvider data_url
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $expected Expected.
 	 */
-	function test_url($value, $expected) {
+	public function test_url($value, $expected) {
 		$this->assertEquals($expected, sanitize::url($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_utf8')]
 	/**
 	 * ::utf8()
 	 *
-	 * @dataProvider data_utf8
-	 *
 	 * @param mixed $value Value.
 	 */
-	function test_utf8($value) {
+	public function test_utf8($value) {
 		$encoding = \strtoupper(\mb_detect_encoding(sanitize::utf8($value)));
 		$this->assertSame(true, \in_array($encoding, array('ASCII', 'UTF-8'), true));
 	}
 
+	#[Test]
+	#[DataProvider('data_whitespace')]
 	/**
 	 * ::whitespace()
 	 *
-	 * @dataProvider data_whitespace
-	 *
 	 * @param string $value Value.
 	 * @param int $newlines Newlines.
 	 * @param string $expected Expected.
 	 */
-	function test_whitespace($value, $newlines, $expected) {
+	public function test_whitespace($value, $newlines, $expected) {
 		$this->assertEquals($expected, sanitize::whitespace($value, $newlines));
 	}
 
+	#[Test]
+	#[DataProvider('data_whitespace')]
 	/**
 	 * ::whitespace_multiline()
-	 *
-	 * @dataProvider data_whitespace
 	 *
 	 * @param string $value Value.
 	 * @param int $newlines Newlines.
 	 * @param string $expected Expected.
 	 */
-	function test_whitespace_multiline($value, $newlines, $expected) {
+	public function test_whitespace_multiline($value, $newlines, $expected) {
 		$this->assertEquals($expected, sanitize::whitespace_multiline($value, $newlines));
 	}
 
+	#[Test]
+	#[DataProvider('data_zip5')]
 	/**
 	 * ::zip5()
-	 *
-	 * @dataProvider data_zip5
 	 *
 	 * @param string $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_zip5($value, $expected) {
+	public function test_zip5($value, $expected) {
 		$this->assertEquals($expected, sanitize::zip5($value));
 	}
 
@@ -516,7 +519,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_accents() {
+	static function data_accents() {
 		return array(
 			array(
 				'Björk Guðmundsdóttir, best þekkt sem Björk (fædd 21. nóvember 1965 í Reykjavík) er íslenskur popptónlistarmaður, sem hefur náð alþjóðlegri hylli.',
@@ -542,7 +545,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_attribute_value() {
+	static function data_attribute_value() {
 		return array(
 			array(
 				'&nbsp;Björk"&amp;quot; ',
@@ -560,7 +563,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ca_postal_code() {
+	static function data_ca_postal_code() {
 		return array(
 			array(
 				'f3f3f3',
@@ -594,7 +597,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_cc() {
+	static function data_cc() {
 		return array(
 			array(
 				'4242424242424242',
@@ -640,7 +643,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_control_characters() {
+	static function data_control_characters() {
 		return array(
 			array(
 				'\0Björk',
@@ -658,7 +661,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_country() {
+	static function data_country() {
 		return array(
 			array(
 				'USA',
@@ -692,7 +695,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_csv() {
+	static function data_csv() {
 		return array(
 			array(
 				'\\\'hello"',
@@ -714,7 +717,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_datetime() {
+	static function data_datetime() {
 		return array(
 			array(
 				'2015-01-02',
@@ -756,7 +759,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_domain() {
+	static function data_domain() {
 		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
@@ -798,7 +801,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ean() {
+	static function data_ean() {
 		return array(
 			array(
 				'0',
@@ -849,7 +852,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_email() {
+	static function data_email() {
 		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
@@ -885,7 +888,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_file_extension() {
+	static function data_file_extension() {
 		return array(
 			array(
 				'  .JPEG ',
@@ -907,7 +910,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_html() {
+	static function data_html() {
 		return array(
 			array(
 				'<b>"Björk"</b>',
@@ -925,7 +928,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_hostname() {
+	static function data_hostname() {
 		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
@@ -985,7 +988,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_ip() {
+	static function data_ip() {
 		return array(
 			array(
 				'2600:3c00::f03c:91ff:feae:0ff2',
@@ -1061,7 +1064,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_iri_value() {
+	static function data_iri_value() {
 		return array(
 			array(
 				'#example',
@@ -1131,7 +1134,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_isbn() {
+	static function data_isbn() {
 		return array(
 			array(
 				'0',
@@ -1165,7 +1168,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_js() {
+	static function data_js() {
 		return array(
 			array(
 				"What's up, doc?",
@@ -1205,7 +1208,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_mime() {
+	static function data_mime() {
 		return array(
 			array(
 				'Application/Octet-Stream',
@@ -1231,7 +1234,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_name() {
+	static function data_name() {
 		return array(
 			array(
 				"åsa-britt\nkjellén",
@@ -1253,7 +1256,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_password() {
+	static function data_password() {
 		return array(
 			array(
 				"\t ålén\n  ☺\0",
@@ -1271,7 +1274,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_printable() {
+	static function data_printable() {
 		return array(
 			array(
 				"\t ålén\n  ☺\0",
@@ -1297,7 +1300,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_province() {
+	static function data_province() {
 		return array(
 			array(
 				'Texas',
@@ -1323,7 +1326,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_quotes() {
+	static function data_quotes() {
 		return array(
 			array(
 				'“T’was the night before Christmas...”',
@@ -1341,7 +1344,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_state() {
+	static function data_state() {
 		return array(
 			array(
 				'Texas',
@@ -1371,7 +1374,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_au_state() {
+	static function data_au_state() {
 		return array(
 			array(
 				'Texas',
@@ -1397,7 +1400,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_svg() {
+	static function data_svg() {
 		return array(
 			array(\file_get_contents(static::ASSETS . 'monogram-inkscape.svg')),
 			array(\file_get_contents(static::ASSETS . 'enshrined.svg')),
@@ -1411,7 +1414,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_timezone() {
+	static function data_timezone() {
 		return array(
 			array('Notime', 'UTC'),
 			array('america/Los_angeles', 'America/Los_Angeles'),
@@ -1428,7 +1431,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_to_range() {
+	static function data_to_range() {
 		return array(
 			array(
 				5,
@@ -1468,7 +1471,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_upc() {
+	static function data_upc() {
 		return array(
 			array(
 				'0',
@@ -1514,7 +1517,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_url() {
+	static function data_url() {
 		$smiley_host = \function_exists('idn_to_ascii') ? 'xn--74h.com' : '☺.com';
 
 		return array(
@@ -1550,7 +1553,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_utf8() {
+	static function data_utf8() {
 		return array(
 			array('Björk Guðmundsdóttir'),
 			array("Hello\nWorld"),
@@ -1565,7 +1568,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_whitespace() {
+	static function data_whitespace() {
 		return array(
 			array(
 				" Björk\n\n",
@@ -1600,7 +1603,7 @@ class sanitize_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_zip5() {
+	static function data_zip5() {
 		return array(
 			array(
 				'Björk',

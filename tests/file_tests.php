@@ -8,13 +8,16 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\file;
 use blobfolio\common\mb;
 
 /**
  * Test Suite
  */
-class file_tests extends \PHPUnit\Framework\TestCase {
+class file_tests extends TestCase {
 	const ASSETS = __DIR__ . '/assets/';
 
 
@@ -23,12 +26,13 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
 	/**
 	 * ::copy()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_copy() {
+	public function test_copy() {
 		$from = self::ASSETS;
 		$base = \dirname(self::ASSETS) . '/copied/';
 		$to = \dirname(self::ASSETS) . '/copied/assets/';
@@ -48,10 +52,10 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, @\is_dir($base));
 	}
 
+	#[Test]
+	#[DataProvider('data_csv_headers')]
 	/**
 	 * ::csv_headers()
-	 *
-	 * @dataProvider data_csv_headers
 	 *
 	 * @param string $file File.
 	 * @param mixed $cols Columns.
@@ -59,17 +63,17 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 * @param mixed $expected Expected.
 	 * @return void Nothing.
 	 */
-	function test_csv_headers(string $file, $cols, string $delimiter, $expected) {
+	public function test_csv_headers(string $file, $cols, string $delimiter, $expected) {
 		$this->assertSame($expected, file::csv_headers($file, $cols, $delimiter));
 	}
 
-
+	#[Test]
 	/**
 	 * ::data_uri()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_data_uri() {
+	public function test_data_uri() {
 		$svg = self::ASSETS . 'pi.svg';
 		$data = file::data_uri($svg);
 
@@ -77,25 +81,26 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, file::data_uri('does_not_exist.txt'));
 	}
 
+	#[Test]
+	#[DataProvider('data_dirsize')]
 	/**
 	 * ::dirsize()
-	 *
-	 * @dataProvider data_dirsize
 	 *
 	 * @param string $dir Directory.
 	 * @param int $expected Expected.
 	 * @return void Nothing.
 	 */
-	function test_dirsize(string $dir, int $expected) {
+	public function test_dirsize(string $dir, int $expected) {
 		$this->assertSame($expected, file::dirsize($dir));
 	}
 
+	#[Test]
 	/**
 	 * ::empty_dir()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_empty_dir() {
+	public function test_empty_dir() {
 		$this->assertSame(false, file::empty_dir(self::ASSETS));
 
 		$new = self::ASSETS . 'empty';
@@ -106,12 +111,13 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 		\rmdir($new);
 	}
 
+	#[Test]
 	/**
 	 * ::dir_hash
 	 *
 	 * @return void Nothing.
 	 */
-	function test_hash_dir() {
+	public function test_hash_dir() {
 		$path = \dirname(__FILE__);
 
 		// Try something made up.
@@ -145,22 +151,22 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame(false, ($hash4 === $hash5));
 	}
 
+	#[Test]
+	#[DataProvider('data_leadingslash')]
 	/**
 	 * ::leadingslash()
-	 *
-	 * @dataProvider data_leadingslash
 	 *
 	 * @param string $path Path.
 	 * @param string $expected Expected.
 	 */
-	function test_leadingslash($path, $expected) {
+	public function test_leadingslash($path, $expected) {
 		$this->assertEquals($expected, file::leadingslash($path));
 	}
 
+	#[Test]
+	#[DataProvider('data_line_count')]
 	/**
 	 * ::line_count()
-	 *
-	 * @dataProvider data_line_count
 	 *
 	 * @param string $file File.
 	 * @param bool $trim Only count printable lines.
@@ -171,10 +177,11 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, file::line_count($file, $trim));
 	}
 
+	#[Test]
 	/**
 	 * ::mkdir() and ::rmdir()
 	 */
-	function test_mkdir_rmdir() {
+	public function test_mkdir_rmdir() {
 		$base = static::ASSETS . 'rmdir-test/';
 		$path = static::ASSETS . 'rmdir-test/subdir/';
 		$file = $path . 'test.txt';
@@ -201,104 +208,105 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame(false, @\is_dir($base));
 	}
 
+	#[Test]
+	#[DataProvider('data_path')]
 	/**
 	 * ::path()
-	 *
-	 * @dataProvider data_path
 	 *
 	 * @param string $path Path.
 	 * @param bool $validate Validate.
 	 * @param string $expected Expected.
 	 */
-	function test_path($path, $validate, $expected) {
+	public function test_path($path, $validate, $expected) {
 		$this->assertEquals($expected, file::path($path, $validate));
 	}
 
+	#[Test]
 	/**
 	 * ::scandir()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_scandir() {
+	public function test_scandir() {
 		$path = \dirname(__FILE__);
 
 		// Files and directories.
 		$files = file::scandir($path);
 		$this->assertSame(true, \in_array("{$path}/assets/", $files, true));
 		$this->assertSame(true, \in_array("{$path}/assets/pi.svg", $files, true));
-		$this->assertSame(true, \in_array("{$path}/test-file.php", $files, true));
+		$this->assertSame(true, \in_array("{$path}/file_tests.php", $files, true));
 
 		// Only files.
 		$files = file::scandir($path, true, false);
 		$this->assertSame(false, \in_array("{$path}/assets/", $files, true));
 		$this->assertSame(true, \in_array("{$path}/assets/pi.svg", $files, true));
-		$this->assertSame(true, \in_array("{$path}/test-file.php", $files, true));
+		$this->assertSame(true, \in_array("{$path}/file_tests.php", $files, true));
 
 		// Only directories.
 		$files = file::scandir($path, false, true);
 		$this->assertSame(true, \in_array("{$path}/assets/", $files, true));
 		$this->assertSame(false, \in_array("{$path}/assets/pi.svg", $files, true));
-		$this->assertSame(false, \in_array("{$path}/test-file.php", $files, true));
+		$this->assertSame(false, \in_array("{$path}/file_tests.php", $files, true));
 	}
 
+	#[Test]
+	#[DataProvider('data_trailingslash')]
 	/**
 	 * ::trailingslash()
 	 *
-	 * @dataProvider data_trailingslash
-	 *
 	 * @param string $path Path.
 	 * @param string $expected Expected.
 	 */
-	function test_trailingslash($path, $expected) {
+	public function test_trailingslash($path, $expected) {
 		$this->assertEquals($expected, file::trailingslash($path));
 	}
 
+	#[Test]
+	#[DataProvider('data_unixslash')]
 	/**
 	 * ::unixslash()
 	 *
-	 * @dataProvider data_unixslash
-	 *
 	 * @param string $path Path.
 	 * @param string $expected Expected.
 	 */
-	function test_unixslash($path, $expected) {
+	public function test_unixslash($path, $expected) {
 		$this->assertEquals($expected, file::unixslash($path));
 	}
 
+	#[Test]
+	#[DataProvider('data_unleadingslash')]
 	/**
 	 * ::unleadingslash()
 	 *
-	 * @dataProvider data_unleadingslash
-	 *
 	 * @param string $path Path.
 	 * @param string $expected Expected.
 	 */
-	function test_unleadingslash($path, $expected) {
+	public function test_unleadingslash($path, $expected) {
 		$this->assertEquals($expected, file::unleadingslash($path));
 	}
 
+	#[Test]
+	#[DataProvider('data_unparse_url')]
 	/**
 	 * ::unparse_url()
 	 *
-	 * @dataProvider data_unparse_url
-	 *
 	 * @param string $url URL.
 	 */
-	function test_unparse_url($url) {
+	public function test_unparse_url($url, $expected) {
 		$parsed = mb::parse_url($url);
 		$unparsed = file::unparse_url($parsed);
-		$this->assertEquals($url, $unparsed);
+		$this->assertEquals($expected, $unparsed);
 	}
 
+	#[Test]
+	#[DataProvider('data_untrailingslash')]
 	/**
 	 * ::untrailingslash()
-	 *
-	 * @dataProvider data_untrailingslash
 	 *
 	 * @param string $path Path.
 	 * @param string $expected Expected.
 	 */
-	function test_untrailingslash($path, $expected) {
+	public function test_untrailingslash($path, $expected) {
 		$this->assertEquals($expected, file::untrailingslash($path));
 	}
 
@@ -315,7 +323,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_csv_headers() {
+	static function data_csv_headers() {
 		return array(
 			// Regular CSV.
 			array(
@@ -384,7 +392,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_dirsize() {
+	static function data_dirsize() {
 		return array(
 			array(
 				static::ASSETS . 'size',
@@ -406,7 +414,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_leadingslash() {
+	static function data_leadingslash() {
 		return array(
 			array(
 				'/file/here',
@@ -428,7 +436,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_line_count() {
+	static function data_line_count() {
 		return array(
 			array(
 				static::ASSETS . 'roles.csv',
@@ -458,7 +466,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_path() {
+	static function data_path() {
 		return array(
 			array(
 				'/file/here',
@@ -513,7 +521,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_trailingslash() {
+	static function data_trailingslash() {
 		return array(
 			array(
 				'/file/here/',
@@ -535,7 +543,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_unixslash() {
+	static function data_unixslash() {
 		return array(
 			array(
 				'/file/here',
@@ -565,7 +573,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_unleadingslash() {
+	static function data_unleadingslash() {
 		return array(
 			array(
 				'/file/here',
@@ -587,12 +595,12 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_unparse_url() {
+	static function data_unparse_url() {
 		return array(
-			array('https://google.com/search?hello#foo'=>'https://google.com/search?hello#foo'),
-			array('google.com/apples'=>'google.com/apples'),
-			array('//☺.com'=>'https://xn--74h.com'),
-			array('ftp://user:pass@ftp.com:123'=>'ftp://user:pass@ftp.com:123'),
+			array('https://google.com/search?hello#foo','https://google.com/search?hello#foo'),
+			array('google.com/apples','google.com/apples'),
+			array('//☺.com','https://xn--74h.com'),
+			array('ftp://user:pass@ftp.com:123','ftp://user:pass@ftp.com:123'),
 		);
 	}
 
@@ -601,7 +609,7 @@ class file_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_untrailingslash() {
+	static function data_untrailingslash() {
 		return array(
 			array(
 				'/file/here/',

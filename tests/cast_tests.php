@@ -8,39 +8,42 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\cast as v_cast;
 use blobfolio\common\ref\cast as r_cast;
 
 /**
  * Test Suite
  */
-class cast_tests extends \PHPUnit\Framework\TestCase {
+class cast_tests extends TestCase {
 	// -----------------------------------------------------------------
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_array')]
 	/**
 	 * ::array()
-	 *
-	 * @dataProvider data_array
 	 *
 	 * @param mixed $value Value.
 	 * @param array $expected Expected.
 	 */
-	function test_array($value, $expected) {
+	public function test_array($value, $expected) {
 		$this->assertEquals($expected, v_cast::to_array($value));
 		$this->assertEquals('array', \gettype(v_cast::to_array($value)));
 	}
 
+	#[Test]
+	#[DataProvider('data_array')]
 	/**
 	 * ::array() alias
-	 *
-	 * @dataProvider data_array
 	 *
 	 * @param mixed $value Value.
 	 * @param array $expected Expected.
 	 */
-	function test_array_alias($value, $expected) {
+	public function test_array_alias($value, $expected) {
 		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
@@ -56,41 +59,41 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($expected, $value);
 	}
 
+	#[Test]
+	#[DataProvider('data_array_type')]
 	/**
 	 * ::array_type()
 	 *
-	 * @dataProvider data_array_type
-	 *
 	 * @param mixed $value Value.
 	 * @param string $expected Expected.
 	 */
-	function test_array_type($value, $expected) {
+	public function test_array_type($value, $expected) {
 		$this->assertEquals($expected, v_cast::array_type($value));
 	}
 
+	#[Test]
+	#[DataProvider('data_bool')]
 	/**
 	 * ::bool()
 	 *
-	 * @dataProvider data_bool
-	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
 	 * @param string $expected Expected.
 	 */
-	function test_bool($value, $flatten, $expected) {
+	public function test_bool($value, $flatten, $expected) {
 		$this->assertSame($expected, v_cast::to_bool($value, $flatten));
 	}
 
+	#[Test]
+	#[DataProvider('data_bool')]
 	/**
 	 * ::bool() alias
-	 *
-	 * @dataProvider data_bool
 	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
 	 * @param string $expected Expected.
 	 */
-	function test_bool_alias($value, $flatten, $expected) {
+	public function test_bool_alias($value, $flatten, $expected) {
 		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
@@ -107,29 +110,29 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, $value2);
 	}
 
+	#[Test]
+	#[DataProvider('data_float')]
 	/**
 	 * ::float()
 	 *
-	 * @dataProvider data_float
-	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
 	 * @param string $expected Expected.
 	 */
-	function test_float($value, $flatten, $expected) {
+	public function test_float($value, $flatten, $expected) {
 		$this->assertSame($expected, v_cast::to_float($value, $flatten));
 	}
 
+	#[Test]
+	#[DataProvider('data_float')]
 	/**
 	 * ::float() alias
-	 *
-	 * @dataProvider data_float
 	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
 	 * @param string $expected Expected.
 	 */
-	function test_float_alias($value, $flatten, $expected) {
+	public function test_float_alias($value, $flatten, $expected) {
 		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
@@ -146,23 +149,23 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, $value2);
 	}
 
+	#[Test]
+	#[DataProvider('data_int')]
 	/**
 	 * ::int()
-	 *
-	 * @dataProvider data_int
 	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
 	 * @param string $expected Expected.
 	 */
-	function test_int($value, $flatten, $expected) {
+	public function test_int($value, $flatten, $expected) {
 		$this->assertSame($expected, v_cast::to_int($value, $flatten));
 	}
 
+	#[Test]
+	#[DataProvider('data_int')]
 	/**
 	 * ::int() alias
-	 *
-	 * @dataProvider data_int
 	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
@@ -185,29 +188,29 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, $value2);
 	}
 
+	#[Test]
+	#[DataProvider('data_string')]
 	/**
 	 * ::string()
 	 *
-	 * @dataProvider data_string
-	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
 	 * @param string $expected Expected.
 	 */
-	function test_string($value, $flatten, $expected) {
+	public function test_string($value, $flatten, $expected) {
 		$this->assertSame($expected, v_cast::to_string($value, $flatten));
 	}
 
+	#[Test]
+	#[DataProvider('data_string')]
 	/**
 	 * ::string() alias
-	 *
-	 * @dataProvider data_string
 	 *
 	 * @param mixed $value Value.
 	 * @param bool $flatten Flatten.
 	 * @param string $expected Expected.
 	 */
-	function test_string_alias($value, $flatten, $expected) {
+	public function test_string_alias($value, $flatten, $expected) {
 		if (\version_compare(\PHP_VERSION, '7.0.0') < 0) {
 			$this->markTestSkipped('Aliases are only supported in PHP 7+.');
 		}
@@ -218,11 +221,10 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame($expected, $value);
 	}
 
-
+	#[Test]
+	#[DataProvider('data_to_type')]
 	/**
 	 * ::to_type()
-	 *
-	 * @dataProvider data_to_type
 	 *
 	 * @param mixed $value Value.
 	 * @param string $type Type.
@@ -246,7 +248,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array() {
+	static function data_array() {
 		return array(
 			array(
 				'string',
@@ -272,7 +274,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_array_type() {
+	static function data_array_type() {
 		return array(
 			array(
 				'string',
@@ -322,7 +324,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_bool() {
+	static function data_bool() {
 		return array(
 			array(
 				'string',
@@ -367,7 +369,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_float() {
+	static function data_float() {
 		return array(
 			array(
 				'string',
@@ -422,7 +424,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_int() {
+	static function data_int() {
 		return array(
 			array(
 				'string',
@@ -472,7 +474,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_string() {
+	static function data_string() {
 		return array(
 			array(
 				"Hello\nWorld",
@@ -517,7 +519,7 @@ class cast_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_to_type() {
+	static function data_to_type() {
 		return array(
 			array(
 				null,

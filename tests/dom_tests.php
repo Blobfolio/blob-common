@@ -8,12 +8,14 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\dom;
 
 /**
  * Test Suite
  */
-class dom_tests extends \PHPUnit\Framework\TestCase {
+class dom_tests extends TestCase {
 	const ASSETS = __DIR__ . '/assets/';
 
 
@@ -22,24 +24,26 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
 	/**
 	 * ::load_svg()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_load_svg() {
+	public function test_load_svg() {
 		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 
 		$this->assertSame(true, \is_a($dom, 'DOMDocument'));
 	}
 
+	#[Test]
 	/**
 	 * ::save_svg()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_save_svg() {
+	public function test_save_svg() {
 		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 		$svg = dom::save_svg($dom);
@@ -47,12 +51,13 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame(true, false !== \strpos($svg, '<svg'));
 	}
 
+	#[Test]
 	/**
 	 * ::get_nodes_by_class()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_get_nodes_by_class() {
+	public function test_get_nodes_by_class() {
 		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 		$class = 'k3xzp';
@@ -62,12 +67,13 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals(1, \count($nodes));
 	}
 
+	#[Test]
 	/**
 	 * ::innerhtml()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_innerhtml() {
+	public function test_innerhtml() {
 		$str = '<div><span><br/><strong>hello</strong>world</span></div>';
 		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$dom->formatOutput = false;
@@ -83,12 +89,13 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('<span><br></br><strong>hello</strong>world</span>', $innerhtml);
 	}
 
+	#[Test]
 	/**
 	 * ::parse_css()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_parse_css() {
+	public function test_parse_css() {
 		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 		$style = $dom->getElementsByTagName('style');
@@ -101,12 +108,13 @@ class dom_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals('.k3xzp{fill:currentColor;}', $parsed[0]['raw']);
 	}
 
+	#[Test]
 	/**
 	 * ::remove_nodes()
 	 *
 	 * @return void Nothing.
 	 */
-	function test_remove_nodes() {
+	public function test_remove_nodes() {
 		$svg = \file_get_contents(self::ASSETS . 'pi.svg');
 		$dom = dom::load_svg($svg);
 

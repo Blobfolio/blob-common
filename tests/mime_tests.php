@@ -8,12 +8,15 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use blobfolio\common\mime;
 
 /**
  * Test Suite
  */
-class mime_tests extends \PHPUnit\Framework\TestCase {
+class mime_tests extends TestCase {
 	const ASSETS = __DIR__ . '/assets/';
 
 
@@ -22,16 +25,16 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	// Tests
 	// -----------------------------------------------------------------
 
+	#[Test]
+	#[DataProvider('data_get_mime')]
 	/**
 	 * ::get_mime()
-	 *
-	 * @dataProvider data_get_mime
 	 *
 	 * @param string $mime MIME.
 	 * @param string $expected_mime Expected MIME.
 	 * @param string $expected_ext Expected extension.
 	 */
-	function test_get_mime($mime, $expected_mime, $expected_ext) {
+	public function test_get_mime($mime, $expected_mime, $expected_ext) {
 		$result = mime::get_mime($mime);
 
 		$this->assertSame(true, \is_array($result));
@@ -39,16 +42,16 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame(true, \in_array($expected_ext, $result['ext'], true));
 	}
 
+	#[Test]
+	#[DataProvider('data_get_extension')]
 	/**
 	 * ::get_extension()
-	 *
-	 * @dataProvider data_get_extension
 	 *
 	 * @param string $ext Extension.
 	 * @param string $expected_ext Expected extension.
 	 * @param string $expected_mime Expected MIME.
 	 */
-	function test_get_extension($ext, $expected_ext, $expected_mime) {
+	public function test_get_extension($ext, $expected_ext, $expected_mime) {
 		$result = mime::get_extension($ext);
 
 		$this->assertSame(true, \is_array($result));
@@ -56,16 +59,16 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 		$this->assertSame(true, \in_array($expected_mime, $result['mime'], true));
 	}
 
+	#[Test]
+	#[DataProvider('data_finfo')]
 	/**
 	 * ::finfo()
-	 *
-	 * @dataProvider data_finfo
 	 *
 	 * @param string $file File.
 	 * @param mixed $expected Expected.
 	 * @param mixed $suggestion Suggestion.
 	 */
-	function test_finfo($file, $expected, $suggestion) {
+	public function test_finfo($file, $expected, $suggestion) {
 		$result = mime::finfo($file);
 		$suggested = $result['suggested_filename'];
 		unset($result['suggested_filename']);
@@ -89,7 +92,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_get_mime() {
+	static function data_get_mime() {
 		return array(
 			array(
 				'audio/Mp3',
@@ -109,7 +112,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_get_extension() {
+	static function data_get_extension() {
 		return array(
 			array(
 				'mp3',
@@ -134,7 +137,7 @@ class mime_tests extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array Data.
 	 */
-	function data_finfo() {
+	static function data_finfo() {
 		return array(
 			array(
 				static::ASSETS . 'space.jpg',
