@@ -1546,7 +1546,7 @@ class sanitize {
 							}
 							// Invalid; convert it.
 							else {
-								$cc1 = (\chr(\ord($c1) / 64) | "\xc0");
+								$cc1 = (\chr(intval(\ord($c1) / 64)) | "\xc0");
 								$cc2 = ($c1 & "\x3f") | "\x80";
 								$out .= $cc1 . $cc2;
 							}
@@ -1565,7 +1565,7 @@ class sanitize {
 							}
 							// Invalid; convert it.
 							else {
-								$cc1 = (\chr(\ord($c1) / 64) | "\xc0");
+								$cc1 = (\chr(intval(\ord($c1) / 64)) | "\xc0");
 								$cc2 = ($c1 & "\x3f") | "\x80";
 								$out .= $cc1 . $cc2;
 							}
@@ -1586,14 +1586,14 @@ class sanitize {
 							}
 							// Invalid; convert it.
 							else {
-								$cc1 = (\chr(\ord($c1) / 64) | "\xc0");
+								$cc1 = (\chr(intval(\ord($c1) / 64)) | "\xc0");
 								$cc2 = ($c1 & "\x3f") | "\x80";
 								$out .= $cc1 . $cc2;
 							}
 						}
 						// Doesn't appear to be UTF-8; convert it.
 						else {
-							$cc1 = (\chr(\ord($c1) / 64) | "\xc0");
+							$cc1 = (\chr(intval(\ord($c1) / 64)) | "\xc0");
 							$cc2 = (($c1 & "\x3f") | "\x80");
 							$out .= $cc1 . $cc2;
 						}
@@ -1607,7 +1607,7 @@ class sanitize {
 							$out .= constants::WIN1252_CHARS[$o1];
 						}
 						else {
-							$cc1 = (\chr($o1 / 64) | "\xc0");
+							$cc1 = (\chr(intval($o1 / 64)) | "\xc0");
 							$cc2 = (($c1 & "\x3f") | "\x80");
 							$out .= $cc1 . $cc2;
 						}
