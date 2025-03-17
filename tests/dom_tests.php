@@ -8,9 +8,9 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use blobfolio\common\dom;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use blobfolio\common\dom;
 
 /**
  * Test Suite

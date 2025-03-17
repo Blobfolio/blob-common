@@ -8,11 +8,11 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use blobfolio\common\cast as v_cast;
+use blobfolio\common\ref\cast as r_cast;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use blobfolio\common\cast as v_cast;
-use blobfolio\common\ref\cast as r_cast;
 
 /**
  * Test Suite

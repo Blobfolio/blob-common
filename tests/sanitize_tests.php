@@ -8,11 +8,11 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use blobfolio\common\constants;
+use blobfolio\common\sanitize;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use blobfolio\common\constants;
-use blobfolio\common\sanitize;
 
 /**
  * Test Suite

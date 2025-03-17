@@ -8,10 +8,10 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use blobfolio\common\cli;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use blobfolio\common\cli;
 
 /**
  * Test Suite

@@ -75,7 +75,8 @@ class dom {
 
 		// Open it.
 		\libxml_use_internal_errors(true);
-		if (PHP_VERSION_ID < 80000) {
+		if (\PHP_VERSION_ID < 80000) {
+			// phpcs:ignore
 			\libxml_disable_entity_loader(true);
 		}
 		$dom = new \DOMDocument('1.0', 'UTF-8');
@@ -219,7 +220,7 @@ class dom {
 	 * @return string Content.
 	 */
 	// phpcs:ignore
-	public static function innerhtml($node, bool $xml=false, int $flags=null) {
+	public static function innerhtml($node, bool $xml=false, ?int $flags=null) {
 		if (
 			! \is_a($node, 'DOMElement') &&
 			! \is_a($node, 'DOMNode')

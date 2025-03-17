@@ -8,11 +8,11 @@
  * @author	Blobfolio, LLC <hello@blobfolio.com>
  */
 
+use blobfolio\common\file;
+use blobfolio\common\mb;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use blobfolio\common\file;
-use blobfolio\common\mb;
 
 /**
  * Test Suite
@@ -291,6 +291,7 @@ class file_tests extends TestCase {
 	 * ::unparse_url()
 	 *
 	 * @param string $url URL.
+	 * @param string $expected Expected.
 	 */
 	public function test_unparse_url($url, $expected) {
 		$parsed = mb::parse_url($url);
@@ -597,10 +598,10 @@ class file_tests extends TestCase {
 	 */
 	static function data_unparse_url() {
 		return array(
-			array('https://google.com/search?hello#foo','https://google.com/search?hello#foo'),
-			array('google.com/apples','google.com/apples'),
-			array('//☺.com','https://xn--74h.com'),
-			array('ftp://user:pass@ftp.com:123','ftp://user:pass@ftp.com:123'),
+			array('https://google.com/search?hello#foo', 'https://google.com/search?hello#foo'),
+			array('google.com/apples', 'google.com/apples'),
+			array('//☺.com', 'https://xn--74h.com'),
+			array('ftp://user:pass@ftp.com:123', 'ftp://user:pass@ftp.com:123'),
 		);
 	}
 
