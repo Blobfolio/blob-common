@@ -40,16 +40,15 @@ class data_tests extends TestCase {
 	 * ::array_idiff()
 	 *
 	 * @param array $expected Expected.
+	 * @param array $arr1 Array 1.
+	 * @param array $arr2 Array 2.
+	 * @param array $arr3 Array 3.
 	 */
-	public function test_array_idiff($expected) {
-		// This takes a variable number of arguments.
-		$arrays = \func_get_args();
-		if (! \is_array($arrays) || \count($arrays) < 2) {
-			return;
-		}
-		unset($arrays[0]);
-
-		$result = \call_user_func_array(array('\\blobfolio\\common\\data', 'array_idiff'), $arrays);
+	public function test_array_idiff($expected, $arr1, $arr2, $arr3) {
+		$result = \call_user_func_array(
+			array('\\blobfolio\\common\\data', 'array_idiff'),
+			array($arr1, $arr2, $arr3),
+		);
 		$this->assertSame($expected, $result);
 	}
 
@@ -59,16 +58,15 @@ class data_tests extends TestCase {
 	 * ::array_iintersect()
 	 *
 	 * @param array $expected Expected.
+	 * @param array $arr1 Array 1.
+	 * @param array $arr2 Array 2.
+	 * @param array $arr3 Array 3.
 	 */
-	public function test_array_iintersect($expected) {
-		// This takes a variable number of arguments.
-		$arrays = \func_get_args();
-		if (! \is_array($arrays) || \count($arrays) < 2) {
-			return;
-		}
-		unset($arrays[0]);
-
-		$result = \call_user_func_array(array('\\blobfolio\\common\\data', 'array_iintersect'), $arrays);
+	public function test_array_iintersect($expected, $arr1, $arr2, $arr3) {
+		$result = \call_user_func_array(
+			array('\\blobfolio\\common\\data', 'array_iintersect'),
+			array($arr1, $arr2, $arr3)
+		);
 		$this->assertSame($expected, $result);
 	}
 
